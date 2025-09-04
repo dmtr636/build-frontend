@@ -1,0 +1,47 @@
+.Input {
+    cursor: pointer;
+    user-select: none;
+
+    input {
+        pointer-events: none;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        caret-color: transparent;
+    }
+
+    &.medium {
+        & > div {
+            border-radius: 12px;
+        }
+    }
+
+    &.large {
+        & > div {
+            border-radius: 12px;
+        }
+    }
+}
+
+.inputEndActions {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 4px;
+    flex-shrink: 0;
+
+    &.medium {
+        min-width: 60px;
+    }
+
+    .large {
+        min-width: 76px;
+    }
+}
+
+.iconArrow {
+    &.showDropdown {
+        transform: scaleY(-1);
+    }
+    transition: transform 0.1s ease-out;
+}

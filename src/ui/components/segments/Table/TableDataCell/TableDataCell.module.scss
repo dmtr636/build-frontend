@@ -1,0 +1,38 @@
+@import "src/ui/styles/functions";
+
+.cell {
+    background: var(--objects-background-contrast-primary);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--lvl-7, 24px);
+    flex-shrink: 0;
+
+    &.index {
+        position: sticky;
+        left: 0;
+        border-right: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+        border-left: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+
+        &.scrolledX {
+            box-shadow: 1px 0px 3px 0px rgba(17, 19, 23, 0.12);
+            clip-path: inset(0px -15px 0px 0px);
+        }
+    }
+
+    &.selected {
+        background: lighter-focus($objects-background-brand-expfolio-tertiary);
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    button:hover > .cell:not(.selected),
+    a:hover > .cell:not(.selected) {
+        background: darker-hover($objects-background-contrast-primary);
+    }
+}
+
+button:active > .cell:not(.selected),
+a:active > .cell:not(.selected) {
+    background: darker-pressing($objects-background-contrast-primary);
+}

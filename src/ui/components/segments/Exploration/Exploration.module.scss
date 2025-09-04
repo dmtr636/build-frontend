@@ -1,0 +1,38 @@
+@import "src/ui/styles/functions";
+
+.card {
+    background: var(--objects-background-contrast-primary);
+    border-radius: var(--m);
+    border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    padding: 24px 32px;
+
+    @media screen and (max-width: 767px) {
+        max-width: 100%;
+        padding: 12px;
+    }
+}
+
+.searchRow {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    @media screen and (max-width: 767px) {
+        gap: 8px;
+    }
+}
+
+.input {
+    flex-grow: 1;
+}
+
+.divider {
+    margin: 24px -32px;
+    border-top: 1px solid $objects-stroke-neutral-secondary;
+}
+
+.filters {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}

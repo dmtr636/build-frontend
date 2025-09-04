@@ -1,0 +1,108 @@
+@import "src/ui/styles/functions";
+
+.header {
+    background: var(--objects-background-contrast-primary);
+    border-bottom: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    z-index: 2;
+    position: sticky;
+    top: 0;
+    transition: translate 0.1s ease-out;
+
+    &.scrolling {
+        translate: 0 -80px;
+    }
+
+    &.scrollingToTop {
+        translate: 0;
+    }
+
+    @media screen and (max-width: 767px) {
+        z-index: 3;
+    }
+}
+
+.secondHeader {
+    background: var(--objects-background-contrast-primary);
+    border-bottom: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    z-index: 2;
+    position: sticky;
+    top: 80px;
+    transition: translate 0.1s ease-out;
+
+    &.scrolling {
+        translate: 0 -80px;
+    }
+
+    &.scrollingToTop {
+        translate: 0;
+    }
+
+    @media screen and (max-width: 767px) {
+        top: 68px;
+
+        &.scrolling {
+            translate: 0 -68px;
+        }
+
+        &.scrollingToTop {
+            translate: 0;
+        }
+    }
+}
+
+.titleRow {
+    height: 80px;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: -1px;
+
+    @media screen and (max-width: 767px) {
+        height: 68px;
+        padding: 0 16px;
+        gap: 24px;
+        margin-bottom: 0;
+    }
+}
+
+.title {
+    color: var(--objects--text-neutral-primary);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 120%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.backButton {
+    margin-right: 4px;
+}
+
+.titleRowActions {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+
+    @media screen and (max-width: 767px) {
+        gap: 12px;
+    }
+}
+
+.actionsRow {
+    height: 76px;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    gap: var(--l);
+
+    @media screen and (max-width: 767px) {
+        height: 60px;
+        padding: 0 16px;
+    }
+}
+
+.titleStatus {
+    margin-left: 4px;
+}

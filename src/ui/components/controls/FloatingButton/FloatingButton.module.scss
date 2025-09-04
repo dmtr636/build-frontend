@@ -1,0 +1,25 @@
+.floatingButtonContainer {
+    position: sticky;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: end;
+    translate: -40px -40px;
+    pointer-events: none;
+
+    @media screen and (max-width: 767px) {
+        translate: -16px -8px;
+    }
+}
+
+.floatingButton {
+    pointer-events: all;
+    width: 60px !important;
+    height: 60px !important;
+
+    svg {
+        width: 36px !important;
+        height: 36px !important;
+    }
+}

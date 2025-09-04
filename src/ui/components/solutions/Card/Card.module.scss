@@ -1,0 +1,14 @@
+@import "src/ui/styles/functions";
+@import "../../../styles/vars";
+
+.card {
+    background: var(--objects-background-contrast-primaryst);
+    border-radius: var(--m);
+    border: 1px solid lighter-pale($objects-stroke-neutral-tertiary);
+    padding: 24px 32px;
+}
+
+.title {
+    color: var(--objects-text-neutral-secondary, #202020);
+    margin-bottom: 28px;
+}

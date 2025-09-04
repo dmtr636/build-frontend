@@ -1,0 +1,118 @@
+@import "src/ui/styles/vars";
+@import "src/ui/styles/functions";
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 100;
+
+    @keyframes backgroundEnterAnim {
+        from {
+            background-color: transparent;
+        }
+        to {
+            background-color: var(--darker-focus);
+        }
+    }
+
+    @keyframes backgroundExitAnim {
+        from {
+            background-color: var(--darker-focus);
+        }
+        to {
+            background-color: transparent;
+        }
+    }
+
+    animation: backgroundEnterAnim 0.2s ease-out forwards;
+
+    &.closing {
+        animation: backgroundExitAnim 0.2s ease-out forwards;
+    }
+}
+
+.drawer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 4px 0 0 4px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.08);
+    background: var(--objects-background-contrast-primary);
+    min-width: 460px;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+
+    @keyframes drawerEnterAnim {
+        from {
+            translate: 100% 0;
+        }
+        to {
+            translate: 0 0;
+        }
+    }
+
+    @keyframes drawerExitAnim {
+        from {
+            translate: 0 0;
+        }
+        to {
+            translate: 100% 0;
+        }
+    }
+
+    animation: drawerEnterAnim 0.2s ease-out forwards;
+
+    &.closing {
+        animation: drawerExitAnim 0.2s ease-out forwards;
+    }
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--objects-background-contrast-primary);
+    height: 80px;
+    padding: 22px 32px 0 32px;
+    color: var(--objects-text-neutral-primary, #111317);
+    border-bottom: 1px solid var(--objects-stroke-neutral-secondary);
+    flex-shrink: 0;
+
+    &.withTabs {
+        height: 126px;
+    }
+}
+
+.titleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: -1px;
+    user-select: none;
+}
+
+.tabs {
+    margin-top: 16px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    padding: 24px 32px;
+}
+
+.actions {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--objects-background-contrast-primary);
+    padding: 22px 32px;
+    display: grid;
+    gap: 16px;
+    margin-top: auto;
+    flex-shrink: 0;
+}

@@ -1,0 +1,218 @@
+.typo {
+    &.accent.primary {
+        color: var(--objects-text-accent-primary);
+    }
+    &.accent.secondary {
+        color: var(--objects-text-accent-secondary);
+    }
+    &.accent.tertiary {
+        color: var(--objects-text-accent-tertiary);
+    }
+    &.accent.quaternary {
+        color: var(--objects-text-accent-quaternary);
+    }
+
+    &.negative.primary {
+        color: var(--objects-text-negative-primary);
+    }
+    &.negative.secondary {
+        color: var(--objects-text-negative-secondary);
+    }
+    &.negative.tertiary {
+        color: var(--objects-text-negative-tertiary);
+    }
+    &.negative.quaternary {
+        color: var(--objects-text-negative-quaternary);
+    }
+
+    &.positive.primary {
+        color: var(--objects-text-positive-primary);
+    }
+    &.positive.secondary {
+        color: var(--objects-text-positive-secondary);
+    }
+    &.positive.tertiary {
+        color: var(--objects-text-positive-tertiary);
+    }
+    &.positive.quaternary {
+        color: var(--objects-text-positive-quaternary);
+    }
+
+    &.neutral.primary {
+        color: var(--objects-text-neutral-primary);
+    }
+    &.neutral.secondary {
+        color: var(--objects-text-neutral-secondary);
+    }
+    &.neutral.tertiary {
+        color: var(--objects-text-neutral-tertiary);
+    }
+    &.neutral.quaternary {
+        color: var(--objects-text-neutral-quaternary);
+    }
+
+    &.contrast.primary {
+        color: var(--objects-text-contrast-primary);
+    }
+    &.contrast.secondary {
+        color: var(--objects-text-contrast-secondary);
+    }
+    &.contrast.tertiary {
+        color: var(--objects-text-contrast-tertiary);
+    }
+    &.contrast.quaternary {
+        color: var(--objects-text-contrast-quaternary);
+    }
+
+    &.brand.primary {
+        color: var(--objects-text-brand-expfolio-primary);
+    }
+    &.brand.secondary {
+        color: var(--objects-text-brand-expfolio-secondary);
+    }
+    &.brand.tertiary {
+        color: var(--objects-text-brand-expfolio-tertiary);
+    }
+    &.brand.quaternary {
+        color: var(--objects-text-brand-expfolio-quaternary);
+    }
+}
+
+.h1 {
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+    letter-spacing: 0.36px;
+}
+
+.h2 {
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.h3 {
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.h4 {
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.h5 {
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.actionXL {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.32px;
+}
+
+.actionL {
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.15px;
+}
+
+.actionM {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.actionS {
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.actionXS {
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 12px;
+}
+
+.subheadXL {
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%;
+}
+
+.subheadL {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%;
+}
+
+.subheadM {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%;
+}
+.subheadS {
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%;
+}
+
+.bodyXL {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%;
+}
+
+.bodyL {
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%;
+}
+
+.bodyM {
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%;
+}
+
+.bodyS {
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%;
+}
+
+.noWrap {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.preLine {
+    white-space: pre-line;
+}

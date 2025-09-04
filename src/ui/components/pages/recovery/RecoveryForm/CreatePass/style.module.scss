@@ -1,0 +1,79 @@
+.header {
+    color: var(--color-components-text-neutral, #070707);
+
+    /* Headings/H4 */
+    font-family: Manrope;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+    /* 28.8px */
+    margin-bottom: 28px;
+}
+
+.checkBlockItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-components-text-neutral-secondary, #393939);
+    opacity: 0.6;
+
+    /* Action/L */
+    font-family: Manrope;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.15px;
+
+    svg path[stroke] {
+        stroke: #393939;
+    }
+
+    &.active {
+        color: var(--color-components-text-positive, #087f3f);
+        opacity: 1;
+
+        svg path[fill] {
+            fill: #087f3f;
+        }
+    }
+}
+
+.head {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    width: 360px;
+}
+
+.checkBlock {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.buttonBlock {
+    display: flex;
+    gap: 20px;
+    margin-top: 28px;
+}
+
+@media (max-width: 767px) {
+    .head {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 28px;
+    }
+    .buttonBlock {
+        display: flex;
+        gap: 20px;
+        margin-top: 16px;
+    }
+    .checkBlock {
+        margin-top: 16px;
+        margin-bottom: 16px;
+    }
+}

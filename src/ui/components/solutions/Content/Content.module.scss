@@ -1,0 +1,65 @@
+@import "src/ui/styles/functions";
+
+.card {
+    background: var(--objects-background-contrast-primary);
+    border-radius: var(--m, 12px);
+    border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    padding: 32px;
+    overflow: hidden;
+    max-width: 960px;
+    position: relative;
+
+    &.noPadding {
+        padding: 0;
+
+        .tabs {
+            margin: 16px 0 0 0;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        max-width: 100%;
+        padding: 16px;
+    }
+}
+
+.tabs {
+    margin: -16px -32px 32px -32px;
+    padding: 0 32px 0 32px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    @media screen and (max-width: 767px) {
+        margin: -8px -16px 16px -16px;
+        padding: 0 16px 0 16px;
+    }
+}
+
+.tabsBorder {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 67px;
+    border-bottom: 1px solid var(--objects-stroke-neutral-tertiary);
+
+    @media screen and (max-width: 767px) {
+        top: 59px;
+    }
+}
+
+.tabsRightGradient {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 47px;
+    height: 66px;
+    background: linear-gradient(270deg, #fff 0%, rgba(255, 255, 255, 0) 117.74%);
+    pointer-events: none;
+
+    @media screen and (max-width: 767px) {
+        width: 20px;
+    }
+}

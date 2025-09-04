@@ -1,0 +1,61 @@
+@use "sass:color";
+@import "src/ui/styles/vars";
+
+@function color-state($color-base, $color-state) {
+    @if $color-base == transparent {
+        @return transparent;
+    }
+    @return mix($color-base, fade-in($color-state, 1), 100% - opacity($color-state) * 100%);
+}
+
+@function lighter-pale($color) {
+    @return color-state($color, $lighter-pale);
+}
+
+@function lighter-hover($color) {
+    @return color-state($color, $lighter-hover);
+}
+
+@function lighter-pressing($color) {
+    @return color-state($color, $lighter-pressing);
+}
+
+@function lighter-disabled($color) {
+    @return color-state($color, $lighter-disabled);
+}
+
+@function lighter-focus($color) {
+    @return color-state($color, $lighter-focus);
+}
+
+@function darker-pale($color) {
+    @return color-state($color, $darker-pale);
+}
+
+@function darker-hover($color) {
+    @return color-state($color, $darker-hover);
+}
+
+@function darker-strong-hover($color) {
+    @return color-state($color, $darker-strong-hover);
+}
+
+@function darker-soft-hover($color) {
+    @return color-state($color, $darker-soft-hover);
+}
+
+@function darker-pressing($color) {
+    @return color-state($color, $darker-pressing);
+}
+
+@function darker-strong-pressing($color) {
+    @return color-state($color, $darker-strong-pressing);
+}
+
+@function darker-disabled($color) {
+    @return color-state($color, $darker-disabled);
+}
+
+@function darker-focus($color) {
+    @return color-state($color, $darker-focus);
+}

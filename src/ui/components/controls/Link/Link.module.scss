@@ -1,0 +1,91 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.link {
+    color: $objects-link-link;
+
+    &.large {
+        font-size: 16px;
+
+        .text {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 145%;
+        }
+
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    &.small {
+        font-size: 13px;
+
+        .text {
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 130%;
+        }
+
+        .icon {
+            width: 12px;
+            height: 12px;
+        }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: lighter-hover($objects-link-link);
+
+            &:not(.disableVisited):visited {
+                color: lighter-hover($objects-link-link-visited);
+            }
+        }
+    }
+
+    &:active {
+        color: darker-hover($objects-link-link);
+
+        &:not(.disableVisited):visited {
+            color: darker-hover($objects-link-link-visited);
+        }
+    }
+
+    &:not(.disableVisited):visited {
+        color: $objects-link-link-visited;
+    }
+
+    svg {
+        path {
+            fill: currentColor;
+        }
+    }
+
+    .lines {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .line {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+}
+
+.text {
+    position: relative;
+
+    &:after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 1px;
+        width: 100%;
+        background-color: currentColor;
+        border-radius: 8px;
+    }
+}

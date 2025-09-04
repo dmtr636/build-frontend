@@ -1,0 +1,104 @@
+@import "src/ui/styles/functions";
+
+/*
+@import "src/ui/styles/newCssVars";
+*/
+
+.container {
+    border-radius: var(--m, 12px);
+    background: var(--objects-background-contrast-primary, #fff);
+    display: flex;
+    width: 424px;
+    padding: var(--lvl-9, 32px);
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    /*gap: var(--lvl-8, 28px);*/
+    flex-shrink: 0;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.checkBlockItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: lighter-pale($objects-text-neutral-primary);
+
+    /* Action/L */
+    font-family: Manrope;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.15px;
+
+    svg path[fill] {
+        fill: lighter-pale($objects-graphic-neutral-primary);
+    }
+
+    &.active {
+        color: var(--color-components-text-positive, #087f3f);
+        opacity: 1;
+
+        svg path[fill] {
+            fill: #087f3f;
+        }
+    }
+}
+
+.checkBlock {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.buttonBlock {
+    display: flex;
+    gap: 20px;
+    margin-top: 24px;
+    width: 360px;
+}
+
+.head {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    width: 360px;
+}
+
+.input {
+    width: 360px;
+}
+
+@media (max-width: 767px) {
+    .container {
+        min-height: 100dvh;
+        width: calc(100vw - 40px);
+        padding: 0;
+        padding-top: 16px;
+        justify-content: flex-start;
+    }
+    .buttonBlock {
+        width: calc(100vw - 40px);
+        margin-top: 16px;
+    }
+    .head {
+        margin-bottom: 28px;
+    }
+    .input {
+        width: calc(100vw - 40px);
+    }
+    .checkBlock {
+        margin-top: 16px;
+        margin-bottom: 16px;
+        gap: 8px;
+    }
+}

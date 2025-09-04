@@ -1,0 +1,87 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+.container {
+    display: flex;
+    align-items: center;
+    border-radius: var(--3xl, 28px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.medium {
+        height: var(--status-height-medium, 44px);
+        padding: 0 var(--lvl-5, 16px);
+        gap: var(--lvl-3, 8px);
+
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    &.small {
+        height: var(--status-height-small, 36px);
+        padding: 0 var(--lvl-4, 12px);
+        gap: var(--lvl-3, 8px);
+
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    &.tiny {
+        height: var(--status-height-tiny, 28px);
+        padding: 0 var(--lvl-3, 8px);
+        gap: var(--lvl-2);
+
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    &.neutral {
+        color: $objects-text-neutral-primary;
+        border: 1px solid var(--objects-stroke-neutral-secondary);
+        background: var(--objects-background-neutral-tertiary);
+    }
+
+    &.positive {
+        color: var(--objects-text-positive-primary);
+        border: 1px solid var(--objects-stroke-positive-secondary);
+        background: var(--objects-background-positive-tertiary);
+    }
+
+    &.negative {
+        color: var(--objects-text-negative-primary);
+        border: 1px solid var(--objects-stroke-negative-secondary);
+        background: var(--objects-background-negative-tertiary);
+    }
+
+    &.warning {
+        color: var(--objects-text-warning-primary);
+        border: 1px solid var(--objects-stroke-warning-secondary);
+        background: $objects-background-warning-tertiary;
+    }
+
+    &.accent {
+        color: var(--objects-text-accent-primary);
+        border: 1px solid var(--objects-stroke-accent-secondary);
+        background: var(--objects-background-accent-tertiary);
+    }
+
+    &.brand {
+        color: var(--objects-text-brand-expfolio-primary);
+        border: 1px solid var(--objects-stroke-brand-expfolio-primary);
+        background: var(--objects-background-brand-expfolio-tertiary);
+    }
+
+    svg path {
+        fill: currentColor;
+    }
+}
+.text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}

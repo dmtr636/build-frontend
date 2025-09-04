@@ -1,0 +1,26 @@
+.footer {
+    flex-shrink: 0;
+    height: 67px;
+    padding: 0 40px;
+    background: var(--objects-background-contrast-primary, #fff);
+    display: flex;
+    align-items: center;
+    gap: var(--lvl-7, 24px);
+
+    @media screen and (max-width: 767px) {
+        flex-direction: column;
+        padding: 16px;
+        gap: 16px;
+        align-items: start;
+        height: auto;
+        margin-top: auto;
+
+        .version {
+            margin-left: 0;
+        }
+    }
+}
+
+.version {
+    margin-left: auto;
+}

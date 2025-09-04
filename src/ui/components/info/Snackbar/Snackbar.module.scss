@@ -1,0 +1,116 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.snackbar {
+    display: flex;
+    align-items: center;
+    padding: var(--lvl-3) var(--lvl-4);
+    gap: var(--lvl-3);
+    border-radius: var(--s);
+    max-width: 360px;
+    cursor: default;
+    user-select: none;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+
+    &.positive {
+        background: $objects-background-positive-tertiary;
+        color: $objects-text-positive-primary;
+
+        .loader {
+            border-color: $objects-graphic-positive-primary;
+        }
+    }
+
+    &.negative {
+        background: $objects-background-negative-tertiary;
+        color: $objects-text-negative-primary;
+
+        .loader {
+            border-color: $objects-graphic-negative-primary;
+        }
+    }
+
+    &.neutral {
+        background: $objects-background-neutral-primary;
+        color: $objects-text-contrast-primary;
+
+        .loader {
+            border-color: $objects-graphic-neutral-tertiary;
+        }
+    }
+
+    svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    svg path {
+        fill: currentColor;
+    }
+
+    @keyframes enterAnim {
+        from {
+            opacity: 0;
+            translate: 0 50px;
+        }
+        to {
+            opacity: 1;
+            translate: 0 0;
+        }
+    }
+
+    @keyframes exitAnim {
+        from {
+            opacity: 1;
+            translate: 0 0;
+        }
+        to {
+            opacity: 0;
+            translate: 0 50px;
+        }
+    }
+
+    animation: enterAnim 0.2s;
+
+    &.removing {
+        animation: exitAnim 0.2s;
+    }
+
+    @media screen and (max-width: 767px) {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 8px;
+
+    @media screen and (max-width: 767px) {
+        padding-left: 12px;
+        margin-left: auto;
+    }
+}
+
+.loader {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-top: 2px solid;
+
+    animation: loaderAnim linear;
+}
+
+@keyframes loaderAnim {
+    from {
+        right: 0;
+    }
+    to {
+        right: 100%;
+    }
+}

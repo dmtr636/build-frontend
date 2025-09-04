@@ -1,0 +1,42 @@
+@import "src/ui/styles/vars";
+
+.container {
+    padding: var(--lvl-5) var(--lvl-4);
+    border-radius: var(--s, 8px);
+    border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    background: var(--objects-background-contrast-primary, #fff);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.grid {
+    margin-top: 4px;
+    display: grid;
+    grid-template-columns: repeat(7, 42px);
+    row-gap: 4px;
+}
+
+.divider {
+    margin: 12px;
+    border-top: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+}
+
+.timeRow {
+    margin-top: 16px;
+    padding: 0 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.timeInput {
+    width: 84px;
+}
+
+.weekButton {
+    color: var(--objects-text-brand-expfolio-primary) !important;
+}

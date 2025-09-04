@@ -1,0 +1,715 @@
+@import "src/ui/styles/vars";
+@import "./Button.mixins";
+
+.button {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: $s;
+
+    &.accent {
+        &:not(.iconVariant) {
+            /*background-color: $objects-background-contrast-primary;*/
+        }
+
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-accent-primary,
+            $objects-background-accent-primary,
+            $objects-background-accent-tertiary,
+            $objects-stroke-accent-secondary
+        );
+    }
+
+    &.positive {
+        &:not(.iconVariant) {
+            /*background-color: $objects-background-contrast-primary;*/
+        }
+
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-positive-primary,
+            $objects-background-positive-primary,
+            $objects-background-positive-tertiary,
+            $objects-stroke-positive-secondary
+        );
+    }
+
+    &.negative {
+        &:not(.iconVariant) {
+            /* background-color: $objects-background-contrast-primary;*/
+        }
+
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-negative-primary,
+            $objects-background-negative-primary,
+            $objects-background-negative-tertiary,
+            $objects-stroke-negative-secondary
+        );
+    }
+
+    &.neutral {
+        &:not(.iconVariant) {
+            /*  background-color: $objects-background-contrast-primary;*/
+        }
+
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-neutral-primary,
+            $objects-background-neutral-primary,
+            $objects-background-neutral-secondary,
+            $objects-stroke-neutral-secondary
+        );
+    }
+
+    &.neutralPale {
+        &:not(.iconVariant) {
+            /*  background-color: $objects-background-contrast-primary;*/
+        }
+
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-neutral-primary,
+            $objects-background-neutral-primary,
+            $objects-background-neutral-secondary,
+            $objects-stroke-neutral-secondary
+        );
+    }
+
+    &.contrast {
+        @include color-types-mixin(
+            $objects-text-neutral-primary,
+            $objects-text-contrast-primary,
+            $objects-background-contrast-primary,
+            $objects-background-contrast-secondary,
+            $objects-stroke-contrast-secondary,
+            "invert"
+        );
+    }
+
+    &.contrast.primary {
+        &.pale {
+            color: darker-pale($objects-text-neutral-primary);
+            background-color: darker-pale($objects-background-contrast-primary);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background-color: darker-hover($objects-background-contrast-primary);
+            }
+        }
+
+        &.hover {
+            background-color: darker-hover($objects-background-contrast-primary);
+        }
+
+        &:active {
+            color: $objects-text-neutral-primary;
+            background-color: darker-pressing($objects-background-contrast-primary);
+        }
+
+        &.focused {
+            color: $objects-text-neutral-primary;
+            background-color: darker-focus($objects-background-contrast-primary);
+        }
+
+        &:disabled,
+        &.disabled {
+            color: darker-disabled($objects-text-neutral-primary);
+            background-color: darker-disabled($objects-background-contrast-primary);
+        }
+    }
+
+    &.contrast.outlined {
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background-color: $lighter-hover;
+            }
+        }
+
+        &.hover {
+            background-color: $lighter-hover;
+        }
+
+        &:active {
+            background-color: $lighter-pressing;
+        }
+    }
+
+    &.contrast.tertiary {
+        &.pale {
+            color: darker-pale($objects-text-contrast-primary);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background-color: $lighter-hover;
+            }
+        }
+
+        &.hover {
+            background-color: $lighter-hover;
+        }
+
+        &:active {
+            color: $objects-text-contrast-primary;
+            background-color: $lighter-pressing;
+        }
+
+        &.focused {
+            color: $objects-text-contrast-primary;
+            background-color: $lighter-pressing;
+        }
+
+        &:disabled,
+        &.disabled {
+            color: darker-disabled($objects-text-contrast-primary);
+        }
+    }
+
+    &.brand {
+        &:not(.iconVariant) {
+            /* background-color: $objects-background-contrast-primary;*/
+        }
+
+        @include color-types-mixin(
+            $objects-text-brand-expfolio-primary,
+            $objects-text-brand-expfolio-primary,
+            $objects-background-brand-expfolio-primary,
+            $objects-background-brand-expfolio-tertiary,
+            $objects-stroke-brand-expfolio-secondary
+        );
+
+        &.primary {
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background-color: darker-hover($objects-background-brand-expfolio-primary);
+                }
+            }
+
+            &.hover {
+                background-color: darker-hover($objects-background-brand-expfolio-primary);
+            }
+
+            &:active {
+                background-color: darker-pressing($objects-background-brand-expfolio-primary);
+            }
+
+            &.focused {
+                background-color: darker-focus($objects-background-brand-expfolio-primary);
+            }
+
+            &:disabled,
+            &.disabled {
+                background-color: lighter-disabled($objects-background-brand-expfolio-primary);
+            }
+        }
+
+        &.tertiary {
+            @include color-states-mixin(
+                "tertiary",
+                $objects-text-brand-expfolio-primary,
+                $objects-background-brand-expfolio-tertiary
+            );
+        }
+
+        &.outlined {
+            border: 1px solid currentColor;
+            padding: 0 calc(var(--current-padding) - 1px);
+            @include color-states-mixin(
+                "outlined",
+                $objects-text-brand-expfolio-tertiary,
+                $objects-background-brand-expfolio-tertiary,
+                $objects-stroke-brand-expfolio-primary
+            );
+        }
+    }
+
+    &.huge {
+        --current-padding: #{$lvl-6};
+        --current-gap: #{$lvl-3};
+        height: $button-height-large;
+        padding: 0 var(--current-padding);
+        gap: var(--current-gap);
+        border-radius: var(--M, 12px);
+
+        .icon {
+            width: $icons-width-xl;
+            height: $icons-height-xl;
+        }
+
+        &.iconVariant {
+            padding: 0;
+
+            .icon {
+                width: $icons-width-xxl;
+                height: $icons-height-xxl;
+            }
+        }
+
+        .loadingAnimation {
+            width: $icons-width-xxl;
+            height: $icons-height-xxl;
+        }
+
+        &.hasOnlyIconBefore {
+            padding: 12px;
+        }
+    }
+
+    &.large {
+        --current-padding: #{$lvl-6};
+        --current-gap: #{$lvl-3};
+        height: $button-height-large;
+        padding: 0 var(--current-padding);
+        gap: var(--current-gap);
+        border-radius: var(--M, 12px);
+
+        .icon {
+            width: $icons-width-l;
+            height: $icons-height-l;
+        }
+
+        &.iconVariant {
+            padding: 0;
+
+            .icon {
+                width: $icons-width-xl;
+                height: $icons-height-xl;
+            }
+        }
+
+        .loadingAnimation {
+            width: $icons-width-xl;
+            height: $icons-height-xl;
+        }
+
+        &.hasOnlyIconBefore {
+            padding: 14px;
+        }
+    }
+
+    &.medium {
+        --current-padding: #{$lvl-5};
+        --current-gap: #{$lvl-3};
+        height: $button-height-medium;
+        padding: 0 var(--current-padding);
+        gap: var(--current-gap);
+        border-radius: var(--M, 12px);
+
+        .icon {
+            width: $icons-width-s;
+            height: $icons-height-s;
+        }
+
+        &.iconVariant {
+            padding: 0;
+
+            .icon {
+                width: $icons-width-l;
+                height: $icons-height-l;
+            }
+        }
+
+        .loadingAnimation {
+            width: $icons-width-l;
+            height: $icons-height-l;
+        }
+
+        &.hasOnlyIconBefore {
+            padding: 12px;
+        }
+    }
+
+    &.small {
+        --current-padding: 12px;
+        --current-gap: #{$lvl-2};
+        height: $button-height-small;
+        padding: 0 var(--current-padding);
+        gap: var(--current-gap);
+        border-radius: var(--S, 8px);
+
+        .icon {
+            width: $icons-width-xs;
+            height: $icons-height-xs;
+        }
+
+        &.iconVariant {
+            padding: 0;
+
+            .icon {
+                width: $icons-width-s;
+                height: $icons-height-s;
+            }
+        }
+
+        .loadingAnimation {
+            width: $icons-width-s;
+            height: $icons-height-s;
+        }
+
+        &.hasOnlyIconBefore {
+            padding: 10px;
+        }
+    }
+
+    &.tiny {
+        --current-padding: #{$lvl-3};
+        --current-gap: #{$lvl-2};
+        height: 28px;
+        gap: var(--current-gap);
+        border-radius: var(--S, 8px);
+
+        .icon {
+            width: $icons-width-xs;
+            height: $icons-height-xs;
+        }
+
+        &.iconVariant {
+            padding: 0;
+
+            .icon {
+                width: $icons-width-xs;
+                height: $icons-height-xs;
+            }
+        }
+
+        &.hasOnlyIconBefore {
+            padding: 6px;
+        }
+    }
+
+    &:not(&.clickable) {
+        pointer-events: none;
+    }
+
+    &.fullWidth {
+        width: 100%;
+    }
+
+    &.peakRounding {
+        border-radius: $x3xl;
+    }
+
+    /* &.lowRounding {
+  border-radius: var(--s, 8px);
+}*/
+
+    &.iconVariant {
+        aspect-ratio: 1;
+        border-radius: 50%;
+    }
+
+    &.listItemVariant {
+        .startContent {
+            gap: $lvl-4;
+        }
+    }
+
+    &.alignStart {
+        justify-content: space-between;
+    }
+
+    &.edgeTop {
+        margin-top: calc(-1 * var(--current-padding) / 2);
+    }
+
+    &.edgeRight {
+        margin-right: calc(-1 * var(--current-padding) / 2);
+    }
+
+    &.edgeBottom {
+        margin-bottom: calc(-1 * var(--current-padding) / 2);
+    }
+
+    &.edgeLeft {
+        margin-left: calc(-1 * var(--current-padding) / 2);
+    }
+
+    .startContent {
+        display: flex;
+        align-items: center;
+        gap: var(--current-gap);
+        overflow: hidden;
+        transition: opacity 0.1s ease-out;
+    }
+
+    .customIconBefore {
+        //width: 27px !important;
+    }
+
+    .endContent {
+        display: flex;
+        align-items: center;
+        gap: var(--current-gap);
+        transition: opacity 0.1s ease-out;
+    }
+
+    .text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    svg:not(.customIconBefore) {
+        path:not([fill="white"]) {
+            fill: currentColor;
+        }
+    }
+
+    &.loading {
+        .startContent {
+            opacity: 0;
+        }
+
+        .endContent {
+            opacity: 0;
+        }
+    }
+
+    .loadingAnimation {
+        position: absolute;
+
+        svg {
+            path[stroke] {
+                stroke: currentColor;
+            }
+        }
+    }
+
+    &.withTransition {
+        transition: background-color 0.1s ease-out;
+    }
+
+    &.text {
+        height: auto;
+        padding: 0;
+
+        &.accent {
+            color: $objects-text-accent-primary;
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: lighter-hover($objects-text-accent-primary);
+                }
+            }
+
+            &.hover {
+                color: lighter-hover($objects-text-accent-primary);
+            }
+
+            &:active {
+                color: darker-pressing($objects-text-accent-primary);
+            }
+
+            &.pale {
+                color: lighter-pale($objects-text-accent-primary);
+            }
+
+            &.focused {
+                color: darker-focus($objects-text-accent-primary);
+            }
+
+            &:disabled,
+            &.disabled {
+                color: lighter-disabled($objects-text-accent-primary);
+            }
+        }
+
+        &.positive {
+            color: $objects-text-positive-primary;
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: lighter-hover($objects-text-positive-primary);
+                }
+            }
+
+            &.hover {
+                color: lighter-hover($objects-text-positive-primary);
+            }
+
+            &:active {
+                color: darker-pressing($objects-text-positive-primary);
+            }
+
+            &.pale {
+                color: lighter-pale($objects-text-positive-primary);
+            }
+
+            &.focused {
+                color: darker-focus($objects-text-positive-primary);
+            }
+
+            &:disabled,
+            &.disabled {
+                color: lighter-disabled($objects-text-positive-primary);
+            }
+        }
+
+        &.negative {
+            color: $objects-text-negative-primary;
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: lighter-hover($objects-text-negative-primary);
+                }
+            }
+
+            &.hover {
+                color: lighter-hover($objects-text-negative-primary);
+            }
+
+            &:active {
+                color: darker-pressing($objects-text-negative-primary);
+            }
+
+            &.pale {
+                color: lighter-pale($objects-text-negative-primary);
+            }
+
+            &.focused {
+                color: darker-focus($objects-text-negative-primary);
+            }
+
+            &:disabled,
+            &.disabled {
+                color: lighter-disabled($objects-text-negative-primary);
+            }
+        }
+
+        &.neutral {
+            color: $objects-text-neutral-primary;
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: lighter-hover($objects-text-neutral-primary);
+                }
+            }
+
+            &.hover {
+                color: lighter-hover($objects-text-neutral-primary);
+            }
+
+            &:active {
+                color: lighter-pressing($objects-text-neutral-primary);
+            }
+
+            &.pale {
+                color: lighter-pale($objects-text-neutral-primary);
+            }
+
+            &.focused {
+                color: lighter-focus($objects-text-neutral-primary);
+            }
+
+            &:disabled,
+            &.disabled {
+                color: lighter-disabled($objects-text-neutral-primary);
+            }
+        }
+
+        &.contrast {
+            color: $objects-text-contrast-primary;
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: darker-strong-hover($objects-text-contrast-primary);
+                }
+            }
+
+            &.hover {
+                color: darker-strong-hover($objects-text-contrast-primary);
+            }
+
+            &:active {
+                color: darker-strong-pressing($objects-text-contrast-primary);
+            }
+
+            &.pale {
+                color: darker-pale($objects-text-contrast-primary);
+            }
+
+            &.focused {
+                color: darker-focus($objects-text-contrast-primary);
+            }
+
+            &:disabled,
+            &.disabled {
+                color: darker-disabled($objects-text-contrast-primary);
+            }
+        }
+
+        &.brand {
+            color: $objects-text-brand-expfolio-tertiary;
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: darker-hover($objects-text-brand-expfolio-tertiary);
+                }
+            }
+
+            &.hover {
+                color: darker-hover($objects-text-brand-expfolio-tertiary);
+            }
+
+            &:active {
+                color: darker-pressing($objects-text-brand-expfolio-tertiary);
+            }
+
+            &.pale {
+                color: lighter-pale($objects-text-brand-expfolio-tertiary);
+            }
+
+            &.focused {
+                color: darker-focus($objects-text-brand-expfolio-tertiary);
+            }
+
+            &:disabled,
+            &.disabled {
+                color: lighter-disabled($objects-text-brand-expfolio-tertiary);
+            }
+        }
+    }
+
+    &.brandListItem {
+        svg path:first-child {
+            fill: $objects-graphic-brand-expfolio-primary;
+        }
+
+        svg path:not(:first-child) {
+            fill: $objects-text-brand-expfolio-tertiary;
+        }
+
+        &:disabled,
+        &.disabled {
+            svg path:first-child {
+                fill: lighter-disabled($objects-graphic-brand-expfolio-primary);
+            }
+
+            svg path:not(:first-child) {
+                fill: lighter-disabled($objects-text-brand-expfolio-tertiary);
+            }
+        }
+    }
+}
+
+.quickOptionsContainer {
+    display: flex;
+    gap: 2px;
+
+    > :first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    > :last-child {
+        padding-left: 12px;
+        padding-right: 12px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+}

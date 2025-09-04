@@ -1,0 +1,17 @@
+.row {
+    display: flex;
+    min-width: 100%;
+    width: fit-content;
+
+    &.large {
+        height: var(--row-height-large, 76px);
+    }
+
+    &.compact {
+        height: var(--row-height-compact, 41px);
+    }
+
+    &:not(:last-child) {
+        border-bottom: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    }
+}

@@ -1,0 +1,96 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--lvl-3);
+}
+
+.crumbButton {
+    display: flex;
+    gap: var(--lvl-3);
+}
+
+.crumb {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 8px;
+
+    .icon {
+        path {
+            fill: lighter-pale($objects-graphic-neutral-primary);
+        }
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    .text {
+        color: lighter-pale($objects-text-neutral-primary);
+
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: 0.32px;
+        /*margin-right: 8px;*/
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            .text {
+                color: lighter-hover($objects-text-neutral-primary);
+            }
+
+            .icon {
+                path {
+                    fill: lighter-hover($objects-graphic-neutral-primary);
+                }
+            }
+        }
+    }
+
+    /*.active {
+    cursor: alias;
+
+    .text {
+      color: $objects-text-neutral-primary;
+    }
+
+    .icon {
+      path {
+        fill: red;
+      }
+    }
+  }*/
+
+    &.disabled {
+        pointer-events: none;
+    }
+}
+
+.arrow {
+    path {
+        fill: lighter-pale($objects-graphic-neutral-primary);
+    }
+}
+
+.crumb {
+    &.active {
+        cursor: default;
+
+        .text {
+            color: $objects-text-neutral-primary;
+            margin-right: 0;
+        }
+
+        .icon path {
+            fill: $objects-graphic-neutral-primary;
+        }
+    }
+}

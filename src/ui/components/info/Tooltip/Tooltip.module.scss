@@ -1,0 +1,74 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.content {
+    max-width: 224px;
+    display: flex;
+    flex-direction: column;
+    //text-align: center;
+
+    gap: var(--lvl-3);
+    padding: var(--lvl-3) var(--lvl-4);
+    border-radius: var(--lvl-3);
+    box-shadow: 0 1px 3px 0 rgba(17, 19, 23, 0.12);
+
+    &.large {
+        max-width: 304px;
+    }
+
+    &.fullWidth {
+        max-width: 100%;
+    }
+
+    &.contrast {
+        background-color: var(--objects-background-contrast-primary);
+
+        .header {
+            color: var(--objects-text-neutral-primary);
+        }
+
+        .text {
+            color: var(--objects-text-neutral-secondary);
+        }
+    }
+
+    &.accent {
+        background-color: var(--objects-background-accent-tertiary);
+
+        .header {
+            color: var(--objects-text-accent-primary);
+        }
+
+        .text {
+            color: var(--objects-text-accent-secondary);
+        }
+    }
+
+    &.neutral {
+        background-color: var(--objects-background-neutral-primary);
+
+        .header {
+            color: var(--objects-text-contrast-primary);
+        }
+
+        .text {
+            color: var(--objects-text-contrast-secondary);
+        }
+    }
+}
+
+.header {
+    word-wrap: break-word;
+
+    &.textAlign {
+        text-align: center;
+    }
+}
+
+.text {
+    word-wrap: break-word;
+
+    &.textAlign {
+        text-align: center;
+    }
+}

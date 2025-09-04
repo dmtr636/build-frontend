@@ -1,0 +1,238 @@
+@import "src/ui/styles/functions";
+
+.container {
+    width: var(--image-width-small, 280px);
+    height: var(--image-height-small, 200px);
+    overflow: hidden;
+    position: relative;
+    border-radius: var(--s, 8px);
+    display: flex;
+    max-width: 100%;
+
+    &:hover {
+        .actionsOverlayBg {
+            opacity: 0.92;
+        }
+
+        .actionsOverlay {
+            opacity: 1;
+        }
+    }
+
+    &.photoGridRowsHasImages {
+        border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+        align-items: center;
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+        border-radius: var(--s, 8px);
+    }
+
+    &.readonly {
+        pointer-events: none;
+    }
+}
+
+.imagePlaceholderContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 12px;
+    border-radius: var(--s, 8px);
+    background: var(--objects-background-neutral-tertiary);
+    border: 1px solid var(--objects-stroke-neutral-secondary);
+    box-shadow: 0px 0px 6px 0px rgba(11, 59, 154, 0.12) inset;
+    cursor: pointer;
+    transition: 0.1s;
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            border: 1px solid darker-hover($objects-stroke-neutral-secondary);
+        }
+    }
+
+    &:active {
+        border: 1px solid darker-pressing($objects-stroke-neutral-secondary);
+    }
+}
+
+.plusPlaceholderContainer {
+    background: none;
+    box-shadow: none;
+    border: 2px dashed var(--objects-stroke-neutral-secondary);
+
+    svg {
+        opacity: 0.32;
+    }
+
+    svg path {
+        fill: var(--objects-graphic-neutral-tertiary);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            border: 2px dashed darker-hover($objects-stroke-neutral-secondary);
+
+            svg {
+                opacity: 0.64;
+            }
+        }
+    }
+
+    &:active {
+        border: 2px dashed darker-pressing($objects-stroke-neutral-secondary);
+
+        svg {
+            opacity: 0.8;
+        }
+    }
+}
+
+.imagePlaceholder {
+    width: var(--icons-height-5xl, 96px);
+    height: var(--icons-height-5xl, 96px);
+    opacity: 0.24;
+
+    path {
+        fill: var(--objects-text-neutral-quaternary);
+    }
+}
+
+.actionsOverlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.1s ease-out;
+    border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    border-radius: var(--s, 8px);
+
+    &.noBorder {
+        border: none;
+    }
+}
+
+.actionsOverlayBg {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: lighter-hover($objects-background-contrast-primary);
+    transition: opacity 0.1s ease-out;
+    border-radius: var(--s, 8px);
+    pointer-events: none;
+}
+
+.actionsOverlayContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+    text-align: center;
+    max-width: 240px;
+    margin: 0 8px;
+}
+
+.actionsOverlayContentTitle {
+    color: var(--objects-text-neutral-tertiary, #5f6a81);
+}
+
+.actionOverlayButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+}
+
+.dropzone {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: -1px;
+    border-radius: var(--s, 8px);
+    border: 1px dashed var(--objects-stroke-brand-expfolio-primary, #a0b6ed);
+    background: var(--objects-background-brand-expfolio-tertiary, #e5ecff);
+}
+
+.photoGridPreview {
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    display: grid;
+    gap: 4px;
+}
+
+.photoGridPreviewRow {
+    display: flex;
+    gap: 4px;
+}
+
+.photoGridPreviewImageWrapper {
+    height: auto;
+    border-radius: 4px;
+    overflow: hidden;
+
+    img {
+        border: none;
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.photoGridImageWrapper {
+    position: relative;
+}
+
+.imageDragHandle {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    cursor: move;
+    border-radius: 50%;
+
+    button {
+        pointer-events: none;
+    }
+}
+
+.photoGridAddRowButtonContainer {
+    border-radius: 0px 0px 12px 12px;
+    border-top: 1px solid var(--stroke-neutral-secondary, #d6d9e0);
+    background-color: var(--objects-background-neutral-tertiary, #f9fafb);
+    padding: 28px 32px 36px 32px;
+    margin: 0 -32px -24px -32px;
+
+    @media screen and (max-width: 767px) {
+        padding: 16px 20px 20px 20px;
+        margin: 0 -20px -20px -20px;
+    }
+}
+
+.animatedRow {
+    animation: rowAnimation 0.25s;
+    overflow: hidden;
+}
+
+@keyframes rowAnimation {
+    from {
+        height: 0;
+    }
+    to {
+        height: 234px;
+    }
+}

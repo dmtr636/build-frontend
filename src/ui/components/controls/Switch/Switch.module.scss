@@ -1,0 +1,176 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+@import "src/ui/styles/cssVars";
+
+.container {
+    display: flex;
+    align-items: center;
+    gap: var(--m);
+
+    &.fullWidth {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    &.textLeft {
+        flex-direction: row-reverse;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            .switch {
+                background-color: lighter-hover($objects-background-neutral-secondary);
+
+                .circle {
+                    background-color: lighter-hover($objects-background-neutral-primary);
+                }
+
+                &.checked {
+                    background-color: lighter-hover($objects-background-accent-secondary);
+
+                    .circle {
+                        background-color: lighter-hover($objects-graphic-accent-primary);
+                    }
+
+                    &.brand {
+                        background-color: darker-hover(
+                            $objects-background-brand-expfolio-secondary
+                        );
+
+                        .circle {
+                            background-color: darker-hover($objects-graphic-brand-expfolio-primary);
+                        }
+                    }
+                }
+            }
+
+            .title {
+                color: lighter-hover($objects-text-neutral-primary);
+            }
+
+            .subtitle {
+                color: lighter-hover($objects-text-neutral-secondary);
+            }
+        }
+    }
+
+    &:disabled {
+        .switch {
+            background-color: lighter-disabled($objects-background-neutral-secondary);
+
+            &.checked {
+                background-color: lighter-disabled($objects-background-accent-secondary);
+
+                .circle {
+                    background-color: lighter-disabled($objects-graphic-accent-primary);
+                }
+            }
+
+            &.brand {
+                &.checked {
+                    background-color: lighter-disabled(
+                        $objects-background-brand-expfolio-secondary
+                    );
+
+                    .circle {
+                        background-color: lighter-disabled(
+                            $objects-graphic-brand-expfolio-tertiary
+                        );
+                    }
+                }
+            }
+        }
+
+        .circle {
+            background-color: lighter-disabled($objects-background-neutral-primary);
+        }
+
+        .title {
+            color: lighter-disabled($objects-text-neutral-primary);
+        }
+
+        .subtitle {
+            color: lighter-disabled($objects-text-neutral-secondary);
+        }
+
+        .indicatorOn {
+            border-right: 1px solid lighter-disabled($objects-graphic-neutral-secondary);
+        }
+
+        .indicatorOff {
+            border: 1px solid lighter-disabled($objects-graphic-neutral-secondary);
+        }
+    }
+}
+
+.switch {
+    position: relative;
+    width: 60px;
+    height: 36px;
+    border-radius: 40px;
+    background: var(--objects-background-neutral-secondary, #e8eaed);
+    transition: background-color 0.2s;
+
+    &.checked {
+        background: var(--objects-background-accent-secondary, #d4def7);
+
+        .circle {
+            background-color: var(--objects-graphic-accent-primary, #2053d5);
+            left: 28px;
+        }
+
+        &.brand {
+            background-color: ($objects-background-brand-expfolio-secondary);
+
+            .circle {
+                background-color: var(--objects-graphic-brand-expfolio-primary);
+
+                svg {
+                    path {
+                        fill: var(--objects-text-neutral-primary);
+                    }
+                }
+            }
+        }
+    }
+}
+
+.circle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: (0px 1px 3px rgba(17, 19, 23, 0.12));
+    background-color: var(--objects-background-neutral-primary);
+    transition:
+        left 0.2s ease-out,
+        background-color 0.2s ease-out;
+
+    svg {
+        width: 20px;
+        height: 20px;
+
+        path {
+            fill: var(--objects-text-contrast-primary);
+        }
+    }
+}
+
+.label {
+    display: grid;
+    gap: 2px;
+    text-align: start;
+}
+
+.title {
+    color: var(--objects-text-neutral-primary);
+}
+
+.subtitle {
+    color: var(--objects-text-neutral-secondary);
+}

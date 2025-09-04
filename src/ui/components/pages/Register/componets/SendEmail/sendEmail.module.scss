@@ -1,0 +1,215 @@
+@import "src/ui/styles/functions";
+
+.buttonBlock {
+    display: flex;
+    flex-direction: column;
+    gap: var(--lvl-5);
+    margin-top: var(--lvl-7);
+    margin-bottom: var(--lvl-6);
+}
+
+.container {
+    width: 360px;
+}
+
+.dividerBlock {
+    display: flex;
+    align-items: center;
+    height: 22px;
+    /*margin-top: 20px;*/
+    gap: var(--lvl-5);
+    color: var(--objects-text-neutral-tertiary, #444d5f);
+
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%; /* 22.1px */
+}
+
+.divider {
+    width: 100%;
+    border: none;
+    height: 1px;
+    border-bottom: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+}
+
+.aceptRules {
+    color: var(--objects-text-neutral-primary, #111317);
+    text-align: center;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%;
+
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.rega {
+    cursor: pointer;
+    color: var(--objects-text-brand-expfolio-tertiary);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.32px;
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: lighter-hover($objects-text-brand-expfolio-tertiary);
+        }
+    }
+}
+
+.body {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+
+    justify-content: center;
+    flex-direction: column;
+
+    @media screen and (max-width: 767px) {
+        height: 100dvh;
+    }
+}
+
+.noAcc {
+    position: absolute;
+    bottom: 28px;
+    color: var(--objects-text-neutral-tertiary, #444d5f);
+    width: 100%;
+    display: flex;
+    margin: 0 auto;
+    /* Action/XL */
+    font-family: Manrope;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.32px;
+}
+
+.textAuth {
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+    font-family: Manrope;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%; /* 20.8px */
+    margin-right: 12px;
+}
+
+.noAcc {
+    color: var(--objects-text-neutral-tertiary, #444d5f);
+
+    width: 360px;
+    bottom: 28px;
+    display: flex;
+    justify-content: center;
+    font-family: Manrope;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.32px;
+    position: absolute;
+}
+
+.authConteiner {
+    width: 360px;
+    height: auto;
+    justify-content: center;
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.authConteinerButtons {
+    display: flex;
+    gap: 12px;
+}
+
+.demoButton {
+    position: absolute;
+    top: 28px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.noAccMob {
+    display: none;
+}
+
+@media (min-width: 768px) and (max-width: 870px) {
+    .demoButton {
+        justify-content: end;
+        right: 28px;
+    }
+}
+
+@media (max-width: 767px) {
+    .container {
+        width: calc(100vw - 32px);
+        min-height: 100dvh;
+        max-height: calc(100dvh);
+        display: flex;
+        flex-direction: column;
+
+        /*padding-top: 88px;*/
+    }
+    .buttonBlock {
+        margin-top: 20px;
+        margin-bottom: 16px;
+        gap: 8px;
+    }
+    .noAcc {
+        width: calc(100vw - 40px);
+        bottom: 40px;
+    }
+    .authConteiner {
+        width: calc(100vw - 40px);
+        margin-top: 16px;
+        flex-direction: row;
+        gap: 12px;
+    }
+    .authConteinerButtons {
+    }
+    .demoButton {
+        top: 16px;
+        right: 16px;
+        justify-content: end;
+    }
+    .aceptRules {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .noAcc {
+        border-top: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+        background: var(--objects-background-neutral-tertiary, #f9fafb);
+        color: var(--objects-text-neutral-tertiary, #444d5f);
+        width: 100vw;
+        padding: 24px 0;
+        margin: 0 -16px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        bottom: 0;
+        letter-spacing: 0.32px;
+        margin-top: auto;
+        position: sticky;
+    }
+    .register {
+        margin-top: 88px;
+    }
+}

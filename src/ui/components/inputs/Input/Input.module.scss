@@ -1,0 +1,459 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+/*
+@import url(https://db.onlinewebfonts.com/c/2767b18dd6a611e3ce83d0bfe4729cb4?family=Password+Dots+Regular);
+*/
+
+@font-face {
+    font-family: "Password";
+    src: url("./Password-Dots.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.inputContainer {
+    position: relative;
+    width: 100%;
+    color: var(--objects-text-neutral-primary, #111317);
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    /*
+letter-spacing: 0.15px;
+*/
+    background-color: white;
+    border-radius: var(--s);
+    cursor: text;
+
+    &.medium {
+        height: var(--input-height-medium, 44px);
+        font-size: 15px;
+        letter-spacing: 0.15px;
+
+        @media screen and (max-width: 767px) {
+            font-size: 16px;
+        }
+    }
+
+    &.large {
+        height: var(--input-height-large, 52px);
+        font-size: 16px;
+    }
+
+    &.readonly {
+        background-color: lighter-disabled($objects-background-neutral-secondary);
+
+        input {
+            color: var(--objects-text-neutral-primary, #111317);
+        }
+    }
+
+    &.outlined {
+        background-color: lighter-pale($objects-background-neutral-secondary);
+
+        &.focus {
+            background-color: lighter-focus($objects-background-neutral-secondary);
+        }
+
+        &.error {
+            background-color: lighter-pale($objects-background-neutral-secondary);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background-color: lighter-hover($objects-background-neutral-secondary);
+            }
+        }
+
+        &.disabled {
+            background-color: lighter-disabled($objects-background-neutral-secondary) !important;
+        }
+
+        &.readonly {
+            background-color: lighter-disabled($objects-background-neutral-secondary) !important;
+        }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            background-color: darker-soft-hover($objects-background-contrast-primary);
+
+            .inputLabel {
+                color: lighter-pale($objects-text-neutral-primary);
+            }
+
+            .inputBorder:not(.active, .error, .disabled, .outlined, .readonly) {
+                border: 1px solid var(--objects-stroke-neutral-secondary);
+                box-shadow: none;
+            }
+
+            .input:not(.disabled) {
+                &::placeholder {
+                    color: lighter-pale($objects-text-neutral-primary);
+                }
+            }
+
+            &:has(button:hover) {
+                background-color: transparent;
+            }
+
+            .icon {
+                path {
+                    fill: lighter-hover($objects-graphic-neutral-primary);
+                }
+            }
+
+            &.readonly {
+                background-color: lighter-disabled($objects-background-neutral-secondary);
+            }
+        }
+    }
+
+    &:has(.inputBorder.disabled) {
+        background-color: lighter-disabled($objects-background-neutral-secondary);
+
+        svg path {
+            fill: lighter-disabled($objects-graphic-neutral-primary);
+        }
+    }
+
+    &:has(.inputBorder.readonly) {
+        svg path {
+            fill: $objects-graphic-neutral-primary;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                svg path {
+                    fill: $objects-graphic-neutral-primary;
+                }
+            }
+        }
+    }
+}
+
+.inputBorder {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    border-radius: var(--s, 8px);
+    cursor: text;
+    box-shadow: 0px 0px 6px 0px rgba(11, 59, 154, 0.12) inset;
+    transition: border-color 0.1s ease;
+
+    &.inputAfterFocus {
+        box-shadow: none;
+    }
+
+    &.active {
+        border: 1px solid var(--objects-stroke-accent-primary);
+        box-shadow: none;
+
+        &.brand {
+            border: 1px solid $objects-stroke-brand-expfolio-quaternary;
+        }
+    }
+
+    &.error {
+        border: 1px solid var(--objects-stroke-negative-primary, #c02626);
+        box-shadow: none;
+
+        &.outlined {
+            border: 1px solid var(--objects-stroke-negative-primary, #c02626);
+            box-shadow: none;
+        }
+    }
+
+    &.disabled {
+        border: 1px solid lighter-disabled($objects-stroke-neutral-secondary);
+        box-shadow: none;
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0) !important;
+            }
+        }
+
+        .icon {
+            path {
+                fill: lighter-disabled($objects-graphic-neutral-primary);
+            }
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    path {
+                        fill: lighter-disabled($objects-graphic-neutral-primary);
+                    }
+                }
+            }
+        }
+
+        &.outlined {
+            border: 1px solid red; /*?*/
+            box-shadow: none;
+
+            &.disabled {
+                border: 1px solid lighter-disabled($objects-background-neutral-secondary);
+            }
+
+            &.readonly {
+                border: 1px solid lighter-disabled($objects-background-neutral-secondary);
+            }
+        }
+    }
+
+    &.outlined {
+        border: 1px solid lighter-pale($objects-background-neutral-secondary);
+        box-shadow: none;
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                border: 1px solid lighter-hover($objects-background-neutral-secondary);
+            }
+        }
+    }
+
+    &.readonly {
+        border: 1px solid lighter-disabled($objects-stroke-neutral-secondary);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                border: 1px solid lighter-disabled($objects-stroke-neutral-secondary);
+            }
+        }
+    }
+}
+
+.input {
+    flex-grow: 1;
+    height: 100%;
+    width: 100%;
+    border-radius: 8px;
+    font-size: 1em;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.32px;
+    text-overflow: ellipsis;
+
+    &.password {
+        font-size: 10px;
+        font-family: Password;
+    }
+
+    &::placeholder {
+        color: lighter-pale($objects-text-neutral-primary);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                color: lighter-pale($objects-text-neutral-primary);
+            }
+        }
+    }
+
+    &.focus {
+        color: #070707;
+    }
+
+    &.disabled {
+        color: lighter-disabled($objects-text-neutral-primary);
+
+        &::placeholder {
+            color: lighter-disabled($objects-text-neutral-primary);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                &::placeholder {
+                    color: lighter-disabled($objects-text-neutral-primary);
+                }
+            }
+        }
+    }
+
+    &.centered {
+        text-align: center;
+    }
+}
+
+.inputContent {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+
+    &.medium {
+        gap: 12px;
+        padding: 0 16px;
+    }
+
+    &.large {
+        gap: 16px;
+        padding: 0 20px;
+    }
+
+    &.disabled {
+        cursor: auto;
+    }
+}
+
+.formName {
+    color: var(--objects-text-neutral-secondary, #2c313a);
+    font-style: normal;
+    font-weight: 600;
+    line-height: 120%;
+    padding-bottom: var(--s);
+
+    &.medium {
+        font-size: 16px;
+    }
+
+    &.large {
+        font-size: 17px;
+    }
+
+    &.error {
+        color: var(--objects-text-negative-primary, #c02626);
+    }
+}
+
+.formText {
+    color: var(--objects-text-neutral-secondary, #2c313a);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%;
+    padding-top: var(--lvl-3);
+    white-space: pre-line;
+
+    &.medium {
+        font-size: 15px;
+    }
+
+    &.large {
+        font-size: 16px;
+    }
+
+    &.error {
+        color: var(--objects-text-negative-primary, #c02626);
+    }
+}
+
+.iconBlock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.medium {
+        width: 36px;
+        height: 36px;
+        gap: 8px;
+    }
+
+    &.large {
+        gap: 12px;
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/*.passShow {
+  width: 24px;
+  height: 24px;
+}*/
+
+/*.passShowBlock {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  z-index: 2;
+
+  svg path {
+    fill: var(--color-components-text-negative, #c2180f);
+  }
+
+  svg path[stroke] {
+    stroke: var(--color-components-text-negative, #c2180f);
+  }
+}*/
+
+.icon {
+    path {
+        fill: lighter-pale($objects-graphic-neutral-primary);
+    }
+
+    &.medium {
+        height: 20px;
+        width: 20px;
+    }
+
+    &.large {
+        height: 24px;
+        width: 24px;
+    }
+
+    &.focus {
+        path {
+            fill: $objects-graphic-neutral-primary;
+        }
+    }
+
+    &.disabled {
+        path {
+            fill: lighter-disabled($objects-text-neutral-primary);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                path {
+                    fill: lighter-disabled($objects-text-neutral-primary);
+                }
+            }
+        }
+    }
+
+    flex-shrink: 0;
+
+    svg {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.customStartIcon {
+    flex-shrink: 0;
+
+    &.medium {
+        height: 20px;
+        width: 20px;
+    }
+
+    &.large {
+        height: 24px;
+        width: 24px;
+    }
+
+    svg {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.required {
+    color: var(--objects-text-negative-primary, #c02626);
+
+    &.requiredError {
+        color: var(--objects-text-neutral-secondary);
+    }
+}

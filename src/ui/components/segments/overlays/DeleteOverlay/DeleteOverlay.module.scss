@@ -1,0 +1,17 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+@import "src/ui/styles/shadows";
+
+.subtitle {
+    color: var(--objects-text-neutral-secondary);
+}
+
+.info {
+    margin-top: var(--l);
+    padding: var(--xl) var(--xxl);
+    border-radius: var(--s);
+    background: var(--objects-background-neutral-tertiary, #fafafa);
+    max-width: 392px;
+
+    @include shadows-inner-low;
+}

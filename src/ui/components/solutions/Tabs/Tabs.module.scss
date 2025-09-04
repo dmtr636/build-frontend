@@ -1,0 +1,229 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.tabs {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin: 0 -32px;
+    padding: 0 32px;
+
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    &.primary {
+        gap: 28px;
+
+        @media screen and (max-width: 767px) {
+            gap: 20px;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        margin: 0 -16px;
+        padding: 0 16px;
+    }
+
+    &.reorderCard {
+        flex-direction: column;
+        gap: 4px;
+        width: calc(100% + 52px);
+        overflow: hidden;
+
+        button {
+            color: var(--objects-text-neutral-primary, #111317);
+            width: 100%;
+            overflow: hidden;
+            justify-content: start;
+            display: flex;
+
+            > div {
+                padding-bottom: 0 !important;
+                height: 44px !important;
+                width: 100%;
+                overflow: hidden;
+                justify-content: start;
+                display: flex;
+
+                > div {
+                    overflow: hidden;
+                }
+            }
+        }
+
+        .button {
+        }
+    }
+}
+
+.button {
+    padding: 0 14px;
+    margin: 0 -14px;
+    color: lighter-pale($objects-text-neutral-secondary);
+
+    &.dragMode {
+        cursor: move;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover:not(&.active) {
+            color: darker-hover($objects-text-neutral-secondary);
+        }
+    }
+
+    &:active:not(&.active) {
+        color: darker-pressing($objects-text-neutral-secondary);
+    }
+
+    @media screen and (max-width: 767px) {
+        padding: 0 10px;
+        margin: 0 -10px;
+    }
+}
+
+.tab {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: var(--lvl-3);
+    flex-shrink: 0;
+
+    &.primary {
+        border-bottom: 1px solid transparent;
+
+        &.active {
+            border-bottom: 1px solid currentColor;
+        }
+    }
+
+    &.secondary {
+        background-color: var(--objects-background-contrast-primary);
+        color: lighter-pale($objects-text-neutral-secondary);
+        border: 1px solid currentColor;
+
+        &:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        &:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        &:first-child:last-child {
+            border-radius: 8px;
+        }
+
+        &.active + & {
+            border-left: none;
+        }
+
+        &.active + & {
+            border-left: none;
+        }
+
+        &:not(.active):not(:last-child) {
+            border-right: none;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover:not(&.active) {
+                color: darker-hover($objects-text-neutral-secondary);
+            }
+        }
+
+        &:active:not(&.active) {
+            color: darker-pressing($objects-text-neutral-secondary);
+        }
+    }
+
+    &.large {
+        height: var(--button-height-large);
+
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        &.primary {
+            padding-bottom: 12px;
+        }
+
+        &.secondary {
+            padding: 0 var(--lvl-6);
+        }
+    }
+
+    &.medium {
+        height: var(--button-height-medium);
+
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        &.primary {
+            padding-bottom: 8px;
+        }
+
+        &.secondary {
+            padding: 0 var(--l);
+        }
+    }
+
+    &.small {
+        height: var(--button-height-small);
+
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        &.primary {
+            padding-bottom: 4px;
+        }
+
+        &.secondary {
+            padding: 0 var(--m);
+        }
+    }
+
+    &.active {
+        &.accent {
+            color: $objects-text-accent-primary;
+        }
+
+        &.brand {
+            color: $objects-text-brand-expfolio-tertiary;
+        }
+
+        &.neutral {
+            color: var(--objects-text-contrast-primary, #fff);
+            background: var(--objects-background-neutral-primary, #111317);
+        }
+    }
+
+    .startContent {
+        display: flex;
+        align-items: center;
+        gap: var(--s);
+    }
+
+    .endContent {
+        display: flex;
+        align-items: center;
+        gap: var(--s);
+    }
+
+    svg {
+        path {
+            fill: currentColor;
+        }
+    }
+
+    transition: border-color 0.1s ease-out;
+}

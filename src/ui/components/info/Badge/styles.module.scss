@@ -1,0 +1,171 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/cssVars";
+@import "src/ui/components/controls/Button/Button.mixins";
+
+.container {
+    position: relative;
+}
+
+.badge {
+    position: absolute;
+    top: 0;
+    right: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--objects-text-contrast-primary, #fff);
+    text-align: center;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 12px;
+    z-index: 1;
+    //background-color: white;
+    cursor: default;
+
+    &.large {
+        display: inline-flex;
+        width: 26px;
+        height: var(--badge-height-large, 28px);
+        padding: var(--lvl-3, 8px);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        border-radius: var(--m, 12px);
+        top: -10px;
+        right: -14px;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: 0.32px;
+    }
+
+    &.medium {
+        display: inline-flex;
+        height: var(--badge-height-medium, 24px);
+        padding: var(--lvl-3, 8px);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+        width: 25px;
+        border-radius: var(--m, 12px);
+        top: -8px;
+        right: -12px;
+        font-size: 15px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: 0.15px;
+    }
+
+    &.small {
+        height: var(--badge-height-small, 20px);
+        border-radius: var(--m, 12px);
+        width: 25px;
+        right: -11px;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+    }
+
+    &.tiny {
+        width: 23px;
+        height: var(--badge-height-tiny, 16px);
+        border-radius: var(--m, 12px);
+        right: -10px;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+    }
+
+    &.micro {
+        width: var(--badge-small, 8px);
+        height: var(--badge-small, 8px);
+        border-radius: var(--m, 12px);
+        right: -1px;
+        font-size: 0;
+    }
+
+    &.accent {
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-accent-primary,
+            $objects-background-accent-primary,
+            $objects-background-accent-secondary,
+            $objects-stroke-accent-secondary
+        );
+    }
+
+    &.positive {
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-positive-primary,
+            $objects-background-positive-primary,
+            $objects-background-positive-secondary,
+            $objects-stroke-positive-secondary
+        );
+    }
+
+    &.negative {
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-negative-primary,
+            $objects-background-negative-primary,
+            $objects-background-negative-secondary,
+            $objects-stroke-negative-secondary
+        );
+    }
+
+    &.neutral {
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-neutral-primary,
+            $objects-background-neutral-primary,
+            $objects-background-neutral-secondary,
+            $objects-stroke-neutral-secondary
+        );
+    }
+
+    &.contrast {
+        @include color-types-mixin(
+            $objects-text-neutral-primary,
+            $objects-text-contrast-primary,
+            $objects-background-contrast-primary,
+            $objects-background-contrast-secondary,
+            $objects-stroke-contrast-secondary,
+            "invert"
+        );
+    }
+
+    &.brand {
+        @include color-types-mixin(
+            $objects-text-brand-expfolio-primary,
+            $objects-text-brand-expfolio-primary,
+            $objects-background-brand-expfolio-primary,
+            $objects-background-brand-expfolio-secondary,
+            $objects-stroke-brand-expfolio-tertiary
+        );
+
+        &.outlined {
+            @include color-states-mixin(
+                "outlined",
+                $objects-text-brand-expfolio-tertiary,
+                $objects-background-brand-expfolio-secondary,
+                $objects-stroke-brand-expfolio-tertiary
+            );
+        }
+    }
+}
+
+.disabled {
+    pointer-events: none;
+}
+
+.pale {
+    pointer-events: none;
+}

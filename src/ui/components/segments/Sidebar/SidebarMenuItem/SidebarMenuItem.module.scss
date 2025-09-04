@@ -1,0 +1,64 @@
+@import "src/ui/styles/functions";
+
+.menuItem {
+    position: relative;
+    min-height: 21px;
+}
+
+.submenu {
+    z-index: 2;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 221px;
+    border-radius: 0 var(--xs) var(--xs) 0;
+    border-left: 1px solid var(--objects-stroke-neutral-tertiary);
+    background: var(--objects-background-neutral-primary);
+    padding: 28px 24px;
+    transition: left 0.3s ease-out;
+
+    @keyframes enterSubmenuAnim {
+        from {
+            opacity: 0;
+            translate: -20px 0;
+        }
+        to {
+            opacity: 1;
+            translate: 0 0;
+        }
+    }
+
+    animation: enterSubmenuAnim 0.15s ease-out;
+}
+
+.submenuHeader {
+    color: #fff;
+}
+
+.submenuItems {
+    display: grid;
+    gap: 8px;
+    margin: 46px -12px 0 -12px;
+}
+
+.arrow {
+    transition: transform 0.15s ease-out;
+
+    &.rotated {
+        transform: scaleX(-1);
+    }
+}
+
+.brandButton {
+    color: var(--objects-text-brand-expfolio-secondary) !important;
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: darker-hover($objects-text-brand-expfolio-secondary) !important;
+        }
+    }
+
+    &:active {
+        color: darker-pressing($objects-text-brand-expfolio-secondary) !important;
+    }
+}

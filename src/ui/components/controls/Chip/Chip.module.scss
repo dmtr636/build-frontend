@@ -1,0 +1,131 @@
+@import "src/ui/styles/vars";
+@import "src/ui/styles/functions";
+
+.button {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--lvl-3);
+    flex-shrink: 0;
+    border-radius: var(--s);
+    white-space: nowrap;
+    overflow: hidden;
+    height: var(--chip-height-medium);
+    padding: 0 calc(var(--lvl-5) - 1px);
+    color: $objects-text-neutral-primary;
+
+    &.primary {
+        border: 1px solid $objects-stroke-neutral-secondary;
+
+        &.pale {
+            color: lighter-pale($objects-text-neutral-primary);
+            border: 1px solid lighter-pale($objects-stroke-neutral-secondary);
+        }
+
+        &.clickable:not(:has(button:hover)) {
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: lighter-hover($objects-text-neutral-primary);
+                    background: var(--darker-hover, rgba(17, 19, 23, 0.04));
+                }
+            }
+            &:active {
+                background: var(--darker-pressing, rgba(17, 19, 23, 0.04));
+            }
+        }
+
+        &.selected {
+            color: var(--objects-text-accent-primary, #2053d5);
+            border-color: $objects-stroke-accent-secondary;
+
+            &:not(:has(button:hover)) {
+                @media (hover: hover) and (pointer: fine) {
+                    &:hover {
+                        color: lighter-hover($objects-text-accent-primary);
+                        background-color: lighter-hover($objects-background-accent-tertiary);
+                    }
+                }
+                &:active {
+                    background: lighter-pressing($objects-background-accent-tertiary);
+                }
+            }
+        }
+    }
+
+    &.secondary {
+        &.pale {
+            color: lighter-pale($objects-background-neutral-secondary);
+        }
+
+        background: var(--objects-background-neutral-secondary, #e8eaed);
+
+        &.clickable:not(:has(button:hover)) {
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: lighter-hover($objects-text-neutral-primary);
+                    background: darker-hover($objects-background-neutral-secondary);
+                }
+            }
+            &:active {
+                background: darker-pressing($objects-background-neutral-secondary);
+            }
+        }
+
+        &.selected {
+            color: var(--objects-text-accent-primary, #2053d5);
+            background: var(--objects-background-accent-tertiary, #e5ecff);
+
+            &.clickable:not(:has(button:hover)) {
+                @media (hover: hover) and (pointer: fine) {
+                    &:hover {
+                        color: lighter-hover($objects-text-accent-primary);
+                        background: darker-hover($objects-background-accent-tertiary);
+                    }
+                }
+                &:active {
+                    background: darker-pressing($objects-background-accent-tertiary);
+                }
+            }
+        }
+    }
+
+    &:not(&.clickable) {
+        cursor: default;
+    }
+
+    &.roundingPeak {
+        border-radius: var(--4xl);
+    }
+
+    svg.icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .startContent {
+        display: flex;
+        align-items: center;
+        gap: var(--lvl-3);
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .endContent {
+        display: flex;
+        align-items: center;
+        gap: var(--lvl-3);
+    }
+
+    svg {
+        path {
+            fill: currentColor;
+        }
+    }
+
+    &.small {
+        height: var(--button-height-small, 36px);
+        padding: 0 calc(var(--lvl-4) - 1px);
+        gap: 4px;
+    }
+}

@@ -1,0 +1,15 @@
+.row {
+    display: flex;
+    border-bottom: 1px solid var(--objects-stroke-neutral-secondary, #e8eaed);
+    height: var(--column-head-height-large, 64px);
+    position: sticky;
+    top: 0;
+    width: fit-content;
+    min-width: 100%;
+    z-index: 1;
+
+    &.scrolledY {
+        box-shadow: 0px 1px 3px 0px rgba(17, 19, 23, 0.12);
+        clip-path: inset(0px 0px -15px 0px);
+    }
+}

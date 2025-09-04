@@ -1,0 +1,46 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.list {
+    padding: var(--s);
+}
+
+.divider {
+    border-top: 1px solid $objects-stroke-neutral-tertiary;
+    margin: 8px 0;
+
+    &:last-child {
+        display: none;
+    }
+}
+
+.footer {
+    &.large {
+        padding: 15px 20px;
+    }
+
+    &.medium {
+        padding: 12px 16px;
+    }
+
+    &.noPadding {
+        padding: 0;
+    }
+}
+
+.arrow {
+    transition: transform 0.15s ease-out;
+
+    &.rotated {
+        transform: scaleX(-1);
+    }
+}
+
+.submenu {
+    z-index: -1;
+    padding: 8px;
+    position: absolute;
+    border-radius: var(--s, 8px);
+    background: var(--objects-background-contrast-primary, #fff);
+    box-shadow: 0px 8px 20px 1px rgba(17, 19, 23, 0.12);
+}

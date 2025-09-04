@@ -1,0 +1,25 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.contact {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--lvl-3);
+    color: var(--objects-text-neutral-primary, #0a0a0b);
+    user-select: text;
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: lighter-hover($objects-text-neutral-primary);
+        }
+    }
+
+    svg path {
+        fill: currentColor;
+    }
+
+    &.disableCopy {
+        pointer-events: none;
+    }
+}

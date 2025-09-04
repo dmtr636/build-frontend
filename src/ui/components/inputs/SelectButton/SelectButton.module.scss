@@ -1,0 +1,6 @@
+.iconArrow {
+    &.showDropdown {
+        transform: scaleY(-1);
+    }
+    transition: transform 0.1s ease-out;
+}

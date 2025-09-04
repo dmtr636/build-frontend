@@ -1,0 +1,56 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.header {
+    /*  color: var(--color-components-text-neutral, #070707);
+
+  !* Headings/H4 *!
+  font-family: Manrope;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 120%;
+  !* 28.8px *!*/
+    margin-top: 24px;
+}
+
+.text {
+    /*
+    font-family: Manrope;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 145%;*/
+    color: var(--objects-text-neutral-secondary);
+    margin-top: 12px;
+    margin-bottom: 24px;
+}
+
+.buttonBlock {
+    width: 360px;
+    gap: var(--lvl-6);
+    margin-top: 24px;
+    display: flex;
+}
+
+.alert {
+    margin-top: 28px;
+}
+
+@media (max-width: 767px) {
+    .header {
+        margin-top: 16px;
+    }
+    .text {
+        margin-top: 12px;
+        width: 320px;
+        margin-bottom: 16px;
+    }
+    .buttonBlock {
+        width: 100%;
+        margin-top: 16px;
+    }
+    .alert {
+        margin-top: 16px;
+    }
+}

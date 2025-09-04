@@ -1,0 +1,144 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: var(--darker-focus);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+
+    &:not(.hideBackdrop) {
+        animation: fadeIn 0.1s;
+    }
+
+    @keyframes fadeIn {
+        from {
+            background: transparent;
+        }
+        to {
+            background: var(--darker-focus);
+        }
+    }
+
+    &.hideBackdrop {
+        background: transparent;
+        pointer-events: none;
+
+        .card {
+            pointer-events: all;
+        }
+    }
+}
+
+.card {
+    border-radius: var(--m, 12px);
+    background: var(--objects-background-contrast-primary, #fff);
+    /*border: 1px solid var(--objects-stroke-neutral-tertiary);*/
+    min-width: 384px;
+    position: relative;
+    box-shadow: 0 12px 28px 4px rgba(17, 19, 23, 0.12);
+
+    @media (max-width: 767px) {
+        height: 100dvh;
+        width: 100%;
+        min-width: 100%;
+        display: flex;
+        flex-direction: column;
+        border-radius: 0;
+
+        &.uploadingOverlay {
+            border-radius: var(--m, 12px);
+            height: auto;
+        }
+    }
+}
+
+.closeIcon {
+    position: absolute;
+    top: -60px;
+    right: -60px;
+
+    @media (max-width: 767px) {
+        top: -61px;
+        right: 0;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px 0 32px;
+
+    &.draggable {
+        cursor: move;
+    }
+
+    &.accent {
+        color: var(--objects-text-accent-primary, #2053d5);
+    }
+
+    &.neutral {
+        color: var(--objects-text-neutral-primary, #111317);
+    }
+
+    &.negative {
+        color: var(--objects-text-negative-primary, #c02626);
+    }
+
+    @media (max-width: 767px) {
+        padding: 18px 20px 0 20px;
+    }
+}
+
+.title {
+    user-select: none;
+    padding: 5px;
+    margin: -5px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    &.draggable {
+        cursor: move;
+    }
+}
+
+.content {
+    margin-top: 20px;
+    padding: 0 32px 24px 32px;
+
+    @media (max-width: 767px) {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+}
+
+.actions {
+    margin-top: 40px;
+    display: flex;
+    gap: 16px;
+
+    @media (max-width: 767px) {
+        margin-top: auto;
+
+        & > div {
+            width: 100%;
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .content {
+        margin-top: 16px;
+        padding: 0 20px 16px 20px;
+    }
+}

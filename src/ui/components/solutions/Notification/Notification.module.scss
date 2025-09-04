@@ -1,0 +1,85 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.content {
+    min-width: 195px;
+    max-width: 500px;
+    display: grid;
+    gap: var(--lvl-3);
+    padding: var(--lvl-3) 0;
+    border-radius: var(--s);
+    background: var(--objects-background-contrast-primary, #fff);
+    box-shadow: 0px 8px 20px 1px rgba(17, 19, 23, 0.12);
+}
+
+.list {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--lvl-3);
+    padding: 0 var(--s);
+}
+
+.notification {
+    width: 100%;
+    width: var(--event-width-large, 440px);
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--lvl-4);
+    border-radius: var(--s, 8px);
+    border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    background: var(--objects-background-contrast-primary, #fff);
+    padding: var(--lvl-5, 16px) var(--lvl-6, 20px);
+
+    /*
+  align-items: center;
+  */
+    /*
+  color: lighter-pale($color-components-text-neutral);
+  */
+    color: var(--objects-text-neutral-primary, #111317);
+
+    white-space: nowrap;
+    overflow: hidden;
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: var(--objects-text-neutral-primary, #111317);
+            background: darker-hover($objects-background-contrast-primary);
+        }
+    }
+}
+
+.notificationDate {
+    display: flex;
+    /*height: 28px;*/
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+
+    /*padding: 0 var(--padding-s);
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--main-xs);
+  border: 1px solid var(--color-components-stroke-accent-tertiary);
+  color: var(--color-components-text-accent);*/
+}
+
+/*.notificationDateDivider {
+  height: 100%;
+  border-left: 1px solid var(--color-components-stroke-accent-tertiary);
+}*/
+
+.notificationText {
+}
+
+.noNotifications {
+    width: 400px;
+    margin: 16px 20px;
+    color: var(--objects-text-neutral-primary, #111317);
+}
+
+.footer {
+    margin-top: 4px;
+    padding: 0 var(--s);
+}

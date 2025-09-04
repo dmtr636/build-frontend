@@ -1,0 +1,215 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.container {
+    display: flex;
+    align-items: center;
+    gap: var(--lvl-4);
+    cursor: default;
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            .content {
+                background: lighter-hover($objects-text-neutral-secondary);
+
+                &.active {
+                    &.brand {
+                        background: var(--objects-graphic-brand-expfolio-primary);
+                    }
+
+                    &.accent {
+                        background: var(--objects-graphic-accent-primary, #2053d5);
+                    }
+                }
+
+                &.disabled {
+                    cursor: default;
+                    background: lighter-disabled($objects-graphic-neutral-secondary);
+
+                    .title {
+                        cursor: default;
+                        color: lighter-disabled($objects-text-neutral-primary);
+
+                        font-size: 16px;
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: normal;
+                        letter-spacing: 0.32px;
+                    }
+
+                    .subtitle {
+                        color: lighter-disabled($objects-text-neutral-secondary);
+
+                        font-size: 15px;
+                        font-style: normal;
+                        font-weight: 500;
+                        line-height: 140%; /* 21px */
+                    }
+                }
+            }
+        }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            .textBlock:not(.disabled) {
+                .title {
+                    color: lighter-hover($objects-text-neutral-primary);
+                }
+
+                .subtitle {
+                    color: lighter-hover($objects-text-neutral-secondary);
+                }
+            }
+        }
+    }
+}
+
+.content {
+    display: flex;
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    align-items: center;
+    justify-content: center;
+    background: lighter-pale($objects-graphic-neutral-secondary);
+
+    color: var(--objects-text-contrast-primary, #fff);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.32px;
+
+    svg {
+        path {
+            fill: white;
+        }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            background: lighter-hover($objects-graphic-neutral-secondary);
+        }
+    }
+
+    &.active {
+        &.brand {
+            background: var(--objects-graphic-brand-expfolio-primary);
+            color: var(--objects-text-brand-expfolio-primary, #184d28);
+
+            svg {
+                path {
+                    fill: var(--objects-graphic-brand-expfolio-secondary);
+                }
+            }
+        }
+
+        &.accent {
+            background: var(--objects-graphic-accent-primary, #2053d5);
+        }
+
+        cursor: default;
+    }
+
+    &.disabled {
+        background: lighter-disabled($objects-graphic-neutral-secondary);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                .textBlock {
+                    cursor: default;
+                    color: lighter-disabled($objects-text-neutral-primary);
+                }
+            }
+        }
+
+        .title {
+            cursor: default;
+            color: lighter-disabled($objects-text-neutral-primary);
+        }
+    }
+}
+
+.steppersContainer {
+    display: flex;
+    gap: 16px;
+}
+
+.divider {
+    height: 1px;
+    width: 16px;
+    background-color: $objects-stroke-neutral-tertiary;
+    border-radius: 5px;
+}
+
+.textBlock {
+    display: flex;
+
+    flex-direction: column;
+    gap: var(--lvl-1);
+    max-width: 200px;
+
+    .title {
+        color: lighter-pale($objects-text-neutral-primary);
+    }
+
+    .subtitle {
+        color: lighter-pale($objects-text-neutral-secondary);
+    }
+
+    &.active {
+        .title {
+            color: darker-focus($objects-text-neutral-primary);
+        }
+
+        .subtitle {
+            color: darker-focus($objects-text-neutral-secondary);
+        }
+    }
+
+    &.disabled {
+        .title {
+            color: lighter-disabled($objects-text-neutral-primary);
+        }
+
+        .subtitle {
+            color: lighter-disabled($objects-text-neutral-secondary);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                .title {
+                    color: lighter-disabled($objects-text-neutral-primary);
+                }
+
+                .subtitle {
+                    color: lighter-disabled($objects-text-neutral-secondary);
+                }
+            }
+        }
+    }
+}
+
+.title {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.32px;
+    text-align: start;
+}
+
+.Stepcontainer {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+    &.active {
+    }
+
+    &.disabled {
+        cursor: default;
+    }
+}

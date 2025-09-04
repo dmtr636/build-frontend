@@ -1,0 +1,22 @@
+.person {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+
+    &.clickable {
+        cursor: pointer;
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                opacity: 0.92;
+            }
+        }
+    }
+}
+
+.actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

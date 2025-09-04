@@ -1,0 +1,15 @@
+.progressBarContainer {
+    display: flex;
+    padding: 4px;
+    border-radius: var(--s, 8px);
+    border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
+}
+
+.progressBar {
+    width: 0;
+    height: 28px;
+    border-radius: var(--xs, 4px);
+    background: var(--objects-background-neutral-primary, #111317);
+    transition: width 0.1s;
+}

@@ -1,0 +1,16 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+.skeleton {
+    border-radius: 8px;
+    animation: skeleton-loading 1s linear infinite alternate;
+    background-color: lighter-pale($objects-background-neutral-tertiary); /*#e6e6e6ff;*/
+}
+
+@keyframes skeleton-loading {
+    0% {
+        opacity: 0.4;
+    }
+    100% {
+        opacity: 1;
+    }
+}

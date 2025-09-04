@@ -1,0 +1,173 @@
+@import "src/ui/styles/functions";
+
+@mixin color-states-mixin($type, $color, $background-color, $border-color: transparent) {
+    color: $color;
+    border-color: $border-color;
+    @if ($type == "primary" or $type == "secondary") {
+        background-color: $background-color;
+    }
+    &.pale {
+        color: lighter-pale($color);
+        border-color: lighter-pale($border-color);
+        @if ($type == "primary" or $type == "secondary") {
+            background-color: lighter-pale($background-color);
+        }
+    }
+    @media (hover: hover) and (pointer: fine) {
+        &:hover,
+        &.hover {
+            color: $color;
+            @if ($type == "secondary") {
+                border-color: darker-hover($border-color);
+                background-color: darker-hover($background-color);
+            } @else {
+                border-color: lighter-hover($border-color);
+                background-color: lighter-hover($background-color);
+            }
+        }
+    }
+    &:active {
+        color: $color;
+        border-color: darker-pressing($border-color);
+        background-color: darker-pressing($background-color);
+    }
+    &.focused {
+        color: $color;
+        border-color: darker-focus($border-color);
+        background-color: darker-focus($background-color);
+    }
+    &:disabled,
+    &.disabled {
+        color: lighter-disabled($color);
+        border-color: lighter-disabled($border-color);
+        @if ($type == "primary" or $type == "secondary") {
+            background-color: lighter-disabled($background-color);
+        }
+    }
+}
+
+@mixin color-invert-states-mixin($type, $color, $background-color, $border-color: transparent) {
+    color: $color;
+    border-color: $border-color;
+    @if ($type == "primary" or $type == "secondary") {
+        background-color: $background-color;
+    }
+    &.pale {
+        color: darker-pale($color);
+        border-color: darker-pale($border-color);
+        @if ($type == "primary" or $type == "secondary") {
+            background-color: darker-pale($background-color);
+        }
+    }
+    @media (hover: hover) and (pointer: fine) {
+        &:hover,
+        &.hover {
+            color: $color;
+            @if ($type == "primary") {
+                border-color: darker-hover($border-color);
+                background-color: darker-hover($background-color);
+            } @else {
+                border-color: lighter-hover($border-color);
+                background-color: lighter-hover($background-color);
+            }
+        }
+    }
+    &:active {
+        color: $color;
+        @if ($type == "primary") {
+            border-color: darker-pressing($border-color);
+            background-color: darker-pressing($background-color);
+        } @else {
+            border-color: lighter-pressing($border-color);
+            background-color: lighter-pressing($background-color);
+        }
+    }
+    &.focused {
+        color: $color;
+        border-color: lighter-focus($border-color);
+        background-color: lighter-focus($background-color);
+    }
+    &:disabled,
+    &.disabled {
+        color: darker-disabled($color);
+        border-color: darker-disabled($border-color);
+        @if ($type == "primary" or $type == "secondary") {
+            background-color: darker-disabled($background-color);
+        }
+    }
+}
+
+@mixin color-types-mixin(
+    $color-text-primary,
+    $color-text-secondary,
+    $color-background-primary,
+    $color-background-secondary,
+    $color-border,
+    $invert: "none"
+) {
+    &.primary {
+        @if ($invert == "invert") {
+            @include color-invert-states-mixin(
+                "primary",
+                $color-text-primary,
+                $color-background-primary
+            );
+        } @else {
+            @include color-states-mixin("primary", $color-text-primary, $color-background-primary);
+        }
+    }
+
+    &.secondary {
+        @if ($invert == "invert") {
+            @include color-invert-states-mixin(
+                "secondary",
+                $color-text-secondary,
+                $color-background-secondary
+            );
+        } @else {
+            @include color-states-mixin(
+                "secondary",
+                $color-text-secondary,
+                $color-background-secondary
+            );
+        }
+    }
+
+    &.tertiary {
+        /* background-color: transparent;*/
+        /*ЭТО НИЧЕГО НЕ СЛОМАЕТ?*/
+        @if ($invert == "invert") {
+            @include color-invert-states-mixin(
+                "tertiary",
+                $color-text-secondary,
+                $color-background-secondary
+            );
+        } @else {
+            @include color-states-mixin(
+                "tertiary",
+                $color-text-secondary,
+                $color-background-secondary
+            );
+        }
+    }
+
+    &.outlined {
+        border: 1px solid currentColor;
+        padding: 0 calc(var(--current-padding) - 1px);
+        @if ($invert == "invert") {
+            @include color-invert-states-mixin(
+                "outlined",
+                $color-text-secondary,
+                $color-background-secondary,
+                $color-border
+            );
+        } @else {
+            @include color-states-mixin(
+                "outlined",
+                $color-text-secondary,
+                $color-background-secondary,
+                $color-border
+            );
+        }
+    }
+}

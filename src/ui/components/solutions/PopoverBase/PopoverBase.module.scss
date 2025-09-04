@@ -1,0 +1,171 @@
+@import "src/ui/styles/functions";
+@import "src/ui/styles/vars";
+
+.popover {
+    position: absolute;
+    display: flex;
+
+    filter: drop-shadow(0px 12px 28px rgba(17, 19, 23, 0.18));
+    //box-shadow: 0px 12px 28px 4px rgba(17, 19, 23, 0.12);
+
+    z-index: 3;
+    border-radius: var(--s, 8px);
+
+    &.contrast {
+        --current-background-color: var(--objects-background-contrast-primary, #fff);
+
+        .content {
+            .header {
+                color: $objects-text-neutral-primary;
+            }
+
+            .text {
+                color: var(--objects-text-neutral-secondary, #444d5f);
+            }
+        }
+    }
+
+    &.accent {
+        --current-background-color: var(--objects-background-accent-tertiary);
+
+        .content {
+            .header {
+                color: var(--objects-text-accent-primary);
+            }
+
+            .text {
+                color: var(--objects-text-accent-secondary);
+            }
+        }
+    }
+
+    &.neutral {
+        --current-background-color: var(--objects-background-neutral-primary);
+
+        .content {
+            .header {
+                color: var(--objects-text-contrast-primary);
+            }
+
+            .text {
+                color: var(--objects-text-contrast-secondary);
+            }
+        }
+    }
+
+    &.brand {
+        --current-background-color: var(--objects-background-brand-expfolio-tertiary);
+
+        .content {
+            .header {
+                color: var(--objects-text-brand-expfolio-primary);
+            }
+
+            .text {
+                color: var(--objects-text-neutral-secondary);
+            }
+        }
+    }
+
+    &.top {
+        flex-direction: column;
+    }
+
+    &.right {
+        flex-direction: row-reverse;
+    }
+
+    &.bottom {
+        flex-direction: column-reverse;
+    }
+
+    &.left {
+        flex-direction: row;
+    }
+
+    &.start {
+        align-items: start;
+    }
+
+    &.center {
+        align-items: center;
+    }
+
+    &.end {
+        align-items: end;
+    }
+
+    .arrow {
+        width: 0;
+        height: 0;
+        --arrowHeight: 8px;
+        --arrowHalfWidth: 6px;
+        --arrowMargin: 16px;
+        z-index: 1;
+
+        &.top {
+            margin: 0 var(--arrowMargin);
+            border-left: var(--arrowHalfWidth) solid transparent;
+            border-right: var(--arrowHalfWidth) solid transparent;
+            border-bottom: var(--arrowHeight) solid var(--current-background-color);
+        }
+
+        &.right {
+            margin: var(--arrowMargin) 0;
+            border-top: var(--arrowHalfWidth) solid transparent;
+            border-bottom: var(--arrowHalfWidth) solid transparent;
+            border-left: var(--arrowHeight) solid var(--current-background-color);
+        }
+
+        &.bottom {
+            margin: 0 var(--arrowMargin);
+            border-left: var(--arrowHalfWidth) solid transparent;
+            border-right: var(--arrowHalfWidth) solid transparent;
+            border-top: var(--arrowHeight) solid var(--current-background-color);
+        }
+
+        &.left {
+            margin: var(--arrowMargin) 0;
+            border-top: var(--arrowHalfWidth) solid transparent;
+            border-bottom: var(--arrowHalfWidth) solid transparent;
+            border-right: var(--arrowHeight) solid var(--current-background-color);
+        }
+    }
+
+    @keyframes enterAnim {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    animation: enterAnim 0.2s;
+}
+
+.cardWrapper {
+    width: 100%;
+    border-radius: var(--s);
+    overflow: hidden;
+}
+
+.card {
+    width: 100%;
+    border-radius: var(--s);
+    overflow: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+
+    &.accent {
+        background-color: var(--objects-background-accent-tertiary);
+    }
+
+    &.neutral {
+        background-color: var(--objects-background-neutral-primary);
+    }
+
+    &.contrast {
+        background-color: var(--objects-background-contrast-primary);
+    }
+}

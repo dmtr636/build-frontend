@@ -1,0 +1,106 @@
+@import "src/ui/styles/vars";
+@import "src/ui/components/controls/Button/Button.mixins";
+
+.counter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: $m;
+    --current-padding: #{$lvl-3};
+    padding: 0 var(--current-padding);
+    pointer-events: none;
+
+    &.accent {
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-accent-primary,
+            $objects-background-accent-primary,
+            $objects-background-accent-secondary,
+            $objects-stroke-accent-secondary
+        );
+    }
+
+    &.positive {
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-positive-primary,
+            $objects-background-positive-primary,
+            $objects-background-positive-secondary,
+            $objects-stroke-positive-secondary
+        );
+    }
+
+    &.negative {
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-negative-primary,
+            $objects-background-negative-primary,
+            $objects-background-negative-secondary,
+            $objects-stroke-negative-secondary
+        );
+    }
+
+    &.neutral {
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-neutral-primary,
+            $objects-background-neutral-primary,
+            $objects-background-neutral-secondary,
+            $objects-stroke-neutral-secondary
+        );
+    }
+
+    &.contrast {
+        @include color-types-mixin(
+            $objects-text-neutral-primary,
+            $objects-text-contrast-primary,
+            $objects-background-contrast-primary,
+            $objects-background-contrast-secondary,
+            $objects-stroke-contrast-secondary,
+            "invert"
+        );
+    }
+
+    &.brand {
+        @include color-types-mixin(
+            $objects-text-brand-expfolio-primary,
+            $objects-text-brand-expfolio-primary,
+            $objects-background-brand-expfolio-primary,
+            $objects-background-brand-expfolio-secondary,
+            $objects-stroke-brand-expfolio-tertiary
+        );
+
+        &.outlined {
+            @include color-states-mixin(
+                "outlined",
+                $objects-text-brand-expfolio-tertiary,
+                $objects-background-brand-expfolio-secondary,
+                $objects-stroke-brand-expfolio-tertiary
+            );
+        }
+    }
+
+    &.large {
+        height: $badge-height-large;
+    }
+
+    &.medium {
+        height: $badge-height-medium;
+    }
+
+    &.small {
+        height: $badge-height-small;
+    }
+
+    &.tiny {
+        height: $badge-height-tiny;
+    }
+
+    &.micro {
+        --current-padding: 0;
+        width: $badge-width-micro;
+        height: $badge-height-micro;
+    }
+
+    transition: background-color 0.1s ease-out;
+}

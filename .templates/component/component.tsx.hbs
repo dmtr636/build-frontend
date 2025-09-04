@@ -1,0 +1,14 @@
+import styles from "./{{name}}.module.scss";
+import { observer } from "mobx-react-lite";
+
+interface I{{name}}Props {
+
+}
+
+export const {{name}} = observer((props: I{{name}}Props) => {
+    return (
+        <div>
+            {{name}}
+        </div>
+    )
+})
