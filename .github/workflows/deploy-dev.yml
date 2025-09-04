@@ -31,5 +31,5 @@ jobs:
           username: dmtr636
           key: ${{ secrets.SSH_KEY }}
           source: "dist/*"
-          target: "/root/expfolio-backend/cdn/frontend-dev/admin"
+          target: "/home/dmtr636/build-backend/cdn/frontend-dev/admin"
           rm: true
