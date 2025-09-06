@@ -1,32 +1,25 @@
-export const DEBUG = false;
-
 const env = import.meta.env;
-
 const hostname = window.location.hostname;
 
-const PRODUCTION_DOMAIN = env.VITE_CI_PRODUCTION_DOMAIN ?? env.VITE_PRODUCTION_DOMAIN;
+const DEBUG = false; // Use backend on localhost:8080
+const USE_PRODUCTION_DOMAIN_IN_DEVELOPMENT = false;
 
-const DEVELOPMENT_DOMAIN = DEBUG ? "http://localhost:8080" : PRODUCTION_DOMAIN;
+const PRODUCTION_DOMAIN = env.VITE_CI_PRODUCTION_DOMAIN ?? env.VITE_PRODUCTION_DOMAIN;
+const DEVELOPMENT_DOMAIN = env.VITE_CI_DEVELOPMENT_DOMAIN ?? env.VITE_DEVELOPMENT_DOMAIN;
 
 export const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 
-export const isDevBranch = () => {
-    return window.location.hostname.includes("dev.expfolio");
-};
-
 let domain: string;
 if (isDevelopment) {
-    domain = DEVELOPMENT_DOMAIN;
+    if (DEBUG) {
+        domain = "http://localhost:8080";
+    } else if (USE_PRODUCTION_DOMAIN_IN_DEVELOPMENT) {
+        domain = PRODUCTION_DOMAIN;
+    } else {
+        domain = DEVELOPMENT_DOMAIN;
+    }
 } else {
     domain = `https://api.${hostname}`;
 }
 
 export { domain };
-
-export const getEmailDomain = () => {
-    if (PRODUCTION_DOMAIN.includes(".")) {
-        return PRODUCTION_DOMAIN.split(".")[1] + "." + PRODUCTION_DOMAIN.split(".")[2];
-    } else {
-        return PRODUCTION_DOMAIN.split("http://")[1];
-    }
-};
