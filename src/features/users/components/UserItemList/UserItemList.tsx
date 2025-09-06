@@ -28,7 +28,7 @@ const UserItemList = observer(({ users }: UserItemListProps) => {
     return (
         <div className={styles.container}>
             <div className={styles.count}>
-                Отображается
+                <span style={{ opacity: 0.6 }}>Отображается</span>
                 <span className={styles.countItem}>{pluralizeUsers(users.length)}</span>
             </div>
             <div className={styles.list}>
