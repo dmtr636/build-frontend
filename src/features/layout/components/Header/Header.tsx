@@ -1,0 +1,90 @@
+import React, { Profiler, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import styles from "./Header.module.scss";
+import { Button } from "src/ui/components/controls/Button/Button.tsx";
+import { IconGroup, IconHome, IconProject } from "src/ui/assets/icons";
+import { Avatar } from "src/ui/components/solutions/Avatar/Avatar.tsx";
+import { appStore } from "src/app/AppStore.ts";
+import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
+
+const Header = () => {
+    const logout = async () => {
+        await appStore.accountStore.logout();
+        window.location.pathname = "/auth/login";
+    };
+    const currentUser = appStore.accountStore.currentUser;
+    console.log(currentUser);
+    return (
+        <div className={styles.container}>
+            <div className={styles.content}>
+                <NavLink
+                    to={"/admin/home"}
+                    className={({ isActive }) => (isActive ? styles.active : "")}
+                >
+                    {({ isActive }) => (
+                        <Button
+                            mode={"neutral"}
+                            type={"text"}
+                            pale={!isActive}
+                            size={"small"}
+                            iconBefore={<IconHome />}
+                        >
+                            Главная
+                        </Button>
+                    )}
+                </NavLink>
+                <NavLink
+                    to={"/admin/journal"}
+                    className={({ isActive }) => (isActive ? styles.active : "")}
+                >
+                    {({ isActive }) => (
+                        <Button
+                            mode={"neutral"}
+                            type={"text"}
+                            pale={!isActive}
+                            size={"small"}
+                            iconBefore={<IconProject />}
+                        >
+                            Журнал объектов
+                        </Button>
+                    )}
+                </NavLink>
+                <NavLink
+                    to={"/admin/users"}
+                    className={({ isActive }) => (isActive ? styles.active : "")}
+                >
+                    {({ isActive }) => (
+                        <Button
+                            mode={"neutral"}
+                            type={"text"}
+                            pale={!isActive}
+                            size={"small"}
+                            iconBefore={<IconGroup />}
+                        >
+                            Пользователи
+                        </Button>
+                    )}
+                </NavLink>
+                <div style={{ marginLeft: "auto" }} className={styles.profile}>
+                    {currentUser?.name}
+                    <Avatar
+                        photoUrl={currentUser?.imageId}
+                        dropdownListOptions={[
+                            { name: "Профиль" },
+                            {
+                                name: "Выйти",
+                                mode: "negative",
+                                onClick: () => {
+                                    logout();
+                                },
+                            },
+                        ]}
+                        userName={currentUser?.name}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Header;

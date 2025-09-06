@@ -47,11 +47,12 @@ export const LoginForm = ({
     passIsChange,
     isLoading = false,
     fullwidthButton,
-    brand,
+    /*
+                                  brand,
+                              */
 }: loginFormProps) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const disabledButton = !(password && emailRegex.test(email.trim()));
-    const isTgApp = useIsTgApp();
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
         onClickEnter();
@@ -64,14 +65,18 @@ export const LoginForm = ({
                     <EmailInput
                         autofocus={true}
                         formName={``}
-                        brand={brand}
+                        /*
+                                                brand={brand}
+                        */
                         value={email}
                         onChange={onChangeEmail}
                         error={error}
                     />
                     <PasswordInput
                         showName={false}
-                        brand={brand}
+                        /*
+                                                brand={brand}
+                        */
                         value={password}
                         onChange={onChangePassword}
                         error={error}
@@ -104,7 +109,7 @@ export const LoginForm = ({
                             onClick={onClickEnter}
                             type="primary"
                             size="large"
-                            mode={brand ? "brand" : "accent"}
+                            mode={"accent"}
                             fullWidth={fullwidthButton}
                         >
                             Войти
@@ -126,17 +131,17 @@ export const LoginForm = ({
                     )}
                 </div>
             </form>
-            <div className={styles.dividerBlock}>
+            {/*   <div className={styles.dividerBlock}>
                 <div className={styles.divider}></div>
                 или <div className={styles.divider}></div>
-            </div>
-            <div className={styles.noAcc}>
+            </div>*/}
+            {/* <div className={styles.noAcc}>
                 Нет аккаунта?{" "}
                 <a className={styles.rega} href={`/auth/register`}>
                     &nbsp;Зарегистрироваться
                 </a>
                 <div></div>
-            </div>
+            </div>*/}
         </div>
     );
 };

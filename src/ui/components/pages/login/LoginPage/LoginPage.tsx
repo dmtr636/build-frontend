@@ -62,7 +62,7 @@ export const LoginPage = (props: LoginPageProps) => {
     };
 
     const data = {
-        email: emailValue?.trim(),
+        login: emailValue?.trim(),
         password: passValue,
         rememberMe: true,
     };
@@ -124,8 +124,8 @@ export const LoginPage = (props: LoginPageProps) => {
         <>
             <div className={styles.body}>
                 <div className={styles.leftside}>
-                    <IconLogoLarge className={styles.iconExp} />
-                    <img src={logoimg} className={styles.logoImgExp} />
+                    {/*  <IconLogoLarge className={styles.iconExp} />
+                    <img src={logoimg} className={styles.logoImgExp} />*/}
                 </div>
                 <div className={styles.rightside}>
                     {showRecover ? (
@@ -145,7 +145,7 @@ export const LoginPage = (props: LoginPageProps) => {
                             onChangePassword={setPassValue}
                             logo={""}
                             error={error}
-                            recover={/*props.recover ?? */ true}
+                            recover={/*props.recover ?? */ false}
                             blockButton={blockButton}
                             subtitleAlertext={alertText}
                             onClickEnter={onClickEnter}
@@ -156,7 +156,7 @@ export const LoginPage = (props: LoginPageProps) => {
                             fullwidthButton={true}
                         />
                     )}
-                    {!showRecover && (
+                    {/*{!showRecover && (
                         <div className={styles.backButton}>
                             <ButtonIcon
                                 onClick={() => navigate("/")}
@@ -166,7 +166,7 @@ export const LoginPage = (props: LoginPageProps) => {
                                 <IconBack />
                             </ButtonIcon>
                         </div>
-                    )}
+                    )}*/}
                 </div>
             </div>
             <SnackbarProvider />

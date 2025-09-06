@@ -127,8 +127,10 @@ import IconBulletedList from "./Bulleted-list.svg?react";
 import IconSimpleQuestion from "./SimpleQuestion.svg?react";
 import IconStar from "./Star.svg?react";
 import IconResume from "./Resume.svg?react";
+import IconDote from "./Dote.svg?react";
 
 export {
+    IconDote,
     IconStar,
     IconResume,
     IconSimpleQuestion,

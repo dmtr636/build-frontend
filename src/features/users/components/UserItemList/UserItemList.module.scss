@@ -1,0 +1,29 @@
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: auto;
+    max-height: 100%;
+}
+
+.count {
+    display: flex;
+    gap: 4px;
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; /* 142.857% */
+}
+
+.countItem {
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 12px;
+}

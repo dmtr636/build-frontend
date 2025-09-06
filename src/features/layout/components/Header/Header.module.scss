@@ -1,0 +1,41 @@
+.container {
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content {
+    width: 1200px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.active {
+    position: relative;
+
+    &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 100%;
+        top: 39px;
+        border-bottom: 1px solid;
+    }
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    color: var(--text-neutral-primary, #111317);
+    gap: 4px;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; /* 142.857% */
+    &:hover {
+        opacity: 0.8;
+    }
+}
