@@ -80,7 +80,7 @@ export const UsersPage = observer(() => {
         ));
         return [...rolesChip, ...positionsChip];
     }, [rolesValue, positionValue]);
-    const filteredUsers = useMemo(() => {
+    const filteredUsersByFilter = useMemo(() => {
         return users.filter((user) => {
             if (rolesValue.length > 0 && !rolesValue.includes(user.role)) {
                 return false;
@@ -100,7 +100,17 @@ export const UsersPage = observer(() => {
 
             return !(onlineOnly && !user.enabled);
         });
-    }, [users, rolesValue, positionValue, onlineOnly, name]);
+    }, [users, rolesValue, positionValue, onlineOnly]);
+    const filteredUsers = useMemo(() => {
+        return filteredUsersByFilter.filter((user) => {
+            if (name.trim() !== "") {
+                if (user.role === "ROOT") return false;
+                const userName = user.name?.toLowerCase() ?? "";
+                if (!userName.includes(name.toLowerCase())) return false;
+            }
+            return true;
+        });
+    }, [filteredUsersByFilter, name]);
     const resetFilters = () => {
         setPositionValue([]);
         setRolesValue([]);
@@ -110,7 +120,12 @@ export const UsersPage = observer(() => {
         <div className={styles.container}>
             <div className={styles.filterBlock}>
                 <div>
-                    <Button mode={"neutral"} fullWidth={true} iconBefore={<IconPlus />}>
+                    <Button
+                        size={"small"}
+                        mode={"neutral"}
+                        fullWidth={true}
+                        iconBefore={<IconPlus />}
+                    >
                         Новый пользователь
                     </Button>
                 </div>
