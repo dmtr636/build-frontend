@@ -16,33 +16,39 @@
     }
 }
 
+.container:has(.buttonsBlockChat:hover) {
+    background-color: var(--background-neutral-tertiary, #f9fafb);
+    border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    cursor: default;
+}
+
 .imgBlock {
     position: relative;
     width: 57px;
-    height: 61px;
+    height: 60px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     /*
-  overflow: hidden;
-  */
+overflow: hidden;
+*/
 }
 
 .noUser {
-    background-color: #e5ecff;
+    background-color: $objects-background-neutral-secondary;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 57px;
-    height: 61px;
+    height: 60px;
     border-radius: 8px;
 
     svg {
-        width: 32px;
+        width: 31px;
 
         path {
-            fill: black;
+            fill: $objects-graphic-neutral-tertiary;
         }
     }
 }
@@ -76,11 +82,13 @@
     margin-left: 12px;
     display: flex;
     flex-direction: column;
-    /*
-  justify-content: center;
-  */
-    padding-top: 8.5px;
+    padding-top: 8px;
     gap: 5px;
+
+    &.sortDate {
+        gap: 2px;
+        padding-top: 4px;
+    }
 }
 
 .otherInfo {

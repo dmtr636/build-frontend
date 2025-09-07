@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./UserItemCard.module.scss";
-import { IconChat, IconDote, IconNext, IconUser } from "src/ui/assets/icons";
+import { IconChat, IconClose, IconDote, IconNext, IconUser } from "src/ui/assets/icons";
 import clsx from "clsx";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { observer } from "mobx-react-lite";
@@ -14,12 +14,26 @@ interface UserItemCardProps {
     enabled?: boolean;
     onClick?: () => void;
     onClickChat?: () => void;
+    createDate?: string;
+    sortByDate?: boolean;
+    isOpen?: boolean;
 }
 
 const UserItemCard = observer(
-    ({ name, role, position, image, enabled, onClick, onClickChat }: UserItemCardProps) => {
+    ({
+        name,
+        role,
+        position,
+        image,
+        enabled,
+        onClick,
+        onClickChat,
+        createDate,
+        sortByDate,
+        isOpen,
+    }: UserItemCardProps) => {
         return (
-            <div className={styles.container} onClick={onClick}>
+            <div className={clsx(styles.container, { [styles.isOpen]: isOpen })} onClick={onClick}>
                 <div className={styles.imgBlock}>
                     {image ? (
                         <img className={styles.userImg} src={image} alt={name} />
@@ -32,8 +46,13 @@ const UserItemCard = observer(
                         <div className={clsx(styles.enabled, { [styles.online]: enabled })}></div>
                     </div>
                 </div>
-                <div className={styles.infoBlock}>
+                <div className={clsx(styles.infoBlock, { [styles.sortDate]: sortByDate })}>
                     <div className={styles.name}>{name}</div>
+                    {sortByDate && (
+                        <div className={styles.date}>
+                            Пользователь добавлен <span>{createDate}</span>
+                        </div>
+                    )}
                     <div className={styles.otherInfo}>
                         {position}
                         {position && role && <IconDote />}
@@ -41,20 +60,24 @@ const UserItemCard = observer(
                     </div>
                 </div>
                 <div className={styles.buttonsBlock}>
-                    <Tooltip text={"Связаться"}>
-                        <ButtonIcon
-                            onClick={onClickChat}
-                            pale={true}
-                            mode={"neutral"}
-                            size={"small"}
-                            type={"tertiary"}
-                        >
-                            <IconChat />
-                        </ButtonIcon>
-                    </Tooltip>
-                    <Tooltip text={"Открыть"}>
+                    <div className={styles.buttonsBlockChat}>
+                        <Tooltip text={"Связаться"}>
+                            <ButtonIcon
+                                onMouseEnter={(e) => e.stopPropagation()}
+                                onMouseLeave={(e) => e.stopPropagation()}
+                                onClick={onClickChat}
+                                pale={true}
+                                mode={"neutral"}
+                                size={"small"}
+                                type={"tertiary"}
+                            >
+                                <IconChat />
+                            </ButtonIcon>
+                        </Tooltip>
+                    </div>
+                    <Tooltip text={isOpen ? "Закрыть" : "Открыть"}>
                         <ButtonIcon pale={true} mode={"neutral"} size={"small"} type={"tertiary"}>
-                            <IconNext />
+                            {isOpen ? <IconClose /> : <IconNext />}
                         </ButtonIcon>
                     </Tooltip>
                 </div>

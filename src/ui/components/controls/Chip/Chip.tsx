@@ -25,6 +25,7 @@ export interface ChipProps {
     pale?: boolean;
     size?: "small" | "medium";
     _ref?: RefObject<HTMLButtonElement>;
+    closePale?: boolean;
 }
 
 export const Chip = (props: ChipProps) => {
@@ -45,6 +46,7 @@ export const Chip = (props: ChipProps) => {
         rounding = "low",
         size = "medium",
         _ref,
+        closePale,
     }: ChipProps = props;
 
     const renderChildren = () => {
@@ -123,7 +125,7 @@ export const Chip = (props: ChipProps) => {
                                 }}
                                 onMouseDown={(event) => event.stopPropagation()}
                                 onTouchStart={(event) => event.stopPropagation()}
-                                pale={props.pale}
+                                pale={props.pale || props.closePale}
                                 style={{
                                     margin: layoutStore.isMobile ? "0 -4px" : undefined,
                                 }}

@@ -6,9 +6,10 @@ import { observer } from "mobx-react-lite";
 
 interface UserItemListProps {
     users: User[];
+    chips?: React.ReactNode[];
 }
 
-const UserItemList = observer(({ users }: UserItemListProps) => {
+const UserItemList = observer(({ users, chips }: UserItemListProps) => {
     function pluralizeUsers(count: number): string {
         const absCount = Math.abs(count) % 100;
         const lastDigit = absCount % 10;
@@ -31,6 +32,7 @@ const UserItemList = observer(({ users }: UserItemListProps) => {
                 <span style={{ opacity: 0.6 }}>Отображается</span>
                 <span className={styles.countItem}>{pluralizeUsers(users.length)}</span>
             </div>
+            <div className={styles.chipsArray}>{chips}</div>
             <div className={styles.list}>
                 {users.map((u, index) => (
                     <UserItemCard

@@ -1,3 +1,33 @@
 .container {
     width: 1200px;
+    display: flex;
+    margin-top: 40px;
+    gap: 24px;
+}
+
+.filterBlock {
+    width: 298px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.filterContainer {
+    padding: 20px 24px 28px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 12px;
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
+}
+
+.filterHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--objects-text-neutral-tertiary, #444d5f);
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+    height: 28px;
 }
