@@ -32,6 +32,12 @@ const UserItemCard = observer(
         sortByDate,
         isOpen,
     }: UserItemCardProps) => {
+        const initials = position
+            ?.split(" ")
+            .slice(0, 2)
+            .map((n) => n[0]?.toUpperCase())
+            .join("");
+        console.log(initials);
         return (
             <div className={clsx(styles.container, { [styles.isOpen]: isOpen })} onClick={onClick}>
                 <div className={styles.imgBlock}>
@@ -54,7 +60,13 @@ const UserItemCard = observer(
                         </div>
                     )}
                     <div className={styles.otherInfo}>
-                        {position}
+                        {initials && initials.length > 1 ? (
+                            <Tooltip text={position}>
+                                <div>{initials}</div>
+                            </Tooltip>
+                        ) : (
+                            position
+                        )}
                         {position && role && <IconDote />}
                         {role}
                     </div>
