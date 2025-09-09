@@ -27,12 +27,12 @@ import { User } from "src/features/users/types/User.ts";
 export const UsersPage = observer(() => {
     const users = appStore.userStore.users;
     const [currentUser, setCurrentUser] = useState<User | undefined>();
-    const usersPositionOptions: SelectOption<string>[] = users
-        .filter((user) => user.position)
-        .map((user) => ({
-            name: user.position ?? "",
-            value: user.position ?? "",
-        }));
+    const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
+    console.log(userPosition);
+    const usersPositionOptions: SelectOption<string>[] = userPosition.map((user) => ({
+        name: user ?? "",
+        value: user ?? "",
+    }));
 
     const rolesOptions: SelectOption<string>[] = [
         { value: "ADMIN", name: "Администратор" },
