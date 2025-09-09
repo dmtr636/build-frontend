@@ -30,6 +30,7 @@
                     background: var(--darker-hover, rgba(17, 19, 23, 0.04));
                 }
             }
+
             &:active {
                 background: var(--darker-pressing, rgba(17, 19, 23, 0.04));
             }
@@ -46,6 +47,7 @@
                         background-color: lighter-hover($objects-background-accent-tertiary);
                     }
                 }
+
                 &:active {
                     background: lighter-pressing($objects-background-accent-tertiary);
                 }
@@ -67,6 +69,7 @@
                     background: darker-hover($objects-background-neutral-secondary);
                 }
             }
+
             &:active {
                 background: darker-pressing($objects-background-neutral-secondary);
             }
@@ -83,6 +86,7 @@
                         background: darker-hover($objects-background-accent-tertiary);
                     }
                 }
+
                 &:active {
                     background: darker-pressing($objects-background-accent-tertiary);
                 }
@@ -127,5 +131,14 @@
         height: var(--button-height-small, 36px);
         padding: 0 calc(var(--lvl-4) - 1px);
         gap: 4px;
+    }
+}
+
+.deleteButton {
+    width: 20px;
+    height: 20px;
+
+    path {
+        color: $objects-graphic-neutral-tertiary;
     }
 }

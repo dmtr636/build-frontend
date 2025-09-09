@@ -128,8 +128,10 @@ import IconSimpleQuestion from "./SimpleQuestion.svg?react";
 import IconStar from "./Star.svg?react";
 import IconResume from "./Resume.svg?react";
 import IconDote from "./Dote.svg?react";
+import IconUpdate from "./Update.svg?react";
 
 export {
+    IconUpdate,
     IconDote,
     IconStar,
     IconResume,

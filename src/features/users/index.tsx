@@ -4,8 +4,15 @@ import { appStore } from "src/app/AppStore.ts";
 import UserItemList from "src/features/users/components/UserItemList/UserItemList.tsx";
 import styles from "./UsersPage.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { IconClose, IconPlus, IconSearch } from "src/ui/assets/icons";
-import { useMemo, useState } from "react";
+import {
+    IconClose,
+    IconPlus,
+    IconSearch,
+    IconSort,
+    IconSorting,
+    IconUpdate,
+} from "src/ui/assets/icons";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
@@ -13,9 +20,13 @@ import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/Mult
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";
+import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
+import UserCard from "src/features/users/components/UserCard/UserCard.tsx";
+import { User } from "src/features/users/types/User.ts";
 
 export const UsersPage = observer(() => {
     const users = appStore.userStore.users;
+    const [currentUser, setCurrentUser] = useState<User | undefined>();
     const usersPositionOptions: SelectOption<string>[] = users
         .filter((user) => user.position)
         .map((user) => ({
@@ -38,7 +49,9 @@ export const UsersPage = observer(() => {
     const [positionValue, setPositionValue] = useState<string[]>([]);
     const [onlineOnly, setOnlineOnly] = useState(false);
     const [name, setName] = useState<string>("");
-
+    useLayoutEffect(() => {
+        appStore.userStore.fetchOnlineUser();
+    }, []);
     const chipArray = useMemo(() => {
         const rolesChip = rolesValue.map((role) => (
             <Chip
@@ -59,6 +72,7 @@ export const UsersPage = observer(() => {
                 {role}
             </Chip>
         ));
+
         const positionsChip = positionValue.map((position) => (
             <Chip
                 closePale={true}
@@ -80,6 +94,10 @@ export const UsersPage = observer(() => {
         ));
         return [...rolesChip, ...positionsChip];
     }, [rolesValue, positionValue]);
+    const usersOnline = appStore.userStore.usersOnline;
+    const onlineIds = Object.entries<any>(usersOnline)
+        .filter(([_, value]) => value.status === "online")
+        .map(([id]) => id);
     const filteredUsersByFilter = useMemo(() => {
         return users.filter((user) => {
             if (rolesValue.length > 0 && !rolesValue.includes(user.role)) {
@@ -98,9 +116,9 @@ export const UsersPage = observer(() => {
                 return false;
             }
 
-            return !(onlineOnly && !user.enabled);
+            return !(onlineOnly && !onlineIds.includes(user.id));
         });
-    }, [users, rolesValue, positionValue, onlineOnly]);
+    }, [users, rolesValue, positionValue, onlineOnly, onlineIds]);
     const filteredUsers = useMemo(() => {
         return filteredUsersByFilter.filter((user) => {
             if (name.trim() !== "") {
@@ -115,6 +133,16 @@ export const UsersPage = observer(() => {
         setPositionValue([]);
         setRolesValue([]);
         setOnlineOnly(false);
+    };
+    const onClickCard = (u: User) => {
+        console.log(u);
+        console.log(currentUser?.id);
+
+        if (u.id !== currentUser?.id || !currentUser) {
+            setCurrentUser(u);
+        } else {
+            setCurrentUser(undefined);
+        }
     };
     return (
         <div className={styles.container}>
@@ -138,7 +166,7 @@ export const UsersPage = observer(() => {
                                 size={"tiny"}
                                 type={"outlined"}
                                 mode={"neutral"}
-                                iconBefore={<IconClose />}
+                                iconBefore={<IconUpdate />}
                             >
                                 Сбросить
                             </Button>
@@ -180,18 +208,32 @@ export const UsersPage = observer(() => {
             </div>
             <div className={styles.userlistBlock}>
                 <div className={styles.sortContainer}>
-                    <Input
-                        size={"large"}
-                        startIcon={<IconSearch />}
-                        onClear={() => setName("")}
-                        onChange={(e) => setName(e.target.value)}
-                        value={name}
-                        placeholder={"Найти по имени"}
-                    />
+                    <div>
+                        <Input
+                            size={"large"}
+                            startIcon={<IconSearch />}
+                            onClear={() => setName("")}
+                            onChange={(e) => setName(e.target.value)}
+                            value={name}
+                            placeholder={"Найти по имени"}
+                        />
+                    </div>
+                    {/* <div>
+                        <Button
+                            size={"large"}
+                            iconBefore={<IconSorting />}
+                            type={"primary"}
+                            mode={"neutral"}
+                        ></Button>
+                    </div>*/}
                 </div>
-                <UserItemList users={filteredUsers} chips={chipArray} />
+                <UserItemList
+                    onClick={(value: User) => onClickCard(value)}
+                    users={filteredUsers}
+                    chips={chipArray}
+                />
             </div>
-            <div className={styles.userCard}></div>
+            <div className={styles.userCard}>{currentUser && <UserCard user={currentUser} />}</div>
         </div>
     );
 });

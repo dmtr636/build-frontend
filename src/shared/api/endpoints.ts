@@ -5,7 +5,7 @@ export const DEMO_LOGIN_ENDPOINT = transformUrl("/api/auth/demoLogin");
 export const LOGOUT_ENDPOINT = transformUrl("/api/auth/logout");
 export const PROJECTS_ENDPOINT = transformUrl("/api/projects");
 export const REVIEWS_ENDPOINT = transformUrl("/api/reviews");
-export const FILES_ENDPOINT = transformUrl("/api/files");
+export const GET_FILES_ENDPOINT = transformUrl("/cdn/files");
 export const REGISTER_SEND_EMAIL_ENDPOINT = transformUrl("/api/auth/signup/sendCode");
 export const REGISTER_CHECK_CODE_ENDPOINT = transformUrl("/api/auth/signup/checkCode");
 export const REGISTER_SET_PASSWORD_ENDPOINT = transformUrl("/api/auth/signup/setPassword");
@@ -23,6 +23,7 @@ export const endpoints = {
     payments: transformUrl("/api/payments"),
     stats: transformUrl("/api/stats"),
     reviews: transformUrl("/api/reviews"),
+    status: transformUrl("/api/admin/users/status"),
 };
 
 export const internalEndpoints = {

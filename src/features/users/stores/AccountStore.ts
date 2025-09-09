@@ -21,6 +21,8 @@ export class AccountStore {
         try {
             const response = await axios.get(endpoints.account);
             this.setUser(response.data);
+            this.fetchUserIsOnline(this.currentUser?.id as string);
+            console.log(this.currentUser);
             return true;
         } catch (error) {
             return false;
@@ -29,13 +31,10 @@ export class AccountStore {
         }
     }
 
-    async fetchUsers() {
-        const response = await axios.get(endpoints.users);
-        this.setUser(response.data);
-    }
-
     async logout() {
+        this.fetchUserIsOffline();
         await axios.post(LOGOUT_ENDPOINT);
+
         this.setUser(null);
     }
 
@@ -50,6 +49,30 @@ export class AccountStore {
         }
         this.setUpdating(false);
         return response;
+    }
+
+    async fetchUserIsOnline(id: string) {
+        axios.put(`${endpoints.users}/${id}/status/online`, {});
+    }
+
+    async fetchUserIsOffline(useBeacon = false) {
+        const url = `${endpoints.users}/${this.currentUser?.id as string}/status/offline`;
+
+        if (useBeacon && navigator.sendBeacon) {
+            try {
+                const blob = new Blob([JSON.stringify({})], { type: "application/json" });
+                navigator.sendBeacon(url, blob);
+                return;
+            } catch (e) {
+                console.error("sendBeacon error", e);
+            }
+        }
+
+        try {
+            await axios.put(url, {});
+        } catch (e) {
+            console.error("axios error", e);
+        }
     }
 
     setUpdating(updating: boolean) {
