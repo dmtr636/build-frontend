@@ -1,10 +1,11 @@
-import { RouteObject } from "react-router-dom";
+import { Navigate, RouteObject } from "react-router-dom";
 import { AppRoot } from "src/app/AppRoot.tsx";
 import { ErrorPage } from "src/ui/components/pages/ErrorPage/ErrorPage.tsx";
 import { HomePage } from "src/features/home";
 import { JournalPage } from "src/features/journal";
 import { UsersPage } from "src/features/users";
 import { LoginPageWrapper } from "src/features/auth/LoginPageWrapper.tsx";
+import { EventsPage } from "src/features/events/EventsPage";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -18,6 +19,10 @@ export const appRoutes: RouteObject[] = [
         element: <AppRoot />,
         children: [
             {
+                path: "/admin",
+                element: <Navigate to={"/admin/home"} replace={true} />,
+            },
+            {
                 path: "/admin/home",
                 element: <HomePage />,
             },
@@ -28,6 +33,10 @@ export const appRoutes: RouteObject[] = [
             {
                 path: "/admin/users",
                 element: <UsersPage />,
+            },
+            {
+                path: "/admin/events",
+                element: <EventsPage />,
             },
         ],
     },

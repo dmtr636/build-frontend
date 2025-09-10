@@ -8,10 +8,10 @@
     }
 
     &.compact {
-        height: var(--row-height-compact, 41px);
+        height: 41px;
     }
 
-    &:not(:last-child) {
+    &:not(&.last) {
         border-bottom: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
     }
 }

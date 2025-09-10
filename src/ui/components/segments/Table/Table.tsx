@@ -6,6 +6,7 @@ import { TableDataRow } from "src/ui/components/segments/Table/TableDataRow/Tabl
 import { TableHeaderRow } from "src/ui/components/segments/Table/TableHeaderRow/TableHeaderRow.tsx";
 import { useRef, useState } from "react";
 import { Virtuoso } from "react-virtuoso";
+import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 
 interface ITableProps<T> {
     data: T[];
@@ -49,33 +50,55 @@ export const Table = observer(<T extends object>(props: ITableProps<T>) => {
                     onChangeTableSettings={props.onChangeTableSettings}
                 />
             </div>
-            <Virtuoso
-                className={clsx(styles.table)}
-                totalCount={props.data.length}
-                itemContent={(index) => (
-                    <TableDataRow
-                        data={props.data[index]}
-                        columns={columns}
-                        size={props.tableSettings.compactMode ? "compact" : "large"}
-                        onRowSelect={(data) => props.onRowSelect?.(data, index)}
-                        rowLink={props.rowLink}
-                        tableSettings={props.tableSettings}
-                        scrolledX={scrolledX}
-                        selected={props.selectedIndex === index}
-                        key={"id" in props.data[index] ? `${props.data[index]["id"]}` : index}
-                    />
-                )}
-                onScroll={(event) => {
-                    if (event.target instanceof HTMLDivElement) {
-                        if (tableHeaderWrapperRef.current) {
-                            tableHeaderWrapperRef.current.scrollLeft = event.target.scrollLeft;
+            {!props.data.length && (
+                <Typo
+                    variant={"bodyL"}
+                    style={{
+                        padding: "10px 24px",
+                        borderLeft: "1px solid var(--objects-stroke-neutral-tertiary, #E8EAED)",
+                        borderRight: "1px solid var(--objects-stroke-neutral-tertiary, #E8EAED)",
+                        borderBottom: "1px solid var(--objects-stroke-neutral-tertiary, #E8EAED)",
+                        borderRadius: "0 0 12px 12px",
+                    }}
+                >
+                    Тут будут рабочие процессы
+                </Typo>
+            )}
+            {!!props.data.length && (
+                <Virtuoso
+                    className={clsx(styles.table)}
+                    totalCount={props.data.length}
+                    useWindowScroll
+                    itemContent={(index) => (
+                        <TableDataRow
+                            data={props.data[index]}
+                            columns={columns}
+                            size={props.tableSettings.compactMode ? "compact" : "large"}
+                            onRowSelect={
+                                props.onRowSelect
+                                    ? (data) => props.onRowSelect?.(data, index)
+                                    : undefined
+                            }
+                            rowLink={props.rowLink}
+                            tableSettings={props.tableSettings}
+                            scrolledX={scrolledX}
+                            selected={props.selectedIndex === index}
+                            key={"id" in props.data[index] ? `${props.data[index]["id"]}` : index}
+                            last={index === props.data.length - 1}
+                        />
+                    )}
+                    onScroll={(event) => {
+                        if (event.target instanceof HTMLDivElement) {
+                            if (tableHeaderWrapperRef.current) {
+                                tableHeaderWrapperRef.current.scrollLeft = event.target.scrollLeft;
+                            }
+                            setScrolledX(!!event.target.scrollLeft);
+                            setScrolledY(!!event.target.scrollTop);
                         }
-                        setScrolledX(!!event.target.scrollLeft);
-                        setScrolledY(!!event.target.scrollTop);
-                    }
-                }}
-                increaseViewportBy={200}
-            />
+                    }}
+                    increaseViewportBy={200}
+                />
+            )}
         </div>
     );
 });

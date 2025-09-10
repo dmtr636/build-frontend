@@ -6,6 +6,9 @@ export interface User {
     enabled?: boolean;
     position?: string;
     name?: string;
+    lastName?: string | null;
+    firstName?: string | null;
+    patronymic?: string | null;
     imageId?: string;
     createDate?: string;
     updateDate?: string;

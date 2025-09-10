@@ -16,4 +16,8 @@ export class UserStore {
         const response = await axios.get(endpoints.users);
         this.users = response.data;
     }
+
+    get usersMap() {
+        return new Map<string, User>(this.users.map((user) => [user.id, user]));
+    }
 }

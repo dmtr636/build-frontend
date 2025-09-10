@@ -17,7 +17,6 @@ export const ExplorationInput = (props: {
             placeholder={props.inputPlaceholder}
             onChange={(event) => props.onInputChange(event.target.value)}
             types={"text"}
-            brand={true}
             value={props.inputValue}
             startIcon={<IconSearch />}
             size={size}

@@ -8,6 +8,7 @@ import styles from "./styles.module.scss";
 const AdminPageWrapper = () => {
     useEffect(() => {
         appStore.userStore.fetchUsers();
+        appStore.eventsStore.fetchEvents();
     }, []);
     return (
         <>
