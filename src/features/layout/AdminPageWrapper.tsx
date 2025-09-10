@@ -4,11 +4,20 @@ import { Outlet } from "react-router-dom";
 import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvider.tsx";
 import { appStore } from "src/app/AppStore.ts";
 import styles from "./styles.module.scss";
+import { observer } from "mobx-react-lite";
 
-const AdminPageWrapper = () => {
+const AdminPageWrapper = observer(() => {
     useEffect(() => {
         appStore.userStore.fetchUsers();
         appStore.eventsStore.fetchEvents();
+        const handleBeforeUnload = () => {
+            console.log("sendBeacon отправлен?"); // true/false
+            appStore.accountStore.fetchUserIsOffline(true); // используем sendBeacon
+        };
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
     }, []);
     return (
         <>
@@ -19,6 +28,6 @@ const AdminPageWrapper = () => {
             <SnackbarProvider />
         </>
     );
-};
+});
 
 export default AdminPageWrapper;

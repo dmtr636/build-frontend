@@ -14,7 +14,14 @@ export const LoginPageWrapper = observer(() => {
                 location.pathname = "/admin/home";
             }
         };
+        const handleBeforeUnload = () => {
+            appStore.accountStore.fetchUserIsOffline(true); // используем sendBeacon
+        };
         onMount();
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
     }, []);
 
     return <LoginPage onLogin={() => (location.pathname = "/admin/home")} recover={false} />;

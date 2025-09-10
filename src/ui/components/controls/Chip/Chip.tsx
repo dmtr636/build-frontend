@@ -114,25 +114,7 @@ export const Chip = (props: ChipProps) => {
                     <div className={styles.endContent}>
                         {renderIcon(iconAfter)}
                         {renderCounter()}
-                        {onDelete && (
-                            <ButtonIcon
-                                mode={selected ? "accent" : "neutral"}
-                                size={layoutStore.isMobile ? "tiny" : "small"}
-                                hover={false}
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    onDelete();
-                                }}
-                                onMouseDown={(event) => event.stopPropagation()}
-                                onTouchStart={(event) => event.stopPropagation()}
-                                pale={props.pale || props.closePale}
-                                style={{
-                                    margin: layoutStore.isMobile ? "0 -4px" : undefined,
-                                }}
-                            >
-                                <IconClose />
-                            </ButtonIcon>
-                        )}
+                        {onDelete && <IconClose className={styles.deleteButton} />}
                     </div>
                 )}
             </>

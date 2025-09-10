@@ -6,6 +6,7 @@ import { IconGroup, IconHome, IconProject, IconTime } from "src/ui/assets/icons"
 import { Avatar } from "src/ui/components/solutions/Avatar/Avatar.tsx";
 import { appStore } from "src/app/AppStore.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
+import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 
 const Header = () => {
     const logout = async () => {
@@ -84,7 +85,7 @@ const Header = () => {
                 <div style={{ marginLeft: "auto" }} className={styles.profile}>
                     {currentUser?.name}
                     <Avatar
-                        photoUrl={currentUser?.imageId}
+                        photoUrl={`${GET_FILES_ENDPOINT}/${currentUser?.imageId}`}
                         dropdownListOptions={[
                             { name: "Профиль" },
                             {
