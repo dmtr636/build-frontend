@@ -61,7 +61,7 @@ export const Table = observer(<T extends object>(props: ITableProps<T>) => {
                         borderRadius: "0 0 12px 12px",
                     }}
                 >
-                    Тут будут рабочие процессы
+                    Здесь пока пусто
                 </Typo>
             )}
             {!!props.data.length && (

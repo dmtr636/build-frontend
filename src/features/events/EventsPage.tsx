@@ -17,6 +17,7 @@ import { eventActionLocale, eventUserActionLocale } from "src/features/events/ev
 import { Tabs } from "src/ui/components/solutions/Tabs/Tabs.tsx";
 import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
 import { formatDate, formatDateShort, formatTime } from "src/shared/utils/date.ts";
+import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 
 export const EventsPage = observer(() => {
     const getUserLink = (userId: string) => {
@@ -58,7 +59,14 @@ export const EventsPage = observer(() => {
                         )}
                     </div>
                     <FlexColumn gap={16} style={{ marginTop: 20 }}>
-                        123
+                        Фильтры пока не работают(
+                        <DatePicker
+                            value={eventsStore.filters.date}
+                            onChange={(value) => (eventsStore.filters.date = value)}
+                            width={"100%"}
+                            placeholder={"За всё время"}
+                            size={"large"}
+                        ></DatePicker>
                         {/*<MultipleSelect*/}
                         {/*    values={positionValue}*/}
                         {/*    onValuesChange={setPositionValue}*/}

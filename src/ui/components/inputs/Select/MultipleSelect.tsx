@@ -67,7 +67,7 @@ export const MultipleSelect = <T = string,>(props: MultipleSelectProps<T>) => {
                 break;
             }
         }
-        return optionNames.length;
+        return Math.min(optionNames.length, 1);
     }, [selectedOptions.length, inputRef.current, init]);
 
     const handleChange = (options: MultipleDropdownListOption<T>[]) => {
