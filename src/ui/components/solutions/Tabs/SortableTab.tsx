@@ -18,6 +18,7 @@ export interface SortableTabProps<T> {
     mode?: "accent" | "brand" | "neutral";
     onReorder?: (tabs: Tab<T>[]) => void;
     reorderCard?: boolean;
+    noBottomBorder?: boolean;
 }
 
 export const SortableTab = observer(<T,>(props: SortableTabProps<T>) => {
@@ -28,6 +29,7 @@ export const SortableTab = observer(<T,>(props: SortableTabProps<T>) => {
         type = "primary",
         size = "medium",
         mode = "accent",
+        noBottomBorder,
     }: SortableTabProps<T> = props;
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -49,6 +51,7 @@ export const SortableTab = observer(<T,>(props: SortableTabProps<T>) => {
                 className={clsx(
                     styles.button,
                     props.onReorder && !props.tab.disableSort && styles.dragMode,
+                    noBottomBorder && styles.noBottomBorder,
                 )}
                 onClick={(event) => {
                     onChange(tab.value, event);
@@ -56,9 +59,16 @@ export const SortableTab = observer(<T,>(props: SortableTabProps<T>) => {
                 key={tab.name}
             >
                 <div
-                    className={clsx(styles.tab, styles[type], styles[size], styles[mode], {
-                        [styles.active]: tab.value === value,
-                    })}
+                    className={clsx(
+                        styles.tab,
+                        styles[type],
+                        styles[size],
+                        styles[mode],
+                        {
+                            [styles.active]: tab.value === value,
+                        },
+                        noBottomBorder && styles.noBottomBorder,
+                    )}
                     key={tab.name}
                 >
                     {renderTabContent(tab)}

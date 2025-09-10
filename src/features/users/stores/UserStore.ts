@@ -18,6 +18,10 @@ export class UserStore {
         this.users = response.data;
     }
 
+    get usersMap() {
+        return new Map<string, User>(this.users.map((user) => [user.id, user]));
+    }
+
     async fetchOnlineUser() {
         const response = await axios.get(endpoints.status);
         this.usersOnline = response.data;

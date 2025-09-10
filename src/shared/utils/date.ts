@@ -1,4 +1,14 @@
 export const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString();
+
+export const formatDateShort = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString().slice(-2);
+
+    return `${day}.${month}.${year}`;
+};
+
 export const formatTime = (dateStr: string) =>
     new Date(dateStr).toLocaleTimeString([], { timeStyle: "short" });
 

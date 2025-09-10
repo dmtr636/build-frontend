@@ -19,6 +19,7 @@ interface IProps<T> {
     tableSettings: ITableSettings;
     scrolledX: boolean;
     selected?: boolean;
+    last?: boolean;
 }
 
 export const TableDataRow = observer(<T,>(props: IProps<T>) => {
@@ -49,7 +50,7 @@ export const TableDataRow = observer(<T,>(props: IProps<T>) => {
             <Link
                 ref={ref as any}
                 to={props.rowLink(props.data)}
-                className={clsx(styles.row, styles[props.size])}
+                className={clsx(styles.row, styles[props.size], props.last && styles.last)}
                 target={props.tableSettings.openPageInNewTab ? "_blank" : undefined}
             >
                 {renderContent()}
@@ -61,7 +62,7 @@ export const TableDataRow = observer(<T,>(props: IProps<T>) => {
         return (
             <button
                 ref={ref as any}
-                className={clsx(styles.row, styles[props.size])}
+                className={clsx(styles.row, styles[props.size], props.last && styles.last)}
                 onClick={() => props.onRowSelect?.(props.data)}
             >
                 {renderContent()}
@@ -69,5 +70,9 @@ export const TableDataRow = observer(<T,>(props: IProps<T>) => {
         );
     }
 
-    return <div className={clsx(styles.row, styles[props.size])}>{renderContent()}</div>;
+    return (
+        <div className={clsx(styles.row, styles[props.size], props.last && styles.last)}>
+            {renderContent()}
+        </div>
+    );
 });

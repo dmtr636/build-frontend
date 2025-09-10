@@ -6,9 +6,9 @@ export interface User {
     enabled: boolean;
     position?: string;
     name?: string;
-    lastName?: string;
-    firstName?: string;
-    patronymic?: string;
+    lastName?: string | null;
+    firstName?: string | null;
+    patronymic?: string | null;
     messenger?: string;
     email?: string;
     workPhone?: string;

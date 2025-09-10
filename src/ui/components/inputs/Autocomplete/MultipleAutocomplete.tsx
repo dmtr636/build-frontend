@@ -79,7 +79,7 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
                 break;
             }
         }
-        return optionNames.length;
+        return Math.min(optionNames.length, 1);
     }, [selectedOptions.length, inputRef.current, init]);
 
     const handleChange = (options: MultipleDropdownListOption<string>[]) => {

@@ -9,6 +9,7 @@ import { observer } from "mobx-react-lite";
 const AdminPageWrapper = observer(() => {
     useEffect(() => {
         appStore.userStore.fetchUsers();
+        appStore.eventsStore.fetchEvents();
         const handleBeforeUnload = () => {
             console.log("sendBeacon отправлен?"); // true/false
             appStore.accountStore.fetchUserIsOffline(true); // используем sendBeacon

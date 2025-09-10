@@ -43,6 +43,7 @@ export interface TabsProps<T> {
     onReorder?: (tabs: Tab<T>[]) => void;
     style?: CSSProperties;
     reorderCard?: boolean;
+    noBottomBorder?: boolean;
 }
 
 export const Tabs = observer(<T = string,>(props: TabsProps<T>) => {

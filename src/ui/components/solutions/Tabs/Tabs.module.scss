@@ -93,7 +93,7 @@
     gap: var(--lvl-3);
     flex-shrink: 0;
 
-    &.primary {
+    &.primary:not(&.noBottomBorder) {
         border-bottom: 1px solid transparent;
 
         &.active {

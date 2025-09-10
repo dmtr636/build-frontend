@@ -6,13 +6,12 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 0 var(--lvl-7, 24px);
     flex-shrink: 0;
     color: var(--objects-text-neutral-secondary, #2c313a);
     user-select: none;
+    padding: 0 12px;
 
     &:first-child {
-        border-radius: var(--m, 12px) 0px 0px 0px;
         border-left: 1px solid var(--objects-stroke-neutral-secondary, #e8eaed);
     }
 
@@ -23,6 +22,7 @@
         z-index: 2;
         position: sticky;
         left: 0;
+        padding: 0 var(--lvl-7, 24px);
 
         &.scrolledX {
             box-shadow: 1px 0px 3px 0px rgba(17, 19, 23, 0.12);
@@ -31,18 +31,12 @@
     }
 
     @media (hover: hover) and (pointer: fine) {
-        &.clickable:hover {
+        &.clickable:hover:not(:has(.dragHandleContainer:hover)) {
             color: lighter-hover($objects-text-neutral-quaternary);
 
-            &.active {
-                color: lighter-hover($objects-text-brand-expfolio-primary);
-            }
         }
     }
 
-    &.active {
-        color: var(--objects-text-brand-expfolio-primary);
-    }
 
     svg path {
         fill: currentColor;
@@ -54,7 +48,7 @@
     cursor: col-resize;
     position: absolute;
     top: 0;
-    right: -8px;
+    right: -9px;
     bottom: 0;
     z-index: 1;
 
