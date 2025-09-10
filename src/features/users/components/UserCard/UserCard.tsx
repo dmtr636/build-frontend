@@ -15,27 +15,27 @@ interface UserCardProps {
 }
 
 function getLastSeen(time: string | Date): string {
-    if (!time) return "";
+    if (!time) return "Не в сети";
     const lastSeen = new Date(time).getTime();
     const now = Date.now();
     const diff = Math.floor((now - lastSeen) / 1000); // разница в секундах
 
     if (diff < 60) {
-        return "в сети только что";
+        return "В сети только что";
     }
 
     const minutes = Math.floor(diff / 60);
     if (minutes < 60) {
-        return `в сети ${minutes} ${getPlural(minutes, "минуту", "минуты", "минут")} назад`;
+        return `В сети ${minutes} ${getPlural(minutes, "минуту", "минуты", "минут")} назад`;
     }
 
     const hours = Math.floor(minutes / 60);
     if (hours < 24) {
-        return `в сети ${hours} ${getPlural(hours, "час", "часа", "часов")} назад`;
+        return `В сети ${hours} ${getPlural(hours, "час", "часа", "часов")} назад`;
     }
 
     const days = Math.floor(hours / 24);
-    return `в сети ${days} ${getPlural(days, "день", "дня", "дней")} назад`;
+    return `В сети ${days} ${getPlural(days, "день", "дня", "дней")} назад`;
 }
 
 function getPlural(number: number, one: string, few: string, many: string): string {

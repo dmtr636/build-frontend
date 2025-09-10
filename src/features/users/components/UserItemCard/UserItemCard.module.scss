@@ -13,6 +13,14 @@
         background-color: darker-hover($objects-background-neutral-tertiary);
         border: 1px solid darker-hover($objects-stroke-neutral-tertiary);
         cursor: pointer;
+
+        .userImg {
+            opacity: 0.85;
+        }
+    }
+
+    &.isOpen {
+        border: 1px solid var(--objects-stroke-accent-primary, #2053d5);
     }
 }
 
@@ -126,4 +134,13 @@ overflow: hidden;
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.icon svg {
+    width: 20px;
+    height: 20px;
+
+    path {
+        fill: lighter-pale($objects-graphic-neutral-primary);
+    }
 }

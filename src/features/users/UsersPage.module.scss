@@ -1,3 +1,5 @@
+@import "src/ui/styles/functions";
+
 .container {
     width: 1240px;
     display: flex;
@@ -32,8 +34,40 @@
     height: 28px;
 }
 
-/*.sortContainer {
-  display: flex;
-  !*flex: 1fr 36px;*!
-  gap: 12px;
-}*/
+.containerError {
+    width: 278px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 110px;
+}
+
+.containerList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.userlistBlock {
+    width: 600px;
+    /*display: flex;
+  flex-direction: column;
+  align-items: center;*/
+}
+
+.iconError {
+    width: 40px;
+    height: 40px;
+
+    path {
+        fill: lighter-pale($objects-graphic-neutral-tertiary);
+    }
+}
+
+.errorText {
+    width: 206px;
+    text-align: center;
+    margin-top: 8px;
+}

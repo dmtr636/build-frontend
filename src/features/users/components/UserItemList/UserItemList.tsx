@@ -4,11 +4,13 @@ import UserItemCard from "src/features/users/components/UserItemCard/UserItemCar
 import { User, UserOnline, UserOnlineMap } from "src/features/users/types/User.ts";
 import { observer } from "mobx-react-lite";
 import { appStore } from "src/app/AppStore.ts";
+import { splitFullName } from "src/shared/utils/splitFullName.ts";
 
 interface UserItemListProps {
     users: User[];
     chips?: React.ReactNode[];
     onClick: (value: User) => void;
+    currentUser?: User;
 }
 
 function pluralizeUsers(count: number): string {
@@ -27,15 +29,7 @@ function pluralizeUsers(count: number): string {
     return `${count} пользователей`;
 }
 
-function splitFullName(user: {
-    lastName?: string | null;
-    firstName?: string | null;
-    patronymic?: string | null;
-}): string {
-    return [user.lastName, user.firstName, user.patronymic].filter(Boolean).join(" ");
-}
-
-const UserItemList = observer(({ users, chips, onClick }: UserItemListProps) => {
+const UserItemList = observer(({ users, chips, onClick, currentUser }: UserItemListProps) => {
     const usersOnline = appStore.userStore.usersOnline;
     const onlineIds = Object.entries<any>(usersOnline)
         .filter(([_, value]) => value.status === "online")
@@ -51,6 +45,7 @@ const UserItemList = observer(({ users, chips, onClick }: UserItemListProps) => 
             <div className={styles.list}>
                 {users.map((u, index) => (
                     <UserItemCard
+                        user={u}
                         onClick={() => onClick(u)}
                         key={index}
                         name={splitFullName(u)}
@@ -58,6 +53,7 @@ const UserItemList = observer(({ users, chips, onClick }: UserItemListProps) => 
                         position={u.position}
                         image={u.imageId}
                         enabled={onlineIds.includes(u.id)}
+                        isOpen={u.id === currentUser?.id}
                     />
                 ))}
             </div>

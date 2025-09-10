@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./UserItemCard.module.scss";
 import { IconChat, IconClose, IconDote, IconNext, IconUser } from "src/ui/assets/icons";
 import clsx from "clsx";
@@ -7,6 +7,8 @@ import { observer } from "mobx-react-lite";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { endpoints, GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { User } from "src/features/users/types/User.ts";
+import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
+import { DropdownListOptions } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
 
 interface UserItemCardProps {
     name?: string;
@@ -19,6 +21,7 @@ interface UserItemCardProps {
     createDate?: string;
     sortByDate?: boolean;
     isOpen?: boolean;
+    user?: User;
 }
 
 function getShortName(fullName: string): string {
@@ -43,15 +46,44 @@ const UserItemCard = observer(
         createDate,
         sortByDate,
         isOpen,
+        user,
     }: UserItemCardProps) => {
+        const ref = useRef<HTMLDivElement | null>(null);
+
         const initials = position
             ?.split(" ")
             .slice(0, 2)
             .map((n) => n[0]?.toUpperCase())
             .join("");
+        const [chats, setChats] = useState(false);
+        const chatOptions: DropdownListOptions = [
+            {
+                name: "Мессенджер",
+                mode: "neutral",
+                onClick: () => {
+                    window.open(user?.messenger);
+                },
+            },
+            {
+                name: "Почта",
+                mode: "neutral",
+                onClick: () => {
+                    window.open(user?.messenger);
+                },
+            },
+        ];
+
+        function handleCard(event: React.MouseEvent<HTMLDivElement>) {
+            if (ref.current && !ref.current.contains(event.target as Node) && onClick) {
+                onClick();
+            }
+        }
 
         return (
-            <div className={clsx(styles.container, { [styles.isOpen]: isOpen })} onClick={onClick}>
+            <div
+                className={clsx(styles.container, { [styles.isOpen]: isOpen })}
+                onClick={handleCard}
+            >
                 <div className={styles.imgBlock}>
                     {image ? (
                         <img
@@ -90,25 +122,33 @@ const UserItemCard = observer(
                     </div>
                 </div>
                 <div className={styles.buttonsBlock}>
-                    <div className={styles.buttonsBlockChat}>
+                    <div className={styles.buttonsBlockChat} ref={ref}>
                         <Tooltip text={"Связаться"}>
-                            <ButtonIcon
-                                onMouseEnter={(e) => e.stopPropagation()}
-                                onMouseLeave={(e) => e.stopPropagation()}
-                                onClick={onClickChat}
-                                pale={true}
-                                mode={"neutral"}
-                                size={"small"}
-                                type={"tertiary"}
+                            <SingleDropdownList
+                                options={chatOptions}
+                                show={chats}
+                                tipPosition={"right-top"}
+                                setShow={setChats}
                             >
-                                <IconChat />
-                            </ButtonIcon>
+                                <ButtonIcon
+                                    onMouseEnter={(e) => e.stopPropagation()}
+                                    onMouseLeave={(e) => e.stopPropagation()}
+                                    onClick={() => {
+                                        setChats((v) => !v);
+                                        if (onClickChat) onClickChat();
+                                    }}
+                                    pale={true}
+                                    mode={"neutral"}
+                                    size={"small"}
+                                    type={"tertiary"}
+                                >
+                                    <IconChat />
+                                </ButtonIcon>
+                            </SingleDropdownList>
                         </Tooltip>
                     </div>
                     <Tooltip text={isOpen ? "Закрыть" : "Открыть"}>
-                        <ButtonIcon pale={true} mode={"neutral"} size={"small"} type={"tertiary"}>
-                            {isOpen ? <IconClose /> : <IconNext />}
-                        </ButtonIcon>
+                        <div className={styles.icon}>{isOpen ? <IconClose /> : <IconNext />}</div>
                     </Tooltip>
                 </div>
             </div>

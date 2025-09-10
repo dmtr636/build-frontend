@@ -6,6 +6,7 @@ import styles from "./UsersPage.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import {
     IconClose,
+    IconError,
     IconPlus,
     IconSearch,
     IconSort,
@@ -23,12 +24,12 @@ import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import UserCard from "src/features/users/components/UserCard/UserCard.tsx";
 import { User } from "src/features/users/types/User.ts";
+import { splitFullName } from "src/shared/utils/splitFullName.ts";
 
 export const UsersPage = observer(() => {
     const users = appStore.userStore.users;
     const [currentUser, setCurrentUser] = useState<User | undefined>();
     const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
-    console.log(userPosition);
     const usersPositionOptions: SelectOption<string>[] = userPosition.map((user) => ({
         name: user ?? "",
         value: user ?? "",
@@ -104,11 +105,6 @@ export const UsersPage = observer(() => {
                 return false;
             }
 
-            if (name.trim() !== "") {
-                if (user.role === "ROOT") return false;
-                const userName = user.name?.toLowerCase() ?? "";
-                if (!userName.includes(name.toLowerCase())) return false;
-            }
             if (
                 positionValue.length > 0 &&
                 (!user.position || !positionValue.includes(user.position))
@@ -118,12 +114,22 @@ export const UsersPage = observer(() => {
 
             return !(onlineOnly && !onlineIds.includes(user.id));
         });
-    }, [users, rolesValue, positionValue, onlineOnly, onlineIds]);
+    }, [users, name, rolesValue, positionValue, onlineOnly, onlineIds]);
+    const filteredUsersByName = useMemo(() => {
+        return users.filter((user) => {
+            if (name.trim() !== "") {
+                if (user.role === "ROOT") return false;
+                const userName = splitFullName(user).toLowerCase().trim();
+                if (!userName.includes(name.toLowerCase())) return false;
+            }
+            return true;
+        });
+    }, [filteredUsersByFilter, name]);
     const filteredUsers = useMemo(() => {
         return filteredUsersByFilter.filter((user) => {
             if (name.trim() !== "") {
                 if (user.role === "ROOT") return false;
-                const userName = user.name?.toLowerCase() ?? "";
+                const userName = splitFullName(user).toLowerCase().trim();
                 if (!userName.includes(name.toLowerCase())) return false;
             }
             return true;
@@ -135,15 +141,61 @@ export const UsersPage = observer(() => {
         setOnlineOnly(false);
     };
     const onClickCard = (u: User) => {
-        console.log(u);
-        console.log(currentUser?.id);
-
         if (u.id !== currentUser?.id || !currentUser) {
             setCurrentUser(u);
         } else {
             setCurrentUser(undefined);
         }
     };
+    const renderContent = useMemo(() => {
+        if (filteredUsersByFilter.length === 0)
+            return (
+                <div className={styles.containerError}>
+                    <IconError className={styles.iconError} />
+                    <div className={styles.errorText}>
+                        Не нашли пользователей <br />с такими фильтрами
+                    </div>
+                    <Button
+                        style={{ marginTop: 32 }}
+                        type={"primary"}
+                        mode={"neutral"}
+                        size={"small"}
+                        onClick={resetFilters}
+                    >
+                        Сбросить
+                    </Button>
+                </div>
+            );
+        if (filteredUsersByName.length === 0)
+            return (
+                <div className={styles.containerError}>
+                    <IconError className={styles.iconError} />
+                    <div className={styles.errorText}>
+                        Не нашли пользователей <br />с таким именем
+                    </div>
+                </div>
+            );
+        if (
+            filteredUsers.length === 0 &&
+            (filteredUsersByName.length > 0 || filteredUsersByFilter.length > 0)
+        )
+            return (
+                <div className={styles.containerError}>
+                    <IconError className={styles.iconError} />
+                    <div className={styles.errorText}>
+                        Не нашли пользователей <br />с такими параметрами
+                    </div>
+                </div>
+            );
+        return (
+            <UserItemList
+                onClick={(value: User) => onClickCard(value)}
+                users={filteredUsers}
+                chips={chipArray}
+                currentUser={currentUser}
+            />
+        );
+    }, [filteredUsersByFilter, filteredUsersByName]);
     return (
         <div className={styles.container}>
             <div className={styles.filterBlock}>
@@ -227,11 +279,7 @@ export const UsersPage = observer(() => {
                         ></Button>
                     </div>*/}
                 </div>
-                <UserItemList
-                    onClick={(value: User) => onClickCard(value)}
-                    users={filteredUsers}
-                    chips={chipArray}
-                />
+                <div className={styles.containerList}>{renderContent}</div>
             </div>
             <div className={styles.userCard}>{currentUser && <UserCard user={currentUser} />}</div>
         </div>
