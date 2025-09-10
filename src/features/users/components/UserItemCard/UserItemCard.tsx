@@ -127,7 +127,7 @@ const UserItemCard = observer(
                             <SingleDropdownList
                                 options={chatOptions}
                                 show={chats}
-                                tipPosition={"right-top"}
+                                tipPosition={"top-left"}
                                 setShow={setChats}
                             >
                                 <ButtonIcon
