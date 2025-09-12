@@ -11,6 +11,7 @@ import { Input, InputProps } from "src/ui/components/inputs/Input/Input.tsx";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { IconCalendar, IconClose } from "src/ui/assets/icons";
 import { clsx } from "clsx";
+import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 
 export interface DatePickerProps
     extends CalendarProps,
@@ -156,14 +157,16 @@ export const DatePicker = (props: DatePickerProps) => {
                     !readonly && (
                         <div className={styles.inputEndActions}>
                             {value && hover && !disableClear && (
-                                <ButtonIcon
-                                    mode="neutral"
-                                    size={size === "large" ? "medium" : "small"}
-                                    pale={true}
-                                    onClick={() => handleChange(null)}
-                                >
-                                    <IconClose />
-                                </ButtonIcon>
+                                <Tooltip header={"Очистить"} delay={500}>
+                                    <ButtonIcon
+                                        mode="neutral"
+                                        size={size === "large" ? "medium" : "small"}
+                                        pale={true}
+                                        onClick={() => handleChange(null)}
+                                    >
+                                        <IconClose />
+                                    </ButtonIcon>
+                                </Tooltip>
                             )}
                             <ButtonIcon
                                 mode="neutral"

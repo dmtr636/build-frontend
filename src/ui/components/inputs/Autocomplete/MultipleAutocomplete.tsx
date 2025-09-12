@@ -10,6 +10,7 @@ import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { TextMeasurer } from "src/shared/utils/TextMeasurer.ts";
+import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 
 export interface MultipleAutocompleteProps {
     options: AutocompleteOption[];
@@ -134,7 +135,10 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
                 formText={formNotification}
                 value={
                     !showDropdown
-                        ? selectedOptions.map((option) => option.name).join(", ")
+                        ? selectedOptions
+                              .slice(0, 1)
+                              .map((option) => option.name)
+                              .join(", ") + (selectedOptions.length > 1 ? ", ..." : "")
                         : inputValue
                 }
                 onChange={handleInputChange}
@@ -151,17 +155,20 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
                     props.endIcon ?? (
                         <div className={styles.inputEndActions}>
                             {values.length > 0 && hover && (
-                                <ButtonIcon
-                                    mode="neutral"
-                                    size={size === "large" ? "medium" : "small"}
-                                    pale={true}
-                                    onClick={() => handleChange([])}
-                                >
-                                    <IconClose />
-                                </ButtonIcon>
+                                <Tooltip header={"Очистить"} delay={500}>
+                                    <ButtonIcon
+                                        mode="neutral"
+                                        size={size === "large" ? "medium" : "small"}
+                                        pale={true}
+                                        onClick={() => handleChange([])}
+                                    >
+                                        <IconClose />
+                                    </ButtonIcon>
+                                </Tooltip>
                             )}
-                            {((values.length > 0 && showDropdown) ||
-                                (values.length > 1 && !showDropdown)) &&
+                            {values.length > 0 &&
+                                !hover &&
+                                !showDropdown &&
                                 values.length > displayedOptionsCount && (
                                     <Counter
                                         value={values.length}

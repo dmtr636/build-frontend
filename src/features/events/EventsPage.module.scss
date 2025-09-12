@@ -1,46 +1,55 @@
 .container {
-  display: grid;
-  grid-template-columns: 258px 1fr;
-  gap: 24px;
-  width: 1240px;
-  padding: 40px 0;
+    display: grid;
+    grid-template-columns: 258px 1fr;
+    gap: 24px;
+    width: 1240px;
+    padding: 40px 0;
 }
 
 .filterContainer {
-  padding: 20px 24px 28px 24px;
-  flex-direction: column;
-  align-items: flex-start;
-  border-radius: 12px;
-  background: var(--objects-background-neutral-tertiary, #f9fafb);
+    padding: 20px 24px 28px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 12px;
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
 }
 
 .filterHead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--objects-text-neutral-tertiary, #444d5f);
-  font-size: 17px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 120%;
-  height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--objects-text-neutral-tertiary, #444d5f);
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+    height: 28px;
 }
 
 .tableWrapper {
 }
 
 .tableHeader {
-  border-radius: 12px 12px 0 0;
-  border-top: 1px solid var(--objects-stroke-neutral-secondary, #D6D9E0);
-  border-left: 1px solid var(--objects-stroke-neutral-secondary, #D6D9E0);
-  border-right: 1px solid var(--objects-stroke-neutral-secondary, #D6D9E0);
-  background: var(--objects-background-contrast-primary, #FFF);
-  padding: 8px 24px 0 24px;
+    border-radius: 12px 12px 0 0;
+    border-top: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    border-left: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    border-right: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    background: var(--objects-background-contrast-primary, #fff);
+    padding: 8px 24px 0 24px;
 }
 
 .linkButton {
-  &:hover {
-    color: var(--objects-text-accent-primary) !important;
-    opacity: 0.7;
-  }
+    &:hover {
+        color: var(--objects-text-accent-primary) !important;
+        opacity: 0.7;
+    }
+}
+
+.chipDeleteIcon {
+    opacity: 0.6;
+    margin-left: 4px;
+
+    path {
+        fill: var(--objects-graphic-neutral-tertiary) !important;
+    }
 }

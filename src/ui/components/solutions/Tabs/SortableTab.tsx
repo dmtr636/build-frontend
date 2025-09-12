@@ -19,6 +19,7 @@ export interface SortableTabProps<T> {
     onReorder?: (tabs: Tab<T>[]) => void;
     reorderCard?: boolean;
     noBottomBorder?: boolean;
+    compact?: boolean;
 }
 
 export const SortableTab = observer(<T,>(props: SortableTabProps<T>) => {
@@ -52,6 +53,7 @@ export const SortableTab = observer(<T,>(props: SortableTabProps<T>) => {
                     styles.button,
                     props.onReorder && !props.tab.disableSort && styles.dragMode,
                     noBottomBorder && styles.noBottomBorder,
+                    props.compact && styles.compact,
                 )}
                 onClick={(event) => {
                     onChange(tab.value, event);

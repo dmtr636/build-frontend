@@ -117,7 +117,8 @@ export const Calendar = memo((props: CalendarProps) => {
                     buttonType={"tertiary"}
                     buttonSize={"small"}
                     width={121}
-                    fullWidth={!layoutStore.isMobile}
+                    fullWidth={false}
+                    tipPosition={"top-left"}
                     onRender={(func) => (setShowMonthDropdownRef.current = func)}
                 />
 
@@ -133,7 +134,8 @@ export const Calendar = memo((props: CalendarProps) => {
                         buttonType={"tertiary"}
                         buttonSize={"small"}
                         width={87}
-                        fullWidth={!layoutStore.isMobile}
+                        fullWidth={false}
+                        tipPosition={"top-left"}
                         onRender={(func) => (setShowYearDropdownRef.current = func)}
                     />
                 )}

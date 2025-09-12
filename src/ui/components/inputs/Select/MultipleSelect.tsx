@@ -9,6 +9,7 @@ import { SelectOption, SelectSize } from "src/ui/components/inputs/Select/Select
 import { MultipleDropdownListOption } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
 import { MultipleDropdownList } from "src/ui/components/solutions/DropdownList/MultipleDropdownList.tsx";
 import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
+import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 
 export interface MultipleSelectProps<T> {
     options: SelectOption<T>[];
@@ -91,7 +92,12 @@ export const MultipleSelect = <T = string,>(props: MultipleSelectProps<T>) => {
                 formName={formName}
                 placeholder={placeholder ?? ""}
                 formText={formNotification}
-                value={selectedOptions.map((option) => option.name).join(", ")}
+                value={
+                    selectedOptions
+                        .slice(0, 1)
+                        .map((option) => option.name)
+                        .join(", ") + (selectedOptions.length > 1 ? ", ..." : "")
+                }
                 onChange={() => {}}
                 size={size}
                 startIcon={iconBefore}
@@ -99,14 +105,16 @@ export const MultipleSelect = <T = string,>(props: MultipleSelectProps<T>) => {
                 endActions={
                     <div className={clsx(styles.inputEndActions, styles[size])}>
                         {hover && !disableClear && !!values.length && (
-                            <ButtonIcon
-                                mode="neutral"
-                                size={size === "large" ? "medium" : "small"}
-                                pale={true}
-                                onClick={() => handleChange([])}
-                            >
-                                <IconClose />
-                            </ButtonIcon>
+                            <Tooltip header={"Очистить"} delay={500}>
+                                <ButtonIcon
+                                    mode="neutral"
+                                    size={size === "large" ? "medium" : "small"}
+                                    pale={true}
+                                    onClick={() => handleChange([])}
+                                >
+                                    <IconClose />
+                                </ButtonIcon>
+                            </Tooltip>
                         )}
                         {values.length > 1 && values.length > displayedOptionsCount && (
                             <Counter

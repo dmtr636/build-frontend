@@ -18,6 +18,8 @@ import { Tabs } from "src/ui/components/solutions/Tabs/Tabs.tsx";
 import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
 import { formatDate, formatDateShort, formatTime } from "src/shared/utils/date.ts";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
+import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
+import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";
 
 export const EventsPage = observer(() => {
     const getUserLink = (userId: string) => {
@@ -37,16 +39,19 @@ export const EventsPage = observer(() => {
         );
     };
 
+    const hasActiveFilters =
+        !!eventsStore.filters.date ||
+        !!eventsStore.filters.actions.length ||
+        !!eventsStore.filters.objectIds.length ||
+        !!eventsStore.filters.userIds.length;
+
     return (
         <div className={styles.container}>
             <div>
                 <div className={styles.filterContainer}>
                     <div className={styles.filterHead}>
                         <span style={{ opacity: 0.6 }}>Фильтры</span>
-                        {(!!eventsStore.filters.date ||
-                            !!eventsStore.filters.actions.length ||
-                            !!eventsStore.filters.objectIds.length ||
-                            !!eventsStore.filters.userIds.length) && (
+                        {hasActiveFilters && (
                             <Button
                                 onClick={eventsStore.resetFilters}
                                 size={"tiny"}
@@ -59,44 +64,68 @@ export const EventsPage = observer(() => {
                         )}
                     </div>
                     <FlexColumn gap={16} style={{ marginTop: 20 }}>
-                        Фильтры пока не работают(
                         <DatePicker
                             value={eventsStore.filters.date}
                             onChange={(value) => (eventsStore.filters.date = value)}
                             width={"100%"}
                             placeholder={"За всё время"}
-                            size={"large"}
+                            size={"medium"}
+                            disableTime={true}
+                            formName={"Дата"}
+                            disableFuture={true}
                         ></DatePicker>
-                        {/*<MultipleSelect*/}
-                        {/*    values={positionValue}*/}
-                        {/*    onValuesChange={setPositionValue}*/}
-                        {/*    options={usersPositionOptions}*/}
-                        {/*    multiple={true}*/}
-                        {/*    placeholder={"Все"}*/}
-                        {/*    formName={"Должность"}*/}
-                        {/*></MultipleSelect>*/}
-                        {/*<MultipleSelect*/}
-                        {/*    values={rolesValue}*/}
-                        {/*    onValuesChange={setRolesValue}*/}
-                        {/*    placeholder={"Все"}*/}
-                        {/*    options={rolesOptions}*/}
-                        {/*    multiple={true}*/}
-                        {/*    formName={"Роль в системе"}*/}
-                        {/*></MultipleSelect>*/}
-                        {/*<MultipleAutocomplete*/}
-                        {/*    formName={"Объекты"}*/}
-                        {/*    options={rolesOptions}*/}
-                        {/*    placeholder={"Все"}*/}
-                        {/*    values={rolesValue}*/}
-                        {/*    onValuesChange={setRolesValue}*/}
-                        {/*    multiple={true}*/}
-                        {/*/>*/}
-                        {/*<Checkbox*/}
-                        {/*    size={"large"}*/}
-                        {/*    onChange={setOnlineOnly}*/}
-                        {/*    checked={onlineOnly}*/}
-                        {/*    title={"Только в сети"}*/}
-                        {/*/>*/}
+                        <MultipleAutocomplete
+                            values={eventsStore.filters.userIds}
+                            multiple={true}
+                            formName={"Пользователь"}
+                            size={"medium"}
+                            options={userStore.users
+                                .map((user) => ({
+                                    name: getNameInitials(user),
+                                    value: user.id,
+                                }))
+                                .filter((user) => user.name)}
+                            placeholder={"Все"}
+                            onValuesChange={(values) => {
+                                eventsStore.filters.userIds = values;
+                            }}
+                        />
+                        <MultipleAutocomplete
+                            values={eventsStore.filters.objectIds}
+                            multiple={true}
+                            formName={"Объект"}
+                            size={"medium"}
+                            options={[
+                                {
+                                    name: "Объект 1",
+                                    value: "Объект 1",
+                                },
+                                {
+                                    name: "Объект 2",
+                                    value: "Объект 2",
+                                },
+                            ]}
+                            placeholder={"Все"}
+                            onValuesChange={(values) => {
+                                eventsStore.filters.objectIds = values;
+                            }}
+                        />
+                        <MultipleAutocomplete
+                            values={eventsStore.filters.actions}
+                            multiple={true}
+                            formName={"Действие"}
+                            size={"medium"}
+                            options={Object.entries(eventActionLocale).flatMap((entry) =>
+                                Object.entries(entry[1]).map((entityEntry) => ({
+                                    name: entityEntry[1],
+                                    value: `${entry[0]}.${entityEntry[0]}`,
+                                })),
+                            )}
+                            placeholder={"Все"}
+                            onValuesChange={(values) => {
+                                eventsStore.filters.actions = values;
+                            }}
+                        />
                     </FlexColumn>
                 </div>
             </div>
@@ -107,6 +136,66 @@ export const EventsPage = observer(() => {
                     size={"large"}
                     inputPlaceholder={"ФИО пользователя, дата, время или текст действия"}
                 />
+                {hasActiveFilters && (
+                    <Flex gap={8} wrap={"wrap"}>
+                        {eventsStore.filters.date && (
+                            <Chip
+                                size={"small"}
+                                onClick={() => {
+                                    eventsStore.filters.date = null;
+                                }}
+                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                            >
+                                {formatDateShort(eventsStore.filters.date)}
+                            </Chip>
+                        )}
+                        {eventsStore.filters.userIds.map((userId) => (
+                            <Chip
+                                key={userId}
+                                size={"small"}
+                                onClick={() => {
+                                    eventsStore.filters.userIds =
+                                        eventsStore.filters.userIds.filter((id) => id !== userId);
+                                }}
+                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                            >
+                                {getNameInitials(userStore.usersMap.get(userId))}
+                            </Chip>
+                        ))}
+                        {eventsStore.filters.objectIds.map((objectId) => (
+                            <Chip
+                                key={objectId}
+                                size={"small"}
+                                onClick={() => {
+                                    eventsStore.filters.objectIds =
+                                        eventsStore.filters.objectIds.filter(
+                                            (id) => id !== objectId,
+                                        );
+                                }}
+                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                            >
+                                {objectId}
+                            </Chip>
+                        ))}
+                        {eventsStore.filters.actions.map((action) => (
+                            <Chip
+                                key={action}
+                                size={"small"}
+                                onClick={() => {
+                                    eventsStore.filters.actions =
+                                        eventsStore.filters.actions.filter((id) => id !== action);
+                                }}
+                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                            >
+                                {
+                                    eventActionLocale[
+                                        action.split(".")[0] as keyof typeof eventActionLocale
+                                    ][action.split(".").slice(1).join()]
+                                }
+                            </Chip>
+                        ))}
+                    </Flex>
+                )}
                 <div className={styles.tableWrapper}>
                     <div className={styles.tableHeader}>
                         <Tabs
@@ -114,11 +203,12 @@ export const EventsPage = observer(() => {
                             onChange={(value) => (eventsStore.tab = value)}
                             size={"large"}
                             type={"primary"}
-                            mode={"accent"}
+                            mode={"neutral"}
                             noBottomBorder={true}
+                            compact={true}
                             tabs={[
                                 {
-                                    name: "Рабочие процеесы",
+                                    name: "Рабочие процессы",
                                     value: "work",
                                 },
                                 {
@@ -201,7 +291,7 @@ export const EventsPage = observer(() => {
                                           {
                                               name: "Объект",
                                               field: "objectId",
-                                              width: 145,
+                                              width: 210,
                                               render: (data: IEvent) => {
                                                   return data.objectId;
                                               },

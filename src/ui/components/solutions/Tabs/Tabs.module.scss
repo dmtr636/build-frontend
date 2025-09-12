@@ -17,6 +17,10 @@
     &.primary {
         gap: 28px;
 
+        &.compact {
+            gap: 20px;
+        }
+
         @media screen and (max-width: 767px) {
             gap: 20px;
         }
@@ -64,6 +68,11 @@
     margin: 0 -14px;
     color: lighter-pale($objects-text-neutral-secondary);
 
+    &.compact {
+        padding: 0 10px;
+        margin: 0 -10px;
+    }
+
     &.dragMode {
         cursor: move;
     }
@@ -98,6 +107,12 @@
 
         &.active {
             border-bottom: 1px solid currentColor;
+        }
+    }
+
+    &.primary {
+        &.neutral {
+            opacity: 0.9;
         }
     }
 
@@ -202,8 +217,8 @@
         }
 
         &.neutral {
-            color: var(--objects-text-contrast-primary, #fff);
-            background: var(--objects-background-neutral-primary, #111317);
+            color: var(--objects-background-neutral-primary, #111317);
+            opacity: 1;
         }
     }
 

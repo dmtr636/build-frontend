@@ -59,7 +59,9 @@ export const Chip = (props: ChipProps) => {
 
     const renderIcon = (icon?: ReactNode, className?: string) => {
         if (isValidElement<SVGElement>(icon)) {
-            return cloneElement(icon, { className: clsx(styles.icon, className) });
+            return cloneElement(icon, {
+                className: clsx(styles.icon, className, icon.props.className),
+            });
         }
     };
 

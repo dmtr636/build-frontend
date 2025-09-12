@@ -44,6 +44,7 @@ export interface TabsProps<T> {
     style?: CSSProperties;
     reorderCard?: boolean;
     noBottomBorder?: boolean;
+    compact?: boolean;
 }
 
 export const Tabs = observer(<T = string,>(props: TabsProps<T>) => {
@@ -139,6 +140,7 @@ export const Tabs = observer(<T = string,>(props: TabsProps<T>) => {
                         styles.tabs,
                         styles[type],
                         props.reorderCard && styles.reorderCard,
+                        props.compact && styles.compact,
                     )}
                     ref={scrollRef}
                     onMouseDown={handleMouseDown}

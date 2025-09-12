@@ -78,8 +78,8 @@ export const ErrorPage = () => {
                 <Typo
                     variant={layoutStore.isMobile ? "h2" : "h1"}
                     className={styles.title}
-                    mode={"brand"}
-                    type={"tertiary"}
+                    mode={"accent"}
+                    type={"primary"}
                 >
                     Нам жаль, что это произошло
                 </Typo>
@@ -96,7 +96,7 @@ export const ErrorPage = () => {
                                     replace: true,
                                 })
                             }
-                            mode={"brand"}
+                            mode={"accent"}
                             fullWidth={layoutStore.isMobile}
                         >
                             Вернуться в сервис
@@ -107,7 +107,7 @@ export const ErrorPage = () => {
                                 size={"large"}
                                 href={telegramContactLink}
                                 target={"_blank"}
-                                mode={"brand"}
+                                mode={"accent"}
                                 type={"tertiary"}
                                 fullWidth={true}
                             >
@@ -116,7 +116,7 @@ export const ErrorPage = () => {
                             <Button
                                 size={"large"}
                                 onClick={() => window.location.reload()}
-                                mode={"brand"}
+                                mode={"accent"}
                                 fullWidth={true}
                             >
                                 Перезагрузить страницу
@@ -127,7 +127,7 @@ export const ErrorPage = () => {
                             <Button
                                 size={"large"}
                                 onClick={() => window.location.reload()}
-                                mode={"brand"}
+                                mode={"accent"}
                             >
                                 Перезагрузить страницу
                             </Button>
@@ -135,7 +135,7 @@ export const ErrorPage = () => {
                                 size={"large"}
                                 href={telegramContactLink}
                                 target={"_blank"}
-                                mode={"brand"}
+                                mode={"accent"}
                                 type={"tertiary"}
                             >
                                 Связаться с нами

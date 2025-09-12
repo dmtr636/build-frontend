@@ -3,6 +3,7 @@ import { IconClose, IconSearch } from "src/ui/assets/icons";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { InputSize } from "src/ui/components/inputs/Input/Input.types.ts";
 import { CSSProperties } from "react";
+import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 
 export const ExplorationInput = (props: {
     inputPlaceholder?: string;
@@ -22,14 +23,16 @@ export const ExplorationInput = (props: {
             size={size}
             endIcon={
                 props.inputValue && (
-                    <ButtonIcon
-                        mode={"neutral"}
-                        size={size === "large" ? "medium" : "small"}
-                        pale={true}
-                        onClick={() => props.onInputChange("")}
-                    >
-                        <IconClose />
-                    </ButtonIcon>
+                    <Tooltip header={"Очистить"} delay={500}>
+                        <ButtonIcon
+                            mode={"neutral"}
+                            size={size === "large" ? "medium" : "small"}
+                            pale={true}
+                            onClick={() => props.onInputChange("")}
+                        >
+                            <IconClose />
+                        </ButtonIcon>
+                    </Tooltip>
                 )
             }
             style={props.style}

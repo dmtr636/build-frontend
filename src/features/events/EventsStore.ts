@@ -5,7 +5,7 @@ import { IEvent } from "src/features/events/Event.ts";
 import { ITableSettings } from "src/ui/components/segments/Table/Table.types.ts";
 import { userStore } from "src/app/AppStore.ts";
 import { getNameInitials } from "src/shared/utils/getFullName.ts";
-import { formatDateShort, formatTime } from "src/shared/utils/date.ts";
+import { formatDate, formatDateShort, formatTime } from "src/shared/utils/date.ts";
 import { eventActionLocale } from "src/features/events/eventsLocale.ts";
 
 interface Filter {
@@ -47,9 +47,7 @@ export class EventsStore {
 
     get filteredEvents() {
         let events = this.events.slice();
-        if (this.search) {
-            events = this.filterEvents(events);
-        }
+        events = this.filterEvents(events);
         if (
             this.search &&
             this.events.length &&
@@ -98,6 +96,18 @@ export class EventsStore {
                     localizedAction.toLowerCase().includes(searchLowerCase)
                 );
             });
+        }
+        if (this.filters.date) {
+            const dateLocaleString = formatDate(this.filters.date);
+            events = events.filter((event) => formatDate(event.date) === dateLocaleString);
+        }
+        if (this.filters.userIds?.length) {
+            events = events.filter((event) => this.filters.userIds.includes(event.userId));
+        }
+        if (this.filters.actions?.length) {
+            events = events.filter((event) =>
+                this.filters.actions.includes(`${event.objectName}.${event.action}`),
+            );
         }
         return events;
     }
