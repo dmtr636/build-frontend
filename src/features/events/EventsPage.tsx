@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import styles from "./EventsPage.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { IconClose } from "src/ui/assets/icons";
+import { IconClose, IconError } from "src/ui/assets/icons";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
@@ -39,11 +39,7 @@ export const EventsPage = observer(() => {
         );
     };
 
-    const hasActiveFilters =
-        !!eventsStore.filters.date ||
-        !!eventsStore.filters.actions.length ||
-        !!eventsStore.filters.objectIds.length ||
-        !!eventsStore.filters.userIds.length;
+    const hasActiveFilters = eventsStore.hasActiveFilters;
 
     return (
         <div className={styles.container}>
@@ -90,26 +86,28 @@ export const EventsPage = observer(() => {
                                 eventsStore.filters.userIds = values;
                             }}
                         />
-                        <MultipleAutocomplete
-                            values={eventsStore.filters.objectIds}
-                            multiple={true}
-                            formName={"Объект"}
-                            size={"medium"}
-                            options={[
-                                {
-                                    name: "Объект 1",
-                                    value: "Объект 1",
-                                },
-                                {
-                                    name: "Объект 2",
-                                    value: "Объект 2",
-                                },
-                            ]}
-                            placeholder={"Все"}
-                            onValuesChange={(values) => {
-                                eventsStore.filters.objectIds = values;
-                            }}
-                        />
+                        {eventsStore.tab === "work" && (
+                            <MultipleAutocomplete
+                                values={eventsStore.filters.objectIds}
+                                multiple={true}
+                                formName={"Объект"}
+                                size={"medium"}
+                                options={[
+                                    {
+                                        name: "Объект 1",
+                                        value: "Объект 1",
+                                    },
+                                    {
+                                        name: "Объект 2",
+                                        value: "Объект 2",
+                                    },
+                                ]}
+                                placeholder={"Все"}
+                                onValuesChange={(values) => {
+                                    eventsStore.filters.objectIds = values;
+                                }}
+                            />
+                        )}
                         <MultipleAutocomplete
                             values={eventsStore.filters.actions}
                             multiple={true}
@@ -136,187 +134,225 @@ export const EventsPage = observer(() => {
                     size={"large"}
                     inputPlaceholder={"ФИО пользователя, дата, время или текст действия"}
                 />
-                {hasActiveFilters && (
-                    <Flex gap={8} wrap={"wrap"}>
-                        {eventsStore.filters.date && (
-                            <Chip
-                                size={"small"}
-                                onClick={() => {
-                                    eventsStore.filters.date = null;
-                                }}
-                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
-                            >
-                                {formatDateShort(eventsStore.filters.date)}
-                            </Chip>
-                        )}
-                        {eventsStore.filters.userIds.map((userId) => (
-                            <Chip
-                                key={userId}
-                                size={"small"}
-                                onClick={() => {
-                                    eventsStore.filters.userIds =
-                                        eventsStore.filters.userIds.filter((id) => id !== userId);
-                                }}
-                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
-                            >
-                                {getNameInitials(userStore.usersMap.get(userId))}
-                            </Chip>
-                        ))}
-                        {eventsStore.filters.objectIds.map((objectId) => (
-                            <Chip
-                                key={objectId}
-                                size={"small"}
-                                onClick={() => {
-                                    eventsStore.filters.objectIds =
-                                        eventsStore.filters.objectIds.filter(
-                                            (id) => id !== objectId,
-                                        );
-                                }}
-                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
-                            >
-                                {objectId}
-                            </Chip>
-                        ))}
-                        {eventsStore.filters.actions.map((action) => (
-                            <Chip
-                                key={action}
-                                size={"small"}
-                                onClick={() => {
-                                    eventsStore.filters.actions =
-                                        eventsStore.filters.actions.filter((id) => id !== action);
-                                }}
-                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
-                            >
-                                {
-                                    eventActionLocale[
-                                        action.split(".")[0] as keyof typeof eventActionLocale
-                                    ][action.split(".").slice(1).join()]
-                                }
-                            </Chip>
-                        ))}
-                    </Flex>
-                )}
-                <div className={styles.tableWrapper}>
-                    <div className={styles.tableHeader}>
-                        <Tabs
-                            value={eventsStore.tab}
-                            onChange={(value) => (eventsStore.tab = value)}
-                            size={"large"}
+                {(hasActiveFilters || eventsStore.search) && !eventsStore.filteredEvents.length ? (
+                    <div className={styles.containerError}>
+                        <IconError className={styles.iconError} />
+                        <Typo
+                            variant={"actionXL"}
+                            mode={"neutral"}
+                            type={"secondary"}
+                            className={styles.errorText}
+                        >
+                            Не нашли действий <br />с выбранными настройками
+                        </Typo>
+                        <Button
+                            style={{ marginTop: 32 }}
                             type={"primary"}
                             mode={"neutral"}
-                            noBottomBorder={true}
-                            compact={true}
-                            tabs={[
-                                {
-                                    name: "Рабочие процессы",
-                                    value: "work",
-                                },
-                                {
-                                    name: "Системные события",
-                                    value: "system",
-                                },
-                            ]}
-                        />
-                    </div>
-                    <div>
-                        <Table<IEvent>
-                            data={eventsStore.filteredEvents}
-                            tableSettings={eventsStore.tableSettings}
-                            onChangeTableSettings={(settings) => {
-                                eventsStore.tableSettings = settings;
+                            size={"small"}
+                            onClick={() => {
+                                eventsStore.resetFilters();
+                                eventsStore.search = "";
                             }}
-                            activeSortDirection={eventsStore.sort.direction}
-                            activeSortField={eventsStore.sort.field}
-                            setActiveSortDirection={(direction) =>
-                                (eventsStore.sort.direction = direction)
-                            }
-                            setActiveSortField={(activeSort) =>
-                                (eventsStore.sort.field = activeSort)
-                            }
-                            columns={[
-                                {
-                                    name: "Пользователь",
-                                    field: "userId",
-                                    width: 190,
-                                    sort: true,
-                                    index: true,
-                                    render: (data: IEvent) => {
-                                        return getUserLink(data.userId);
-                                    },
-                                },
-                                {
-                                    name: "Дата и время",
-                                    field: "date",
-                                    width: 152,
-                                    sort: true,
-                                    render: (data: IEvent) => {
-                                        return (
-                                            <Grid
-                                                columns={"70px auto 50px"}
-                                                gap={1}
-                                                align={"center"}
-                                            >
-                                                <Typo variant={"bodyL"}>
-                                                    {formatDateShort(data.date)}
-                                                </Typo>
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="4"
-                                                    height="5"
-                                                    viewBox="0 0 4 5"
-                                                    fill="none"
-                                                >
-                                                    <circle
-                                                        opacity="0.5"
-                                                        cx="2"
-                                                        cy="2.5"
-                                                        r="2"
-                                                        fill="#5F6A81"
-                                                    />
-                                                </svg>
-                                                <Typo
-                                                    variant={"bodyL"}
-                                                    type={"quaternary"}
-                                                    mode={"neutral"}
-                                                    style={{ textAlign: "center" }}
-                                                >
-                                                    {formatTime(data.date)}
-                                                </Typo>
-                                            </Grid>
-                                        );
-                                    },
-                                },
-                                ...(eventsStore.tab === "work"
-                                    ? [
-                                          {
-                                              name: "Объект",
-                                              field: "objectId",
-                                              width: 210,
-                                              render: (data: IEvent) => {
-                                                  return data.objectId;
-                                              },
-                                          },
-                                      ]
-                                    : []),
-                                {
-                                    name: "Действие",
-                                    field: "action",
-                                    width: 476,
-                                    render: (data: IEvent) => {
-                                        if (!data.objectName) {
-                                            return "-";
-                                        }
-                                        return (
-                                            <Typo variant={"bodyL"} noWrap={true}>
-                                                {eventActionLocale[data.objectName][data.action]}
-                                            </Typo>
-                                        );
-                                    },
-                                },
-                            ]}
-                        />
+                        >
+                            Сбросить
+                        </Button>
                     </div>
-                </div>
+                ) : (
+                    <>
+                        {hasActiveFilters && (
+                            <Flex gap={8} wrap={"wrap"}>
+                                {eventsStore.filters.date && (
+                                    <Chip
+                                        size={"small"}
+                                        onClick={() => {
+                                            eventsStore.filters.date = null;
+                                        }}
+                                        iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                                    >
+                                        {formatDateShort(eventsStore.filters.date)}
+                                    </Chip>
+                                )}
+                                {eventsStore.filters.userIds.map((userId) => (
+                                    <Chip
+                                        key={userId}
+                                        size={"small"}
+                                        onClick={() => {
+                                            eventsStore.filters.userIds =
+                                                eventsStore.filters.userIds.filter(
+                                                    (id) => id !== userId,
+                                                );
+                                        }}
+                                        iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                                    >
+                                        {getNameInitials(userStore.usersMap.get(userId))}
+                                    </Chip>
+                                ))}
+                                {eventsStore.filters.objectIds.map((objectId) => (
+                                    <Chip
+                                        key={objectId}
+                                        size={"small"}
+                                        onClick={() => {
+                                            eventsStore.filters.objectIds =
+                                                eventsStore.filters.objectIds.filter(
+                                                    (id) => id !== objectId,
+                                                );
+                                        }}
+                                        iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                                    >
+                                        {objectId}
+                                    </Chip>
+                                ))}
+                                {eventsStore.filters.actions.map((action) => (
+                                    <Chip
+                                        key={action}
+                                        size={"small"}
+                                        onClick={() => {
+                                            eventsStore.filters.actions =
+                                                eventsStore.filters.actions.filter(
+                                                    (id) => id !== action,
+                                                );
+                                        }}
+                                        iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                                    >
+                                        {
+                                            eventActionLocale[
+                                                action.split(
+                                                    ".",
+                                                )[0] as keyof typeof eventActionLocale
+                                            ][action.split(".").slice(1).join()]
+                                        }
+                                    </Chip>
+                                ))}
+                            </Flex>
+                        )}
+                        <div className={styles.tableWrapper}>
+                            <div className={styles.tableHeader}>
+                                <Tabs
+                                    value={eventsStore.tab}
+                                    onChange={(value) => (eventsStore.tab = value)}
+                                    size={"large"}
+                                    type={"primary"}
+                                    mode={"neutral"}
+                                    noBottomBorder={true}
+                                    compact={true}
+                                    tabs={[
+                                        {
+                                            name: "Рабочие процессы",
+                                            value: "work",
+                                        },
+                                        {
+                                            name: "Системные события",
+                                            value: "system",
+                                        },
+                                    ]}
+                                />
+                            </div>
+                            <div>
+                                <Table<IEvent>
+                                    data={eventsStore.filteredEvents}
+                                    tableSettings={eventsStore.tableSettings}
+                                    onChangeTableSettings={(settings) => {
+                                        eventsStore.tableSettings = settings;
+                                    }}
+                                    activeSortDirection={eventsStore.sort.direction}
+                                    activeSortField={eventsStore.sort.field}
+                                    setActiveSortDirection={(direction) =>
+                                        (eventsStore.sort.direction = direction)
+                                    }
+                                    setActiveSortField={(activeSort) =>
+                                        (eventsStore.sort.field = activeSort)
+                                    }
+                                    columns={[
+                                        {
+                                            name: "Пользователь",
+                                            field: "userId",
+                                            width: 190,
+                                            sort: true,
+                                            index: true,
+                                            render: (data: IEvent) => {
+                                                return getUserLink(data.userId);
+                                            },
+                                        },
+                                        {
+                                            name: "Дата и время",
+                                            field: "date",
+                                            width: 152,
+                                            sort: true,
+                                            render: (data: IEvent) => {
+                                                return (
+                                                    <Grid
+                                                        columns={"70px auto 50px"}
+                                                        gap={1}
+                                                        align={"center"}
+                                                    >
+                                                        <Typo variant={"bodyL"}>
+                                                            {formatDateShort(data.date)}
+                                                        </Typo>
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="4"
+                                                            height="5"
+                                                            viewBox="0 0 4 5"
+                                                            fill="none"
+                                                        >
+                                                            <circle
+                                                                opacity="0.5"
+                                                                cx="2"
+                                                                cy="2.5"
+                                                                r="2"
+                                                                fill="#5F6A81"
+                                                            />
+                                                        </svg>
+                                                        <Typo
+                                                            variant={"bodyL"}
+                                                            type={"quaternary"}
+                                                            mode={"neutral"}
+                                                            style={{ textAlign: "center" }}
+                                                        >
+                                                            {formatTime(data.date)}
+                                                        </Typo>
+                                                    </Grid>
+                                                );
+                                            },
+                                        },
+                                        ...(eventsStore.tab === "work"
+                                            ? [
+                                                  {
+                                                      name: "Объект",
+                                                      field: "objectId",
+                                                      width: 210,
+                                                      render: (data: IEvent) => {
+                                                          return data.objectId;
+                                                      },
+                                                  },
+                                              ]
+                                            : []),
+                                        {
+                                            name: "Действие",
+                                            field: "action",
+                                            width: 476,
+                                            render: (data: IEvent) => {
+                                                if (!data.objectName) {
+                                                    return "-";
+                                                }
+                                                return (
+                                                    <Typo variant={"bodyL"} noWrap={true}>
+                                                        {
+                                                            eventActionLocale[data.objectName][
+                                                                data.action
+                                                            ]
+                                                        }
+                                                    </Typo>
+                                                );
+                                            },
+                                        },
+                                    ]}
+                                />
+                            </div>
+                        </div>
+                    </>
+                )}
             </FlexColumn>
         </div>
     );

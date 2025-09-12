@@ -3,7 +3,7 @@ import { ApiClient } from "src/shared/api/ApiClient.ts";
 import { endpoints } from "src/shared/api/endpoints.ts";
 import { IEvent } from "src/features/events/Event.ts";
 import { ITableSettings } from "src/ui/components/segments/Table/Table.types.ts";
-import { userStore } from "src/app/AppStore.ts";
+import { eventsStore, userStore } from "src/app/AppStore.ts";
 import { getNameInitials } from "src/shared/utils/getFullName.ts";
 import { formatDate, formatDateShort, formatTime } from "src/shared/utils/date.ts";
 import { eventActionLocale } from "src/features/events/eventsLocale.ts";
@@ -49,8 +49,8 @@ export class EventsStore {
         let events = this.events.slice();
         events = this.filterEvents(events);
         if (
-            this.search &&
-            this.events.length &&
+            (this.search || this.hasActiveFilters) &&
+            events.length &&
             !events.some((event) => event.actionType === this.tab)
         ) {
             runInAction(() => {
@@ -76,6 +76,15 @@ export class EventsStore {
             });
         }
         return events;
+    }
+
+    get hasActiveFilters() {
+        return (
+            !!this.filters.date ||
+            !!this.filters.actions.length ||
+            !!this.filters.objectIds.length ||
+            !!this.filters.userIds.length
+        );
     }
 
     filterEvents(events: IEvent[]) {

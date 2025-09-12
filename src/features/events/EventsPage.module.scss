@@ -1,3 +1,5 @@
+@import "src/ui/styles/functions";
+
 .container {
     display: grid;
     grid-template-columns: 258px 1fr;
@@ -52,4 +54,30 @@
     path {
         fill: var(--objects-graphic-neutral-tertiary) !important;
     }
+}
+
+.containerError {
+    width: 278px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    align-self: center;
+}
+
+.iconError {
+    width: 48px;
+    height: 48px;
+    opacity: 0.4;
+
+    path {
+        fill: $objects-graphic-neutral-tertiary;
+    }
+}
+
+.errorText {
+    width: 248px;
+    text-align: center;
+    margin-top: 8px;
 }
