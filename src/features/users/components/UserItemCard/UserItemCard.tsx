@@ -12,7 +12,7 @@ import { DropdownListOptions } from "src/ui/components/solutions/DropdownList/Dr
 
 interface UserItemCardProps {
     name?: string;
-    role?: string;
+    company?: string;
     position?: string;
     image?: string;
     enabled?: boolean;
@@ -37,7 +37,7 @@ function getShortName(fullName: string): string {
 const UserItemCard = observer(
     ({
         name,
-        role,
+        company,
         position,
         image,
         enabled,
@@ -117,8 +117,8 @@ const UserItemCard = observer(
                         ) : (
                             position
                         )}
-                        {position && role && <IconDote />}
-                        {role}
+                        {position && company && <IconDote />}
+                        {company}
                     </div>
                 </div>
                 <div className={styles.buttonsBlock}>

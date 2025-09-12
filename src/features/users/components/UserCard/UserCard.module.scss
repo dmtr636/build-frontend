@@ -2,7 +2,7 @@
     border-radius: 12px;
     background: #f9fafb;
     width: 294px;
-    padding: 20px;
+    padding: 20px 20px 16px;
 }
 
 .header {
@@ -155,17 +155,15 @@
 
 .footer {
     border-top: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
-    padding-top: 16px;
     color: var(--objects-text-neutral-secondary, #2c313a);
-    text-align: center;
+    text-align: left;
     width: 296px;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
     line-height: 140%; /* 18.2px */
+    padding: 16px 20px 0;
+
     margin-top: 16px;
     gap: 4px;
-    /*margin: 0 -20px;
-margin-top: 10px;
-padding: 0 20px;*/
 }

@@ -17,6 +17,7 @@ export interface User {
     createDate: string; // ISO date-time
     updateDate: string; // ISO date-time
     info?: Record<string, unknown>;
+    company?: string;
 }
 
 export interface UserOnline {

@@ -49,7 +49,9 @@ const UserItemList = observer(({ users, chips, onClick, currentUser }: UserItemL
                         onClick={() => onClick(u)}
                         key={index}
                         name={splitFullName(u)}
+                        /*
                         role={u.role}
+*/
                         position={u.position}
                         image={u.imageId}
                         enabled={onlineIds.includes(u.id)}

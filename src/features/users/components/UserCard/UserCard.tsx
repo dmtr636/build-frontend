@@ -9,6 +9,7 @@ import { observer } from "mobx-react-lite";
 import { appStore } from "src/app/AppStore.ts";
 import { clsx } from "clsx";
 import { IconMax, IconTg } from "src/features/users/components/UserCard/assets";
+import { formatPhone } from "src/shared/utils/formatPhone.ts";
 
 interface UserCardProps {
     user: User;
@@ -70,25 +71,6 @@ function getLinkInfo(url: string): LinkInfo | null {
     }
 }
 
-function formatPhone(phone: string | number): string {
-    // оставляем только цифры
-    const digits = phone.toString().replace(/\D/g, "");
-
-    // убираем 8 или 7 в начале, заменяем на 7
-    const normalized = digits.replace(/^8/, "7");
-
-    // добиваем до 11 цифр
-    if (normalized.length !== 11) return phone.toString();
-
-    const country = normalized[0];
-    const code = normalized.slice(1, 4);
-    const part1 = normalized.slice(4, 7);
-    const part2 = normalized.slice(7, 9);
-    const part3 = normalized.slice(9, 11);
-
-    return `+${country} (${code}) ${part1}-${part2}-${part3}`;
-}
-
 function formatDateShort(dateInput: string | Date): string {
     const date = new Date(dateInput);
     const day = String(date.getDate()).padStart(2, "0");
@@ -141,7 +123,7 @@ const UserCard = observer(({ user }: UserCardProps) => {
                         : getLastSeen(currentUserOnline?.date as string)}
                 </div>
                 <div className={styles.position}>{user.position}</div>
-                <div className={styles.role}>{user.role}</div>
+                <div className={styles.role}>Тут будет организация</div>
                 <Button
                     style={{ marginTop: 16 }}
                     size={"small"}
@@ -219,6 +201,10 @@ const UserCard = observer(({ user }: UserCardProps) => {
                     )}
                 </div>
                 <div className={styles.footer}>
+                    <div>
+                        <span style={{ opacity: 0.5 }}>Системная роль </span>
+                        {user.role}
+                    </div>
                     <span style={{ opacity: 0.5 }}>Пользователь добавлен </span>
                     {formatDateShort(user.createDate)}
                 </div>

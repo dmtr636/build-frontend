@@ -6,7 +6,9 @@ import styles from "./UsersPage.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import {
     IconClose,
+    IconDownload,
     IconError,
+    IconImport,
     IconPlus,
     IconSearch,
     IconSort,
@@ -25,6 +27,9 @@ import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx
 import UserCard from "src/features/users/components/UserCard/UserCard.tsx";
 import { User } from "src/features/users/types/User.ts";
 import { splitFullName } from "src/shared/utils/splitFullName.ts";
+import { useGenerateCSV } from "src/features/users/hooks/useGenerateCSV.ts";
+import { getFullName } from "src/shared/utils/getFullName.ts";
+import { formatPhone, formatPhoneNumber } from "src/shared/utils/formatPhone.ts";
 
 export const UsersPage = observer(() => {
     const users = appStore.userStore.users;
@@ -35,15 +40,15 @@ export const UsersPage = observer(() => {
         value: user ?? "",
     }));
 
-    const rolesOptions: SelectOption<string>[] = [
-        { value: "ADMIN", name: "Администратор" },
+    const companyOptions: SelectOption<string>[] = [
+        { value: "Яндекс", name: "Яндекс" },
         {
-            value: "USER",
-            name: "Пользователь",
+            value: "Самолет",
+            name: "Самолет",
         },
         {
-            value: "ROOT",
-            name: "ROOT",
+            value: "DOGMA",
+            name: "DOGMA",
         },
     ];
     const [rolesValue, setRolesValue] = useState<string[]>([]);
@@ -196,6 +201,13 @@ export const UsersPage = observer(() => {
             />
         );
     }, [filteredUsersByFilter, filteredUsersByName]);
+    const usersForCsv = filteredUsers.map((user) => ({
+        ...user,
+        fullName: getFullName(user),
+        workPhone: formatPhone(user.workPhone),
+        personalPhone: formatPhone(user.personalPhone),
+    }));
+    const { downloadCsv } = useGenerateCSV({ data: usersForCsv as any });
     return (
         <div className={styles.container}>
             <div className={styles.filterBlock}>
@@ -237,13 +249,13 @@ export const UsersPage = observer(() => {
                             values={rolesValue}
                             onValuesChange={setRolesValue}
                             placeholder={"Все"}
-                            options={rolesOptions}
+                            options={companyOptions}
                             multiple={true}
-                            formName={"Роль в системе"}
+                            formName={"Организация"}
                         ></MultipleSelect>
                         <MultipleAutocomplete
                             formName={"Объекты"}
-                            options={rolesOptions}
+                            options={companyOptions}
                             placeholder={"Все"}
                             values={rolesValue}
                             onValuesChange={setRolesValue}
@@ -256,6 +268,18 @@ export const UsersPage = observer(() => {
                             title={"Только в сети"}
                         />
                     </FlexColumn>
+                </div>
+                <div>
+                    <Button
+                        fullWidth={true}
+                        size={"small"}
+                        type={"outlined"}
+                        iconBefore={<IconImport />}
+                        mode={"neutral"}
+                        onClick={downloadCsv}
+                    >
+                        Экспорт в XLSX
+                    </Button>
                 </div>
             </div>
             <div className={styles.userlistBlock}>
