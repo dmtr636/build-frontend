@@ -32,14 +32,8 @@
 
     @media (hover: hover) and (pointer: fine) {
         &.clickable:hover:not(:has(.dragHandleContainer:hover)) {
-            color: lighter-hover($objects-text-neutral-quaternary);
-
+            color: lighter-hover($objects-text-neutral-tertiary);
         }
-    }
-
-
-    svg path {
-        fill: currentColor;
     }
 }
 
@@ -66,4 +60,25 @@
 .dragHandle {
     height: 100%;
     border-right: 1px solid var(--objects-stroke-neutral-secondary);
+}
+
+.iconSorting {
+    width: 20px;
+    height: 20px;
+
+    path {
+        fill: #b0b0b0;
+    }
+
+    &.activeSortingAsc {
+        path:first-child {
+            fill: currentColor;
+        }
+    }
+
+    &.activeSortingDesc {
+        path:last-child {
+            fill: currentColor;
+        }
+    }
 }
