@@ -10,6 +10,7 @@ import { appStore } from "src/app/AppStore.ts";
 import { clsx } from "clsx";
 import { IconMax, IconTg } from "src/features/users/components/UserCard/assets";
 import { formatPhone } from "src/shared/utils/formatPhone.ts";
+import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 interface UserCardProps {
     user: User;
@@ -172,9 +173,10 @@ const UserCard = observer(({ user }: UserCardProps) => {
                                 <div className={styles.messengerHead}>Рабочий</div>
                                 <div
                                     className={styles.messengerLink}
-                                    onClick={() =>
-                                        navigator.clipboard.writeText(user.workPhone ?? "")
-                                    }
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(user.workPhone ?? "");
+                                        snackbarStore.showPositiveSnackbar("Номер скопирован");
+                                    }}
                                 >
                                     {formatPhone(user.workPhone)}
                                 </div>
@@ -190,9 +192,10 @@ const UserCard = observer(({ user }: UserCardProps) => {
                                 <div className={styles.messengerHead}>Личный</div>
                                 <div
                                     className={styles.messengerLink}
-                                    onClick={() =>
-                                        navigator.clipboard.writeText(user.personalPhone ?? "")
-                                    }
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(user.personalPhone ?? "");
+                                        snackbarStore.showPositiveSnackbar("Номер скопирован");
+                                    }}
                                 >
                                     {formatPhone(user.personalPhone)}
                                 </div>

@@ -9,6 +9,7 @@ import { endpoints, GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { User } from "src/features/users/types/User.ts";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
 import { DropdownListOptions } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
+import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 interface UserItemCardProps {
     name?: string;
@@ -56,6 +57,7 @@ const UserItemCard = observer(
             .map((n) => n[0]?.toUpperCase())
             .join("");
         const [chats, setChats] = useState(false);
+        console.log(user);
         const chatOptions: DropdownListOptions = [
             {
                 name: "Мессенджер",
@@ -71,10 +73,47 @@ const UserItemCard = observer(
                     window.open(user?.messenger);
                 },
             },
+            {
+                name: "Рабочий телефон",
+                mode: "neutral",
+                onClick: () => {
+                    if (user?.workPhone) {
+                        navigator.clipboard.writeText(user?.workPhone);
+                        snackbarStore.showPositiveSnackbar("Номер скопирован");
+                    }
+                },
+            },
+            {
+                name: "Личный телефон",
+                mode: "neutral",
+                onClick: () => {
+                    if (user?.personalPhone) {
+                        navigator.clipboard.writeText(user?.personalPhone);
+                        snackbarStore.showPositiveSnackbar("Номер скопирован");
+                    }
+                },
+            },
         ];
+        const filteredChatOptions = chatOptions.filter((option) => {
+            switch (option.name) {
+                case "Мессенджер":
+                    return Boolean(user?.messenger);
+                case "Почта":
+                    return Boolean(user?.email);
+                case "Рабочий телефон":
+                    return Boolean(user?.workPhone);
+                case "Личный телефон":
+                    return Boolean(user?.personalPhone);
+                default:
+                    return true;
+            }
+        });
 
         function handleCard(event: React.MouseEvent<HTMLDivElement>) {
             if (ref.current && !ref.current.contains(event.target as Node) && onClick) {
+                onClick();
+            }
+            if (!ref.current && onClick) {
                 onClick();
             }
         }
@@ -122,31 +161,33 @@ const UserItemCard = observer(
                     </div>
                 </div>
                 <div className={styles.buttonsBlock}>
-                    <div className={styles.buttonsBlockChat} ref={ref}>
+                    {(user?.email || user?.messenger || user?.personalPhone || user?.workPhone) && (
                         <Tooltip text={"Связаться"}>
-                            <SingleDropdownList
-                                options={chatOptions}
-                                show={chats}
-                                tipPosition={"top-left"}
-                                setShow={setChats}
-                            >
-                                <ButtonIcon
-                                    onMouseEnter={(e) => e.stopPropagation()}
-                                    onMouseLeave={(e) => e.stopPropagation()}
-                                    onClick={() => {
-                                        setChats((v) => !v);
-                                        if (onClickChat) onClickChat();
-                                    }}
-                                    pale={true}
-                                    mode={"neutral"}
-                                    size={"small"}
-                                    type={"tertiary"}
+                            <div className={styles.buttonsBlockChat} ref={ref}>
+                                <SingleDropdownList
+                                    options={filteredChatOptions}
+                                    show={chats}
+                                    tipPosition={"top-left"}
+                                    setShow={setChats}
                                 >
-                                    <IconChat />
-                                </ButtonIcon>
-                            </SingleDropdownList>
+                                    <ButtonIcon
+                                        onMouseEnter={(e) => e.stopPropagation()}
+                                        onMouseLeave={(e) => e.stopPropagation()}
+                                        onClick={() => {
+                                            setChats((v) => !v);
+                                            if (onClickChat) onClickChat();
+                                        }}
+                                        pale={true}
+                                        mode={"neutral"}
+                                        size={"small"}
+                                        type={"tertiary"}
+                                    >
+                                        <IconChat />
+                                    </ButtonIcon>
+                                </SingleDropdownList>
+                            </div>
                         </Tooltip>
-                    </div>
+                    )}
                     <Tooltip text={isOpen ? "Закрыть" : "Открыть"}>
                         <div className={styles.icon}>{isOpen ? <IconClose /> : <IconNext />}</div>
                     </Tooltip>

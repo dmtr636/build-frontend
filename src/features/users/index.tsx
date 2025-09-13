@@ -30,6 +30,7 @@ import { splitFullName } from "src/shared/utils/splitFullName.ts";
 import { useGenerateCSV } from "src/features/users/hooks/useGenerateCSV.ts";
 import { getFullName } from "src/shared/utils/getFullName.ts";
 import { formatPhone, formatPhoneNumber } from "src/shared/utils/formatPhone.ts";
+import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvider.tsx";
 
 export const UsersPage = observer(() => {
     const users = appStore.userStore.users;
@@ -152,6 +153,7 @@ export const UsersPage = observer(() => {
             setCurrentUser(undefined);
         }
     };
+    console.log(currentUser?.id);
     const renderContent = useMemo(() => {
         if (filteredUsersByFilter.length === 0)
             return (
@@ -194,7 +196,9 @@ export const UsersPage = observer(() => {
             );
         return (
             <UserItemList
-                onClick={(value: User) => onClickCard(value)}
+                onClick={(value: User) => {
+                    onClickCard(value);
+                }}
                 users={filteredUsers}
                 chips={chipArray}
                 currentUser={currentUser}
@@ -306,6 +310,7 @@ export const UsersPage = observer(() => {
                 <div className={styles.containerList}>{renderContent}</div>
             </div>
             <div className={styles.userCard}>{currentUser && <UserCard user={currentUser} />}</div>
+            <SnackbarProvider />
         </div>
     );
 });
