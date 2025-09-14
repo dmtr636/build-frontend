@@ -3,7 +3,7 @@ import { ITableColumn, ITableSettings } from "src/ui/components/segments/Table/T
 import { clsx } from "clsx";
 import styles from "./TableHeaderCell.module.scss";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
-import { IconSorting, IconSortingDown, IconSortingUp } from "src/ui/assets/icons";
+import { IconSorting } from "src/ui/assets/icons";
 import { useCallback, useEffect, useState } from "react";
 import { throttle } from "src/shared/utils/throttle.ts";
 
@@ -73,14 +73,18 @@ export const TableHeaderCell = observer(<T,>(props: IProps<T>) => {
                 <Typo variant={"actionL"} noWrap={true}>
                     {props.column.name}
                 </Typo>
-                {isActive && props.activeSortDirection === "asc" && (
-                    <IconSortingUp style={{ width: 20, height: 20 }} />
-                )}
-                {isActive && props.activeSortDirection === "desc" && (
-                    <IconSortingDown style={{ width: 20, height: 20 }} />
-                )}
-                {props.column.sort && !isActive && (
-                    <IconSorting style={{ width: 20, height: 20 }} />
+                {props.column.sort && (
+                    <IconSorting
+                        className={clsx(
+                            styles.iconSorting,
+                            props.activeSortDirection === "asc" &&
+                                isActive &&
+                                styles.activeSortingAsc,
+                            props.activeSortDirection === "desc" &&
+                                isActive &&
+                                styles.activeSortingDesc,
+                        )}
+                    />
                 )}
             </>
         );
