@@ -2,7 +2,7 @@ import React, { Profiler, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { IconGroup, IconHome, IconProject, IconTime } from "src/ui/assets/icons";
+import { IconFlag, IconGroup, IconHome, IconProject, IconTime } from "src/ui/assets/icons";
 import { Avatar } from "src/ui/components/solutions/Avatar/Avatar.tsx";
 import { appStore } from "src/app/AppStore.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
@@ -47,6 +47,22 @@ const Header = () => {
                             iconBefore={<IconProject />}
                         >
                             Журнал объектов
+                        </Button>
+                    )}
+                </NavLink>
+                <NavLink
+                    to={"/admin/organizations"}
+                    className={({ isActive }) => (isActive ? styles.active : "")}
+                >
+                    {({ isActive }) => (
+                        <Button
+                            mode={"neutral"}
+                            type={"text"}
+                            pale={!isActive}
+                            size={"small"}
+                            iconBefore={<IconFlag />}
+                        >
+                            Организации
                         </Button>
                     )}
                 </NavLink>

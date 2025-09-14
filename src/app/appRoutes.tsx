@@ -6,6 +6,7 @@ import { JournalPage } from "src/features/journal";
 import { UsersPage } from "src/features/users";
 import { LoginPageWrapper } from "src/features/auth/LoginPageWrapper.tsx";
 import { EventsPage } from "src/features/events/EventsPage";
+import { OrganizationsPage } from "src/features/organizations/OrganizationsPage.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -37,6 +38,10 @@ export const appRoutes: RouteObject[] = [
             {
                 path: "/admin/events",
                 element: <EventsPage />,
+            },
+            {
+                path: "/admin/organizations",
+                element: <OrganizationsPage />,
             },
         ],
     },

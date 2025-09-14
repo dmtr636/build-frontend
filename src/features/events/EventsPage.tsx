@@ -134,6 +134,66 @@ export const EventsPage = observer(() => {
                     size={"large"}
                     inputPlaceholder={"ФИО пользователя, дата, время или текст действия"}
                 />
+                {hasActiveFilters && (
+                    <Flex gap={8} wrap={"wrap"}>
+                        {eventsStore.filters.date && (
+                            <Chip
+                                size={"small"}
+                                onClick={() => {
+                                    eventsStore.filters.date = null;
+                                }}
+                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                            >
+                                {formatDateShort(eventsStore.filters.date)}
+                            </Chip>
+                        )}
+                        {eventsStore.filters.userIds.map((userId) => (
+                            <Chip
+                                key={userId}
+                                size={"small"}
+                                onClick={() => {
+                                    eventsStore.filters.userIds =
+                                        eventsStore.filters.userIds.filter((id) => id !== userId);
+                                }}
+                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                            >
+                                {getNameInitials(userStore.usersMap.get(userId))}
+                            </Chip>
+                        ))}
+                        {eventsStore.filters.objectIds.map((objectId) => (
+                            <Chip
+                                key={objectId}
+                                size={"small"}
+                                onClick={() => {
+                                    eventsStore.filters.objectIds =
+                                        eventsStore.filters.objectIds.filter(
+                                            (id) => id !== objectId,
+                                        );
+                                }}
+                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                            >
+                                {objectId}
+                            </Chip>
+                        ))}
+                        {eventsStore.filters.actions.map((action) => (
+                            <Chip
+                                key={action}
+                                size={"small"}
+                                onClick={() => {
+                                    eventsStore.filters.actions =
+                                        eventsStore.filters.actions.filter((id) => id !== action);
+                                }}
+                                iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                            >
+                                {
+                                    eventActionLocale[
+                                        action.split(".")[0] as keyof typeof eventActionLocale
+                                    ][action.split(".").slice(1).join()]
+                                }
+                            </Chip>
+                        ))}
+                    </Flex>
+                )}
                 {(hasActiveFilters || eventsStore.search) && !eventsStore.filteredEvents.length ? (
                     <div className={styles.containerError}>
                         <IconError className={styles.iconError} />
@@ -160,72 +220,6 @@ export const EventsPage = observer(() => {
                     </div>
                 ) : (
                     <>
-                        {hasActiveFilters && (
-                            <Flex gap={8} wrap={"wrap"}>
-                                {eventsStore.filters.date && (
-                                    <Chip
-                                        size={"small"}
-                                        onClick={() => {
-                                            eventsStore.filters.date = null;
-                                        }}
-                                        iconAfter={<IconClose className={styles.chipDeleteIcon} />}
-                                    >
-                                        {formatDateShort(eventsStore.filters.date)}
-                                    </Chip>
-                                )}
-                                {eventsStore.filters.userIds.map((userId) => (
-                                    <Chip
-                                        key={userId}
-                                        size={"small"}
-                                        onClick={() => {
-                                            eventsStore.filters.userIds =
-                                                eventsStore.filters.userIds.filter(
-                                                    (id) => id !== userId,
-                                                );
-                                        }}
-                                        iconAfter={<IconClose className={styles.chipDeleteIcon} />}
-                                    >
-                                        {getNameInitials(userStore.usersMap.get(userId))}
-                                    </Chip>
-                                ))}
-                                {eventsStore.filters.objectIds.map((objectId) => (
-                                    <Chip
-                                        key={objectId}
-                                        size={"small"}
-                                        onClick={() => {
-                                            eventsStore.filters.objectIds =
-                                                eventsStore.filters.objectIds.filter(
-                                                    (id) => id !== objectId,
-                                                );
-                                        }}
-                                        iconAfter={<IconClose className={styles.chipDeleteIcon} />}
-                                    >
-                                        {objectId}
-                                    </Chip>
-                                ))}
-                                {eventsStore.filters.actions.map((action) => (
-                                    <Chip
-                                        key={action}
-                                        size={"small"}
-                                        onClick={() => {
-                                            eventsStore.filters.actions =
-                                                eventsStore.filters.actions.filter(
-                                                    (id) => id !== action,
-                                                );
-                                        }}
-                                        iconAfter={<IconClose className={styles.chipDeleteIcon} />}
-                                    >
-                                        {
-                                            eventActionLocale[
-                                                action.split(
-                                                    ".",
-                                                )[0] as keyof typeof eventActionLocale
-                                            ][action.split(".").slice(1).join()]
-                                        }
-                                    </Chip>
-                                ))}
-                            </Flex>
-                        )}
                         <div className={styles.tableWrapper}>
                             <div className={styles.tableHeader}>
                                 <Tabs

@@ -129,6 +129,7 @@ import IconStar from "./Star.svg?react";
 import IconResume from "./Resume.svg?react";
 import IconDote from "./Dote.svg?react";
 import IconUpdate from "./Update.svg?react";
+import IconFlag from "./Flag.svg?react";
 
 export {
     IconUpdate,
@@ -259,4 +260,5 @@ export {
     IconFlagRU,
     IconFlagUSA,
     IconBulletedList,
+    IconFlag,
 };
