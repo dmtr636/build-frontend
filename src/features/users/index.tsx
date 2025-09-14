@@ -1,21 +1,18 @@
 import { observer } from "mobx-react-lite";
-import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { appStore } from "src/app/AppStore.ts";
 import UserItemList from "src/features/users/components/UserItemList/UserItemList.tsx";
 import styles from "./UsersPage.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import {
-    IconClose,
-    IconDownload,
+    IconCheckmark,
     IconError,
     IconImport,
     IconPlus,
     IconSearch,
-    IconSort,
     IconSorting,
     IconUpdate,
 } from "src/ui/assets/icons";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
@@ -23,17 +20,30 @@ import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/Mult
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";
-import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import UserCard from "src/features/users/components/UserCard/UserCard.tsx";
 import { User } from "src/features/users/types/User.ts";
 import { splitFullName } from "src/shared/utils/splitFullName.ts";
 import { useGenerateCSV } from "src/features/users/hooks/useGenerateCSV.ts";
 import { getFullName } from "src/shared/utils/getFullName.ts";
-import { formatPhone, formatPhoneNumber } from "src/shared/utils/formatPhone.ts";
+import { formatPhone } from "src/shared/utils/formatPhone.ts";
 import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvider.tsx";
+import { DropdownListOption } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
+import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
+
+interface SortOption {
+    field: "createDate" | "name" | "group" | "role";
+    order: "asc" | "desc";
+    label: string;
+}
 
 export const UsersPage = observer(() => {
     const users = appStore.userStore.users;
+    const [sortOption, setSortOption] = useState<SortOption>({
+        field: "name",
+        order: "asc",
+        label: "По алфавиту, от А - Я",
+    });
+
     const [currentUser, setCurrentUser] = useState<User | undefined>();
     const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
     const usersPositionOptions: SelectOption<string>[] = userPosition.map((user) => ({
@@ -52,6 +62,122 @@ export const UsersPage = observer(() => {
             name: "DOGMA",
         },
     ];
+    const isSelected = (field: string, order: "asc" | "desc") =>
+        sortOption?.field === field && sortOption?.order === order;
+
+    const dropDownSortOptions: DropdownListOption<string>[] = [
+        {
+            name: "По алфавиту",
+            mode: "neutral",
+            renderOption: () => <div className={styles.renderHeader}>По алфавиту</div>,
+        },
+        {
+            name: "От А - Я",
+            mode: "neutral",
+            pale: true,
+            disabled: isSelected("name", "asc"),
+            iconAfter: isSelected("name", "asc") ? <IconCheckmark /> : undefined,
+            onClick: () => {
+                setSortOption({ field: "name", order: "asc", label: "По алфавиту, от А - Я" });
+            },
+        },
+        {
+            name: "От Я - А",
+            mode: "neutral",
+            pale: true,
+            disabled: isSelected("name", "desc"),
+            iconAfter: isSelected("name", "desc") ? <IconCheckmark /> : undefined,
+            onClick: () => {
+                setSortOption({ field: "name", order: "desc", label: "По алфавиту, от Я - А" });
+            },
+        },
+        {
+            name: "По дате создания",
+            mode: "neutral",
+            renderOption: () => <div className={styles.renderHeader}>По дате создания</div>,
+        },
+        {
+            name: "Сначала новые",
+            mode: "neutral",
+            pale: true,
+            disabled: isSelected("createDate", "asc"),
+            iconAfter: isSelected("createDate", "asc") ? <IconCheckmark /> : undefined,
+            onClick: () => {
+                setSortOption({
+                    field: "createDate",
+                    order: "asc",
+                    label: "По дате создания, сначала новые",
+                });
+            },
+        },
+        {
+            name: "Сначала старые",
+            mode: "neutral",
+            pale: true,
+            disabled: isSelected("createDate", "desc"),
+            iconAfter: isSelected("createDate", "desc") ? <IconCheckmark /> : undefined,
+            onClick: () => {
+                setSortOption({
+                    field: "createDate",
+                    order: "desc",
+                    label: "По дате создания, сначала старые",
+                });
+            },
+        },
+        {
+            name: "По роли",
+            mode: "neutral",
+            renderOption: () => <div className={styles.renderHeader}>По роли</div>,
+        },
+        {
+            name: "В должности",
+            mode: "neutral",
+            pale: true,
+            disabled: isSelected("role", "asc"),
+            iconAfter: isSelected("role", "asc") ? <IconCheckmark /> : undefined,
+            onClick: () => {
+                setSortOption({
+                    field: "role",
+                    order: "asc",
+                    label: "По роли, в должности",
+                });
+            },
+        },
+        {
+            name: "В системе",
+            mode: "neutral",
+            pale: true,
+            disabled: isSelected("role", "desc"),
+            iconAfter: isSelected("role", "desc") ? <IconCheckmark /> : undefined,
+            onClick: () => {
+                setSortOption({
+                    field: "role",
+                    order: "desc",
+                    label: "По роли, в системе",
+                });
+            },
+        },
+        {
+            name: "По группе",
+            mode: "neutral",
+            renderOption: () => <div className={styles.renderHeader}>По группе</div>,
+        },
+        {
+            name: "В организации",
+            mode: "neutral",
+            pale: true,
+            disabled: isSelected("group", "asc"),
+            iconAfter: isSelected("group", "asc") ? <IconCheckmark /> : undefined,
+            onClick: () => {
+                setSortOption({
+                    field: "group",
+                    order: "asc",
+                    label: "По группе, в организации",
+                });
+            },
+        },
+    ];
+
     const [rolesValue, setRolesValue] = useState<string[]>([]);
     const [positionValue, setPositionValue] = useState<string[]>([]);
     const [onlineOnly, setOnlineOnly] = useState(false);
@@ -153,7 +279,7 @@ export const UsersPage = observer(() => {
             setCurrentUser(undefined);
         }
     };
-    console.log(currentUser?.id);
+    console.log(filteredUsers);
     const renderContent = useMemo(() => {
         if (filteredUsersByFilter.length === 0)
             return (
@@ -288,7 +414,7 @@ export const UsersPage = observer(() => {
             </div>
             <div className={styles.userlistBlock}>
                 <div className={styles.sortContainer}>
-                    <div>
+                    <div style={{ width: "100%" }}>
                         <Input
                             size={"large"}
                             startIcon={<IconSearch />}
@@ -298,14 +424,16 @@ export const UsersPage = observer(() => {
                             placeholder={"Найти по имени"}
                         />
                     </div>
-                    {/* <div>
-                        <Button
-                            size={"large"}
-                            iconBefore={<IconSorting />}
-                            type={"primary"}
-                            mode={"neutral"}
-                        ></Button>
-                    </div>*/}
+                    <div>
+                        <SingleDropdownList maxHeight={542} options={dropDownSortOptions}>
+                            <Button
+                                size={"large"}
+                                iconBefore={<IconSorting />}
+                                type={"outlined"}
+                                mode={"neutral"}
+                            ></Button>
+                        </SingleDropdownList>
+                    </div>
                 </div>
                 <div className={styles.containerList}>{renderContent}</div>
             </div>

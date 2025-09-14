@@ -11,6 +11,7 @@ export interface DropdownListOption<T = string> {
     mode?: "accent" | "neutral" | "negative" | "brand";
     children?: DropdownListOption<T>[];
     subMenuKey?: string;
+    pale?: boolean;
     renderOption?: () => ReactNode;
 }
 

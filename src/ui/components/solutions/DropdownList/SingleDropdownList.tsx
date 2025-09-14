@@ -142,6 +142,7 @@ export const SingleDropdownList = observer(<T,>(props: SingleDropdownListProps<T
         const isSelected = value !== undefined && option.value === value;
         return (
             <ListItem
+                pale={option.pale}
                 mode={option.mode ?? mode}
                 size={size}
                 onClick={() => {
