@@ -247,7 +247,7 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
                         Отменить
                     </Button>
                     <Button
-                        disabled={!email || !role}
+                        disabled={!email || !role || !firstName || !lastName}
                         mode={"neutral"}
                         type={"primary"}
                         onClick={onClick}
