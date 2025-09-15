@@ -293,7 +293,7 @@ export const OrganizationsPage = observer(() => {
                             {currentOrg.name}
                         </Typo>
                         <div className={styles.badge}>
-                            {currentOrg?.employeeIds.length || "Нет"}{" "}
+                            {currentOrg?.employeeIds.length || "Пока нет"}{" "}
                             {numDecl(currentOrg?.employeeIds.length, [
                                 "сотрудник",
                                 "сотрудника",
