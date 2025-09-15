@@ -30,6 +30,7 @@ import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvid
 import { DropdownListOption } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
 import useExcelExporter from "src/features/users/hooks/useExcelExporter.ts";
+import UserForm from "src/features/users/components/UserForm/UserForm.tsx";
 
 export interface SortOption {
     field: "createDate" | "name" | "group" | "role";
@@ -92,7 +93,6 @@ function sortItems(items: User[], sortOption: { field: string; order: "asc" | "d
 }
 
 export const UsersPage = observer(() => {
-    const users = appStore.userStore.users;
     const [sortOption, setSortOption] = useState<SortOption>({
         field: "name",
         order: "asc",
@@ -100,6 +100,8 @@ export const UsersPage = observer(() => {
     });
 
     const [currentUser, setCurrentUser] = useState<User | undefined>();
+    const users = appStore.userStore.users;
+
     const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
     const usersPositionOptions: SelectOption<string>[] = userPosition.map((user) => ({
         name: user ?? "",
@@ -238,6 +240,7 @@ export const UsersPage = observer(() => {
     const [onlineOnly, setOnlineOnly] = useState(false);
     const [name, setName] = useState<string>("");
     const [sortIsOpen, setSortIsOpen] = useState<boolean>(false);
+    const [openCreate, setOpenCreate] = useState(false);
     useLayoutEffect(() => {
         appStore.userStore.fetchOnlineUser();
     }, []);
@@ -289,7 +292,7 @@ export const UsersPage = observer(() => {
         .map(([id]) => id);
     const filteredUsersByFilter = useMemo(() => {
         return users.filter((user) => {
-            if (rolesValue.length > 0 && !rolesValue.includes(user.role)) {
+            if (rolesValue.length > 0 && !rolesValue.includes(user.role as string)) {
                 return false;
             }
 
@@ -300,7 +303,7 @@ export const UsersPage = observer(() => {
                 return false;
             }
 
-            return !(onlineOnly && !onlineIds.includes(user.id));
+            return !(onlineOnly && !onlineIds.includes(user.id as string));
         });
     }, [users, name, rolesValue, positionValue, onlineOnly, onlineIds]);
     const filteredUsersByName = useMemo(() => {
@@ -444,6 +447,7 @@ export const UsersPage = observer(() => {
                         mode={"neutral"}
                         fullWidth={true}
                         iconBefore={<IconPlus />}
+                        onClick={() => setOpenCreate(true)}
                     >
                         Новый пользователь
                     </Button>
@@ -523,6 +527,7 @@ export const UsersPage = observer(() => {
                     </div>
                     <div>
                         <SingleDropdownList
+                            hideTip={true}
                             setShow={setSortIsOpen}
                             maxHeight={542}
                             options={dropDownSortOptions}
@@ -559,6 +564,7 @@ export const UsersPage = observer(() => {
                 <div className={styles.containerList}>{renderContent}</div>
             </div>
             <div className={styles.userCard}>{currentUser && <UserCard user={currentUser} />}</div>
+            <UserForm open={openCreate} setOpen={setOpenCreate} />
             <SnackbarProvider />
         </div>
     );

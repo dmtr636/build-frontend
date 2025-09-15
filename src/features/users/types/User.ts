@@ -3,7 +3,9 @@ export interface User {
     login: string;
     password?: string;
     role: "ROOT" | "ADMIN" | "USER";
-    enabled: boolean;
+    /*
+        enabled?: boolean;
+    */
     position?: string;
     name?: string;
     lastName?: string | null;
@@ -15,8 +17,8 @@ export interface User {
     personalPhone?: string;
     imageId?: string;
     organizationId?: string;
-    createDate: string; // ISO date-time
-    updateDate: string; // ISO date-time
+    createDate?: string; // ISO date-time
+    updateDate?: string; // ISO date-time
     info?: Record<string, unknown>;
     company?: string;
 }

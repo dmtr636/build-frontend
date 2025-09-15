@@ -19,7 +19,7 @@ export class UserStore {
     }
 
     get usersMap() {
-        return new Map<string, User>(this.users.map((user) => [user.id, user]));
+        return new Map<string, User>(this.users.map((user) => [user.id, user]) as any);
     }
 
     async fetchOnlineUser() {

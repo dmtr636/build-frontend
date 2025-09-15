@@ -201,7 +201,7 @@ const UserCard = observer(({ user }: UserCardProps) => {
                         {user.role}
                     </div>
                     <span style={{ opacity: 0.5 }}>Пользователь добавлен </span>
-                    {formatDateShort(user.createDate)}
+                    {formatDateShort(user?.createDate)}
                 </div>
             </div>
         </div>
