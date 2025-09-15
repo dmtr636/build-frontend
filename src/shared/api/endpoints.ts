@@ -12,6 +12,7 @@ export const endpoints = {
     account: transformUrl("/api/account"),
     users: transformUrl("/api/admin/users"),
     events: transformUrl("/api/admin/events"),
+    organizations: transformUrl("/api/admin/organizations"),
     files: transformUrl("/api/files"),
     status: transformUrl("/api/admin/users/status"),
 };

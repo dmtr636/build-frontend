@@ -10,6 +10,7 @@ const AdminPageWrapper = observer(() => {
     useEffect(() => {
         appStore.userStore.fetchUsers();
         appStore.eventsStore.fetchEvents();
+        appStore.organizationsStore.fetchOrganizations();
         const handleBeforeUnload = () => {
             console.log("sendBeacon отправлен?"); // true/false
             appStore.accountStore.fetchUserIsOffline(true); // используем sendBeacon
@@ -25,7 +26,7 @@ const AdminPageWrapper = observer(() => {
             <div className={styles.container}>
                 <Outlet />
             </div>
-            <SnackbarProvider />
+            <SnackbarProvider centered={true} />
         </>
     );
 });

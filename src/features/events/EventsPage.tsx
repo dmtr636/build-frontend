@@ -13,7 +13,11 @@ import { ExplorationInput } from "src/ui/components/segments/Exploration/Explora
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
 import { IEvent } from "src/features/events/Event.ts";
 import { getNameInitials } from "src/shared/utils/getFullName.ts";
-import { eventActionLocale, eventUserActionLocale } from "src/features/events/eventsLocale.ts";
+import {
+    autocompleteActionLocaleOptions,
+    eventActionLocale,
+    eventUserActionLocale,
+} from "src/features/events/eventsLocale.ts";
 import { Tabs } from "src/ui/components/solutions/Tabs/Tabs.tsx";
 import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
 import { formatDate, formatDateShort, formatTime } from "src/shared/utils/date.ts";
@@ -113,16 +117,13 @@ export const EventsPage = observer(() => {
                             multiple={true}
                             formName={"Действие"}
                             size={"medium"}
-                            options={Object.entries(eventActionLocale).flatMap((entry) =>
-                                Object.entries(entry[1]).map((entityEntry) => ({
-                                    name: entityEntry[1],
-                                    value: `${entry[0]}.${entityEntry[0]}`,
-                                })),
-                            )}
+                            options={autocompleteActionLocaleOptions}
                             placeholder={"Все"}
                             onValuesChange={(values) => {
                                 eventsStore.filters.actions = values;
                             }}
+                            fullWidth={false}
+                            tipPosition={"top-left"}
                         />
                     </FlexColumn>
                 </div>

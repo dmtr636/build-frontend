@@ -11,6 +11,7 @@ import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { TextMeasurer } from "src/shared/utils/TextMeasurer.ts";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
+import { TipPosition } from "src/ui/components/solutions/PopoverBase/PopoverBase.types.ts";
 
 export interface MultipleAutocompleteProps {
     options: AutocompleteOption[];
@@ -29,6 +30,8 @@ export interface MultipleAutocompleteProps {
     endIcon?: ReactNode;
     clearInputValueOnChange?: boolean;
     brand?: boolean;
+    fullWidth?: boolean;
+    tipPosition?: TipPosition;
 }
 
 export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
@@ -45,6 +48,8 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
         error,
         required,
         brand,
+        fullWidth = true,
+        tipPosition,
     }: MultipleAutocompleteProps = props;
     const [hover, setHover] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -119,7 +124,7 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
             options={options.filter((o) => o.name.toLowerCase().includes(inputValue.toLowerCase()))}
             values={values}
             onChange={handleChange}
-            fullWidth={true}
+            fullWidth={fullWidth}
             mode="neutral"
             setShow={handleShowDropdown}
             size={size}
@@ -127,6 +132,7 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
             multiple={true}
             footer={renderFooter()}
             closeOnSecondClick={false}
+            tipPosition={tipPosition}
         >
             <Input
                 inputRef={inputRef}

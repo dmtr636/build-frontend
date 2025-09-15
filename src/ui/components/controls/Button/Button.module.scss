@@ -257,6 +257,10 @@
 
         &.hasOnlyIconBefore {
             padding: 12px;
+
+            &.outlined {
+                padding: 11px;
+            }
         }
     }
 
@@ -289,6 +293,10 @@
 
         &.hasOnlyIconBefore {
             padding: 14px;
+
+            &.outlined {
+                padding: 13px;
+            }
         }
     }
 
@@ -321,6 +329,10 @@
 
         &.hasOnlyIconBefore {
             padding: 12px;
+
+            &.outlined {
+                padding: 11px;
+            }
         }
     }
 
@@ -353,6 +365,10 @@
 
         &.hasOnlyIconBefore {
             padding: 10px;
+
+            &.outlined {
+                padding: 9px;
+            }
         }
     }
 
@@ -379,6 +395,10 @@
 
         &.hasOnlyIconBefore {
             padding: 6px;
+
+            &.outlined {
+                padding: 5px;
+            }
         }
     }
 

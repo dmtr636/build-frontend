@@ -15,6 +15,7 @@ export interface SingleAutocompleteProps<T> {
     options: AutocompleteOption<T>[];
     value: T | null;
     onValueChange: (value: T | null) => void;
+    onOptionClick?: (value: T | null) => void;
     onOptionChange?: (option: AutocompleteOption<T> | null) => void;
     iconBefore?: ReactNode;
     formName?: string;
@@ -36,6 +37,7 @@ export interface SingleAutocompleteProps<T> {
     disableClear?: boolean;
     onEnterClick?: (inputValue: string) => void;
     zIndex?: number;
+    disableChangeHandler?: boolean;
 }
 
 export const SingleAutocomplete = observer(<T = string,>(props: SingleAutocompleteProps<T>) => {
@@ -93,9 +95,14 @@ export const SingleAutocomplete = observer(<T = string,>(props: SingleAutocomple
     ]);
 
     const handleChange = (option: DropdownListOption<T | null> | null) => {
-        setInputValue(option?.name?.toString() ?? "");
-        onValueChange(option?.value ?? null);
-        onOptionChange?.(option as AutocompleteOption<T>);
+        if (option?.value) {
+            props.onOptionClick?.(option.value);
+        }
+        if (!props.disableChangeHandler) {
+            setInputValue(option?.name?.toString() ?? "");
+            onValueChange(option?.value ?? null);
+            onOptionChange?.(option as AutocompleteOption<T>);
+        }
         if (props.clearInputValueOnChange) {
             setInputValue("");
         }
