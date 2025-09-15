@@ -5,6 +5,7 @@ import styles from "./UsersPage.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import {
     IconCheckmark,
+    IconClose,
     IconError,
     IconImport,
     IconPlus,
@@ -12,7 +13,7 @@ import {
     IconSorting,
     IconUpdate,
 } from "src/ui/assets/icons";
-import { useLayoutEffect, useMemo, useState } from "react";
+import React, { useLayoutEffect, useMemo, useState } from "react";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
@@ -23,17 +24,71 @@ import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";
 import UserCard from "src/features/users/components/UserCard/UserCard.tsx";
 import { User } from "src/features/users/types/User.ts";
 import { splitFullName } from "src/shared/utils/splitFullName.ts";
-import { useGenerateCSV } from "src/features/users/hooks/useGenerateCSV.ts";
 import { getFullName } from "src/shared/utils/getFullName.ts";
 import { formatPhone } from "src/shared/utils/formatPhone.ts";
 import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvider.tsx";
 import { DropdownListOption } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
+import useExcelExporter from "src/features/users/hooks/useExcelExporter.ts";
 
-interface SortOption {
+export interface SortOption {
     field: "createDate" | "name" | "group" | "role";
     order: "asc" | "desc";
     label: string;
+}
+
+function pluralizeUsers(count: number): string {
+    const absCount = Math.abs(count) % 100;
+    const lastDigit = absCount % 10;
+
+    if (absCount > 10 && absCount < 20) {
+        return `${count} пользователей`;
+    }
+    if (lastDigit > 1 && lastDigit < 5) {
+        return `${count} пользователя`;
+    }
+    if (lastDigit === 1) {
+        return `${count} пользователь`;
+    }
+    return `${count} пользователей`;
+}
+
+function sortItems(items: User[], sortOption: { field: string; order: "asc" | "desc" }) {
+    const { field, order } = sortOption;
+
+    return [...items].sort((a, b) => {
+        let aValue: string | number = "";
+        let bValue: string | number = "";
+
+        if (field === "role") {
+            if (order === "asc") {
+                aValue = a.position ?? "";
+                bValue = b.position ?? "";
+            } else {
+                aValue = a.role ?? "";
+                bValue = b.role ?? "";
+            }
+        } else if (field === "name") {
+            const getFullName = (item: User) =>
+                `${item.lastName ?? ""} ${item.firstName ?? ""} ${item.patronymic ?? ""}`.trim();
+
+            aValue = getFullName(a);
+            bValue = getFullName(b);
+        } else if (field === "createDate") {
+            const aDate = a.createDate ? new Date(a.createDate).getTime() : 0;
+            const bDate = b.createDate ? new Date(b.createDate).getTime() : 0;
+            return order === "asc" ? aDate - bDate : bDate - aDate;
+        } else {
+            aValue = (a as any)[field] ?? "";
+            bValue = (b as any)[field] ?? "";
+        }
+
+        const result = String(aValue).localeCompare(String(bValue), "ru", {
+            sensitivity: "base",
+        });
+
+        return order === "asc" ? result : -result;
+    });
 }
 
 export const UsersPage = observer(() => {
@@ -182,6 +237,7 @@ export const UsersPage = observer(() => {
     const [positionValue, setPositionValue] = useState<string[]>([]);
     const [onlineOnly, setOnlineOnly] = useState(false);
     const [name, setName] = useState<string>("");
+    const [sortIsOpen, setSortIsOpen] = useState<boolean>(false);
     useLayoutEffect(() => {
         appStore.userStore.fetchOnlineUser();
     }, []);
@@ -279,7 +335,7 @@ export const UsersPage = observer(() => {
             setCurrentUser(undefined);
         }
     };
-    console.log(filteredUsers);
+    const sortedUsers = sortItems(filteredUsers, sortOption);
     const renderContent = useMemo(() => {
         if (filteredUsersByFilter.length === 0)
             return (
@@ -325,9 +381,9 @@ export const UsersPage = observer(() => {
                 onClick={(value: User) => {
                     onClickCard(value);
                 }}
-                users={filteredUsers}
-                chips={chipArray}
+                users={sortedUsers}
                 currentUser={currentUser}
+                sortOption={sortOption}
             />
         );
     }, [filteredUsersByFilter, filteredUsersByName]);
@@ -337,7 +393,48 @@ export const UsersPage = observer(() => {
         workPhone: formatPhone(user.workPhone),
         personalPhone: formatPhone(user.personalPhone),
     }));
-    const { downloadCsv } = useGenerateCSV({ data: usersForCsv as any });
+    const columnHeaders = [
+        {
+            key: "fullName",
+            displayLabel: "Имя",
+        },
+        {
+            key: "login",
+            displayLabel: "Логин",
+        },
+        {
+            key: "position",
+            displayLabel: "Должность",
+        },
+        {
+            key: "role",
+            displayLabel: "Роль в системек",
+        },
+        {
+            key: "messenger",
+            displayLabel: "Мессенджер",
+        },
+        {
+            key: "email",
+            displayLabel: "Почта",
+        },
+        {
+            key: "workPhone",
+            displayLabel: "Рабочий телефон",
+        },
+        {
+            key: "personalPhone",
+            displayLabel: "Личный телефон",
+        },
+        {
+            key: "createDate",
+            displayLabel: "Регистрация в системе",
+        },
+    ];
+    const { downloadExcel } = useExcelExporter({
+        data: usersForCsv as any,
+        columnHeaders: columnHeaders,
+    });
     return (
         <div className={styles.container}>
             <div className={styles.filterBlock}>
@@ -349,6 +446,18 @@ export const UsersPage = observer(() => {
                         iconBefore={<IconPlus />}
                     >
                         Новый пользователь
+                    </Button>
+                </div>
+                <div>
+                    <Button
+                        fullWidth={true}
+                        size={"small"}
+                        type={"outlined"}
+                        iconBefore={<IconImport />}
+                        mode={"neutral"}
+                        onClick={downloadExcel}
+                    >
+                        Экспорт в XLSX
                     </Button>
                 </div>
                 <div className={styles.filterContainer}>
@@ -399,18 +508,6 @@ export const UsersPage = observer(() => {
                         />
                     </FlexColumn>
                 </div>
-                <div>
-                    <Button
-                        fullWidth={true}
-                        size={"small"}
-                        type={"outlined"}
-                        iconBefore={<IconImport />}
-                        mode={"neutral"}
-                        onClick={downloadCsv}
-                    >
-                        Экспорт в XLSX
-                    </Button>
-                </div>
             </div>
             <div className={styles.userlistBlock}>
                 <div className={styles.sortContainer}>
@@ -425,15 +522,39 @@ export const UsersPage = observer(() => {
                         />
                     </div>
                     <div>
-                        <SingleDropdownList maxHeight={542} options={dropDownSortOptions}>
+                        <SingleDropdownList
+                            setShow={setSortIsOpen}
+                            maxHeight={542}
+                            options={dropDownSortOptions}
+                            tipPosition={"top-right"}
+                        >
                             <Button
                                 size={"large"}
-                                iconBefore={<IconSorting />}
-                                type={"outlined"}
+                                iconBefore={sortIsOpen ? <IconClose /> : <IconSorting />}
+                                type={sortIsOpen ? "primary" : "outlined"}
                                 mode={"neutral"}
                             ></Button>
                         </SingleDropdownList>
                     </div>
+                </div>
+                <div className={styles.containerHeader}>
+                    <div className={styles.headFilters}>
+                        {filteredUsers.length > 0 && (
+                            <div className={styles.count}>
+                                <span style={{ opacity: 0.6 }}>Отображается</span>
+                                <span className={styles.countItem}>
+                                    {pluralizeUsers(filteredUsers.length)}
+                                </span>
+                            </div>
+                        )}
+                        <div className={styles.count} style={{ marginLeft: "auto" }}>
+                            <span style={{ opacity: 0.6 }}>Сортируется</span>
+                            <span className={styles.countItem}>{sortOption.label}</span>
+                        </div>
+                    </div>
+                    {chipArray && chipArray?.length > 0 && (
+                        <div className={styles.chipsArray}>{chipArray}</div>
+                    )}
                 </div>
                 <div className={styles.containerList}>{renderContent}</div>
             </div>
