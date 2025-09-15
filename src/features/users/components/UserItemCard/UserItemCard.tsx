@@ -1,15 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "./UserItemCard.module.scss";
 import { IconChat, IconClose, IconDote, IconNext, IconUser } from "src/ui/assets/icons";
 import clsx from "clsx";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { observer } from "mobx-react-lite";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
-import { endpoints, GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
+import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { User } from "src/features/users/types/User.ts";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
 import { DropdownListOptions } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { formatDateShort } from "src/shared/utils/date.ts";
+import { SortOption } from "src/features/users";
 
 interface UserItemCardProps {
     name?: string;
@@ -23,6 +25,7 @@ interface UserItemCardProps {
     sortByDate?: boolean;
     isOpen?: boolean;
     user?: User;
+    sortOption?: SortOption;
 }
 
 function getShortName(fullName: string): string {
@@ -44,20 +47,21 @@ const UserItemCard = observer(
         enabled,
         onClick,
         onClickChat,
-        createDate,
         sortByDate,
+        sortOption,
         isOpen,
         user,
     }: UserItemCardProps) => {
         const ref = useRef<HTMLDivElement | null>(null);
-
+        const additionalRow =
+            sortOption?.field === "createDate" ||
+            (sortOption?.field === "role" && sortOption.order === "desc");
         const initials = position
             ?.split(" ")
             .slice(0, 2)
             .map((n) => n[0]?.toUpperCase())
             .join("");
         const [chats, setChats] = useState(false);
-        console.log(user);
         const chatOptions: DropdownListOptions = [
             {
                 name: "Мессенджер",
@@ -139,13 +143,20 @@ const UserItemCard = observer(
                         <div className={clsx(styles.enabled, { [styles.online]: enabled })}></div>
                     </div>
                 </div>
-                <div className={clsx(styles.infoBlock, { [styles.sortDate]: sortByDate })}>
+                <div className={clsx(styles.infoBlock, { [styles.sortDate]: additionalRow })}>
                     <Tooltip text={name}>
                         <div className={styles.name}>{getShortName(name ?? "")}</div>
                     </Tooltip>
                     {sortByDate && (
                         <div className={styles.date}>
-                            Пользователь добавлен <span>{createDate}</span>
+                            <span style={{ opacity: 0.5 }}>Пользователь добавлен </span>
+                            <span>{formatDateShort(user?.createDate ?? "")}</span>
+                        </div>
+                    )}
+                    {sortOption?.field === "role" && sortOption.order === "desc" && (
+                        <div className={styles.date}>
+                            <span style={{ opacity: 0.5 }}>Системная роль </span>
+                            <span>{user?.role ?? ""}</span>
                         </div>
                     )}
                     <div className={styles.otherInfo}>

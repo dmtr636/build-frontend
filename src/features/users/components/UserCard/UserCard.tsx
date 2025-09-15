@@ -11,6 +11,7 @@ import { clsx } from "clsx";
 import { IconMax, IconTg } from "src/features/users/components/UserCard/assets";
 import { formatPhone } from "src/shared/utils/formatPhone.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { formatDateShort } from "src/shared/utils/date.ts";
 
 interface UserCardProps {
     user: User;
@@ -70,15 +71,6 @@ function getLinkInfo(url: string): LinkInfo | null {
     } catch {
         return null;
     }
-}
-
-function formatDateShort(dateInput: string | Date): string {
-    const date = new Date(dateInput);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = String(date.getFullYear()).slice(-2);
-
-    return `${day}.${month}.${year}`;
 }
 
 const UserCard = observer(({ user }: UserCardProps) => {

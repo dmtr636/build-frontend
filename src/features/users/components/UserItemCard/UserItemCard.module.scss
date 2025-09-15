@@ -96,7 +96,7 @@ overflow: hidden;
 
     &.sortDate {
         gap: 2px;
-        padding-top: 4px;
+        padding-top: 0px;
     }
 }
 
@@ -110,6 +110,8 @@ overflow: hidden;
     font-style: normal;
     font-weight: 500;
     line-height: 140%; /* 18.2px */
+    &.sortDate {
+    }
 }
 
 .buttonsBlock {
@@ -143,4 +145,13 @@ overflow: hidden;
     path {
         fill: lighter-pale($objects-graphic-neutral-primary);
     }
+}
+
+.date {
+    color: var(--objects-text-neutral-secondary, #2c313a);
+
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%; /* 16.8px */
 }
