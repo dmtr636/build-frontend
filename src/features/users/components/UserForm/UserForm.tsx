@@ -115,6 +115,7 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
                         <div className={styles.contentPersonal}>
                             <div className={styles.inputPersonal}>
                                 <Input
+                                    required={true}
                                     formName={"Имя"}
                                     placeholder={"Введите имя"}
                                     onChange={(e) => setFirstName(e.target.value)}
@@ -123,6 +124,7 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
                             </div>
                             <div className={styles.inputPersonal}>
                                 <Input
+                                    required={true}
                                     formName={"Фамилия"}
                                     placeholder={"Введите фамилию"}
                                     onChange={(e) => setLastName(e.target.value)}
@@ -200,6 +202,16 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
                         </div>
                         <div className={styles.contentContact}>
                             <div className={styles.inputContact}>
+                                <EmailInput
+                                    required={true}
+                                    formName={"Почта"}
+                                    placeholder={"example@mail.com"}
+                                    onChange={setEmail}
+                                    value={email}
+                                    size={"medium"}
+                                />
+                            </div>
+                            <div className={styles.inputContact}>
                                 <Input
                                     startIcon={<IconChat />}
                                     formName={"Месседжер"}
@@ -208,16 +220,7 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
                                     value={messager}
                                 />
                             </div>
-                            <div className={styles.inputContact}>
-                                <EmailInput
-                                    required={true}
-                                    formName={"Корпоративная почта"}
-                                    placeholder={"example@mail.com"}
-                                    onChange={setEmail}
-                                    value={email}
-                                    size={"medium"}
-                                />
-                            </div>
+
                             <div className={styles.inputContact}>
                                 <PhoneInput
                                     formName={"Рабочий телефон"}
