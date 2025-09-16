@@ -93,7 +93,7 @@ export const SingleSelect = <T = string,>(props: SingleSelectProps<T>) => {
                         {value && hover && value !== defaultValue && !disableClear && (
                             <ButtonIcon
                                 mode="neutral"
-                                size={size === "large" ? "small" : "tiny"}
+                                size={size === "large" ? "medium" : "small"}
                                 pale={true}
                                 onClick={() => handleChange(null)}
                             >
@@ -102,7 +102,7 @@ export const SingleSelect = <T = string,>(props: SingleSelectProps<T>) => {
                         )}
                         <ButtonIcon
                             mode="neutral"
-                            size={size === "large" ? "small" : "tiny"}
+                            size={size === "large" ? "medium" : "small"}
                             hover={!value && hover}
                             pale={true}
                         >

@@ -68,7 +68,7 @@
     transition: transform 0.2s ease-out;
 
     &.expanded {
-        transform: scaleY(-1);
+        transform: rotate(180deg);
     }
 }
 
