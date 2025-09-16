@@ -23,7 +23,7 @@
 letter-spacing: 0.15px;
 */
     background-color: white;
-    border-radius: var(--s);
+    border-radius: 12px;
     cursor: text;
 
     &.medium {
@@ -138,7 +138,7 @@ letter-spacing: 0.15px;
     inset: 0;
     pointer-events: none;
     border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
-    border-radius: var(--s, 8px);
+    border-radius: 12px;
     cursor: text;
     box-shadow: 0px 0px 6px 0px rgba(11, 59, 154, 0.12) inset;
     transition: border-color 0.1s ease;
@@ -230,7 +230,7 @@ letter-spacing: 0.15px;
     flex-grow: 1;
     height: 100%;
     width: 100%;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 1em;
     font-style: normal;
     font-weight: 600;
@@ -283,7 +283,7 @@ letter-spacing: 0.15px;
     height: 100%;
     display: flex;
     align-items: center;
-    border-radius: 8px;
+    border-radius: 12px;
 
     &.medium {
         gap: 12px;

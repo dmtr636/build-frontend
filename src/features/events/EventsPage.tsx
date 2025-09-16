@@ -24,6 +24,7 @@ import { formatDate, formatDateShort, formatTime } from "src/shared/utils/date.t
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
 import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";
+import { Helmet } from "react-helmet";
 
 export const EventsPage = observer(() => {
     const getUserLink = (userId: string) => {
@@ -47,6 +48,9 @@ export const EventsPage = observer(() => {
 
     return (
         <div className={styles.container}>
+            <Helmet>
+                <title>История действий – Build</title>
+            </Helmet>
             <div>
                 <div className={styles.filterContainer}>
                     <div className={styles.filterHead}>

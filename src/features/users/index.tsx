@@ -30,6 +30,7 @@ import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvid
 import { DropdownListOption } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
 import useExcelExporter from "src/features/users/hooks/useExcelExporter.ts";
+import { Helmet } from "react-helmet";
 import UserForm from "src/features/users/components/UserForm/UserForm.tsx";
 
 export interface SortOption {
@@ -440,6 +441,9 @@ export const UsersPage = observer(() => {
     });
     return (
         <div className={styles.container}>
+            <Helmet>
+                <title>Пользователи – Build</title>
+            </Helmet>
             <div className={styles.filterBlock}>
                 <div>
                     <Button

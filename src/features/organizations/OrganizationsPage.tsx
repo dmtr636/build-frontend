@@ -15,7 +15,7 @@ import {
 import { ExplorationInput } from "src/ui/components/segments/Exploration/ExplorationInput.tsx";
 import { appStore, eventsStore, organizationsStore, userStore } from "src/app/AppStore.ts";
 import { DropdownListOption } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
 import OrganizationListCard from "src/features/organizations/OrganizationListCard/OrganizationListCard.tsx";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
@@ -31,6 +31,8 @@ import { useNavigate } from "react-router-dom";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import UserItemCard from "src/features/organizations/UserItemCard/UserItemCard.tsx";
 import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
+import { Helmet } from "react-helmet";
+import { Divider } from "src/ui/components/atoms/Divider/Divider.tsx";
 
 export const OrganizationsPage = observer(() => {
     const [showSortDropdown, setShowSortDropdown] = useState(false);
@@ -174,6 +176,9 @@ export const OrganizationsPage = observer(() => {
 
     return (
         <div className={styles.container}>
+            <Helmet>
+                <title>Организации – Build</title>
+            </Helmet>
             <div className={styles.leftCol}>
                 <div className={styles.searchRow}>
                     <Button
@@ -330,12 +335,22 @@ export const OrganizationsPage = observer(() => {
                             iconBefore={<IconPlus />}
                         />
                         {!!organizationsStore.currentOrgUsers.length && (
-                            <ExplorationInput
-                                onInputChange={(v) => (organizationsStore.cardSearch = v)}
-                                inputValue={organizationsStore.cardSearch}
-                                size={"medium"}
-                                inputPlaceholder={"Найти по имени"}
-                            />
+                            <>
+                                <Divider
+                                    direction={"horizontal"}
+                                    type={"secondary"}
+                                    mode={"neutral"}
+                                    style={{
+                                        margin: "4px -20px",
+                                    }}
+                                />
+                                <ExplorationInput
+                                    onInputChange={(v) => (organizationsStore.cardSearch = v)}
+                                    inputValue={organizationsStore.cardSearch}
+                                    size={"medium"}
+                                    inputPlaceholder={"Найти по имени"}
+                                />
+                            </>
                         )}
                         {!organizationsStore.currentOrgUsers.length && (
                             <div className={styles.noUsersInOrg}>
