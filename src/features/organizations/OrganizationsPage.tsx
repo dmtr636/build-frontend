@@ -370,12 +370,7 @@ export const OrganizationsPage = observer(() => {
                                 </div>
                             )}
                         {!!organizationsStore.currentOrgUsers.length && (
-                            <FlexColumn
-                                gap={8}
-                                style={{
-                                    marginTop: 12,
-                                }}
-                            >
+                            <FlexColumn gap={8}>
                                 {organizationsStore.filteredCurrentOrgUsers.map((u) => (
                                     <UserItemCard
                                         user={u}
