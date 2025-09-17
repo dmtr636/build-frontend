@@ -567,9 +567,13 @@ export const UsersPage = observer(() => {
                 </div>
                 <div className={styles.containerList}>{renderContent}</div>
             </div>
-            <div className={styles.userCard}>{currentUser && <UserCard user={currentUser} />}</div>
+            <div className={styles.userCard}>
+                {currentUser && (
+                    <UserCard clearUser={() => setCurrentUser(undefined)} user={currentUser} />
+                )}
+            </div>
             <UserForm open={openCreate} setOpen={setOpenCreate} />
-            <SnackbarProvider />
+            {/* <SnackbarProvider />*/}
         </div>
     );
 });

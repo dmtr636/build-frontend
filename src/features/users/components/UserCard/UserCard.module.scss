@@ -14,6 +14,7 @@
     width: 100px;
     height: 100px;
     border-radius: 50%;
+    cursor: pointer;
 }
 
 .avatarImg {
@@ -21,6 +22,25 @@
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.noAvatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    background: #e8eaed;
+
+    svg {
+        width: 44px;
+        height: 44px;
+
+        path {
+            fill: #5f6a81;
+        }
+    }
 }
 
 .body {
@@ -43,7 +63,7 @@
 .online {
     color: var(--objects-text-neutral-primary, #111317);
     text-align: center;
-
+    position: relative;
     /* Action/S */
     font-family: Manrope;
     font-size: 12px;
@@ -54,7 +74,9 @@
     background: var(--objects-background-neutral-secondary, #e8eaed);
     padding: 0 8px;
     margin-top: 8px;
-    padding-bottom: 1px;
+    /*
+padding-bottom: 2px;
+*/
     height: 16px;
 
     &.active {
@@ -62,6 +84,11 @@
         background: var(--objects-background-positive-secondary, #d4f7eb);
         color: var(--objects-text-positive-primary, #267d5f);
     }
+}
+
+.onlineText {
+    position: relative;
+    top: -1px;
 }
 
 .position {
@@ -163,7 +190,15 @@
     font-weight: 500;
     line-height: 140%; /* 18.2px */
     padding: 16px 20px 0;
+    display: flex;
+    flex-direction: column;
 
     margin-top: 16px;
-    gap: 4px;
+    gap: 8px;
+}
+
+.textFooter {
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+    font-size: 16px;
+    line-height: 130%;
 }

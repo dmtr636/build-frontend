@@ -1,7 +1,14 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import styles from "./UserCard.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { IconEdit, IconEmail, IconMore, IconPhone } from "src/ui/assets/icons";
+import {
+    IconEdit,
+    IconEmail,
+    IconMore,
+    IconPhone,
+    IconUser,
+    IconUserRounded,
+} from "src/ui/assets/icons";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { User } from "src/features/users/types/User.ts";
@@ -12,9 +19,16 @@ import { IconMax, IconTg } from "src/features/users/components/UserCard/assets";
 import { formatPhone } from "src/shared/utils/formatPhone.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { formatDateShort } from "src/shared/utils/date.ts";
+import UserCardEdit from "src/features/users/components/UserCardDelete/UserCardEdit.tsx";
+import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
+import { getFullName } from "src/shared/utils/getFullName.ts";
+import { DropdownListOptions } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
+import { useNavigate } from "react-router-dom";
+import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
 
 interface UserCardProps {
     user: User;
+    clearUser: () => void;
 }
 
 function getLastSeen(time: string | Date): string {
@@ -67,15 +81,39 @@ function getLinkInfo(url: string): LinkInfo | null {
             return { icon: <IconMax />, short: "max.ru" };
         }
 
-        return null;
+        return { icon: null, short: url };
     } catch {
-        return null;
+        return { icon: null, short: url };
     }
 }
 
-const UserCard = observer(({ user }: UserCardProps) => {
+const UserCard = observer(({ user, clearUser }: UserCardProps) => {
     const usersOnline = appStore.userStore.usersOnline;
     const currentUserOnline: { date: string; status: string } = usersOnline[user.id as any];
+    const [openModal, setOpenModal] = useState(false);
+    const [openModalDelete, setOpenModalDelete] = useState(false);
+    const navigate = useNavigate();
+    const moreOptions: DropdownListOptions = [
+        {
+            name: "Выгрузить объекты (XLSX)",
+            mode: "neutral",
+            onClick: () => {},
+        },
+        {
+            name: "История действий",
+            mode: "neutral",
+            onClick: () => {
+                navigate(`/events/?userId=${user.id}`);
+            },
+        },
+        {
+            name: "Удалить доступ",
+            mode: "negative",
+            onClick: () => {
+                setOpenModalDelete(true);
+            },
+        },
+    ];
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -85,21 +123,30 @@ const UserCard = observer(({ user }: UserCardProps) => {
                         type={"outlined"}
                         size={"small"}
                         iconBefore={<IconEdit />}
+                        onClick={() => setOpenModal(true)}
                     ></Button>
                 </Tooltip>
-                <div className={styles.avatar}>
-                    <img
-                        className={styles.avatarImg}
-                        src={`${GET_FILES_ENDPOINT}/${user?.imageId}`}
-                    />
+                <div className={styles.avatar} onClick={() => navigate(`/admin/users/${user.id}`)}>
+                    {user.imageId ? (
+                        <img
+                            className={styles.avatarImg}
+                            src={`${GET_FILES_ENDPOINT}/${user?.imageId}`}
+                        />
+                    ) : (
+                        <div className={styles.noAvatar}>
+                            <IconUserRounded />
+                        </div>
+                    )}
                 </div>
                 <Tooltip text={"Ещё"}>
-                    <Button
-                        mode={"neutral"}
-                        type={"outlined"}
-                        size={"small"}
-                        iconBefore={<IconMore />}
-                    ></Button>
+                    <SingleDropdownList options={moreOptions} hideTip tipPosition={"top-right"}>
+                        <Button
+                            mode={"neutral"}
+                            type={"outlined"}
+                            size={"small"}
+                            iconBefore={<IconMore />}
+                        ></Button>
+                    </SingleDropdownList>
                 </Tooltip>
             </div>
             <div className={styles.body}>
@@ -111,9 +158,12 @@ const UserCard = observer(({ user }: UserCardProps) => {
                         [styles.active]: currentUserOnline?.status === "online",
                     })}
                 >
-                    {currentUserOnline?.status === "online"
-                        ? "В сети"
-                        : getLastSeen(currentUserOnline?.date as string)}
+                    {" "}
+                    <span className={styles.onlineText}>
+                        {currentUserOnline?.status === "online"
+                            ? "В сети"
+                            : getLastSeen(currentUserOnline?.date as string)}
+                    </span>
                 </div>
                 <div className={styles.position}>{user.position}</div>
                 <div className={styles.role}>Тут будет организация</div>
@@ -200,10 +250,46 @@ const UserCard = observer(({ user }: UserCardProps) => {
                         <span style={{ opacity: 0.5 }}>Системная роль </span>
                         {user.role}
                     </div>
-                    <span style={{ opacity: 0.5 }}>Пользователь добавлен </span>
-                    {formatDateShort(user?.createDate)}
+                    <div>
+                        <span style={{ opacity: 0.5 }}>Пользователь добавлен </span>
+                        {formatDateShort(user?.createDate)}
+                    </div>
                 </div>
             </div>
+            {user && <UserCardEdit open={openModal} setOpen={setOpenModal} currentUser={user} />}
+            <Overlay
+                open={openModalDelete}
+                mode={"negative"}
+                onClose={() => setOpenModalDelete(false)}
+                title={"Удаление пользователя"}
+                actions={[
+                    <Button
+                        mode={"negative"}
+                        key={2}
+                        onClick={async () => {
+                            await appStore.userStore.deleteUser(user.id);
+                            snackbarStore.showPositiveSnackbar("Пользователь удален");
+                            clearUser();
+                            setOpenModalDelete(false);
+                        }}
+                    >
+                        Удалить
+                    </Button>,
+                    <Button
+                        mode={"neutral"}
+                        type={"tertiary"}
+                        key={1}
+                        onClick={() => setOpenModalDelete(false)}
+                    >
+                        Отмена
+                    </Button>,
+                ]}
+            >
+                <div className={styles.textFooter}>
+                    {" "}
+                    Будет удален пользователь: <b style={{ color: "black" }}>{getFullName(user)}</b>
+                </div>
+            </Overlay>
         </div>
     );
 });

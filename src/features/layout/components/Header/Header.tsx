@@ -7,6 +7,7 @@ import { Avatar } from "src/ui/components/solutions/Avatar/Avatar.tsx";
 import { appStore } from "src/app/AppStore.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
+import { clsx } from "clsx";
 
 const Header = () => {
     const logout = async () => {
@@ -14,13 +15,14 @@ const Header = () => {
         window.location.pathname = "/auth/login";
     };
     const currentUser = appStore.accountStore.currentUser;
-    console.log(currentUser);
+
+    const navigate = useNavigate();
     return (
         <div className={styles.container}>
             <div className={styles.content}>
                 <NavLink
                     to={"/admin/home"}
-                    className={({ isActive }) => (isActive ? styles.active : "")}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {({ isActive }) => (
                         <Button
@@ -36,7 +38,7 @@ const Header = () => {
                 </NavLink>
                 <NavLink
                     to={"/admin/journal"}
-                    className={({ isActive }) => (isActive ? styles.active : "")}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {({ isActive }) => (
                         <Button
@@ -52,7 +54,7 @@ const Header = () => {
                 </NavLink>
                 <NavLink
                     to={"/admin/organizations"}
-                    className={({ isActive }) => (isActive ? styles.active : "")}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {({ isActive }) => (
                         <Button
@@ -68,7 +70,7 @@ const Header = () => {
                 </NavLink>
                 <NavLink
                     to={"/admin/users"}
-                    className={({ isActive }) => (isActive ? styles.active : "")}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {({ isActive }) => (
                         <Button
@@ -84,7 +86,7 @@ const Header = () => {
                 </NavLink>
                 <NavLink
                     to={"/admin/events"}
-                    className={({ isActive }) => (isActive ? styles.active : "")}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {({ isActive }) => (
                         <Button
@@ -103,7 +105,12 @@ const Header = () => {
                     <Avatar
                         photoUrl={`${GET_FILES_ENDPOINT}/${currentUser?.imageId}`}
                         dropdownListOptions={[
-                            { name: "Профиль" },
+                            {
+                                name: "Профиль",
+                                onClick: () => {
+                                    navigate(`/admin/users/${currentUser?.id}`);
+                                },
+                            },
                             {
                                 name: "Выйти",
                                 mode: "negative",

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
-import styles from "./UserForm.module.scss";
+import styles from "./UserCardEdit.module.scss";
 import { Media } from "src/ui/components/solutions/Media/Media.tsx";
 import { fileUrl } from "src/shared/utils/file.ts";
 import { appStore } from "src/app/AppStore.ts";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
-import { IconChat } from "src/ui/assets/icons";
+import { IconBasket, IconChat } from "src/ui/assets/icons";
 import { EmailInput } from "src/ui/components/inputs/EmailInput/EmailInput.tsx";
 import { PhoneInput } from "src/ui/components/inputs/PhoneInput/PhoneInput.tsx";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
@@ -15,27 +15,31 @@ import { SingleAutocomplete } from "src/ui/components/inputs/Autocomplete/Single
 import { Select } from "src/ui/components/inputs/Select/Select.tsx";
 import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { observer } from "mobx-react-lite";
+import { getFullName } from "src/shared/utils/getFullName.ts";
 
 interface UserFormProps {
     open: boolean;
     setOpen: (open: boolean) => void;
+    currentUser: User;
 }
 
-const UserForm = ({ open, setOpen }: UserFormProps) => {
+const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
     const [userImg, setUserImg] = useState<string | null>(null);
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
     const [patronymic, setPatronym] = useState<string>("");
-
     const [email, setEmail] = useState<string>("");
     const [messager, setMessager] = useState<string>("");
     const [phone, setPhone] = useState<string>("");
     const [workphone, setWorkphone] = useState<string>("");
     const [position, setPositionValue] = useState<string | undefined | null>(undefined);
-    const users = appStore.userStore.users;
-    const [role, setRole] = useState<"ROOT" | "ADMIN" | "USER">();
-    const userPosition = [...new Set(users?.filter((u) => u.position).map((u) => u.position))];
     const [company, setCompany] = useState<string>("");
+    const [role, setRole] = useState<"ROOT" | "ADMIN" | "USER" | undefined>();
+    const [openDelModal, setOpenDelModal] = useState<boolean>(false);
+    const users = appStore.userStore.users;
+    const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
+
     const usersPositionOptions: AutocompleteOption<string>[] = userPosition.map((user) => ({
         name: user ?? "",
         value: user ?? "",
@@ -62,8 +66,23 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
             name: "DOGMA",
         },
     ];
+    const resetFields = () => {
+        setUserImg(null);
+        setFirstName("");
+        setLastName("");
+        setPatronym("");
+        setEmail("");
+        setMessager("");
+        setPhone("");
+        setWorkphone("");
+        setPositionValue(undefined);
+        setCompany("");
+        setRole(undefined);
+    };
 
     const userForm: Partial<User> = {
+        ...currentUser,
+
         firstName,
         lastName,
         patronymic,
@@ -78,13 +97,49 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
     };
     const onClick = () => {
         if (userForm)
-            appStore.userStore.createUser(userForm as User).then(() => {
-                snackbarStore.showPositiveSnackbar("Пользователь создан");
+            appStore.userStore.updateUser(userForm as User).then(() => {
+                snackbarStore.showPositiveSnackbar("Пользователь изменен");
+                resetFields();
+
                 setOpen(false);
             });
     };
+    useEffect(() => {
+        setFirstName(currentUser.firstName ?? "");
+        setLastName(currentUser.lastName ?? "");
+        setEmail(currentUser.email ?? "");
+        setRole(currentUser.role);
+        if (currentUser.patronymic) setPatronym(currentUser.patronymic);
+        if (currentUser.imageId) setUserImg(currentUser.imageId);
+        if (currentUser.workPhone) setWorkphone(currentUser.workPhone);
+        if (currentUser.personalPhone) setPhone(currentUser.personalPhone);
+        if (currentUser.messenger) setMessager(currentUser.messenger);
+        if (currentUser.position) setPositionValue(currentUser.position);
+    }, [currentUser]);
+    const shouldBlockButton = (): boolean => {
+        return (
+            userImg !== (currentUser.imageId ?? null) ||
+            firstName !== (currentUser.firstName ?? "") ||
+            lastName !== (currentUser.lastName ?? "") ||
+            patronymic !== (currentUser.patronymic ?? "") ||
+            email !== (currentUser.email ?? "") ||
+            messager !== (currentUser.messenger ?? "") ||
+            phone !== (currentUser.personalPhone ?? "") ||
+            workphone !== (currentUser.workPhone ?? "") ||
+            position !== (currentUser.position ?? null) ||
+            company !== (currentUser.company ?? "") ||
+            role !== currentUser.role
+        );
+    };
     return (
-        <Overlay open={open} onClose={() => setOpen(false)} title={"Новый пользователь"}>
+        <Overlay
+            open={open}
+            onClose={() => {
+                resetFields();
+                setOpen(false);
+            }}
+            title={"Редактировать пользователя"}
+        >
             <div className={styles.container}>
                 <div>
                     <Media
@@ -147,6 +202,7 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
                         <div className={styles.contentContact} style={{ marginBottom: 0 }}>
                             <div className={styles.inputContact}>
                                 <SingleAutocomplete
+                                    disabled={currentUser.role === "USER"}
                                     zIndex={9999}
                                     value={company}
                                     onValueChange={(e) => setCompany(e as string)}
@@ -158,6 +214,7 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
                             </div>
                             <div className={styles.inputContact}>
                                 <SingleAutocomplete
+                                    disabled={currentUser.role === "USER"}
                                     zIndex={9999}
                                     value={position}
                                     onValueChange={(e) => setPositionValue(e)}
@@ -241,21 +298,70 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
                     </div>
                 </div>
                 <div className={styles.footer}>
-                    <Button mode={"neutral"} type={"outlined"} onClick={() => setOpen(false)}>
-                        Отменить
-                    </Button>
-                    <Button
-                        disabled={!email || !role || !firstName || !lastName}
-                        mode={"neutral"}
-                        type={"primary"}
-                        onClick={onClick}
-                    >
-                        Создать пользователя
-                    </Button>
+                    <div>
+                        <Button
+                            mode={"negative"}
+                            iconBefore={<IconBasket />}
+                            type={"secondary"}
+                            onClick={() => setOpenDelModal(true)}
+                        >
+                            Удалить
+                        </Button>
+                    </div>
+                    <div style={{ display: "flex", gap: 16 }}>
+                        <Button mode={"neutral"} type={"outlined"} onClick={() => setOpen(false)}>
+                            Отменить
+                        </Button>
+                        <Button
+                            disabled={
+                                !email || !role || !firstName || !lastName || !shouldBlockButton()
+                            }
+                            mode={"neutral"}
+                            type={"primary"}
+                            onClick={onClick}
+                        >
+                            Сохранить изменения
+                        </Button>
+                    </div>
                 </div>
             </div>
+            <Overlay
+                open={openDelModal}
+                mode={"negative"}
+                onClose={() => setOpenDelModal(false)}
+                title={"Удаление пользователя"}
+                actions={[
+                    <Button
+                        mode={"negative"}
+                        key={2}
+                        onClick={async () => {
+                            await appStore.userStore.deleteUser(currentUser.id);
+                            snackbarStore.showPositiveSnackbar("Пользователь удален");
+
+                            setOpen(false);
+                        }}
+                    >
+                        Удалить
+                    </Button>,
+                    <Button
+                        mode={"neutral"}
+                        type={"tertiary"}
+                        key={1}
+                        onClick={() => setOpenDelModal(false)}
+                    >
+                        Отмена
+                    </Button>,
+                ]}
+            >
+                <div className={styles.textFooter}>
+                    {" "}
+                    Будет удален пользователь:{" "}
+                    <b style={{ color: "black" }}>{getFullName(currentUser)}</b>
+                </div>
+            </Overlay>
         </Overlay>
     );
-};
+});
 
-export default UserForm;
+export default UserCardEdit;
+UserCardEdit.displayName = "UserCardEdit";

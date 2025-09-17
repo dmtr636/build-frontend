@@ -36,11 +36,13 @@ export interface SingleDropdownListProps<T>
     zIndex?: number;
     listStyles?: React.CSSProperties;
     withoutPopover?: boolean;
+    disabled?: boolean;
 }
 
 export const SingleDropdownList = observer(<T,>(props: SingleDropdownListProps<T>) => {
     const {
         children,
+        disabled,
         options,
         onChange,
         value,
@@ -93,7 +95,7 @@ export const SingleDropdownList = observer(<T,>(props: SingleDropdownListProps<T
     };
 
     const renderList = () => {
-        if (!options.length && !footer && !header) {
+        if ((!options.length && !footer && !header) || disabled) {
             return null;
         }
         const listClassName = clsx(styles.list, styles[mode]);
