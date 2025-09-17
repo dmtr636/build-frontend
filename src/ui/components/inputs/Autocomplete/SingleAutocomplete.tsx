@@ -73,7 +73,7 @@ export const SingleAutocomplete = observer(<T = string,>(props: SingleAutocomple
             return options;
         }
         return options.filter((option) =>
-            option.name.toLowerCase().startsWith(inputValue.toLowerCase()),
+            option.name.toLowerCase().includes(inputValue.toLowerCase()),
         );
     }, [
         inputValue,

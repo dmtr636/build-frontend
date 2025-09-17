@@ -46,8 +46,8 @@ const OrganizationListCard = observer(({ onClick, isOpen, organization }: UserIt
                     <div className={styles.name}>{organization?.name}</div>
                 </Tooltip>
                 <div className={styles.otherInfo}>
-                    {organization?.employeeIds.length || "Нет"}{" "}
-                    {numDecl(organization?.employeeIds.length, [
+                    {organization?.employees.length || "Нет"}{" "}
+                    {numDecl(organization?.employees.length, [
                         "сотрудник",
                         "сотрудника",
                         "сотрудников",

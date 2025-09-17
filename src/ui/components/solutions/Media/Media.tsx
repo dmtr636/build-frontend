@@ -332,11 +332,7 @@ export const Media = observer(
                     </Typo>
                 )}
                 <div
-                    className={clsx(
-                        styles.container,
-                        styles.photoGridRowsHasImages,
-                        props.readonly && styles.readonly,
-                    )}
+                    className={clsx(styles.container, props.readonly && styles.readonly)}
                     style={{
                         ...props.style,
                         height: props.style?.height,

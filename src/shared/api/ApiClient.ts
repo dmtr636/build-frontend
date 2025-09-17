@@ -142,6 +142,40 @@ export class ApiClient {
         }
     }
 
+    async deleteWithBody<T>(
+        endpoint: string,
+        data?: object | object[],
+        params?: {
+            exceptionCodeLocalization?: ExceptionCodeLocalization;
+            disableSnackbar?: boolean;
+        },
+    ): Promise<ApiResponse<T>> {
+        try {
+            const response = await axios.delete<T>(endpoint, {
+                data: data,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            return {
+                data: response.data,
+                status: true,
+            };
+        } catch (error) {
+            const errorData = this.handleError(
+                error,
+                params ?? {
+                    exceptionCodeLocalization: this.exceptionCodeLocalization,
+                    disableSnackbar: this.disableSnackbar,
+                },
+            );
+            return {
+                error: errorData?.error,
+                status: false,
+            };
+        }
+    }
+
     private handleError(
         error: unknown,
         params: {

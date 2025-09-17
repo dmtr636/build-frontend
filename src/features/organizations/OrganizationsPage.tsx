@@ -27,12 +27,14 @@ import { Status } from "src/ui/components/info/Status/Status.tsx";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import { getFullName, getNameInitials } from "src/shared/utils/getFullName.ts";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import UserItemCard from "src/features/organizations/UserItemCard/UserItemCard.tsx";
 import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
 import { Helmet } from "react-helmet";
 import { Divider } from "src/ui/components/atoms/Divider/Divider.tsx";
+import { OrganizationForm } from "src/features/organizations/OrganizationForm/OrganizationForm.tsx";
+import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
 
 export const OrganizationsPage = observer(() => {
     const [showSortDropdown, setShowSortDropdown] = useState(false);
@@ -40,9 +42,16 @@ export const OrganizationsPage = observer(() => {
     const orgCardRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
     const usersOnline = appStore.userStore.usersOnline;
+    const params = useParams<{ id: string }>();
+
     useLayoutEffect(() => {
         appStore.userStore.fetchOnlineUser();
     }, []);
+
+    useLayoutEffect(() => {
+        organizationsStore.currentOrganizationId = params.id || null;
+    }, [params.id]);
+
     const isSelected = (field: string, order: "asc" | "desc") =>
         organizationsStore.sort.field === field && organizationsStore.sort?.direction === order;
 
@@ -186,7 +195,9 @@ export const OrganizationsPage = observer(() => {
                         size={"large"}
                         mode={"neutral"}
                         iconBefore={<IconPlus />}
-                        onClick={() => {}}
+                        onClick={() => {
+                            organizationsStore.showAddOverlay = true;
+                        }}
                     >
                         Новая организация
                     </Button>
@@ -249,8 +260,10 @@ export const OrganizationsPage = observer(() => {
                             onClick={() => {
                                 if (organizationsStore.currentOrganizationId === org.id) {
                                     organizationsStore.currentOrganizationId = null;
+                                    navigate(`/admin/organizations`, { replace: true });
                                 } else {
                                     organizationsStore.currentOrganizationId = org.id;
+                                    navigate(`/admin/organizations/${org.id}`, { replace: true });
                                 }
                             }}
                         />
@@ -258,10 +271,7 @@ export const OrganizationsPage = observer(() => {
                 </div>
             </div>
             {organizationsStore.currentOrganizationId && currentOrg && (
-                <div
-                    ref={orgCardRef}
-                    className={`${styles.orgCard} ${showBottomGradient ? styles.showBottomGradient : ""}`}
-                >
+                <div ref={orgCardRef} className={`${styles.orgCard}`}>
                     <Tooltip header={"Редактировать"} delay={500}>
                         <Button
                             className={styles.editButton}
@@ -269,7 +279,9 @@ export const OrganizationsPage = observer(() => {
                             type={"outlined"}
                             mode={"neutral"}
                             iconBefore={<IconEdit />}
-                            onClick={() => {}}
+                            onClick={() => {
+                                organizationsStore.editingOrganization = currentOrg;
+                            }}
                         />
                     </Tooltip>
                     <Tooltip header={"Удалить"} delay={500}>
@@ -279,7 +291,10 @@ export const OrganizationsPage = observer(() => {
                             type={"outlined"}
                             mode={"negative"}
                             iconBefore={<IconBasket />}
-                            onClick={() => {}}
+                            onClick={() => {
+                                organizationsStore.deletingOrganization = currentOrg;
+                                organizationsStore.showDeleteOverlay = true;
+                            }}
                         />
                     </Tooltip>
                     <div className={styles.orgCardHeader}>
@@ -298,8 +313,8 @@ export const OrganizationsPage = observer(() => {
                             {currentOrg.name}
                         </Typo>
                         <div className={styles.badge}>
-                            {currentOrg?.employeeIds.length || "Пока нет"}{" "}
-                            {numDecl(currentOrg?.employeeIds.length, [
+                            {currentOrg?.employees.length || "Пока нет"}{" "}
+                            {numDecl(currentOrg?.employees.length, [
                                 "сотрудник",
                                 "сотрудника",
                                 "сотрудников",
@@ -389,6 +404,49 @@ export const OrganizationsPage = observer(() => {
                     </FlexColumn>
                 </div>
             )}
+            {showBottomGradient && organizationsStore.currentOrganizationId && currentOrg && (
+                <div className={styles.orgCardGradient} />
+            )}
+            <OrganizationForm
+                show={organizationsStore.showAddOverlay}
+                setShow={(show) => (organizationsStore.showAddOverlay = show)}
+                type={"add"}
+            />
+            <OrganizationForm
+                show={!!organizationsStore.editingOrganization}
+                setShow={(show) =>
+                    (organizationsStore.editingOrganization = show
+                        ? organizationsStore.editingOrganization
+                        : null)
+                }
+                type={"edit"}
+                organization={organizationsStore.editingOrganization}
+            />
+            <DeleteOverlay
+                open={organizationsStore.showDeleteOverlay}
+                title={"Удалить организацию"}
+                subtitle={"Будет удалена организация"}
+                bottomSubtitle={
+                    "Учётные записи пользователей останутся в системе, но они будут отвязаны от организации."
+                }
+                info={organizationsStore.deletingOrganization?.name}
+                deleteButtonLabel={"Удалить"}
+                onDelete={async () => {
+                    if (organizationsStore.deletingOrganization) {
+                        await organizationsStore.deleteOrganization(
+                            organizationsStore.deletingOrganization,
+                        );
+                        snackbarStore.showNeutralSnackbar("Организация удалена", {
+                            showCloseButton: true,
+                            icon: <IconBasket />,
+                        });
+                        organizationsStore.deletingOrganization = null;
+                        organizationsStore.showDeleteOverlay = false;
+                    }
+                }}
+                loading={organizationsStore.loading}
+                onCancel={() => (organizationsStore.showDeleteOverlay = false)}
+            />
         </div>
     );
 });

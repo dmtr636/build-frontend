@@ -68,8 +68,12 @@ export const Overlay = observer((props: OverlayProps) => {
         if (open) {
             translate.current = { x: 0, y: 0 };
             document.addEventListener("mouseup", handleDocumentMouseUp);
+            document.documentElement.style.overflow = "hidden";
         }
-        return () => document.removeEventListener("mouseup", handleDocumentMouseUp);
+        return () => {
+            document.removeEventListener("mouseup", handleDocumentMouseUp);
+            document.documentElement.style.overflow = "initial";
+        };
     }, [open]);
 
     useEffect(() => {

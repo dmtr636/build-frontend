@@ -11,6 +11,7 @@ export const DeleteOverlay = (props: {
     open: boolean;
     title: string;
     subtitle: string;
+    bottomSubtitle?: string;
     info?: ReactNode;
     deleteButtonLabel: string;
     onDelete: () => void;
@@ -88,6 +89,19 @@ export const DeleteOverlay = (props: {
                 <div className={styles.info}>
                     <TooltipTypo variant={"actionXL"}>{props.info}</TooltipTypo>
                 </div>
+            )}
+            {props.bottomSubtitle && (
+                <Typo
+                    variant={"bodyL"}
+                    className={styles.subtitle}
+                    style={{
+                        marginTop: 12,
+                    }}
+                    mode={"neutral"}
+                    type={"quaternary"}
+                >
+                    {props.bottomSubtitle}
+                </Typo>
             )}
         </Overlay>
     );

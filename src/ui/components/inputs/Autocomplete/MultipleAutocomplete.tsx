@@ -12,6 +12,7 @@ import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { TextMeasurer } from "src/shared/utils/TextMeasurer.ts";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { TipPosition } from "src/ui/components/solutions/PopoverBase/PopoverBase.types.ts";
+import { clsx } from "clsx";
 
 export interface MultipleAutocompleteProps {
     options: AutocompleteOption[];
@@ -59,7 +60,7 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
 
     const filteredOptions = useMemo(() => {
         return options.filter((option) =>
-            option.name.toLowerCase().startsWith(inputValue.toLowerCase()),
+            option.name.toLowerCase().includes(inputValue.toLowerCase()),
         );
     }, [inputValue, options.length, options.map((option) => option.icon).filter(Boolean).length]);
 
@@ -121,12 +122,13 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
 
     return (
         <MultipleDropdownList
-            options={options.filter((o) => o.name.toLowerCase().includes(inputValue.toLowerCase()))}
+            options={filteredOptions}
             values={values}
             onChange={handleChange}
             fullWidth={fullWidth}
             mode="neutral"
             setShow={handleShowDropdown}
+            show={showDropdown}
             size={size}
             hideTip={true}
             multiple={true}
@@ -147,6 +149,12 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
                               .join(", ") + (selectedOptions.length > 1 ? ", ..." : "")
                         : inputValue
                 }
+                tooltipHeader={
+                    selectedOptions.length > 1 && !showDropdown
+                        ? selectedOptions.map((option) => option.name).join(", ")
+                        : undefined
+                }
+                hasTooltip={true}
                 onChange={handleInputChange}
                 size={size}
                 required={required}
@@ -173,7 +181,6 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
                                 </Tooltip>
                             )}
                             {values.length > 0 &&
-                                !hover &&
                                 !showDropdown &&
                                 values.length > displayedOptionsCount && (
                                     <Counter
@@ -191,8 +198,20 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
                                 mode="neutral"
                                 size={size === "large" ? "medium" : "small"}
                                 pale={true}
+                                onClick={() => {
+                                    if (showDropdown) {
+                                        setTimeout(() => {
+                                            setShowDropdown(false);
+                                            inputRef.current?.blur();
+                                        });
+                                    }
+                                }}
                             >
-                                {showDropdown ? <IconArrowUp /> : <IconArrowDown />}
+                                <IconArrowDown
+                                    className={clsx(styles.iconArrow, {
+                                        [styles.showDropdown]: showDropdown,
+                                    })}
+                                />
                             </ButtonIcon>
                         </div>
                     )

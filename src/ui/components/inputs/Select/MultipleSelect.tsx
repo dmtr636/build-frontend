@@ -102,6 +102,12 @@ export const MultipleSelect = <T = string,>(props: MultipleSelectProps<T>) => {
                 size={size}
                 startIcon={iconBefore}
                 brand={props.brand}
+                tooltipHeader={
+                    selectedOptions.length > 1 && !showDropdown
+                        ? selectedOptions.map((option) => option.name).join(", ")
+                        : undefined
+                }
+                hasTooltip={true}
                 endActions={
                     <div className={clsx(styles.inputEndActions, styles[size])}>
                         {hover && !disableClear && !!values.length && (
