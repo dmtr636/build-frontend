@@ -195,7 +195,7 @@ export const OrganizationForm = observer((props: Props) => {
                                     <Typo variant={"actionM"} type={"quaternary"} mode={"neutral"}>
                                         {vm.form.employees.length}{" "}
                                         {numDecl(vm.form?.employees.length, [
-                                            "пользователя",
+                                            "пользователь",
                                             "пользователя",
                                             "пользователей",
                                         ])}
