@@ -7,6 +7,7 @@ import { Avatar } from "src/ui/components/solutions/Avatar/Avatar.tsx";
 import { appStore } from "src/app/AppStore.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
+import { clsx } from "clsx";
 
 const Header = () => {
     const logout = async () => {
@@ -20,7 +21,7 @@ const Header = () => {
             <div className={styles.content}>
                 <NavLink
                     to={"/admin/home"}
-                    className={({ isActive }) => (isActive ? styles.active : "")}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {({ isActive }) => (
                         <Button
@@ -36,7 +37,7 @@ const Header = () => {
                 </NavLink>
                 <NavLink
                     to={"/admin/journal"}
-                    className={({ isActive }) => (isActive ? styles.active : "")}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {({ isActive }) => (
                         <Button
@@ -52,7 +53,7 @@ const Header = () => {
                 </NavLink>
                 <NavLink
                     to={"/admin/organizations"}
-                    className={({ isActive }) => (isActive ? styles.active : "")}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {({ isActive }) => (
                         <Button
@@ -68,7 +69,7 @@ const Header = () => {
                 </NavLink>
                 <NavLink
                     to={"/admin/users"}
-                    className={({ isActive }) => (isActive ? styles.active : "")}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {({ isActive }) => (
                         <Button
@@ -84,7 +85,7 @@ const Header = () => {
                 </NavLink>
                 <NavLink
                     to={"/admin/events"}
-                    className={({ isActive }) => (isActive ? styles.active : "")}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {({ isActive }) => (
                         <Button

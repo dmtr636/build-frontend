@@ -56,9 +56,8 @@ export class AccountStore {
         axios.put(`${endpoints.users}/${id}/status/online`, {});
     }
 
-    async createUser(user: User) {
-        const response = await axios.post(endpoints.users, user);
-        this.users = response.data;
+    async deleteUser(id: string) {
+        await axios.post(`${endpoints.users}/${id}`);
     }
 
     async fetchUserIsOffline(useBeacon = false) {

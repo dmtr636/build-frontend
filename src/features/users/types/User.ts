@@ -3,9 +3,6 @@ export interface User {
     login: string;
     password?: string;
     role: "ROOT" | "ADMIN" | "USER";
-    /*
-        enabled?: boolean;
-    */
     position?: string;
     name?: string;
     lastName?: string | null;
