@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./UserPage.module.scss";
 import { appStore } from "src/app/AppStore.ts";
@@ -15,6 +15,8 @@ import { AutocompleteOption } from "src/ui/components/inputs/Autocomplete/Autoco
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
 import { observer } from "mobx-react-lite";
 import { clsx } from "clsx";
+import { User } from "src/features/users/types/User.ts";
+import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 const UserPage = observer(() => {
     const { id } = useParams();
@@ -62,7 +64,7 @@ const UserPage = observer(() => {
             name: "DOGMA",
         },
     ];
-    const setInitialValue = () => {
+    const setInitialValue = useCallback(() => {
         setFirstName(currentUser?.firstName ?? "");
         setLastName(currentUser?.lastName ?? "");
         setEmail(currentUser?.email ?? "");
@@ -73,8 +75,9 @@ const UserPage = observer(() => {
         if (currentUser?.personalPhone) setPhone(currentUser.personalPhone);
         if (currentUser?.messenger) setMessager(currentUser.messenger);
         if (currentUser?.position) setPositionValue(currentUser.position);
-    };
+    }, [currentUser]);
     useEffect(() => {
+        console.log(currentUser);
         setInitialValue();
     }, [currentUser]);
     const shouldBlockButton = (): boolean => {
@@ -95,6 +98,27 @@ const UserPage = observer(() => {
     if (!currentUser) {
         navigate("/admin/users");
     }
+    const userForm: Partial<User> = {
+        ...currentUser,
+
+        firstName,
+        lastName,
+        patronymic,
+        role: role as "ROOT" | "ADMIN" | "USER",
+        position: position ?? "",
+        messenger: messager,
+        workPhone: workphone,
+        personalPhone: phone,
+        email: email,
+        imageId: userImg ?? undefined,
+        login: email,
+    };
+    const onClick = () => {
+        if (userForm)
+            appStore.userStore.updateUser(userForm as User).then(() => {
+                snackbarStore.showPositiveSnackbar("Пользователь изменен");
+            });
+    };
     return (
         <div className={styles.body}>
             <div className={styles.header}>
@@ -283,9 +307,7 @@ const UserPage = observer(() => {
                                     }
                                     mode={"neutral"}
                                     type={"primary"}
-                                    /*
-                                                                onClick={onClick}
-                                */
+                                    onClick={onClick}
                                 >
                                     Сохранить изменения
                                 </Button>
