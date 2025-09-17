@@ -246,11 +246,11 @@ const UserCard = observer(({ user, clearUser }: UserCardProps) => {
                     )}
                 </div>
                 <div className={styles.footer}>
-                    <div>
+                    <div style={{ display: "flex", gap: 4 }}>
                         <span style={{ opacity: 0.5 }}>Системная роль </span>
                         {user.role}
                     </div>
-                    <div>
+                    <div style={{ display: "flex", gap: 4 }}>
                         <span style={{ opacity: 0.5 }}>Пользователь добавлен </span>
                         {formatDateShort(user?.createDate)}
                     </div>
