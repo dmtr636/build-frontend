@@ -226,7 +226,7 @@ const UserPage = observer(() => {
                                 <div className={styles.inputPersonal}>
                                     <Input
                                         startIcon={<IconChat />}
-                                        formName={"Месседжер"}
+                                        formName={"Мессенджер"}
                                         placeholder={"https://example.com"}
                                         onChange={(e) => setMessager(e.target.value)}
                                         value={messager}
