@@ -16,8 +16,7 @@ const AdminPageWrapper = observer(() => {
         appStore.eventsStore.fetchEvents();
         appStore.organizationsStore.fetchOrganizations();
         const handleBeforeUnload = () => {
-            console.log("sendBeacon отправлен?"); // true/false
-            appStore.accountStore.fetchUserIsOffline(true); // используем sendBeacon
+            appStore.accountStore.fetchUserIsOffline(true);
         };
         window.addEventListener("beforeunload", handleBeforeUnload);
 

@@ -7,6 +7,7 @@ import { UsersPage } from "src/features/users";
 import { LoginPageWrapper } from "src/features/auth/LoginPageWrapper.tsx";
 import { EventsPage } from "src/features/events/EventsPage";
 import { OrganizationsPage } from "src/features/organizations/OrganizationsPage.tsx";
+import UserPage from "src/features/users/pages/UserPage/UserPage.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -34,6 +35,10 @@ export const appRoutes: RouteObject[] = [
             {
                 path: "/admin/users",
                 element: <UsersPage />,
+            },
+            {
+                path: "/admin/users/:id",
+                element: <UserPage />,
             },
             {
                 path: "/admin/events",

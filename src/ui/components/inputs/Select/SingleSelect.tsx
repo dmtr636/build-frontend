@@ -25,6 +25,7 @@ export interface SingleSelectProps<T> {
     disableClear?: boolean;
     required?: boolean;
     appendTextToValue?: string;
+    disabled?: boolean;
     maxHeight?: number;
     zIndex?: number;
 }
@@ -45,6 +46,7 @@ export const SingleSelect = <T = string,>(props: SingleSelectProps<T>) => {
         brand,
         required,
         disableClear,
+        disabled,
         maxHeight,
     }: SingleSelectProps<T> = props;
     const [hover, setHover] = useState(false);
@@ -66,6 +68,7 @@ export const SingleSelect = <T = string,>(props: SingleSelectProps<T>) => {
     return (
         <SingleDropdownList<T | null>
             options={options}
+            disabled={disabled}
             value={value}
             onChange={handleChange}
             fullWidth={true}
@@ -84,6 +87,7 @@ export const SingleSelect = <T = string,>(props: SingleSelectProps<T>) => {
                 value={(selectedOption?.name ?? "") + (props.appendTextToValue ?? "")}
                 onChange={() => {}}
                 size={size}
+                disabled={disabled}
                 customStartIcon={selectedOption?.icon}
                 startIcon={iconBefore ?? selectedOption?.listItemIcon}
                 brand={brand}
@@ -93,6 +97,7 @@ export const SingleSelect = <T = string,>(props: SingleSelectProps<T>) => {
                         {value && hover && value !== defaultValue && !disableClear && (
                             <ButtonIcon
                                 mode="neutral"
+                                disabled={disabled}
                                 size={size === "large" ? "medium" : "small"}
                                 pale={true}
                                 onClick={() => handleChange(null)}
@@ -102,6 +107,7 @@ export const SingleSelect = <T = string,>(props: SingleSelectProps<T>) => {
                         )}
                         <ButtonIcon
                             mode="neutral"
+                            disabled={disabled}
                             size={size === "large" ? "medium" : "small"}
                             hover={!value && hover}
                             pale={true}

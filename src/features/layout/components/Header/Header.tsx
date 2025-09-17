@@ -15,7 +15,8 @@ const Header = () => {
         window.location.pathname = "/auth/login";
     };
     const currentUser = appStore.accountStore.currentUser;
-    console.log(currentUser);
+
+    const navigate = useNavigate();
     return (
         <div className={styles.container}>
             <div className={styles.content}>
@@ -104,7 +105,12 @@ const Header = () => {
                     <Avatar
                         photoUrl={`${GET_FILES_ENDPOINT}/${currentUser?.imageId}`}
                         dropdownListOptions={[
-                            { name: "Профиль" },
+                            {
+                                name: "Профиль",
+                                onClick: () => {
+                                    navigate(`/admin/users/${currentUser?.id}`);
+                                },
+                            },
                             {
                                 name: "Выйти",
                                 mode: "negative",

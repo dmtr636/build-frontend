@@ -126,7 +126,7 @@ const UserCard = observer(({ user, clearUser }: UserCardProps) => {
                         onClick={() => setOpenModal(true)}
                     ></Button>
                 </Tooltip>
-                <div className={styles.avatar}>
+                <div className={styles.avatar} onClick={() => navigate(`/admin/users/${user.id}`)}>
                     {user.imageId ? (
                         <img
                             className={styles.avatarImg}
