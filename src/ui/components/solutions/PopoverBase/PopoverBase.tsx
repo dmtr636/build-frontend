@@ -111,12 +111,12 @@ export const PopoverBase = observer((props: PopoverBaseProps) => {
     }, [show, triggerEvent]);
 
     const getArrowSide = () => {
-        if (tipPosition) {
-            return tipPosition.split("-")[0];
-        }
         const childrenElement = childrenRef.current!;
         const popoverElement = popoverRef.current!;
         if (!childrenElement || !popoverElement) {
+            if (tipPosition) {
+                return tipPosition.split("-")[0];
+            }
             return "top";
         }
         const childrenRect = childrenElement.getBoundingClientRect();
@@ -128,6 +128,9 @@ export const PopoverBase = observer((props: PopoverBaseProps) => {
             if (childrenRect.top - margin >= popoverHeight) {
                 return "bottom";
             }
+        }
+        if (tipPosition) {
+            return tipPosition.split("-")[0];
         }
         return "top";
     };

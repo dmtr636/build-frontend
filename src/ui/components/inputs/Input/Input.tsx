@@ -61,6 +61,8 @@ export interface InputProps {
     onKeyDown?: (event: React.KeyboardEvent) => void;
     validate?: boolean;
     inputReadonly?: boolean;
+    tooltipHeader?: string;
+    hasTooltip?: boolean;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
@@ -103,6 +105,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
         onClear,
         showBacklight,
         inputReadonly,
+        tooltipHeader,
+        hasTooltip,
     }: InputProps = props;
 
     const [isInputFocused, setIsInputFocused] = useState(false);
@@ -232,7 +236,34 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
             onMouseLeave(event);
         }
     };
+
     const renderInput = () => {
+        const inputComponent = (
+            <input
+                id={id}
+                ref={inputRef}
+                type={number ? "number" : types}
+                value={value}
+                className={clsx(styles.input, styles[size], {
+                    [styles.focus]: isInputFocused,
+                    [styles.disabled]: disabled,
+                    [styles.password]: types === "password" && value.length > 0,
+                    [styles.outlined]: outlined,
+                    [styles.centered]: centered,
+                })}
+                onChange={onChange}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+                placeholder={maskType && !placeholder ? currentPlaceholder : placeholder}
+                disabled={disabled || readonly}
+                autoFocus={autoFocus}
+                autoComplete={types === `password` ? `password` : ``}
+                style={inputStyle}
+                readOnly={inputReadonly}
+                title={tooltipHeader && hasTooltip ? undefined : value}
+            />
+        );
+
         return (
             <div
                 className={inputClassName}
@@ -307,31 +338,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
                             style={inputStyle}
                             readOnly={inputReadonly}
                         />
+                    ) : hasTooltip ? (
+                        <Tooltip header={tooltipHeader} alwaysMount={true}>
+                            <span style={{ flexGrow: 1, height: "100%", width: "100%" }}>
+                                {inputComponent}
+                            </span>
+                        </Tooltip>
                     ) : (
-                        <input
-                            id={id}
-                            ref={inputRef}
-                            type={number ? "number" : types}
-                            value={value}
-                            className={clsx(styles.input, styles[size], {
-                                [styles.focus]: isInputFocused,
-                                [styles.disabled]: disabled,
-                                [styles.password]: types === "password" && value.length > 0,
-                                [styles.outlined]: outlined,
-                                [styles.centered]: centered,
-                            })}
-                            onChange={onChange}
-                            onFocus={handleInputFocus}
-                            onBlur={handleInputBlur}
-                            placeholder={
-                                maskType && !placeholder ? currentPlaceholder : placeholder
-                            }
-                            disabled={disabled || readonly}
-                            autoFocus={autoFocus}
-                            autoComplete={types === `password` ? `password` : ``}
-                            style={inputStyle}
-                            readOnly={inputReadonly}
-                        />
+                        inputComponent
                     )}
 
                     {(getEndIcon() || validate !== undefined) && (
@@ -340,6 +354,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
 
                     {endActions}
                 </div>
+
                 {showBacklight && !isInputFocused && <Backlight />}
             </div>
         );

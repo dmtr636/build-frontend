@@ -16,7 +16,12 @@ export class OrganizationsStore {
     };
     search = "";
     cardSearch = "";
+    overlaySearch = "";
     currentOrganizationId: string | null = null;
+    editingOrganization: Organization | null = null;
+    showAddOverlay = false;
+    showDeleteOverlay = false;
+    deletingOrganization: Organization | null = null;
 
     constructor() {
         makeAutoObservable(this);
@@ -44,8 +49,8 @@ export class OrganizationsStore {
         } else if (this.sort.field === "count") {
             organizations.sort((a, b) => {
                 return this.sort.direction === "desc"
-                    ? b.employeeIds.length - a.employeeIds.length
-                    : a.employeeIds.length - b.employeeIds.length;
+                    ? b.employees.length - a.employees.length
+                    : a.employees.length - b.employees.length;
             });
         }
         return organizations;
@@ -62,9 +67,7 @@ export class OrganizationsStore {
     }
 
     get currentOrgUsers() {
-        return (this.currentOrg?.employeeIds
-            .map((id) => userStore.usersMap.get(id))
-            .filter(Boolean) ?? []) as User[];
+        return this.currentOrg?.employees ?? [];
     }
 
     get filteredCurrentOrgUsers() {
@@ -113,10 +116,112 @@ export class OrganizationsStore {
                 return;
             }
             user.organizationId = organization.id;
+            if (!organization.employees.some((e) => e.id === userId)) {
+                organization.employees.push(user);
+            }
         }
-        organization.employeeIds.push(userId);
         await this.apiClient.post(endpoints.organizations + "/" + organization.id + "/employees", [
             userId,
         ]);
+    };
+
+    addUsersToOrganization = async (
+        organization: Organization,
+        userIds: string[],
+    ): Promise<void> => {
+        userIds.forEach((userId) => {
+            const user = userStore.usersMap.get(userId);
+            if (user) {
+                if (user.organizationId === organization.id) {
+                    return;
+                }
+                user.organizationId = organization.id;
+                if (!organization.employees.some((e) => e.id === userId)) {
+                    organization.employees.push(user);
+                }
+            }
+        });
+        await this.apiClient.post(
+            endpoints.organizations + "/" + organization.id + "/employees",
+            userIds,
+        );
+    };
+
+    createOrganization = async (organization: Partial<Organization>): Promise<boolean> => {
+        this.loading = true;
+        const response = await this.apiClient.post<Organization>(
+            endpoints.organizations,
+            organization,
+        );
+        this.loading = false;
+        if (response.status) {
+            if (organization.employees?.length) {
+                await this.addUsersToOrganization(
+                    response.data,
+                    organization.employees?.map((e) => e.id),
+                );
+            }
+            this.organizations.push(response.data);
+            return true;
+        } else {
+            this.loading = false;
+            return false;
+        }
+    };
+
+    removeUsersFromOrganization = async (
+        organization: Organization,
+        userIds: string[],
+    ): Promise<void> => {
+        organization.employees = organization.employees.filter((e) => !userIds.includes(e.id));
+        userIds.forEach((userId) => {
+            const u = userStore.usersMap.get(userId);
+            if (u) {
+                u.organizationId = undefined;
+            }
+        });
+        await this.apiClient.deleteWithBody(
+            endpoints.organizations + "/" + organization.id + "/employees",
+            userIds,
+        );
+    };
+
+    deleteOrganization = async (organization: Organization): Promise<void> => {
+        this.loading = true;
+        await this.removeUsersFromOrganization(
+            organization,
+            organization.employees.map((e) => e.id),
+        );
+        const response = await this.apiClient.delete(endpoints.organizations, organization.id);
+        if (response.status) {
+            this.organizations = this.organizations.filter((o) => o.id !== organization.id);
+        }
+        this.loading = false;
+    };
+
+    updateOrganization = async (
+        organization: Organization,
+        oldOrganization: Organization,
+    ): Promise<void> => {
+        this.loading = true;
+        const newUsers = organization.employees.filter(
+            (e) => !oldOrganization.employees.find((_e) => e.id === _e.id),
+        );
+        const deletedUsers = oldOrganization.employees.filter(
+            (e) => !organization.employees.find((_e) => e.id === _e.id),
+        );
+        await this.addUsersToOrganization(
+            organization,
+            newUsers.map((u) => u.id),
+        );
+        await this.removeUsersFromOrganization(
+            organization,
+            deletedUsers.map((u) => u.id),
+        );
+        await this.apiClient.put(endpoints.organizations, organization);
+        this.organizations = this.organizations.map((o) =>
+            o.id === organization.id ? organization : o,
+        );
+        this.loading = false;
     };
 }

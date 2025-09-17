@@ -14,6 +14,7 @@ interface TooltipProps extends Omit<PopoverBaseProps, "triggerEvent" | "content"
     size?: "large" | "medium";
     textCenter?: boolean;
     hide?: boolean;
+    alwaysMount?: boolean;
 }
 
 export const Tooltip = observer((props: TooltipProps) => {
@@ -25,6 +26,7 @@ export const Tooltip = observer((props: TooltipProps) => {
         textCenter,
         fullWidth,
         hide,
+        alwaysMount = false,
     }: TooltipProps = props;
     const contentClassName = clsx(
         styles.content,
@@ -33,7 +35,7 @@ export const Tooltip = observer((props: TooltipProps) => {
         fullWidth && styles.fullWidth,
     );
 
-    if (!header && !text) {
+    if (!header && !text && !alwaysMount) {
         return props.children;
     }
 
@@ -43,8 +45,9 @@ export const Tooltip = observer((props: TooltipProps) => {
         <PopoverBase
             {...props}
             mode={mode}
-            triggerEvent={"hover"}
+            triggerEvent={!header && !text && alwaysMount ? "none" : "hover"}
             zIndex={110}
+            show={!header && !text && alwaysMount ? false : undefined}
             content={
                 <div className={contentClassName}>
                     {header && (

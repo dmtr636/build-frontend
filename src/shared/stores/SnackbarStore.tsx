@@ -51,6 +51,7 @@ export class SnackbarStore {
             message,
             mode: "neutral",
             icon: <IconSuccess />,
+            showCloseButton: true,
             ...options,
         });
     }

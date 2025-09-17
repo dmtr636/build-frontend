@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./UserItemCard.module.scss";
 import {
+    IconBasket,
     IconChat,
     IconClose,
     IconDote,
@@ -26,6 +27,7 @@ interface UserItemCardProps {
     enabled?: boolean;
     onClick?: () => void;
     onClickChat?: () => void;
+    onDelete?: () => void;
     createDate?: string;
     sortByDate?: boolean;
     isOpen?: boolean;
@@ -55,8 +57,10 @@ const UserItemCard = observer(
         sortByDate,
         isOpen,
         user,
+        onDelete,
     }: UserItemCardProps) => {
         const ref = useRef<HTMLDivElement | null>(null);
+        const refDelete = useRef<HTMLDivElement | null>(null);
 
         const initials = position
             ?.split(" ")
@@ -118,7 +122,13 @@ const UserItemCard = observer(
 
         function handleCard(event: React.MouseEvent<HTMLDivElement>) {
             if (ref.current && !ref.current.contains(event.target as Node) && onClick) {
-                onClick();
+                if (onDelete) {
+                    if (refDelete.current && !refDelete.current.contains(event.target as Node)) {
+                        onClick();
+                    }
+                } else {
+                    onClick();
+                }
             }
             if (!ref.current && onClick) {
                 onClick();
@@ -129,6 +139,9 @@ const UserItemCard = observer(
             <div
                 className={clsx(styles.container, { [styles.isOpen]: isOpen })}
                 onClick={handleCard}
+                style={{
+                    width: onDelete ? 694 : undefined,
+                }}
             >
                 <div className={styles.imgBlock}>
                     {image ? (
@@ -168,6 +181,21 @@ const UserItemCard = observer(
                     </div>
                 </div>
                 <div className={styles.buttonsBlock}>
+                    {onDelete && (
+                        <span ref={refDelete}>
+                            <Tooltip text={"Удалить из организации"}>
+                                <ButtonIcon
+                                    type={"tertiary"}
+                                    mode={"negative"}
+                                    size={"small"}
+                                    onClick={onDelete}
+                                    className={styles.deleteButton}
+                                >
+                                    <IconBasket />
+                                </ButtonIcon>
+                            </Tooltip>
+                        </span>
+                    )}
                     {(user?.email || user?.messenger || user?.personalPhone || user?.workPhone) && (
                         <span ref={ref}>
                             <Tooltip text={"Связаться"} closeOnClick={true}>
@@ -177,6 +205,7 @@ const UserItemCard = observer(
                                         show={chats}
                                         tipPosition={"top-right"}
                                         setShow={setChats}
+                                        zIndex={100}
                                     >
                                         <ButtonIcon
                                             onMouseEnter={(e) => e.stopPropagation()}
@@ -198,7 +227,12 @@ const UserItemCard = observer(
                         </span>
                     )}
                     <Tooltip text={isOpen ? "Закрыть" : "Открыть"}>
-                        <div className={styles.icon}>
+                        <div
+                            className={styles.icon}
+                            style={{
+                                padding: "0 8px",
+                            }}
+                        >
                             {isOpen ? <IconClose /> : <IconNewInset />}
                         </div>
                     </Tooltip>

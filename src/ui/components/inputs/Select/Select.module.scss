@@ -3,7 +3,7 @@
     user-select: none;
 
     input {
-        pointer-events: none;
+        cursor: pointer;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

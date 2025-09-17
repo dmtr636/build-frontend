@@ -24,7 +24,8 @@
     }
 }
 
-.container:has(.buttonsBlockChat:hover) {
+.container:has(.buttonsBlockChat:hover),
+.container:has(.deleteButton:hover) {
     background-color: var(--background-neutral-tertiary, #f9fafb);
     border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
     cursor: default;

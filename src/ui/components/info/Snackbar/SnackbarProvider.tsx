@@ -10,7 +10,7 @@ import { IconClose } from "src/ui/assets/icons";
 import { sidebarStore } from "src/ui/components/segments/Sidebar/SidebarStore.ts";
 import { layoutStore } from "src/app/AppStore.ts";
 
-export const DEFAULT_SNACKBAR_DELAY_MS = 2500;
+export const DEFAULT_SNACKBAR_DELAY_MS = 2000;
 export const DEFAULT_SNACKBAR_EXIT_ANIMATION_DURATION_MS = 200;
 
 const SnackbarWithTimer = observer(({ snackbar }: { snackbar: SnackbarData }) => {
@@ -57,6 +57,9 @@ const SnackbarWithTimer = observer(({ snackbar }: { snackbar: SnackbarData }) =>
                     mode={snackbar.mode === "neutral" ? "contrast" : snackbar.mode}
                     size="small"
                     onClick={() => snackbarStore.remove(snackbar.id)}
+                    style={{
+                        margin: "-4px 0",
+                    }}
                 >
                     <IconClose />
                 </ButtonIcon>,

@@ -5,6 +5,7 @@
     display: flex;
     margin-top: 40px;
     gap: 24px;
+    position: relative;
 }
 
 .leftCol {
@@ -18,6 +19,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    padding-bottom: 80px;
 }
 
 .searchRow {
@@ -69,28 +71,12 @@
     background: #f9fafb;
     padding: 20px;
     max-height: calc(100vh - 120px);
-    min-height: 657px;
     overflow: auto;
-    width: auto;
+    width: 463px;
     flex-grow: 1;
-    position: relative;
-}
-
-.orgCard::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 32px;
-    pointer-events: none;
-    background: linear-gradient(180deg, rgba(249, 250, 251, 0) 0%, #f9fafb 70%);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.showBottomGradient::after {
-    opacity: 1;
+    position: sticky;
+    top: 100px;
+    flex-shrink: 0;
 }
 
 .editButton {
@@ -173,4 +159,16 @@
             fill: var(--graphic-neutral-tertiary, #5f6a81);
         }
     }
+}
+
+.orgCardGradient {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 463px;
+    height: 20px;
+    flex-shrink: 0;
+    background: linear-gradient(0deg, rgba(95, 95, 95, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 0 0 12px 12px;
+    pointer-events: none;
 }

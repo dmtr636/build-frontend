@@ -43,6 +43,10 @@ export const appRoutes: RouteObject[] = [
                 path: "/admin/organizations",
                 element: <OrganizationsPage />,
             },
+            {
+                path: "/admin/organizations/:id",
+                element: <OrganizationsPage />,
+            },
         ],
     },
 ];
