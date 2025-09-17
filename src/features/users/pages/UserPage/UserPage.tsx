@@ -205,7 +205,6 @@ const UserPage = observer(() => {
                             <div className={styles.contentContact} style={{ marginBottom: 0 }}>
                                 <div className={styles.inputPersonal}>
                                     <SingleAutocomplete
-                                        disabled={!currentUserIsAdmin}
                                         zIndex={9999}
                                         value={company}
                                         onValueChange={(e) => setCompany(e as string)}
