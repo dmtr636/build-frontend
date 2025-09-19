@@ -1,3 +1,5 @@
+@import "src/ui/styles/functions";
+
 .container {
     background: var(--objects-background-neutral-tertiary, #f9fafb);
     height: 60px;
@@ -33,20 +35,93 @@
     font-style: normal;
     font-weight: 600;
     line-height: 20px; /* 142.857% */
+    cursor: pointer;
+
     &:hover {
         opacity: 0.8;
     }
 }
 
+.linkItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: lighter-pale($objects-text-neutral-primary);
+
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; /* 133.333% */
+    letter-spacing: 0.15px;
+}
+
+.linkItemIcon {
+    display: flex;
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    background: #ececec;
+    opacity: 0.7;
+
+    svg {
+        width: 16px;
+        height: 16px;
+        opacity: 0.7;
+
+        path {
+            fill: $lighter-pale ($objects-graphic-neutral-primary);
+        }
+    }
+}
+
 .link {
-    box-sizing: border-box;
     height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
 
+    &:hover {
+        .linkItem {
+            color: lighter-hover($objects-text-neutral-primary);
+        }
+
+        .linkItemIcon {
+            background: #e6e6e6;
+
+            svg {
+                width: 16px;
+                height: 16px;
+
+                path {
+                    fill: $lighter-hover ($objects-graphic-neutral-primary);
+                }
+            }
+        }
+    }
+
     &.active {
-        border-bottom: 1px solid;
-        margin-bottom: -1px;
+        .linkItem {
+            color: var(--objects-text-neutral-primary, #111317);
+        }
+
+        .linkItemIcon {
+            background: var(--objects-graphic-neutral-primary, #111317);
+            opacity: 1;
+
+            svg {
+                width: 16px;
+                height: 16px;
+                opacity: 1;
+
+                path {
+                    fill: $objects-graphic-contrast-primary;
+                }
+            }
+        }
     }
 }

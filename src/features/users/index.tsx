@@ -26,12 +26,12 @@ import { User } from "src/features/users/types/User.ts";
 import { splitFullName } from "src/shared/utils/splitFullName.ts";
 import { getFullName } from "src/shared/utils/getFullName.ts";
 import { formatPhone } from "src/shared/utils/formatPhone.ts";
-import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvider.tsx";
 import { DropdownListOption } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
 import useExcelExporter from "src/features/users/hooks/useExcelExporter.ts";
 import { Helmet } from "react-helmet";
 import UserForm from "src/features/users/components/UserForm/UserForm.tsx";
+import { formatDateShort } from "src/shared/utils/date.ts";
 
 export interface SortOption {
     field: "createDate" | "name" | "group" | "role";
@@ -108,18 +108,11 @@ export const UsersPage = observer(() => {
         name: user ?? "",
         value: user ?? "",
     }));
-
-    const companyOptions: SelectOption<string>[] = [
-        { value: "Яндекс", name: "Яндекс" },
-        {
-            value: "Самолет",
-            name: "Самолет",
-        },
-        {
-            value: "DOGMA",
-            name: "DOGMA",
-        },
-    ];
+    const organisations = appStore.organizationsStore.organizations;
+    const companyOptions: SelectOption<string>[] = organisations.map((org) => ({
+        name: org.name,
+        value: org.id,
+    }));
     const isSelected = (field: string, order: "asc" | "desc") =>
         sortOption?.field === field && sortOption?.order === order;
 
@@ -242,27 +235,28 @@ export const UsersPage = observer(() => {
     const [name, setName] = useState<string>("");
     const [sortIsOpen, setSortIsOpen] = useState<boolean>(false);
     const [openCreate, setOpenCreate] = useState(false);
+    const [company, setCompany] = useState<SelectOption<string>[]>([]);
     useLayoutEffect(() => {
         appStore.userStore.fetchOnlineUser();
     }, []);
     const chipArray = useMemo(() => {
-        const rolesChip = rolesValue.map((role) => (
+        const companyChips = company?.map((comp: SelectOption<string>) => (
             <Chip
                 closePale={true}
                 size={"small"}
+                key={comp.value}
                 onClick={() =>
-                    setRolesValue((prevState) => {
-                        return prevState.filter((prev) => prev !== role);
+                    setCompany((prevState) => {
+                        return prevState?.filter((prev) => prev.value !== comp.value);
                     })
                 }
-                key={role}
                 onDelete={() =>
-                    setRolesValue((prevState) => {
-                        return prevState.filter((prev) => prev !== role);
+                    setCompany((prevState) => {
+                        return prevState?.filter((prev) => prev.value !== comp.value);
                     })
                 }
             >
-                {role}
+                {comp.name}
             </Chip>
         ));
 
@@ -285,15 +279,16 @@ export const UsersPage = observer(() => {
                 {position}
             </Chip>
         ));
-        return [...rolesChip, ...positionsChip];
-    }, [rolesValue, positionValue]);
+        return [...(companyChips ?? []), ...positionsChip];
+    }, [company, positionValue]);
     const usersOnline = appStore.userStore.usersOnline;
     const onlineIds = Object.entries<any>(usersOnline)
         .filter(([_, value]) => value.status === "online")
         .map(([id]) => id);
     const filteredUsersByFilter = useMemo(() => {
         return users.filter((user) => {
-            if (rolesValue.length > 0 && !rolesValue.includes(user.role as string)) {
+            const orgIds = company?.map((c) => c.value);
+            if (orgIds && orgIds.length > 0 && !orgIds.includes(user.organizationId as string)) {
                 return false;
             }
 
@@ -306,7 +301,7 @@ export const UsersPage = observer(() => {
 
             return !(onlineOnly && !onlineIds.includes(user.id as string));
         });
-    }, [users, name, rolesValue, positionValue, onlineOnly, onlineIds]);
+    }, [users, name, company, positionValue, onlineOnly, onlineIds]);
     const filteredUsersByName = useMemo(() => {
         return users.filter((user) => {
             if (name.trim() !== "") {
@@ -329,7 +324,7 @@ export const UsersPage = observer(() => {
     }, [filteredUsersByFilter, name]);
     const resetFilters = () => {
         setPositionValue([]);
-        setRolesValue([]);
+        setCompany([]);
         setOnlineOnly(false);
     };
     const onClickCard = (u: User) => {
@@ -435,9 +430,12 @@ export const UsersPage = observer(() => {
             displayLabel: "Регистрация в системе",
         },
     ];
+    const date = new Date();
+    const formattedDate = formatDateShort(date.toString()).slice(0, 5);
     const { downloadExcel } = useExcelExporter({
         data: usersForCsv as any,
         columnHeaders: columnHeaders,
+        filename: `Пользователи_${formattedDate}`,
     });
     return (
         <div className={styles.container}>
@@ -471,7 +469,7 @@ export const UsersPage = observer(() => {
                 <div className={styles.filterContainer}>
                     <div className={styles.filterHead}>
                         <span style={{ opacity: 0.6 }}>Фильтры</span>
-                        {(rolesValue.length > 0 || positionValue.length > 0 || onlineOnly) && (
+                        {(company?.length > 0 || positionValue.length > 0 || onlineOnly) && (
                             <Button
                                 onClick={resetFilters}
                                 size={"tiny"}
@@ -495,6 +493,7 @@ export const UsersPage = observer(() => {
                         <MultipleSelect
                             values={rolesValue}
                             onValuesChange={setRolesValue}
+                            onOptionsChange={setCompany}
                             placeholder={"Все"}
                             options={companyOptions}
                             multiple={true}
@@ -547,20 +546,21 @@ export const UsersPage = observer(() => {
                     </div>
                 </div>
                 <div className={styles.containerHeader}>
-                    <div className={styles.headFilters}>
-                        {filteredUsers.length > 0 && (
+                    {filteredUsers.length > 0 && (
+                        <div className={styles.headFilters}>
                             <div className={styles.count}>
                                 <span style={{ opacity: 0.6 }}>Отображается</span>
                                 <span className={styles.countItem}>
                                     {pluralizeUsers(filteredUsers.length)}
                                 </span>
                             </div>
-                        )}
-                        <div className={styles.count} style={{ marginLeft: "auto" }}>
-                            <span style={{ opacity: 0.6 }}>Сортируется</span>
-                            <span className={styles.countItem}>{sortOption.label}</span>
+
+                            <div className={styles.count} style={{ marginLeft: "auto" }}>
+                                <span style={{ opacity: 0.6 }}>Сортируется</span>
+                                <span className={styles.countItem}>{sortOption.label}</span>
+                            </div>
                         </div>
-                    </div>
+                    )}
                     {chipArray && chipArray?.length > 0 && (
                         <div className={styles.chipsArray}>{chipArray}</div>
                     )}
@@ -569,7 +569,7 @@ export const UsersPage = observer(() => {
             </div>
             <div className={styles.userCard}>
                 {currentUser && (
-                    <UserCard clearUser={() => setCurrentUser(undefined)} user={currentUser} />
+                    <UserCard clearUser={() => setCurrentUser(undefined)} userId={currentUser.id} />
                 )}
             </div>
             <UserForm open={openCreate} setOpen={setOpenCreate} />

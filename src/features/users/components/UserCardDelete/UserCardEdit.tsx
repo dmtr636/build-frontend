@@ -55,17 +55,11 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
             name: "ROOT",
         },
     ];
-    const companyOptions: SelectOption<string>[] = [
-        { value: "Яндекс", name: "Яндекс" },
-        {
-            value: "Самолет",
-            name: "Самолет",
-        },
-        {
-            value: "DOGMA",
-            name: "DOGMA",
-        },
-    ];
+    const organisations = appStore.organizationsStore.organizations;
+    const companyOptions: SelectOption<string>[] = organisations.map((org) => ({
+        name: org.name,
+        value: org.id,
+    }));
     const resetFields = () => {
         setUserImg(null);
         setFirstName("");
@@ -94,6 +88,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
         email: email,
         imageId: userImg ?? undefined,
         login: email,
+        organizationId: company,
     };
     const onClick = () => {
         if (userForm)
@@ -115,7 +110,9 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
         if (currentUser.personalPhone) setPhone(currentUser.personalPhone);
         if (currentUser.messenger) setMessager(currentUser.messenger);
         if (currentUser.position) setPositionValue(currentUser.position);
+        if (currentUser.organizationId) setCompany(currentUser.organizationId);
     }, [currentUser]);
+    console.log(currentUser);
     const shouldBlockButton = (): boolean => {
         return (
             userImg !== (currentUser.imageId ?? null) ||
@@ -127,10 +124,11 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
             phone !== (currentUser.personalPhone ?? "") ||
             workphone !== (currentUser.workPhone ?? "") ||
             position !== (currentUser.position ?? null) ||
-            company !== (currentUser.company ?? "") ||
+            company !== (currentUser.organizationId ?? "") ||
             role !== currentUser.role
         );
     };
+    console.log(shouldBlockButton());
     return (
         <Overlay
             open={open}

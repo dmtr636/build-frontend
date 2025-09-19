@@ -51,17 +51,11 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
             name: "ROOT",
         },
     ];
-    const companyOptions: SelectOption<string>[] = [
-        { value: "Яндекс", name: "Яндекс" },
-        {
-            value: "Самолет",
-            name: "Самолет",
-        },
-        {
-            value: "DOGMA",
-            name: "DOGMA",
-        },
-    ];
+    const organisations = appStore.organizationsStore.organizations;
+    const companyOptions: SelectOption<string>[] = organisations.map((org) => ({
+        name: org.name,
+        value: org.id,
+    }));
 
     const userForm: Partial<User> = {
         firstName,
@@ -74,6 +68,7 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
         personalPhone: phone,
         email: email,
         imageId: userImg ?? undefined,
+        organizationId: company,
         login: email,
     };
     const onClick = () => {
