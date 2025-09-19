@@ -1,13 +1,13 @@
-import React, { Profiler, useState } from "react";
+import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
-import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { IconFlag, IconGroup, IconHome, IconProject, IconTime } from "src/ui/assets/icons";
 import { Avatar } from "src/ui/components/solutions/Avatar/Avatar.tsx";
 import { appStore } from "src/app/AppStore.ts";
-import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { clsx } from "clsx";
+import { getNameInitials } from "src/shared/utils/getFullName.ts";
+import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
 
 const Header = () => {
     const logout = async () => {
@@ -24,104 +24,96 @@ const Header = () => {
                     to={"/admin/home"}
                     className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
-                    {({ isActive }) => (
-                        <Button
-                            mode={"neutral"}
-                            type={"text"}
-                            pale={!isActive}
-                            size={"small"}
-                            iconBefore={<IconHome />}
-                        >
+                    {() => (
+                        <div className={styles.linkItem}>
+                            <div className={styles.linkItemIcon}>
+                                <IconHome />
+                            </div>
                             Главная
-                        </Button>
+                        </div>
                     )}
                 </NavLink>
                 <NavLink
                     to={"/admin/journal"}
                     className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
-                    {({ isActive }) => (
-                        <Button
-                            mode={"neutral"}
-                            type={"text"}
-                            pale={!isActive}
-                            size={"small"}
-                            iconBefore={<IconProject />}
-                        >
+                    {() => (
+                        <div className={styles.linkItem}>
+                            <div className={styles.linkItemIcon}>
+                                <IconProject />
+                            </div>
                             Журнал объектов
-                        </Button>
+                        </div>
                     )}
                 </NavLink>
                 <NavLink
                     to={"/admin/organizations"}
                     className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
-                    {({ isActive }) => (
-                        <Button
-                            mode={"neutral"}
-                            type={"text"}
-                            pale={!isActive}
-                            size={"small"}
-                            iconBefore={<IconFlag />}
-                        >
+                    {() => (
+                        <div className={styles.linkItem}>
+                            <div className={styles.linkItemIcon}>
+                                <IconFlag />
+                            </div>
                             Организации
-                        </Button>
+                        </div>
                     )}
                 </NavLink>
                 <NavLink
                     to={"/admin/users"}
                     className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
-                    {({ isActive }) => (
-                        <Button
-                            mode={"neutral"}
-                            type={"text"}
-                            pale={!isActive}
-                            size={"small"}
-                            iconBefore={<IconGroup />}
-                        >
+                    {() => (
+                        <div className={styles.linkItem}>
+                            <div className={styles.linkItemIcon}>
+                                <IconGroup />
+                            </div>
                             Пользователи
-                        </Button>
+                        </div>
                     )}
                 </NavLink>
                 <NavLink
                     to={"/admin/events"}
                     className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
-                    {({ isActive }) => (
-                        <Button
-                            mode={"neutral"}
-                            type={"text"}
-                            pale={!isActive}
-                            size={"small"}
-                            iconBefore={<IconTime />}
-                        >
+                    {() => (
+                        <div className={styles.linkItem}>
+                            <div className={styles.linkItemIcon}>
+                                <IconTime />
+                            </div>
                             История действий
-                        </Button>
+                        </div>
                     )}
                 </NavLink>
-                <div style={{ marginLeft: "auto" }} className={styles.profile}>
-                    {currentUser?.name}
-                    <Avatar
-                        photoUrl={`${GET_FILES_ENDPOINT}/${currentUser?.imageId}`}
-                        dropdownListOptions={[
-                            {
-                                name: "Профиль",
-                                onClick: () => {
-                                    navigate(`/admin/users/${currentUser?.id}`);
-                                },
+                <SingleDropdownList
+                    tipPosition={"top-center"}
+                    hideTip={true}
+                    options={[
+                        {
+                            name: "Профиль",
+                            mode: "neutral",
+                            onClick: () => {
+                                navigate(`/admin/users/${currentUser?.id}`);
                             },
-                            {
-                                name: "Выйти",
-                                mode: "negative",
-                                onClick: () => {
-                                    logout();
-                                },
+                        },
+                        {
+                            name: "Выйти",
+                            mode: "negative",
+                            onClick: () => {
+                                logout();
                             },
-                        ]}
-                        userName={currentUser?.name}
-                    />
-                </div>
+                        },
+                    ]}
+                >
+                    <div style={{ marginLeft: "auto" }} className={styles.profile}>
+                        {getNameInitials(currentUser ?? undefined)}
+
+                        <Avatar
+                            photoUrl={`${GET_FILES_ENDPOINT}/${currentUser?.imageId}`}
+                            userName={currentUser?.name}
+                        />
+                    </div>
+                </SingleDropdownList>
             </div>
         </div>
     );

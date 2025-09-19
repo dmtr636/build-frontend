@@ -31,6 +31,10 @@ export class OrganizationsStore {
         return new Map<string, Organization>(this.organizations.map((org) => [org.id, org]));
     }
 
+    organizationById(id: string) {
+        return this.organizations.find((org) => org.id === id);
+    }
+
     get filteredOrganizations() {
         let organizations = this.organizations.slice();
         organizations = this.filterOrganizations(organizations);

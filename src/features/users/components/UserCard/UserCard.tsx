@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
 
 interface UserCardProps {
-    user: User;
+    userId: string;
     clearUser: () => void;
 }
 
@@ -87,9 +87,12 @@ function getLinkInfo(url: string): LinkInfo | null {
     }
 }
 
-const UserCard = observer(({ user, clearUser }: UserCardProps) => {
+const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
+    const user = appStore.userStore.usersMap.get(userId);
+    if (!user) return null;
     const usersOnline = appStore.userStore.usersOnline;
-    const currentUserOnline: { date: string; status: string } = usersOnline[user.id as any];
+    const userOrg = appStore.organizationsStore.organizationById(user?.organizationId as string);
+    const currentUserOnline: { date: string; status: string } = usersOnline[user?.id as any];
     const [openModal, setOpenModal] = useState(false);
     const [openModalDelete, setOpenModalDelete] = useState(false);
     const navigate = useNavigate();
@@ -103,7 +106,7 @@ const UserCard = observer(({ user, clearUser }: UserCardProps) => {
             name: "История действий",
             mode: "neutral",
             onClick: () => {
-                navigate(`/events/?userId=${user.id}`);
+                navigate(`/events/?userId=${user?.id}`);
             },
         },
         {
@@ -114,6 +117,7 @@ const UserCard = observer(({ user, clearUser }: UserCardProps) => {
             },
         },
     ];
+    console.log(userOrg);
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -166,7 +170,7 @@ const UserCard = observer(({ user, clearUser }: UserCardProps) => {
                     </span>
                 </div>
                 <div className={styles.position}>{user.position}</div>
-                <div className={styles.role}>Тут будет организация</div>
+                {userOrg && <div className={styles.role}>{userOrg?.name}</div>}
                 <Button
                     style={{ marginTop: 16 }}
                     size={"small"}

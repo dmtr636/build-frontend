@@ -36,8 +36,8 @@ justify-content: space-between;
 .inputPersonal {
     width: 314px;
     /*
-  margin-top: 16px;
-  */
+margin-top: 16px;
+*/
 }
 
 .body {
@@ -84,7 +84,7 @@ justify-content: space-between;
 .footer {
     position: absolute;
     bottom: 40px;
-    left: calc(100vw / 2 - 267px);
+    left: calc((100vw - 1240px) / 2 + 317px);
     display: inline-flex;
     padding: 16px 20px;
     justify-content: center;

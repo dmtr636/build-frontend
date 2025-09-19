@@ -12,6 +12,7 @@ import { DropdownListOptions } from "src/ui/components/solutions/DropdownList/Dr
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { formatDateShort } from "src/shared/utils/date.ts";
 import { SortOption } from "src/features/users";
+import { appStore } from "src/app/AppStore.ts";
 
 interface UserItemCardProps {
     name?: string;
@@ -114,12 +115,14 @@ const UserItemCard = observer(
         });
 
         function handleCard(event: React.MouseEvent<HTMLDivElement>) {
+            console.log(ref);
             if (ref.current && !ref.current.contains(event.target as Node) && onClick) {
                 onClick();
             }
-            if (!ref.current && onClick) {
+            /*if (!ref.current && onClick) {
+                console.log(123);
                 onClick();
-            }
+            }*/
         }
 
         return (
@@ -172,33 +175,44 @@ const UserItemCard = observer(
                     </div>
                 </div>
                 <div className={styles.buttonsBlock}>
-                    {(user?.email || user?.messenger || user?.personalPhone || user?.workPhone) && (
-                        <Tooltip text={"Связаться"}>
-                            <div className={styles.buttonsBlockChat} ref={ref}>
-                                <SingleDropdownList
-                                    options={filteredChatOptions}
-                                    show={chats}
-                                    tipPosition={"top-left"}
-                                    setShow={setChats}
+                    <div ref={ref}>
+                        {(user?.email ||
+                            user?.messenger ||
+                            user?.personalPhone ||
+                            user?.workPhone) && (
+                            <Tooltip text={"Связаться"}>
+                                <div
+                                    className={styles.buttonsBlockChat}
+                                    /*
+                                                                    ref={ref}
+                                    */
+                                    onMouseEnter={(e) => e.stopPropagation()}
+                                    onMouseLeave={(e) => e.stopPropagation()}
+                                    onClick={() => {
+                                        setChats((v) => !v);
+                                        if (onClickChat) onClickChat();
+                                    }}
                                 >
-                                    <ButtonIcon
-                                        onMouseEnter={(e) => e.stopPropagation()}
-                                        onMouseLeave={(e) => e.stopPropagation()}
-                                        onClick={() => {
-                                            setChats((v) => !v);
-                                            if (onClickChat) onClickChat();
-                                        }}
-                                        pale={true}
-                                        mode={"neutral"}
-                                        size={"small"}
-                                        type={"tertiary"}
+                                    <SingleDropdownList
+                                        options={filteredChatOptions}
+                                        show={chats}
+                                        tipPosition={"top-left"}
+                                        setShow={setChats}
                                     >
-                                        <IconChat />
-                                    </ButtonIcon>
-                                </SingleDropdownList>
-                            </div>
-                        </Tooltip>
-                    )}
+                                        <ButtonIcon
+                                            pale={true}
+                                            mode={"neutral"}
+                                            size={"small"}
+                                            type={"tertiary"}
+                                        >
+                                            <IconChat />
+                                        </ButtonIcon>
+                                    </SingleDropdownList>
+                                </div>
+                            </Tooltip>
+                        )}
+                    </div>
+
                     <Tooltip text={isOpen ? "Закрыть" : "Открыть"}>
                         <div className={styles.icon}>{isOpen ? <IconClose /> : <IconNext />}</div>
                     </Tooltip>
