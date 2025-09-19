@@ -58,6 +58,7 @@ export const SortableTab = observer(<T,>(props: SortableTabProps<T>) => {
                 onClick={(event) => {
                     onChange(tab.value, event);
                 }}
+                disabled={props.tab.disabled}
                 key={tab.name}
             >
                 <div

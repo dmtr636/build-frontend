@@ -86,7 +86,7 @@ export const PopoverBase = observer((props: PopoverBaseProps) => {
     });
     const delayTimeoutRef = useRef<NodeJS.Timeout>();
     const container: HTMLElement =
-        props.container ?? document.getElementById(DRAWER_CONTAINER_ID) ?? document.body;
+        props.container ?? document.getElementById(DRAWER_CONTAINER_ID) ?? document.documentElement;
 
     useLayoutEffect(() => {
         setShow(props.show ?? show);
@@ -157,7 +157,11 @@ export const PopoverBase = observer((props: PopoverBaseProps) => {
             element.addEventListener("input", handleInput);
             document.addEventListener("click", handleDocumentClick);
             if (show) {
-                container.addEventListener("scroll", handleWindowResize);
+                if (container === document.documentElement) {
+                    window.addEventListener("scroll", handleWindowResize);
+                } else {
+                    container.addEventListener("scroll", handleWindowResize);
+                }
                 window.addEventListener("resize", handleWindowResize);
             }
         }
@@ -176,7 +180,11 @@ export const PopoverBase = observer((props: PopoverBaseProps) => {
                 element.addEventListener("click", handleClose);
             }
             if (show) {
-                container.addEventListener("scroll", handleWindowResize);
+                if (container === document.documentElement) {
+                    window.addEventListener("scroll", handleWindowResize);
+                } else {
+                    container.addEventListener("scroll", handleWindowResize);
+                }
             }
         }
         return () => {
@@ -189,6 +197,7 @@ export const PopoverBase = observer((props: PopoverBaseProps) => {
             window.removeEventListener("resize", handleWindowResize);
             document.removeEventListener("click", handleDocumentClick);
             document.removeEventListener("wheel", handleMouseLeave);
+            window.removeEventListener("scroll", handleWindowResize);
             container.removeEventListener("scroll", handleWindowResize);
         };
     };
@@ -241,8 +250,12 @@ export const PopoverBase = observer((props: PopoverBaseProps) => {
                 offsetX +
                 container.scrollLeft -
                 container.offsetLeft +
-                window.scrollX,
-            top: childrenRect.top + offsetY + container.scrollTop + window.scrollY,
+                (container === document.documentElement ? 0 : window.scrollX),
+            top:
+                childrenRect.top +
+                offsetY +
+                container.scrollTop +
+                (container === document.documentElement ? 0 : window.scrollY),
         });
     };
 

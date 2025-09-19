@@ -25,6 +25,7 @@ import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
 import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";
 import { Helmet } from "react-helmet";
+import { useEffect } from "react";
 
 export const EventsPage = observer(() => {
     const getUserLink = (userId: string) => {
@@ -45,6 +46,11 @@ export const EventsPage = observer(() => {
     };
 
     const hasActiveFilters = eventsStore.hasActiveFilters;
+
+    useEffect(() => {
+        eventsStore.filters.actions = [];
+        eventsStore.filters.objectIds = [];
+    }, [eventsStore.tab]);
 
     return (
         <div className={styles.container}>
@@ -239,10 +245,16 @@ export const EventsPage = observer(() => {
                                         {
                                             name: "Рабочие процессы",
                                             value: "work",
+                                            disabled: !eventsStore.filteredEvents.some(
+                                                (e) => e.actionType === "work",
+                                            ),
                                         },
                                         {
                                             name: "Системные события",
                                             value: "system",
+                                            disabled: !eventsStore.filteredEvents.some(
+                                                (e) => e.actionType === "system",
+                                            ),
                                         },
                                     ]}
                                 />

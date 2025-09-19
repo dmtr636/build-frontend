@@ -87,6 +87,10 @@
         color: darker-pressing($objects-text-neutral-secondary);
     }
 
+    &:disabled {
+        color: lighter-disabled($objects-text-neutral-secondary);
+    }
+
     @media screen and (max-width: 767px) {
         padding: 0 10px;
         margin: 0 -10px;
