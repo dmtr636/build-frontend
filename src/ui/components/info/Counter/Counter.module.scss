@@ -8,7 +8,11 @@
     border-radius: $m;
     --current-padding: #{$lvl-3};
     padding: 0 var(--current-padding);
-    pointer-events: none;
+    cursor: auto;
+
+    > div {
+        pointer-events: none;
+    }
 
     &.accent {
         @include color-types-mixin(

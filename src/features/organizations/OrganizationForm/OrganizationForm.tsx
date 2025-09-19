@@ -34,6 +34,7 @@ interface Props {
 class ViewModel {
     organization: Organization | null;
     form: Partial<Organization>;
+    showDeleteOverlay = false;
 
     constructor(props: Props) {
         this.organization = props.organization ?? null;
@@ -278,7 +279,7 @@ export const OrganizationForm = observer((props: Props) => {
                                 iconBefore={<IconBasket />}
                                 onClick={() => {
                                     organizationsStore.deletingOrganization = vm.organization;
-                                    organizationsStore.showDeleteOverlay = true;
+                                    vm.showDeleteOverlay = true;
                                 }}
                             >
                                 Удалить организацию
@@ -327,7 +328,7 @@ export const OrganizationForm = observer((props: Props) => {
                 </div>
             </Overlay>
             <DeleteOverlay
-                open={organizationsStore.showDeleteOverlay}
+                open={vm.showDeleteOverlay}
                 title={"Удалить организацию"}
                 subtitle={"Будет удалена организация"}
                 bottomSubtitle={
@@ -345,13 +346,13 @@ export const OrganizationForm = observer((props: Props) => {
                             icon: <IconBasket />,
                         });
                         organizationsStore.deletingOrganization = null;
-                        organizationsStore.showDeleteOverlay = false;
+                        vm.showDeleteOverlay = false;
                         organizationsStore.editingOrganization = null;
                         props.setShow(false);
                     }
                 }}
                 loading={organizationsStore.loading}
-                onCancel={() => (organizationsStore.showDeleteOverlay = false)}
+                onCancel={() => (vm.showDeleteOverlay = false)}
             />
         </>
     );

@@ -2,13 +2,20 @@
 
 .container {
     display: grid;
-    grid-template-columns: 258px 1fr;
+    grid-template-columns: 298px 1fr;
     gap: 24px;
     width: 1240px;
     padding: 40px 0;
+
+    @media screen and (min-width: 1500px) {
+        width: 1440px;
+        grid-template-columns: 358px 1fr;
+    }
 }
 
 .filterContainer {
+    position: sticky;
+    top: 100px;
     padding: 20px 24px 28px 24px;
     flex-direction: column;
     align-items: flex-start;

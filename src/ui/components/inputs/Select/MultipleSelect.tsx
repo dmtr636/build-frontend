@@ -123,12 +123,20 @@ export const MultipleSelect = <T = string,>(props: MultipleSelectProps<T>) => {
                             </Tooltip>
                         )}
                         {values.length > 1 && values.length > displayedOptionsCount && (
-                            <Counter
-                                value={values.length}
-                                maxValue={values.length - displayedOptionsCount}
-                                mode={"neutral"}
-                                size={size}
-                            />
+                            <Tooltip
+                                header={
+                                    selectedOptions.length > 1 && !showDropdown
+                                        ? selectedOptions.map((option) => option.name).join(", ")
+                                        : undefined
+                                }
+                            >
+                                <Counter
+                                    value={values.length}
+                                    maxValue={values.length - displayedOptionsCount}
+                                    mode={"neutral"}
+                                    size={size}
+                                />
+                            </Tooltip>
                         )}
                         <ButtonIcon
                             mode="neutral"

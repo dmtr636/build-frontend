@@ -9,6 +9,10 @@
     position: sticky;
     top: 0;
     z-index: 2;
+
+    @media screen and (min-width: 1500px) {
+        padding-left: calc(50vw - 720px);
+    }
 }
 
 .content {
@@ -16,6 +20,10 @@
     display: flex;
     align-items: center;
     gap: 28px;
+
+    @media screen and (min-width: 1500px) {
+        width: 1440px;
+    }
 }
 
 .profile {

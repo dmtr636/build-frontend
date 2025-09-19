@@ -4,7 +4,7 @@ import { endpoints } from "src/shared/api/endpoints.ts";
 import { IEvent } from "src/features/events/Event.ts";
 import { ITableSettings } from "src/ui/components/segments/Table/Table.types.ts";
 import { eventsStore, userStore } from "src/app/AppStore.ts";
-import { getNameInitials } from "src/shared/utils/getFullName.ts";
+import { getFullName, getNameInitials } from "src/shared/utils/getFullName.ts";
 import { formatDate, formatDateShort, formatTime } from "src/shared/utils/date.ts";
 import { eventActionLocale } from "src/features/events/eventsLocale.ts";
 
@@ -92,6 +92,7 @@ export class EventsStore {
             events = events.filter((event) => {
                 const user = userStore.usersMap.get(event.userId);
                 const userInitials = getNameInitials(user);
+                const userFullName = getFullName(user);
                 const date = formatDateShort(event.date);
                 const time = formatTime(event.date);
                 const localizedAction = event.objectName
@@ -100,6 +101,7 @@ export class EventsStore {
                 const searchLowerCase = this.search.toLowerCase();
                 return (
                     userInitials.toLowerCase().includes(searchLowerCase) ||
+                    userFullName.toLowerCase().includes(searchLowerCase) ||
                     date.includes(searchLowerCase) ||
                     time.includes(searchLowerCase) ||
                     localizedAction.toLowerCase().includes(searchLowerCase)
