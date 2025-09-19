@@ -29,6 +29,7 @@ export interface Tab<T = string> {
     customIconAfter?: ReactNode;
     counter?: number;
     disableSort?: boolean;
+    disabled?: boolean;
 }
 
 export type TabsSize = "large" | "medium" | "small";
