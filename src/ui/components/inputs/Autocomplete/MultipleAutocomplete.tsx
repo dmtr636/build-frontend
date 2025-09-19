@@ -183,16 +183,26 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
                             {values.length > 0 &&
                                 !showDropdown &&
                                 values.length > displayedOptionsCount && (
-                                    <Counter
-                                        value={values.length}
-                                        maxValue={
-                                            !showDropdown
-                                                ? values.length - displayedOptionsCount
-                                                : values.length
+                                    <Tooltip
+                                        header={
+                                            selectedOptions.length > 1 && !showDropdown
+                                                ? selectedOptions
+                                                      .map((option) => option.name)
+                                                      .join(", ")
+                                                : undefined
                                         }
-                                        mode={"neutral"}
-                                        size={size}
-                                    />
+                                    >
+                                        <Counter
+                                            value={values.length}
+                                            maxValue={
+                                                !showDropdown
+                                                    ? values.length - displayedOptionsCount
+                                                    : values.length
+                                            }
+                                            mode={"neutral"}
+                                            size={size}
+                                        />
+                                    </Tooltip>
                                 )}
                             <ButtonIcon
                                 mode="neutral"

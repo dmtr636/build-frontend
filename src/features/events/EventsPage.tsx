@@ -7,7 +7,7 @@ import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
-import { eventsStore, userStore } from "src/app/AppStore.ts";
+import { eventsStore, organizationsStore, userStore } from "src/app/AppStore.ts";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { ExplorationInput } from "src/ui/components/segments/Exploration/ExplorationInput.tsx";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
@@ -39,7 +39,7 @@ export const EventsPage = observer(() => {
                 href={`/admin/users/${user.id}`}
                 target={"_blank"}
             >
-                {getNameInitials(user)}
+                {getNameInitials(user) || user.login}
             </Button>
         );
     };
@@ -281,28 +281,13 @@ export const EventsPage = observer(() => {
                                             render: (data: IEvent) => {
                                                 return (
                                                     <Grid
-                                                        columns={"70px auto 50px"}
+                                                        columns={"70px 50px"}
                                                         gap={1}
                                                         align={"center"}
                                                     >
                                                         <Typo variant={"bodyL"}>
                                                             {formatDateShort(data.date)}
                                                         </Typo>
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="4"
-                                                            height="5"
-                                                            viewBox="0 0 4 5"
-                                                            fill="none"
-                                                        >
-                                                            <circle
-                                                                opacity="0.5"
-                                                                cx="2"
-                                                                cy="2.5"
-                                                                r="2"
-                                                                fill="#5F6A81"
-                                                            />
-                                                        </svg>
                                                         <Typo
                                                             variant={"bodyL"}
                                                             type={"quaternary"}
@@ -342,6 +327,30 @@ export const EventsPage = observer(() => {
                                                                 data.action
                                                             ]
                                                         }
+                                                        <Typo
+                                                            variant={"subheadM"}
+                                                            style={{ display: "inline" }}
+                                                        >
+                                                            {data.objectName === "user" &&
+                                                                data.objectId &&
+                                                                userStore.usersMap.has(
+                                                                    data.objectId,
+                                                                ) &&
+                                                                ` «${userStore.usersMap.get(data.objectId)?.login}»`}
+                                                            {data.objectName === "organization" &&
+                                                                data.objectId &&
+                                                                organizationsStore.organizationsMap.has(
+                                                                    data.objectId,
+                                                                ) &&
+                                                                ` «${organizationsStore.organizationsMap.get(data.objectId)?.name}»`}
+                                                            {data.objectName ===
+                                                                "organization-employees" &&
+                                                                data.objectId &&
+                                                                organizationsStore.organizationsMap.has(
+                                                                    data.objectId,
+                                                                ) &&
+                                                                ` «${organizationsStore.organizationsMap.get(data.objectId)?.name}»`}
+                                                        </Typo>
                                                     </Typo>
                                                 );
                                             },

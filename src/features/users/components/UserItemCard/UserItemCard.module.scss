@@ -22,6 +22,10 @@
     &.isOpen {
         border: 1px solid var(--objects-stroke-accent-primary, #2053d5);
     }
+
+    @media screen and (min-width: 1500px) {
+        width: 634px;
+    }
 }
 
 .container:has(.buttonsBlockChat:hover) {

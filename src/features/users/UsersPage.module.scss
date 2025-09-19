@@ -5,6 +5,10 @@
     display: flex;
     margin-top: 40px;
     gap: 24px;
+
+    @media screen and (min-width: 1500px) {
+        width: 1440px;
+    }
 }
 
 .filterBlock {
@@ -12,6 +16,10 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+
+    @media screen and (min-width: 1500px) {
+        width: 358px;
+    }
 }
 
 .filterContainer {
@@ -55,6 +63,10 @@
     /*display: flex;
 flex-direction: column;
 align-items: center;*/
+
+    @media screen and (min-width: 1500px) {
+        width: 634px;
+    }
 }
 
 .iconError {
