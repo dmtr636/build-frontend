@@ -36,8 +36,8 @@ const UserPage = observer(() => {
     const [role, setRole] = useState<"ROOT" | "ADMIN" | "USER" | undefined>();
     const users = appStore.userStore.users;
     const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
-    const currentUserIsAdmin = appStore.accountStore.currentUser?.role !== "USER";
-
+    const loginUser = appStore.accountStore.currentUser;
+    const canEdit = !(loginUser?.id === currentUser?.id || loginUser?.role !== "USER");
     const usersPositionOptions: AutocompleteOption<string>[] = userPosition.map((user) => ({
         name: user ?? "",
         value: user ?? "",
@@ -53,17 +53,11 @@ const UserPage = observer(() => {
             name: "ROOT",
         },
     ];
-    const companyOptions: SelectOption<string>[] = [
-        { value: "Яндекс", name: "Яндекс" },
-        {
-            value: "Самолет",
-            name: "Самолет",
-        },
-        {
-            value: "DOGMA",
-            name: "DOGMA",
-        },
-    ];
+    const organisations = appStore.organizationsStore.organizations;
+    const companyOptions: SelectOption<string>[] = organisations.map((org) => ({
+        name: org.name,
+        value: org.id,
+    }));
     const setInitialValue = useCallback(() => {
         setFirstName(currentUser?.firstName ?? "");
         setLastName(currentUser?.lastName ?? "");
@@ -75,9 +69,9 @@ const UserPage = observer(() => {
         if (currentUser?.personalPhone) setPhone(currentUser.personalPhone);
         if (currentUser?.messenger) setMessager(currentUser.messenger);
         if (currentUser?.position) setPositionValue(currentUser.position);
+        if (currentUser?.organizationId) setCompany(currentUser.organizationId);
     }, [currentUser]);
     useEffect(() => {
-        console.log(currentUser);
         setInitialValue();
     }, [currentUser]);
     const shouldBlockButton = (): boolean => {
@@ -119,6 +113,7 @@ const UserPage = observer(() => {
                 snackbarStore.showPositiveSnackbar("Пользователь изменен");
             });
     };
+    console.log(loginUser);
     return (
         <div className={styles.body}>
             <div className={styles.header}>
@@ -132,6 +127,7 @@ const UserPage = observer(() => {
                     <div>
                         <Media
                             type={"image"}
+                            readonly={canEdit}
                             style={{ width: 150, height: 170 }}
                             url={fileUrl(userImg)}
                             onSelectFile={async (file) => {
@@ -159,6 +155,7 @@ const UserPage = observer(() => {
                             <div className={styles.contentPersonal}>
                                 <div className={styles.inputPersonal}>
                                     <Input
+                                        readonly={canEdit}
                                         required={true}
                                         formName={"Имя"}
                                         placeholder={"Введите имя"}
@@ -168,6 +165,7 @@ const UserPage = observer(() => {
                                 </div>
                                 <div className={styles.inputPersonal}>
                                     <Input
+                                        readonly={canEdit}
                                         required={true}
                                         formName={"Фамилия"}
                                         placeholder={"Введите фамилию"}
@@ -177,6 +175,7 @@ const UserPage = observer(() => {
                                 </div>
                                 <div className={styles.inputPersonal}>
                                     <Input
+                                        readonly={canEdit}
                                         formName={"Отчество"}
                                         placeholder={"Введите отчество"}
                                         onChange={(e) => setPatronym(e.target.value)}
@@ -193,7 +192,7 @@ const UserPage = observer(() => {
                             <div className={styles.contentContact} style={{ marginBottom: 0 }}>
                                 <div className={styles.inputPersonal}>
                                     <SingleAutocomplete
-                                        disabled={!currentUserIsAdmin}
+                                        disabled={loginUser?.role === "USER"}
                                         zIndex={9999}
                                         value={position}
                                         onValueChange={(e) => setPositionValue(e)}
@@ -205,7 +204,7 @@ const UserPage = observer(() => {
                                 </div>
                                 <div className={styles.inputPersonal}>
                                     <Select
-                                        disabled={!currentUserIsAdmin}
+                                        disabled={loginUser?.role === "USER"}
                                         required={true}
                                         zIndex={9999}
                                         key={"12"}
@@ -230,6 +229,7 @@ const UserPage = observer(() => {
                                 <div className={styles.inputPersonal}>
                                     <SingleAutocomplete
                                         zIndex={9999}
+                                        disabled={canEdit}
                                         value={company}
                                         onValueChange={(e) => setCompany(e as string)}
                                         options={companyOptions}
@@ -248,6 +248,7 @@ const UserPage = observer(() => {
                             <div className={styles.contentContact}>
                                 <div className={styles.inputPersonal}>
                                     <Input
+                                        readonly={canEdit}
                                         startIcon={<IconChat />}
                                         formName={"Мессенджер"}
                                         placeholder={"https://example.com"}
@@ -257,6 +258,7 @@ const UserPage = observer(() => {
                                 </div>
                                 <div className={styles.inputPersonal}>
                                     <EmailInput
+                                        readonly={canEdit}
                                         required={true}
                                         formName={"Почта"}
                                         placeholder={"example@mail.com"}
@@ -268,6 +270,7 @@ const UserPage = observer(() => {
 
                                 <div className={styles.inputPersonal}>
                                     <PhoneInput
+                                        readonly={canEdit}
                                         formName={"Рабочий телефон"}
                                         placeholder={"+7"}
                                         onChange={setWorkphone}
@@ -277,6 +280,7 @@ const UserPage = observer(() => {
                                 </div>
                                 <div className={styles.inputPersonal}>
                                     <PhoneInput
+                                        readonly={canEdit}
                                         formName={"Личный телефон"}
                                         placeholder={"+7"}
                                         onChange={setPhone}

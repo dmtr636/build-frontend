@@ -1,7 +1,7 @@
 import { ChangeEvent, CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import { Input } from "../Input/Input";
 import { InputSize } from "../Input/Input.types";
-import { IconClear, IconTelephone } from "src/ui/assets/icons";
+import { IconClear, IconClose, IconTelephone } from "src/ui/assets/icons";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 
@@ -140,7 +140,8 @@ export const PhoneInput = ({
                 style={style}
                 showBacklight={showBacklight}
                 endIcon={
-                    value.length > 2 && (
+                    value.length > 2 &&
+                    isInputFocused && (
                         <Tooltip tipPosition={"top-center"} mode={`neutral`} text={`Очистить`}>
                             <ButtonIcon
                                 onClick={() => {
@@ -155,7 +156,7 @@ export const PhoneInput = ({
                                 size={size === "large" ? "medium" : "small"}
                                 pale={true}
                             >
-                                <IconClear />
+                                <IconClose />
                             </ButtonIcon>
                         </Tooltip>
                     )

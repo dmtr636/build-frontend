@@ -60,6 +60,8 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
         name: org.name,
         value: org.id,
     }));
+    const loginUser = appStore.accountStore.currentUser;
+    const canEdit = !(loginUser?.id === currentUser?.id || loginUser?.role !== "USER");
     const resetFields = () => {
         setUserImg(null);
         setFirstName("");
@@ -141,6 +143,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
             <div className={styles.container}>
                 <div>
                     <Media
+                        readonly={canEdit}
                         type={"image"}
                         style={{ width: 150, height: 170 }}
                         url={fileUrl(userImg)}
@@ -166,6 +169,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                         <div className={styles.contentPersonal}>
                             <div className={styles.inputPersonal}>
                                 <Input
+                                    readonly={canEdit}
                                     required={true}
                                     formName={"Имя"}
                                     placeholder={"Введите имя"}
@@ -175,6 +179,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                             </div>
                             <div className={styles.inputPersonal}>
                                 <Input
+                                    readonly={canEdit}
                                     required={true}
                                     formName={"Фамилия"}
                                     placeholder={"Введите фамилию"}
@@ -184,6 +189,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                             </div>
                             <div className={styles.inputPersonal}>
                                 <Input
+                                    readonly={canEdit}
                                     formName={"Отчество"}
                                     placeholder={"Введите отчество"}
                                     onChange={(e) => setPatronym(e.target.value)}
@@ -256,6 +262,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                         <div className={styles.contentContact}>
                             <div className={styles.inputContact}>
                                 <EmailInput
+                                    readonly={canEdit}
                                     required={true}
                                     formName={"Почта"}
                                     placeholder={"example@mail.com"}
@@ -266,6 +273,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                             </div>
                             <div className={styles.inputContact}>
                                 <Input
+                                    readonly={canEdit}
                                     startIcon={<IconChat />}
                                     formName={"Месседжер"}
                                     placeholder={"https://example.com"}
@@ -276,6 +284,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
 
                             <div className={styles.inputContact}>
                                 <PhoneInput
+                                    readonly={canEdit}
                                     formName={"Рабочий телефон"}
                                     placeholder={"+7"}
                                     onChange={setWorkphone}
@@ -285,6 +294,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                             </div>
                             <div className={styles.inputContact}>
                                 <PhoneInput
+                                    readonly={canEdit}
                                     formName={"Личный телефон"}
                                     placeholder={"+7"}
                                     onChange={setPhone}
