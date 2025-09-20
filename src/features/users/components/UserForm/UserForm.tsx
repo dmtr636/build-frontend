@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import styles from "./UserForm.module.scss";
 import { Media } from "src/ui/components/solutions/Media/Media.tsx";
@@ -20,9 +20,11 @@ import { emailValidate } from "src/shared/utils/emailValidate.ts";
 interface UserFormProps {
     open: boolean;
     setOpen: (open: boolean) => void;
+    initialOrgId?: string;
+    onSave?: (user: User) => void;
 }
 
-const UserForm = ({ open, setOpen }: UserFormProps) => {
+const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
     const [userImg, setUserImg] = useState<string | null>(null);
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
@@ -58,6 +60,12 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
         value: org.id,
     }));
 
+    useEffect(() => {
+        if (initialOrgId) {
+            setCompany(initialOrgId);
+        }
+    }, [initialOrgId]);
+
     const userForm: Partial<User> = {
         firstName,
         lastName,
@@ -71,12 +79,16 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
         imageId: userImg ?? undefined,
         organizationId: company,
         login: email,
+        password: "kydas-team-password", // TODO: Для тестирования ставим всем юзерам такой пароль, в проде уберём
     };
     const onClick = () => {
         if (userForm)
-            appStore.userStore.createUser(userForm as User).then(() => {
+            appStore.userStore.createUser(userForm as User).then((resposne) => {
                 snackbarStore.showPositiveSnackbar("Пользователь создан");
                 setOpen(false);
+                if (resposne.data) {
+                    onSave?.(resposne.data);
+                }
             });
     };
     return (

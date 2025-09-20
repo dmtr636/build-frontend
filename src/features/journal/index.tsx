@@ -7,9 +7,9 @@ export const JournalPage = observer(() => {
     return (
         <div>
             <Helmet>
-                <title>Журнал объектов – Build</title>
+                <title>Журнал – Build</title>
             </Helmet>
-            <Typo variant={"h1"}>Журнал объектов</Typo>
+            <Typo variant={"h1"}>Журнал</Typo>
         </div>
     );
 });

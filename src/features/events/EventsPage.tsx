@@ -26,8 +26,11 @@ import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
 import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";
 import { Helmet } from "react-helmet";
 import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export const EventsPage = observer(() => {
+    const [searchParams] = useSearchParams();
+
     const getUserLink = (userId: string) => {
         const user = userStore.usersMap.get(userId);
         if (!user) {
@@ -47,15 +50,18 @@ export const EventsPage = observer(() => {
 
     const hasActiveFilters = eventsStore.hasActiveFilters;
 
+    const userIdSearchParam = searchParams.get("userId");
+
     useEffect(() => {
-        eventsStore.filters.actions = [];
-        eventsStore.filters.objectIds = [];
-    }, [eventsStore.tab]);
+        if (userIdSearchParam) {
+            eventsStore.filters.userIds = [userIdSearchParam];
+        }
+    }, [userIdSearchParam]);
 
     return (
         <div className={styles.container}>
             <Helmet>
-                <title>История действий – Build</title>
+                <title>История – Build</title>
             </Helmet>
             <div>
                 <div className={styles.filterContainer}>
@@ -235,7 +241,11 @@ export const EventsPage = observer(() => {
                             <div className={styles.tableHeader}>
                                 <Tabs
                                     value={eventsStore.tab}
-                                    onChange={(value) => (eventsStore.tab = value)}
+                                    onChange={(value) => {
+                                        eventsStore.tab = value;
+                                        eventsStore.filters.actions = [];
+                                        eventsStore.filters.objectIds = [];
+                                    }}
                                     size={"large"}
                                     type={"primary"}
                                     mode={"neutral"}

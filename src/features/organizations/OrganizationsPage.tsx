@@ -35,10 +35,12 @@ import { Helmet } from "react-helmet";
 import { Divider } from "src/ui/components/atoms/Divider/Divider.tsx";
 import { OrganizationForm } from "src/features/organizations/OrganizationForm/OrganizationForm.tsx";
 import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
+import UserForm from "src/features/users/components/UserForm/UserForm.tsx";
 
 export const OrganizationsPage = observer(() => {
     const [showSortDropdown, setShowSortDropdown] = useState(false);
     const [showBottomGradient, setShowBottomGradient] = useState(false);
+    const [showUserForm, setShowUserForm] = useState(false);
     const orgCardRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
     const usersOnline = appStore.userStore.usersOnline;
@@ -338,12 +340,12 @@ export const OrganizationsPage = observer(() => {
                                         value,
                                     );
                                 }
-                                snackbarStore.showNeutralPositiveSnackbar(
-                                    "Пользователь добавлен в организацию",
-                                );
+                                snackbarStore.showNeutralPositiveSnackbar("Пользователь добавлен");
                             }}
                             disableChangeHandler={true}
-                            onAddButtonClick={() => {}}
+                            onAddButtonClick={() => {
+                                setShowUserForm(true);
+                            }}
                             addButtonLabel={"Добавить пользователя"}
                             formName={"Добавить пользователя в организацию"}
                             placeholder={"Введите имя или выберите из списка"}
@@ -447,6 +449,13 @@ export const OrganizationsPage = observer(() => {
                 loading={organizationsStore.loading}
                 onCancel={() => (organizationsStore.showDeleteOverlay = false)}
             />
+            {showUserForm && (
+                <UserForm
+                    open={showUserForm}
+                    setOpen={setShowUserForm}
+                    initialOrgId={currentOrg?.id}
+                />
+            )}
         </div>
     );
 });

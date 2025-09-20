@@ -12,7 +12,6 @@ export class AccountStore {
     updating = false;
     private apiClient = new ApiClient();
     updateAbortController = new AbortController();
-    users: User[] = [];
 
     constructor() {
         makeAutoObservable(this);

@@ -3,7 +3,7 @@ import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx
 import { Organization } from "src/features/organizations/Organization.ts";
 import { makeAutoObservable } from "mobx";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
 import { Media } from "src/ui/components/solutions/Media/Media.tsx";
 import { fileUrl } from "src/shared/utils/file.ts";
@@ -23,6 +23,7 @@ import { numDecl } from "src/shared/utils/numDecl.ts";
 import UserItemCard from "src/features/organizations/UserItemCard/UserItemCard.tsx";
 import { User } from "src/features/users/types/User.ts";
 import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
+import UserForm from "src/features/users/components/UserForm/UserForm.tsx";
 
 interface Props {
     show: boolean;
@@ -64,6 +65,7 @@ export const OrganizationForm = observer((props: Props) => {
         (u) => !u.organizationId && !vm.form.employees?.some((e) => e.id === u.id),
     );
     const usersOnline = appStore.userStore.usersOnline;
+    const [showUserForm, setShowUserForm] = useState(false);
 
     useEffect(() => {
         if (!props.show) {
@@ -134,7 +136,9 @@ export const OrganizationForm = observer((props: Props) => {
                                 }
                             }}
                             disableChangeHandler={true}
-                            onAddButtonClick={() => {}}
+                            onAddButtonClick={() => {
+                                setShowUserForm(true);
+                            }}
                             addButtonLabel={"Добавить пользователя"}
                             formName={"Добавить пользователя в организацию"}
                             placeholder={"Введите имя или выберите из списка"}
@@ -354,6 +358,33 @@ export const OrganizationForm = observer((props: Props) => {
                 loading={organizationsStore.loading}
                 onCancel={() => (vm.showDeleteOverlay = false)}
             />
+            {showUserForm && (
+                <UserForm
+                    open={showUserForm}
+                    setOpen={setShowUserForm}
+                    initialOrgId={props.organization?.id}
+                    onSave={(user) => {
+                        if (
+                            props.type === "edit" &&
+                            user &&
+                            (!user.organizationId ||
+                                (user.organizationId &&
+                                    user.organizationId === props.organization?.id)) &&
+                            !vm.form.employees?.some((e) => e.id === user.id)
+                        ) {
+                            vm.form.employees?.push(user);
+                        }
+                        if (
+                            props.type === "add" &&
+                            user &&
+                            !user.organizationId &&
+                            !vm.form.employees?.some((e) => e.id === user.id)
+                        ) {
+                            vm.form.employees?.push(user);
+                        }
+                    }}
+                />
+            )}
         </>
     );
 });

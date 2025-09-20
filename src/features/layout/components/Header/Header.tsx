@@ -1,7 +1,16 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
-import { IconFlag, IconGroup, IconHome, IconProject, IconTime } from "src/ui/assets/icons";
+import {
+    IconCheckmark,
+    IconFlag,
+    IconGroup,
+    IconHome,
+    IconInfo,
+    IconProject,
+    IconSuccess,
+    IconTime,
+} from "src/ui/assets/icons";
 import { Avatar } from "src/ui/components/solutions/Avatar/Avatar.tsx";
 import { appStore } from "src/app/AppStore.ts";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
@@ -27,9 +36,9 @@ const Header = () => {
                     {() => (
                         <div className={styles.linkItem}>
                             <div className={styles.linkItemIcon}>
-                                <IconHome />
+                                <IconSuccess />
                             </div>
-                            Главная
+                            Задачи
                         </div>
                     )}
                 </NavLink>
@@ -42,7 +51,7 @@ const Header = () => {
                             <div className={styles.linkItemIcon}>
                                 <IconProject />
                             </div>
-                            Журнал объектов
+                            Журнал
                         </div>
                     )}
                 </NavLink>
@@ -81,7 +90,20 @@ const Header = () => {
                             <div className={styles.linkItemIcon}>
                                 <IconTime />
                             </div>
-                            История действий
+                            История
+                        </div>
+                    )}
+                </NavLink>
+                <NavLink
+                    to={"/admin/registry"}
+                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
+                >
+                    {() => (
+                        <div className={styles.linkItem}>
+                            <div className={styles.linkItemIcon}>
+                                <IconInfo />
+                            </div>
+                            Реестр
                         </div>
                     )}
                 </NavLink>

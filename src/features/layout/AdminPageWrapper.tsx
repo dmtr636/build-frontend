@@ -15,6 +15,8 @@ const AdminPageWrapper = observer(() => {
         appStore.userStore.fetchUsers();
         appStore.eventsStore.fetchEvents();
         appStore.organizationsStore.fetchOrganizations();
+        appStore.websocketStore.connectToSocket();
+
         const handleBeforeUnload = () => {
             appStore.accountStore.fetchUserIsOffline(true);
         };
@@ -38,6 +40,7 @@ const AdminPageWrapper = observer(() => {
             if (containerRef.current) {
                 ro.unobserve(containerRef.current);
             }
+            appStore.websocketStore.closeSocket();
         };
     }, []);
 

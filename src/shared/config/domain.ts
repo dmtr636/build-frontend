@@ -1,7 +1,7 @@
 const env = import.meta.env;
 const hostname = window.location.hostname;
 
-const DEBUG = false; // Use backend on localhost:8080
+export const DEBUG = false; // Use backend on localhost:8080
 const USE_PRODUCTION_DOMAIN_IN_DEVELOPMENT = false;
 
 const PRODUCTION_DOMAIN = env.VITE_CI_PRODUCTION_DOMAIN ?? env.VITE_PRODUCTION_DOMAIN;
