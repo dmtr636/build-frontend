@@ -180,7 +180,7 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
                                     </ButtonIcon>
                                 </Tooltip>
                             )}
-                            {values.length > 0 &&
+                            {values.length > 1 &&
                                 !showDropdown &&
                                 values.length > displayedOptionsCount && (
                                     <Tooltip

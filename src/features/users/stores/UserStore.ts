@@ -23,8 +23,9 @@ export class UserStore {
     }
 
     async createUser(user: User) {
-        await axios.post(endpoints.users, user);
+        const response = await axios.post(endpoints.users, user);
         this.fetchUsers();
+        return response;
     }
 
     async updateUser(user: User) {

@@ -188,7 +188,7 @@ padding-bottom: 2px;
     border-top: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
     color: var(--objects-text-neutral-secondary, #2c313a);
     text-align: left;
-    width: 296px;
+    width: calc(100% + 40px);
     font-size: 13px;
     font-style: normal;
     font-weight: 500;

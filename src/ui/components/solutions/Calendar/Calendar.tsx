@@ -31,7 +31,7 @@ export const Calendar = memo((props: CalendarProps) => {
         value,
         onChange,
         startYear = 1900,
-        endYear = dateInstance.getFullYear() + 5,
+        endYear = dateInstance.getFullYear() + (props.disableFuture ? 0 : 5),
         disableYear,
         disableTime,
         disableFuture,
@@ -110,7 +110,16 @@ export const Calendar = memo((props: CalendarProps) => {
                 </ButtonIcon>
 
                 <SelectButton
-                    options={months.map((month, index) => ({ name: month, value: index }))}
+                    options={months
+                        .filter((_monthName, index) =>
+                            disableFuture
+                                ? index <= todayDate.getMonth() || year !== todayDate.getFullYear()
+                                : true,
+                        )
+                        .map((monthName, index) => ({
+                            name: monthName,
+                            value: index,
+                        }))}
                     value={month}
                     onChange={setMonth}
                     mode={"neutral"}
@@ -151,6 +160,11 @@ export const Calendar = memo((props: CalendarProps) => {
                             setMonth(month + 1);
                         }
                     }}
+                    disabled={
+                        todayDate.getMonth() === month &&
+                        todayDate.getFullYear() === year &&
+                        disableFuture
+                    }
                 >
                     <IconArrowRight />
                 </ButtonIcon>

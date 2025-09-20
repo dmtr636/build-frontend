@@ -106,7 +106,7 @@ const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
             name: "История действий",
             mode: "neutral",
             onClick: () => {
-                navigate(`/events/?userId=${user?.id}`);
+                navigate(`/admin/events?userId=${user?.id}`);
             },
         },
         {
