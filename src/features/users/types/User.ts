@@ -13,7 +13,7 @@ export interface User {
     workPhone?: string;
     personalPhone?: string;
     imageId?: string;
-    organizationId?: string;
+    organizationId?: string | null;
     createDate?: string; // ISO date-time
     updateDate?: string; // ISO date-time
     info?: Record<string, unknown>;

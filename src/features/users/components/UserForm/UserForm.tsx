@@ -15,6 +15,7 @@ import { SingleAutocomplete } from "src/ui/components/inputs/Autocomplete/Single
 import { Select } from "src/ui/components/inputs/Select/Select.tsx";
 import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { emailValidate } from "src/shared/utils/emailValidate.ts";
 
 interface UserFormProps {
     open: boolean;
@@ -35,7 +36,7 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
     const users = appStore.userStore.users;
     const [role, setRole] = useState<"ROOT" | "ADMIN" | "USER">();
     const userPosition = [...new Set(users?.filter((u) => u.position).map((u) => u.position))];
-    const [company, setCompany] = useState<string>("");
+    const [company, setCompany] = useState<string | null>(null);
     const usersPositionOptions: AutocompleteOption<string>[] = userPosition.map((user) => ({
         name: user ?? "",
         value: user ?? "",
@@ -240,7 +241,9 @@ const UserForm = ({ open, setOpen }: UserFormProps) => {
                         Отменить
                     </Button>
                     <Button
-                        disabled={!email || !role || !firstName || !lastName}
+                        disabled={
+                            !email || !role || !firstName || !emailValidate(email) || !lastName
+                        }
                         mode={"neutral"}
                         type={"primary"}
                         onClick={onClick}

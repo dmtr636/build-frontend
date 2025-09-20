@@ -21,7 +21,6 @@ export const PhoneInput = ({
     readonly,
     setError,
     autoFocus,
-    onClear,
     style,
     showBacklight,
 }: {
@@ -107,9 +106,9 @@ export const PhoneInput = ({
             /* setTimeout(() => handleClearInput(), 0);*/
         }
     }, []);
-    useEffect(() => {
+    /*useEffect(() => {
         setPhoneMask(value);
-    }, [value]);
+    }, [value]);*/
     const handleClearInput = (): void => {
         inputRef.current?.setSelectionRange(4, 4);
     };
@@ -136,31 +135,17 @@ export const PhoneInput = ({
                 brand={brand}
                 readonly={readonly}
                 required={required}
-                onClear={onClear}
+                onClear={() => {
+                    setPhoneMask(``);
+                    console.log(123);
+                    onChange("");
+                    if (setError) {
+                        setError(false);
+                    }
+                    setTimeout(() => handleClearInput(), 0);
+                }}
                 style={style}
                 showBacklight={showBacklight}
-                endIcon={
-                    value.length > 2 &&
-                    isInputFocused && (
-                        <Tooltip tipPosition={"top-center"} mode={`neutral`} text={`Очистить`}>
-                            <ButtonIcon
-                                onClick={() => {
-                                    setPhoneMask(``);
-                                    onChange(removePhoneMask(``));
-                                    if (setError) {
-                                        setError(false);
-                                    }
-                                    setTimeout(() => handleClearInput(), 0);
-                                }}
-                                mode={"neutral"}
-                                size={size === "large" ? "medium" : "small"}
-                                pale={true}
-                            >
-                                <IconClose />
-                            </ButtonIcon>
-                        </Tooltip>
-                    )
-                }
             />
         </>
     );

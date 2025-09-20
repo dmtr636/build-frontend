@@ -17,6 +17,7 @@ import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { observer } from "mobx-react-lite";
 import { getFullName } from "src/shared/utils/getFullName.ts";
+import { emailValidate } from "src/shared/utils/emailValidate.ts";
 
 interface UserFormProps {
     open: boolean;
@@ -34,7 +35,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
     const [phone, setPhone] = useState<string>("");
     const [workphone, setWorkphone] = useState<string>("");
     const [position, setPositionValue] = useState<string | undefined | null>(undefined);
-    const [company, setCompany] = useState<string>("");
+    const [company, setCompany] = useState<string | null>(null);
     const [role, setRole] = useState<"ROOT" | "ADMIN" | "USER" | undefined>();
     const [openDelModal, setOpenDelModal] = useState<boolean>(false);
     const users = appStore.userStore.users;
@@ -72,7 +73,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
         setPhone("");
         setWorkphone("");
         setPositionValue(undefined);
-        setCompany("");
+        setCompany(null);
         setRole(undefined);
     };
 
@@ -95,7 +96,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
     const onClick = () => {
         if (userForm)
             appStore.userStore.updateUser(userForm as User).then(() => {
-                snackbarStore.showPositiveSnackbar("Пользователь изменен");
+                snackbarStore.showNeutralSnackbar("Изменения сохранены");
                 resetFields();
 
                 setOpen(false);
@@ -206,7 +207,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                         <div className={styles.contentContact} style={{ marginBottom: 0 }}>
                             <div className={styles.inputContact}>
                                 <SingleAutocomplete
-                                    disabled={currentUser.role === "USER"}
+                                    disabled={loginUser?.role === "USER"}
                                     zIndex={9999}
                                     value={company}
                                     onValueChange={(e) => setCompany(e as string)}
@@ -218,7 +219,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                             </div>
                             <div className={styles.inputContact}>
                                 <SingleAutocomplete
-                                    disabled={currentUser.role === "USER"}
+                                    disabled={loginUser?.role === "USER"}
                                     zIndex={9999}
                                     value={position}
                                     onValueChange={(e) => setPositionValue(e)}
@@ -229,19 +230,12 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                                 ></SingleAutocomplete>
                             </div>
                             <div className={styles.inputContact}>
-                                {/*<MultipleSelect
-                                    values={rolesValue}
-                                    onValuesChange={setRole}
-                                    placeholder={"Все"}
-                                    options={rolesOptions}
-                                    multiple={true}
-                                    formName={"В системе"}
-                                ></MultipleSelect>*/}
                                 <Select
                                     required={true}
                                     zIndex={9999}
                                     key={"12"}
                                     value={role}
+                                    disabled={loginUser?.role === "USER"}
                                     onValueChange={(v) => {
                                         console.log(v);
                                         setRole(v as "ROOT" | "ADMIN" | "USER");
@@ -322,7 +316,12 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                         </Button>
                         <Button
                             disabled={
-                                !email || !role || !firstName || !lastName || !shouldBlockButton()
+                                !email ||
+                                !role ||
+                                !firstName ||
+                                !lastName ||
+                                !emailValidate(email) ||
+                                !shouldBlockButton()
                             }
                             mode={"neutral"}
                             type={"primary"}

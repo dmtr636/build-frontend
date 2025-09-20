@@ -58,13 +58,15 @@ margin-top: 16px;
 
 .header {
     color: var(--objects-text-neutral-tertiary, #444d5f);
-
+    width: 976px;
     font-size: 17px;
     font-style: normal;
     font-weight: 600;
     line-height: 130%; /* 22.1px */
     display: flex;
+    /*
     align-items: center;
+    */
     gap: 12px;
 }
 

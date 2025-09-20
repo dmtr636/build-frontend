@@ -32,6 +32,7 @@ import useExcelExporter from "src/features/users/hooks/useExcelExporter.ts";
 import { Helmet } from "react-helmet";
 import UserForm from "src/features/users/components/UserForm/UserForm.tsx";
 import { formatDateShort } from "src/shared/utils/date.ts";
+import { clsx } from "clsx";
 
 export interface SortOption {
     field: "createDate" | "name" | "group" | "role";
@@ -94,11 +95,7 @@ function sortItems(items: User[], sortOption: { field: string; order: "asc" | "d
 }
 
 export const UsersPage = observer(() => {
-    const [sortOption, setSortOption] = useState<SortOption>({
-        field: "name",
-        order: "asc",
-        label: "По алфавиту, от А - Я",
-    });
+    const [sortOption, setSortOption] = useState<SortOption>(appStore.userStore.sortOption);
 
     const [currentUser, setCurrentUser] = useState<User | undefined>();
     const users = appStore.userStore.users;
@@ -115,7 +112,10 @@ export const UsersPage = observer(() => {
     }));
     const isSelected = (field: string, order: "asc" | "desc") =>
         sortOption?.field === field && sortOption?.order === order;
-
+    const onChangeSort = (sort: SortOption) => {
+        setSortOption(sort);
+        appStore.userStore.setSortOption(sort);
+    };
     const dropDownSortOptions: DropdownListOption<string>[] = [
         {
             name: "По алфавиту",
@@ -129,7 +129,7 @@ export const UsersPage = observer(() => {
             disabled: isSelected("name", "asc"),
             iconAfter: isSelected("name", "asc") ? <IconCheckmark /> : undefined,
             onClick: () => {
-                setSortOption({ field: "name", order: "asc", label: "По алфавиту, от А - Я" });
+                onChangeSort({ field: "name", order: "asc", label: "По алфавиту, от А - Я" });
             },
         },
         {
@@ -139,7 +139,7 @@ export const UsersPage = observer(() => {
             disabled: isSelected("name", "desc"),
             iconAfter: isSelected("name", "desc") ? <IconCheckmark /> : undefined,
             onClick: () => {
-                setSortOption({ field: "name", order: "desc", label: "По алфавиту, от Я - А" });
+                onChangeSort({ field: "name", order: "desc", label: "По алфавиту, от Я - А" });
             },
         },
         {
@@ -154,7 +154,7 @@ export const UsersPage = observer(() => {
             disabled: isSelected("createDate", "asc"),
             iconAfter: isSelected("createDate", "asc") ? <IconCheckmark /> : undefined,
             onClick: () => {
-                setSortOption({
+                onChangeSort({
                     field: "createDate",
                     order: "asc",
                     label: "По дате создания, сначала новые",
@@ -168,7 +168,7 @@ export const UsersPage = observer(() => {
             disabled: isSelected("createDate", "desc"),
             iconAfter: isSelected("createDate", "desc") ? <IconCheckmark /> : undefined,
             onClick: () => {
-                setSortOption({
+                onChangeSort({
                     field: "createDate",
                     order: "desc",
                     label: "По дате создания, сначала старые",
@@ -187,7 +187,7 @@ export const UsersPage = observer(() => {
             disabled: isSelected("role", "asc"),
             iconAfter: isSelected("role", "asc") ? <IconCheckmark /> : undefined,
             onClick: () => {
-                setSortOption({
+                onChangeSort({
                     field: "role",
                     order: "asc",
                     label: "По роли, в должности",
@@ -201,7 +201,7 @@ export const UsersPage = observer(() => {
             disabled: isSelected("role", "desc"),
             iconAfter: isSelected("role", "desc") ? <IconCheckmark /> : undefined,
             onClick: () => {
-                setSortOption({
+                onChangeSort({
                     field: "role",
                     order: "desc",
                     label: "По роли, в системе",
@@ -220,7 +220,7 @@ export const UsersPage = observer(() => {
             disabled: isSelected("group", "asc"),
             iconAfter: isSelected("group", "asc") ? <IconCheckmark /> : undefined,
             onClick: () => {
-                setSortOption({
+                onChangeSort({
                     field: "group",
                     order: "asc",
                     label: "По группе, в организации",
@@ -228,14 +228,14 @@ export const UsersPage = observer(() => {
             },
         },
     ];
-
-    const [rolesValue, setRolesValue] = useState<string[]>([]);
-    const [positionValue, setPositionValue] = useState<string[]>([]);
+    console.log(appStore.userStore.roles);
+    const [rolesValue, setRolesValue] = useState<string[]>(appStore.userStore.roles);
+    const [positionValue, setPositionValue] = useState<string[]>(appStore.userStore.position);
     const [onlineOnly, setOnlineOnly] = useState(false);
     const [name, setName] = useState<string>("");
     const [sortIsOpen, setSortIsOpen] = useState<boolean>(false);
     const [openCreate, setOpenCreate] = useState(false);
-    const [company, setCompany] = useState<SelectOption<string>[]>([]);
+    const [company, setCompany] = useState<SelectOption<string>[]>(appStore.userStore.company);
     useLayoutEffect(() => {
         appStore.userStore.fetchOnlineUser();
     }, []);
@@ -245,16 +245,31 @@ export const UsersPage = observer(() => {
                 closePale={true}
                 size={"small"}
                 key={comp.value}
-                onClick={() =>
+                onClick={() => {
+                    setRolesValue((prevState) => {
+                        appStore.userStore.setRoles(
+                            prevState.filter((item) => !item.includes(comp.value)),
+                        );
+                        return prevState.filter((item) => !item.includes(comp.value));
+                    });
                     setCompany((prevState) => {
+                        appStore.userStore.setCompany(
+                            prevState?.filter((prev) => prev.value !== comp.value),
+                        );
                         return prevState?.filter((prev) => prev.value !== comp.value);
-                    })
-                }
-                onDelete={() =>
+                    });
+                }}
+                onDelete={() => {
+                    setRolesValue((prevState) => {
+                        return prevState.filter((item) => !item.includes(comp.value));
+                    });
                     setCompany((prevState) => {
+                        appStore.userStore.setCompany(
+                            prevState?.filter((prev) => prev.value !== comp.value),
+                        );
                         return prevState?.filter((prev) => prev.value !== comp.value);
-                    })
-                }
+                    });
+                }}
             >
                 {comp.name}
             </Chip>
@@ -267,11 +282,18 @@ export const UsersPage = observer(() => {
                 key={position}
                 onClick={() =>
                     setPositionValue((prevState) => {
+                        appStore.userStore.setOrganizations(
+                            prevState.filter((prev) => prev !== position),
+                        );
                         return prevState.filter((prev) => prev !== position);
                     })
                 }
                 onDelete={() =>
                     setPositionValue((prevState) => {
+                        appStore.userStore.setOrganizations(
+                            prevState.filter((prev) => prev !== position),
+                        );
+
                         return prevState.filter((prev) => prev !== position);
                     })
                 }
@@ -335,6 +357,8 @@ export const UsersPage = observer(() => {
         }
     };
     const sortedUsers = sortItems(filteredUsers, sortOption);
+    const [scrolled, setScrolled] = useState(false);
+
     const renderContent = useMemo(() => {
         if (filteredUsersByFilter.length === 0)
             return (
@@ -377,6 +401,7 @@ export const UsersPage = observer(() => {
             );
         return (
             <UserItemList
+                setScrolled={setScrolled}
                 onClick={(value: User) => {
                     onClickCard(value);
                 }}
@@ -428,6 +453,7 @@ export const UsersPage = observer(() => {
         {
             key: "createDate",
             displayLabel: "Регистрация в системе",
+            width: 25,
         },
     ];
     const date = new Date();
@@ -437,6 +463,18 @@ export const UsersPage = observer(() => {
         columnHeaders: columnHeaders,
         filename: `Пользователи_${formattedDate}`,
     });
+    const onChangeRoles = (value: string[]) => {
+        setRolesValue(value);
+        appStore.userStore.setRoles(value);
+    };
+    const onChangeCompany = (value: SelectOption<string>[]) => {
+        setCompany(value);
+        appStore.userStore.setCompany(value);
+    };
+    const onChangePosition = (value: string[]) => {
+        setPositionValue(value);
+        appStore.userStore.setOrganizations(value);
+    };
     return (
         <div className={styles.container}>
             <Helmet>
@@ -484,7 +522,7 @@ export const UsersPage = observer(() => {
                     <FlexColumn gap={16} style={{ marginTop: 20 }}>
                         <MultipleSelect
                             values={positionValue}
-                            onValuesChange={setPositionValue}
+                            onValuesChange={onChangePosition}
                             options={usersPositionOptions}
                             multiple={true}
                             placeholder={"Все"}
@@ -492,8 +530,8 @@ export const UsersPage = observer(() => {
                         ></MultipleSelect>
                         <MultipleSelect
                             values={rolesValue}
-                            onValuesChange={setRolesValue}
-                            onOptionsChange={setCompany}
+                            onValuesChange={onChangeRoles}
+                            onOptionsChange={onChangeCompany}
                             placeholder={"Все"}
                             options={companyOptions}
                             multiple={true}
@@ -545,7 +583,7 @@ export const UsersPage = observer(() => {
                         </SingleDropdownList>
                     </div>
                 </div>
-                <div className={styles.containerHeader}>
+                <div className={clsx(styles.containerHeader, { [styles.scrolled]: scrolled })}>
                     {filteredUsers.length > 0 && (
                         <div className={styles.headFilters}>
                             <div className={styles.count}>
@@ -565,7 +603,7 @@ export const UsersPage = observer(() => {
                         <div className={styles.chipsArray}>{chipArray}</div>
                     )}
                 </div>
-                <div className={styles.containerList}>{renderContent}</div>
+                <div className={clsx(styles.containerList)}>{renderContent}</div>
             </div>
             <div className={styles.userCard}>
                 {currentUser && (

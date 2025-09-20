@@ -1,13 +1,23 @@
 import { makeAutoObservable } from "mobx";
 import axios from "axios";
 import { endpoints, LOGOUT_ENDPOINT } from "src/shared/api/endpoints.ts";
-import { ApiClient } from "src/shared/api/ApiClient.ts";
 
 import { User, UserOnlineMap } from "src/features/users/types/User.ts";
+import { SortOption } from "src/features/users";
+import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
 
 export class UserStore {
     users: User[] = [];
     usersOnline: UserOnlineMap = {};
+    sortOption: SortOption = {
+        field: "name",
+        order: "asc",
+        label: "По алфавиту, от А - Я",
+    };
+    roles: string[] = [];
+    company: SelectOption<string>[] = [];
+    organizationFilter: string[] = [];
+    position: string[] = [];
 
     constructor() {
         makeAutoObservable(this);
@@ -20,6 +30,22 @@ export class UserStore {
 
     get usersMap() {
         return new Map<string, User>(this.users.map((user) => [user.id, user]) as any);
+    }
+
+    setSortOption(sort: SortOption) {
+        this.sortOption = sort;
+    }
+
+    setRoles(role: string[]) {
+        this.roles = role;
+    }
+
+    setCompany(company: SelectOption<string>[]) {
+        this.company = company;
+    }
+
+    setOrganizations(orgs: string[]) {
+        this.position = orgs;
     }
 
     async createUser(user: User) {

@@ -17,6 +17,7 @@ import { observer } from "mobx-react-lite";
 import { clsx } from "clsx";
 import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { emailValidate } from "src/shared/utils/emailValidate.ts";
 
 const UserPage = observer(() => {
     const { id } = useParams();
@@ -31,8 +32,8 @@ const UserPage = observer(() => {
     const [messager, setMessager] = useState<string>("");
     const [phone, setPhone] = useState<string>("");
     const [workphone, setWorkphone] = useState<string>("");
-    const [position, setPositionValue] = useState<string | undefined | null>(undefined);
-    const [company, setCompany] = useState<string>("");
+    const [position, setPositionValue] = useState<string | undefined | null>(null);
+    const [company, setCompany] = useState<string | null>(null);
     const [role, setRole] = useState<"ROOT" | "ADMIN" | "USER" | undefined>();
     const users = appStore.userStore.users;
     const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
@@ -84,11 +85,14 @@ const UserPage = observer(() => {
             messager !== (currentUser?.messenger ?? "") ||
             phone !== (currentUser?.personalPhone ?? "") ||
             workphone !== (currentUser?.workPhone ?? "") ||
-            position !== (currentUser?.position ?? null) ||
-            company !== (currentUser?.company ?? "") ||
+            position !== currentUser?.position ||
+            company !== currentUser?.organizationId ||
             role !== currentUser?.role
         );
     };
+    console.log(position);
+    console.log(currentUser?.position);
+
     if (!currentUser) {
         navigate("/admin/users");
     }
@@ -105,15 +109,16 @@ const UserPage = observer(() => {
         personalPhone: phone,
         email: email,
         imageId: userImg ?? undefined,
+        organizationId: company,
         login: email,
     };
     const onClick = () => {
         if (userForm)
             appStore.userStore.updateUser(userForm as User).then(() => {
-                snackbarStore.showPositiveSnackbar("Пользователь изменен");
+                snackbarStore.showNeutralSnackbar("Изменения сохранены");
             });
     };
-    console.log(loginUser);
+    console.log(emailValidate(email));
     return (
         <div className={styles.body}>
             <div className={styles.header}>
@@ -304,6 +309,7 @@ const UserPage = observer(() => {
                                 <Button
                                     disabled={
                                         !email ||
+                                        !emailValidate(email) ||
                                         !role ||
                                         !firstName ||
                                         !lastName ||
