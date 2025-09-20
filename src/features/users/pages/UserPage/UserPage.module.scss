@@ -41,6 +41,18 @@ margin-top: 16px;
 }
 
 .body {
+    width: 1240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    @media screen and (min-width: 1500px) {
+        width: 1440px;
+    }
+
+    /*
+  margin: 0 auto;
+  */
     margin-top: 40px;
 }
 
@@ -84,7 +96,7 @@ margin-top: 16px;
 .footer {
     position: absolute;
     bottom: 40px;
-    left: calc((100vw - 1240px) / 2 + 317px);
+    left: calc((100vw - 1240px) / 2 + 317px + 143px);
     display: inline-flex;
     padding: 16px 20px;
     justify-content: center;
