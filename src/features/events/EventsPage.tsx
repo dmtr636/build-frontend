@@ -61,7 +61,7 @@ export const EventsPage = observer(() => {
     return (
         <div className={styles.container}>
             <Helmet>
-                <title>История действий – Build</title>
+                <title>История – Build</title>
             </Helmet>
             <div>
                 <div className={styles.filterContainer}>

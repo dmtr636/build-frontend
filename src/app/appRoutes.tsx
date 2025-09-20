@@ -8,6 +8,7 @@ import { LoginPageWrapper } from "src/features/auth/LoginPageWrapper.tsx";
 import { EventsPage } from "src/features/events/EventsPage";
 import { OrganizationsPage } from "src/features/organizations/OrganizationsPage.tsx";
 import UserPage from "src/features/users/pages/UserPage/UserPage.tsx";
+import { RegistryPage } from "src/features/registry";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -51,6 +52,10 @@ export const appRoutes: RouteObject[] = [
             {
                 path: "/admin/organizations/:id",
                 element: <OrganizationsPage />,
+            },
+            {
+                path: "/admin/registry",
+                element: <RegistryPage />,
             },
         ],
     },
