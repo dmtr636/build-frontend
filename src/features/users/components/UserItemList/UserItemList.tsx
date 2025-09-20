@@ -21,60 +21,78 @@ const UserItemList = observer(({ users, onClick, currentUser, sortOption }: User
         .map(([id]) => id);
     type SortField = "createDate" | "name" | "group" | "role";
     type SortOrder = "asc" | "desc";
+    console.log(appStore.organizationsStore.organizationById(""));
 
     function groupUsers(users: User[], field: SortField, order: SortOrder = "asc") {
         switch (field) {
             case "group": {
                 const groups: Record<string, User[]> = {};
                 for (const u of users) {
-                    if (!groups[u.organizationId ?? ""]) groups[u.organizationId ?? ""] = [];
-                    groups[u.organizationId ?? ""].push(u);
+                    const orgId = u.organizationId ?? "";
+                    if (!groups[orgId]) groups[orgId] = [];
+                    groups[orgId].push(u);
                 }
-                return Object.values(groups).map((group) => (
-                    <div key={group[0].organizationId}>
-                        {group[0]?.organizationId && (
+
+                return Object.values(groups)
+                    .sort((a, b) => {
+                        const aId = a[0]?.organizationId ?? "";
+                        const bId = b[0]?.organizationId ?? "";
+                        if (!aId && bId) return 1; // пустые в конец
+                        if (aId && !bId) return -1; // непустые в начало
+                        return 0;
+                    })
+                    .map((group) => (
+                        <div key={group[0]?.organizationId ?? "no-org"}>
                             <div className={styles.headGroup}>
-                                {
-                                    appStore.organizationsStore.organizationById(
-                                        group[0]?.organizationId ?? "",
-                                    )?.name
-                                }
+                                {appStore.organizationsStore.organizationById(
+                                    group[0]?.organizationId ?? "",
+                                )?.name || "Без организации"}
                             </div>
-                        )}
-                        <div className={styles.list}>
-                            {group.map((u, index) => (
-                                <UserItemCard
-                                    user={u}
-                                    onClick={() => onClick(u)}
-                                    key={index}
-                                    name={splitFullName(u)}
-                                    sortByDate={sortOption.field === "createDate"}
-                                    position={u.position}
-                                    sortOption={sortOption}
-                                    image={u.imageId}
-                                    enabled={onlineIds.includes(u.id)}
-                                    isOpen={u.id === currentUser?.id}
-                                />
-                            ))}
+                            <div className={styles.list}>
+                                {group.map((u, index) => (
+                                    <UserItemCard
+                                        user={u}
+                                        onClick={() => onClick(u)}
+                                        key={index}
+                                        name={splitFullName(u)}
+                                        sortByDate={sortOption.field === "createDate"}
+                                        position={u.position}
+                                        sortOption={sortOption}
+                                        image={u.imageId}
+                                        enabled={onlineIds.includes(u.id)}
+                                        isOpen={u.id === currentUser?.id}
+                                    />
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ));
+                    ));
             }
 
             case "role":
                 if (order === "asc") {
                     // по position
-                    {
-                        const groups: Record<string, User[]> = {};
-                        for (const u of users) {
-                            if (!groups[u.position ?? ""]) groups[u.position ?? ""] = [];
-                            groups[u.position ?? ""].push(u);
-                        }
-                        return Object.values(groups).map((group) => (
-                            <div key={group[0].position}>
-                                {group[0].position && (
-                                    <div className={styles.headGroup}>{group[0].position}</div>
-                                )}
+                    const groups: Record<string, User[]> = {};
+                    for (const u of users) {
+                        const pos = u.position ?? "";
+                        if (!groups[pos]) groups[pos] = [];
+                        groups[pos].push(u);
+                    }
+
+                    return Object.values(groups)
+                        .sort((a, b) => {
+                            const aPos = a[0]?.position ?? "";
+                            const bPos = b[0]?.position ?? "";
+                            if (!aPos && bPos) return 1;
+                            if (aPos && !bPos) return -1;
+                            return 0;
+                        })
+                        .map((group) => (
+                            <div key={group[0]?.position ?? "no-pos"}>
+                                <div className={styles.headGroup}>
+                                    {group[0]?.position?.length
+                                        ? group[0].position
+                                        : "Без должности"}
+                                </div>
                                 <div className={styles.list}>
                                     {group.map((u, index) => (
                                         <UserItemCard
@@ -93,9 +111,7 @@ const UserItemList = observer(({ users, onClick, currentUser, sortOption }: User
                                 </div>
                             </div>
                         ));
-                    } // обернули массив, дальше сортировка у тебя
                 } else {
-                    // по role
                     return (
                         <div className={styles.list}>
                             {users.map((u, index) => (
