@@ -90,8 +90,6 @@ const UserPage = observer(() => {
             role !== currentUser?.role
         );
     };
-    console.log(position);
-    console.log(currentUser?.position);
 
     if (!currentUser) {
         navigate("/admin/users");
@@ -118,10 +116,13 @@ const UserPage = observer(() => {
                 snackbarStore.showNeutralSnackbar("Изменения сохранены");
             });
     };
-    console.log(emailValidate(email));
+
+    const usersEmail = users.map((user) => user.email);
+    const emailIsInvalid =
+        !emailValidate(email) || (usersEmail.includes(email) && email !== currentUser?.email);
     return (
         <div className={styles.body}>
-            <div className={styles.header}>
+            <div className={styles.headerTop}>
                 <div className={clsx(styles.headerItem, styles.active)}>Данные</div>
                 <div className={styles.headerItem} style={{ opacity: 0.3 }}>
                     Нет объектов
@@ -270,6 +271,15 @@ const UserPage = observer(() => {
                                         onChange={setEmail}
                                         value={email}
                                         size={"medium"}
+                                        error={
+                                            usersEmail.includes(email) &&
+                                            email !== currentUser?.email
+                                        }
+                                        formText={
+                                            usersEmail.includes(email) &&
+                                            email !== currentUser?.email &&
+                                            "Пользователь с такой почтой уже существует"
+                                        }
                                     />
                                 </div>
 
@@ -309,7 +319,7 @@ const UserPage = observer(() => {
                                 <Button
                                     disabled={
                                         !email ||
-                                        !emailValidate(email) ||
+                                        emailIsInvalid ||
                                         !role ||
                                         !firstName ||
                                         !lastName ||

@@ -96,7 +96,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
     const onClick = () => {
         if (userForm)
             appStore.userStore.updateUser(userForm as User).then(() => {
-                snackbarStore.showNeutralSnackbar("Изменения сохранены");
+                snackbarStore.showNeutralPositiveSnackbar("Изменения сохранены");
                 resetFields();
 
                 setOpen(false);
@@ -114,6 +114,9 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
         if (currentUser.messenger) setMessager(currentUser.messenger);
         if (currentUser.position) setPositionValue(currentUser.position);
         if (currentUser.organizationId) setCompany(currentUser.organizationId);
+        return () => {
+            resetFields();
+        };
     }, [currentUser]);
     console.log(currentUser);
     const shouldBlockButton = (): boolean => {
@@ -131,7 +134,10 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
             role !== currentUser.role
         );
     };
-    console.log(shouldBlockButton());
+
+    const usersEmail = users.map((user) => user.email);
+    const emailIsInvalid =
+        !emailValidate(email) || (usersEmail.includes(email) && email !== currentUser?.email);
     return (
         <Overlay
             open={open}
@@ -262,6 +268,14 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                                     placeholder={"example@mail.com"}
                                     onChange={setEmail}
                                     value={email}
+                                    error={
+                                        usersEmail.includes(email) && email !== currentUser?.email
+                                    }
+                                    formText={
+                                        usersEmail.includes(email) &&
+                                        email !== currentUser?.email &&
+                                        "Пользователь с такой почтой уже существует"
+                                    }
                                     size={"medium"}
                                 />
                             </div>
@@ -320,7 +334,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                                 !role ||
                                 !firstName ||
                                 !lastName ||
-                                !emailValidate(email) ||
+                                emailIsInvalid ||
                                 !shouldBlockButton()
                             }
                             mode={"neutral"}

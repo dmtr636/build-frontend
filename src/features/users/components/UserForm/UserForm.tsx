@@ -91,6 +91,8 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
                 }
             });
     };
+    const usersEmail = users.map((user) => user.email);
+    const emailIsInvalid = !emailValidate(email) || usersEmail.includes(email);
     return (
         <Overlay open={open} onClose={() => setOpen(false)} title={"Новый пользователь"}>
             <div className={styles.container}>
@@ -215,6 +217,11 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
                                     onChange={setEmail}
                                     value={email}
                                     size={"medium"}
+                                    error={usersEmail.includes(email)}
+                                    formText={
+                                        usersEmail.includes(email) &&
+                                        "Пользователь с такой почтой уже существует"
+                                    }
                                 />
                             </div>
                             <div className={styles.inputContact}>
@@ -253,9 +260,7 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
                         Отменить
                     </Button>
                     <Button
-                        disabled={
-                            !email || !role || !firstName || !emailValidate(email) || !lastName
-                        }
+                        disabled={!email || !role || !firstName || emailIsInvalid || !lastName}
                         mode={"neutral"}
                         type={"primary"}
                         onClick={onClick}
