@@ -59,7 +59,19 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
         name: org.name,
         value: org.id,
     }));
-
+    const resetFields = () => {
+        setUserImg(null);
+        setFirstName("");
+        setLastName("");
+        setPatronym("");
+        setEmail("");
+        setMessager("");
+        setPhone("");
+        setWorkphone("");
+        setPositionValue(undefined);
+        setCompany(null);
+        setRole(undefined);
+    };
     useEffect(() => {
         if (initialOrgId) {
             setCompany(initialOrgId);
@@ -71,7 +83,7 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
         lastName,
         patronymic,
         role: role as "ROOT" | "ADMIN" | "USER",
-        position: position ?? "",
+        position: position ?? null,
         messenger: messager,
         workPhone: workphone,
         personalPhone: phone,
@@ -84,7 +96,10 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
     const onClick = () => {
         if (userForm)
             appStore.userStore.createUser(userForm as User).then((resposne) => {
-                snackbarStore.showPositiveSnackbar("Пользователь создан");
+                snackbarStore.showNeutralPositiveSnackbar(
+                    "Пользователь создан \n Отправили пароль ему на почту",
+                );
+                resetFields();
                 setOpen(false);
                 if (resposne.data) {
                     onSave?.(resposne.data);
@@ -168,6 +183,8 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
                             </div>
                             <div className={styles.inputContact}>
                                 <SingleAutocomplete
+                                    required={role === "USER"}
+                                    disabled={role !== "USER"}
                                     zIndex={9999}
                                     value={position}
                                     onValueChange={(e) => setPositionValue(e)}
@@ -178,22 +195,14 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
                                 ></SingleAutocomplete>
                             </div>
                             <div className={styles.inputContact}>
-                                {/*<MultipleSelect
-                                    values={rolesValue}
-                                    onValuesChange={setRole}
-                                    placeholder={"Все"}
-                                    options={rolesOptions}
-                                    multiple={true}
-                                    formName={"В системе"}
-                                ></MultipleSelect>*/}
                                 <Select
                                     required={true}
                                     zIndex={9999}
                                     key={"12"}
                                     value={role}
                                     onValueChange={(v) => {
-                                        console.log(v);
                                         setRole(v as "ROOT" | "ADMIN" | "USER");
+                                        if (v !== "USER") setPositionValue(null);
                                     }}
                                     options={rolesOptions}
                                     multiple={false}
@@ -260,7 +269,14 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
                         Отменить
                     </Button>
                     <Button
-                        disabled={!email || !role || !firstName || emailIsInvalid || !lastName}
+                        disabled={
+                            !email ||
+                            !role ||
+                            !firstName ||
+                            emailIsInvalid ||
+                            (!position && role === "USER") ||
+                            !lastName
+                        }
                         mode={"neutral"}
                         type={"primary"}
                         onClick={onClick}

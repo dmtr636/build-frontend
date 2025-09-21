@@ -106,9 +106,9 @@ export const PhoneInput = ({
             /* setTimeout(() => handleClearInput(), 0);*/
         }
     }, []);
-    /*useEffect(() => {
+    useEffect(() => {
         setPhoneMask(value);
-    }, [value]);*/
+    }, [value]);
     const handleClearInput = (): void => {
         inputRef.current?.setSelectionRange(4, 4);
     };

@@ -19,6 +19,10 @@ import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { emailValidate } from "src/shared/utils/emailValidate.ts";
 
+const normalizePhone = (value?: string | null): string => {
+    if (!value || value.trim() === "" || value === "+7") return "";
+    return value;
+};
 const UserPage = observer(() => {
     const { id } = useParams();
     const currentUser = appStore.userStore.users.find((user) => user.id === id);
@@ -73,8 +77,20 @@ const UserPage = observer(() => {
         if (currentUser?.organizationId) setCompany(currentUser.organizationId);
     }, [currentUser]);
     useEffect(() => {
-        setInitialValue();
+        setFirstName(currentUser?.firstName ?? "");
+        setLastName(currentUser?.lastName ?? "");
+        setEmail(currentUser?.email ?? "");
+        setRole(currentUser?.role);
+        if (currentUser?.patronymic) setPatronym(currentUser.patronymic);
+        if (currentUser?.imageId) setUserImg(currentUser.imageId);
+        if (currentUser?.workPhone) setWorkphone(currentUser.workPhone);
+        if (currentUser?.personalPhone) setPhone(currentUser.personalPhone);
+        if (currentUser?.messenger) setMessager(currentUser.messenger);
+        if (currentUser?.position) setPositionValue(currentUser.position);
+        if (currentUser?.organizationId) setCompany(currentUser.organizationId);
     }, [currentUser]);
+    console.log(workphone);
+    console.log(phone);
     const shouldBlockButton = (): boolean => {
         return (
             userImg !== (currentUser?.imageId ?? null) ||
@@ -83,17 +99,13 @@ const UserPage = observer(() => {
             patronymic !== (currentUser?.patronymic ?? "") ||
             email !== (currentUser?.email ?? "") ||
             messager !== (currentUser?.messenger ?? "") ||
-            phone !== (currentUser?.personalPhone ?? "") ||
-            workphone !== (currentUser?.workPhone ?? "") ||
+            normalizePhone(phone) !== normalizePhone(currentUser?.personalPhone) ||
+            normalizePhone(workphone) !== normalizePhone(currentUser?.workPhone) ||
             position !== currentUser?.position ||
             company !== currentUser?.organizationId ||
             role !== currentUser?.role
         );
     };
-
-    if (!currentUser) {
-        navigate("/admin/users");
-    }
     const userForm: Partial<User> = {
         ...currentUser,
 
@@ -101,7 +113,7 @@ const UserPage = observer(() => {
         lastName,
         patronymic,
         role: role as "ROOT" | "ADMIN" | "USER",
-        position: position ?? "",
+        position: position ?? null,
         messenger: messager,
         workPhone: workphone,
         personalPhone: phone,
@@ -113,13 +125,14 @@ const UserPage = observer(() => {
     const onClick = () => {
         if (userForm)
             appStore.userStore.updateUser(userForm as User).then(() => {
-                snackbarStore.showNeutralSnackbar("Изменения сохранены");
+                snackbarStore.showNeutralPositiveSnackbar("Изменения сохранены");
             });
     };
 
     const usersEmail = users.map((user) => user.email);
     const emailIsInvalid =
         !emailValidate(email) || (usersEmail.includes(email) && email !== currentUser?.email);
+
     return (
         <div className={styles.body}>
             <div className={styles.headerTop}>
@@ -198,8 +211,9 @@ const UserPage = observer(() => {
                             <div className={styles.contentContact} style={{ marginBottom: 0 }}>
                                 <div className={styles.inputPersonal}>
                                     <SingleAutocomplete
-                                        disabled={loginUser?.role === "USER"}
+                                        disabled={loginUser?.role === "USER" || role !== "USER"}
                                         zIndex={9999}
+                                        required={role === "USER"}
                                         value={position}
                                         onValueChange={(e) => setPositionValue(e)}
                                         options={usersPositionOptions}
@@ -217,6 +231,7 @@ const UserPage = observer(() => {
                                         value={role}
                                         onValueChange={(v) => {
                                             setRole(v as "ROOT" | "ADMIN" | "USER");
+                                            if (v !== "USER") setPositionValue(null);
                                         }}
                                         options={rolesOptions}
                                         multiple={false}
@@ -323,7 +338,8 @@ const UserPage = observer(() => {
                                         !role ||
                                         !firstName ||
                                         !lastName ||
-                                        !shouldBlockButton()
+                                        !shouldBlockButton() ||
+                                        (!position && role === "USER")
                                     }
                                     mode={"neutral"}
                                     type={"primary"}

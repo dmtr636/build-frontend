@@ -22,7 +22,7 @@ import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 interface UserItemCardProps {
     name?: string;
     company?: string;
-    position?: string;
+    position?: string | null;
     image?: string;
     enabled?: boolean;
     onClick?: () => void;
@@ -90,7 +90,7 @@ const UserItemCard = observer(
                 onClick: () => {
                     if (user?.workPhone) {
                         navigator.clipboard.writeText(user?.workPhone);
-                        snackbarStore.showPositiveSnackbar("Номер скопирован");
+                        snackbarStore.showNeutralPositiveSnackbar("Номер скопирован");
                     }
                 },
             },
@@ -100,7 +100,7 @@ const UserItemCard = observer(
                 onClick: () => {
                     if (user?.personalPhone) {
                         navigator.clipboard.writeText(user?.personalPhone);
-                        snackbarStore.showPositiveSnackbar("Номер скопирован");
+                        snackbarStore.showNeutralPositiveSnackbar("Номер скопирован");
                     }
                 },
             },

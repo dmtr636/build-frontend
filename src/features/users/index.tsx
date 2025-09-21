@@ -80,7 +80,7 @@ function sortItems(items: User[], sortOption: { field: string; order: "asc" | "d
         } else if (field === "createDate") {
             const aDate = a.createDate ? new Date(a.createDate).getTime() : 0;
             const bDate = b.createDate ? new Date(b.createDate).getTime() : 0;
-            return order === "asc" ? aDate - bDate : bDate - aDate;
+            return order === "desc" ? aDate - bDate : bDate - aDate;
         } else {
             aValue = (a as any)[field] ?? "";
             bValue = (b as any)[field] ?? "";
@@ -99,7 +99,7 @@ export const UsersPage = observer(() => {
 
     const [currentUser, setCurrentUser] = useState<User | undefined>();
     const users = appStore.userStore.users;
-
+    const loginUser = appStore.accountStore.currentUser;
     const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
     const usersPositionOptions: SelectOption<string>[] = userPosition.map((user) => ({
         name: user ?? "",
@@ -481,17 +481,19 @@ export const UsersPage = observer(() => {
                 <title>Пользователи – Build</title>
             </Helmet>
             <div className={styles.filterBlock}>
-                <div>
-                    <Button
-                        size={"small"}
-                        mode={"neutral"}
-                        fullWidth={true}
-                        iconBefore={<IconPlus />}
-                        onClick={() => setOpenCreate(true)}
-                    >
-                        Новый пользователь
-                    </Button>
-                </div>
+                {loginUser?.role !== "USER" && (
+                    <div>
+                        <Button
+                            size={"small"}
+                            mode={"neutral"}
+                            fullWidth={true}
+                            iconBefore={<IconPlus />}
+                            onClick={() => setOpenCreate(true)}
+                        >
+                            Новый пользователь
+                        </Button>
+                    </div>
+                )}
                 <div>
                     <Button
                         fullWidth={true}

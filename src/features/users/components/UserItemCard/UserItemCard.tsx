@@ -17,7 +17,7 @@ import { appStore } from "src/app/AppStore.ts";
 interface UserItemCardProps {
     name?: string;
     company?: string;
-    position?: string;
+    position?: string | null;
     image?: string;
     enabled?: boolean;
     onClick?: () => void;

@@ -118,7 +118,6 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
             resetFields();
         };
     }, [currentUser]);
-    console.log(currentUser);
     const shouldBlockButton = (): boolean => {
         return (
             userImg !== (currentUser.imageId ?? null) ||
@@ -138,6 +137,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
     const usersEmail = users.map((user) => user.email);
     const emailIsInvalid =
         !emailValidate(email) || (usersEmail.includes(email) && email !== currentUser?.email);
+
     return (
         <Overlay
             open={open}
@@ -225,7 +225,8 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                             </div>
                             <div className={styles.inputContact}>
                                 <SingleAutocomplete
-                                    disabled={loginUser?.role === "USER"}
+                                    disabled={loginUser?.role === "USER" || role !== "USER"}
+                                    required={role === "USER"}
                                     zIndex={9999}
                                     value={position}
                                     onValueChange={(e) => setPositionValue(e)}
@@ -245,6 +246,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                                     onValueChange={(v) => {
                                         console.log(v);
                                         setRole(v as "ROOT" | "ADMIN" | "USER");
+                                        if (v !== "USER") setPositionValue(null);
                                     }}
                                     options={rolesOptions}
                                     multiple={false}
@@ -335,6 +337,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                                 !firstName ||
                                 !lastName ||
                                 emailIsInvalid ||
+                                (!position && role === "USER") ||
                                 !shouldBlockButton()
                             }
                             mode={"neutral"}
@@ -357,7 +360,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                         key={2}
                         onClick={async () => {
                             await appStore.userStore.deleteUser(currentUser.id);
-                            snackbarStore.showPositiveSnackbar("Пользователь удален");
+                            snackbarStore.showNeutralPositiveSnackbar("Пользователь удален");
 
                             setOpen(false);
                         }}

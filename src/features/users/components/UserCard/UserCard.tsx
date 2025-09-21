@@ -220,7 +220,9 @@ const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
                                     className={styles.messengerLink}
                                     onClick={() => {
                                         navigator.clipboard.writeText(user.workPhone ?? "");
-                                        snackbarStore.showPositiveSnackbar("Номер скопирован");
+                                        snackbarStore.showNeutralPositiveSnackbar(
+                                            "Номер скопирован",
+                                        );
                                     }}
                                 >
                                     {formatPhone(user.workPhone)}
@@ -239,7 +241,9 @@ const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
                                     className={styles.messengerLink}
                                     onClick={() => {
                                         navigator.clipboard.writeText(user.personalPhone ?? "");
-                                        snackbarStore.showPositiveSnackbar("Номер скопирован");
+                                        snackbarStore.showNeutralPositiveSnackbar(
+                                            "Номер скопирован",
+                                        );
                                     }}
                                 >
                                     {formatPhone(user.personalPhone)}
@@ -271,7 +275,7 @@ const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
                         key={2}
                         onClick={async () => {
                             await appStore.userStore.deleteUser(user.id);
-                            snackbarStore.showPositiveSnackbar("Пользователь удален");
+                            snackbarStore.showNeutralPositiveSnackbar("Пользователь удален");
                             clearUser();
                             setOpenModalDelete(false);
                         }}
