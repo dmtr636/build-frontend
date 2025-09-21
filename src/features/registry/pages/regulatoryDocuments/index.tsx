@@ -2,17 +2,29 @@ import { observer } from "mobx-react-lite";
 import { RegistryHeader } from "src/features/registry/components/RegistryHeader/RegistryHeader.tsx";
 import { organizationsStore, registryStore } from "src/app/AppStore.ts";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
-import { IRegistryDocument } from "src/features/registry/types.ts";
+import { NormativeDocument } from "src/features/registry/types.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { IconEdit, IconError } from "src/ui/assets/icons";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import styles from "src/features/organizations/OrganizationsPage.module.scss";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
-import React from "react";
+import React, { useEffect } from "react";
+import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
+import { Helmet } from "react-helmet";
 
 export const RegulatoryDocuments = observer(() => {
+    useEffect(() => {
+        if (!registryStore.documents.length) {
+            registryStore.fetchAllDocuments();
+        }
+    }, []);
+
     return (
-        <div>
+        <FlexColumn
+            style={{
+                paddingBottom: "40px",
+            }}
+        >
             <RegistryHeader
                 search={registryStore.documentsSearch}
                 onSearch={(value) => (registryStore.documentsSearch = value)}
@@ -44,7 +56,7 @@ export const RegulatoryDocuments = observer(() => {
                 </div>
             )}
             {!!registryStore.filteredDocuments.length && (
-                <Table<IRegistryDocument>
+                <Table<NormativeDocument>
                     data={registryStore.filteredDocuments}
                     tableSettings={registryStore.documentsTableSettings}
                     onChangeTableSettings={(settings) => {
@@ -55,6 +67,7 @@ export const RegulatoryDocuments = observer(() => {
                     onRowClick={(_data) => {
                         console.log("data");
                     }}
+                    tableHeaderRowStickyTop={119}
                     columns={[
                         {
                             name: "",
@@ -63,7 +76,7 @@ export const RegulatoryDocuments = observer(() => {
                             sort: false,
                             index: false,
                             resizable: false,
-                            render: (_data: IRegistryDocument, hovered?: boolean) => {
+                            render: (_data: NormativeDocument, hovered?: boolean) => {
                                 return (
                                     <Tooltip header={"Редактировать"}>
                                         <Button
@@ -87,8 +100,8 @@ export const RegulatoryDocuments = observer(() => {
                             sort: false,
                             wrap: true,
                             resizable: false,
-                            render: (data: IRegistryDocument) => {
-                                return data.statement;
+                            render: (data: NormativeDocument) => {
+                                return data.regulation;
                             },
                         },
                         {
@@ -98,13 +111,13 @@ export const RegulatoryDocuments = observer(() => {
                             sort: false,
                             wrap: true,
                             resizable: false,
-                            render: (data: IRegistryDocument) => {
+                            render: (data: NormativeDocument) => {
                                 return data.name;
                             },
                         },
                     ]}
                 />
             )}
-        </div>
+        </FlexColumn>
     );
 });

@@ -9,11 +9,9 @@ import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
 
 const AdminPageWrapper = observer(() => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [overflowed, setOverflowed] = useState(false);
 
     useEffect(() => {
         appStore.userStore.fetchUsers();
-        appStore.eventsStore.fetchEvents();
         appStore.organizationsStore.fetchOrganizations();
         appStore.websocketStore.connectToSocket();
 
@@ -23,9 +21,8 @@ const AdminPageWrapper = observer(() => {
         window.addEventListener("beforeunload", handleBeforeUnload);
 
         const checkOverflowed = () => {
-            setOverflowed(
-                document.documentElement.scrollHeight > document.documentElement.clientHeight,
-            );
+            layoutStore.overflowed =
+                document.documentElement.scrollHeight > document.documentElement.clientHeight;
         };
 
         const checkScrolling = () => {

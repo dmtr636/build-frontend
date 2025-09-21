@@ -7,7 +7,7 @@ import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
-import { eventsStore, organizationsStore, userStore } from "src/app/AppStore.ts";
+import { appStore, eventsStore, organizationsStore, userStore } from "src/app/AppStore.ts";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { ExplorationInput } from "src/ui/components/segments/Exploration/ExplorationInput.tsx";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
@@ -57,6 +57,12 @@ export const EventsPage = observer(() => {
             eventsStore.filters.userIds = [userIdSearchParam];
         }
     }, [userIdSearchParam]);
+
+    useEffect(() => {
+        if (!appStore.eventsStore.events.length) {
+            appStore.eventsStore.fetchEvents();
+        }
+    }, []);
 
     return (
         <div className={styles.container}>
@@ -358,23 +364,26 @@ export const EventsPage = observer(() => {
                                                         >
                                                             {data.objectName === "user" &&
                                                                 data.objectId &&
-                                                                userStore.usersMap.has(
+                                                                (userStore.usersMap.has(
                                                                     data.objectId,
-                                                                ) &&
-                                                                ` «${userStore.usersMap.get(data.objectId)?.login}»`}
+                                                                )
+                                                                    ? ` «${userStore.usersMap.get(data.objectId)?.login}»`
+                                                                    : ` «${data.info.login}»`)}
                                                             {data.objectName === "organization" &&
                                                                 data.objectId &&
-                                                                organizationsStore.organizationsMap.has(
+                                                                (organizationsStore.organizationsMap.has(
                                                                     data.objectId,
-                                                                ) &&
-                                                                ` «${organizationsStore.organizationsMap.get(data.objectId)?.name}»`}
+                                                                )
+                                                                    ? ` «${organizationsStore.organizationsMap.get(data.objectId)?.name}»`
+                                                                    : ` «${data.info.name}»`)}
                                                             {data.objectName ===
                                                                 "organization-employees" &&
                                                                 data.objectId &&
-                                                                organizationsStore.organizationsMap.has(
+                                                                (organizationsStore.organizationsMap.has(
                                                                     data.objectId,
-                                                                ) &&
-                                                                ` «${organizationsStore.organizationsMap.get(data.objectId)?.name}»`}
+                                                                )
+                                                                    ? ` «${organizationsStore.organizationsMap.get(data.objectId)?.name}»`
+                                                                    : ` «${data.info.name}»`)}
                                                         </Typo>
                                                     </Typo>
                                                 );

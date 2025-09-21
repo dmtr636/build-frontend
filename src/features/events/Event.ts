@@ -6,5 +6,5 @@ export interface IEvent {
     objectName?: "user" | "organization" | "organization-employees";
     objectId?: string;
     createdAt: string;
-    info: object;
+    info: Record<string, string>;
 }

@@ -3,6 +3,7 @@ import { ITableColumn, ITableSettings } from "src/ui/components/segments/Table/T
 import { clsx } from "clsx";
 import styles from "./TableHeaderRow.module.scss";
 import { TableHeaderCell } from "src/ui/components/segments/Table/TableHeaderCell/TableHeaderCell.tsx";
+import { CSSProperties } from "react";
 
 interface IProps<T> {
     columns: ITableColumn<T>[];
@@ -15,6 +16,7 @@ interface IProps<T> {
     tableSettings: ITableSettings;
     onChangeTableSettings: (settings: ITableSettings) => void;
     headerRowHasBorderRadius?: boolean;
+    tableHeaderRowStickyTop?: CSSProperties["top"];
 }
 
 export const TableHeaderRow = observer(<T,>(props: IProps<T>) => {

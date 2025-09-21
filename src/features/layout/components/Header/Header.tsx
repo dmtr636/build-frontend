@@ -95,7 +95,7 @@ const Header = () => {
                     )}
                 </NavLink>
                 <NavLink
-                    to={"/admin/registry"}
+                    to={"/admin/dictionaries"}
                     className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
                 >
                     {() => (

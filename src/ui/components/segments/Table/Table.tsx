@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import { observer } from "mobx-react-lite";
 import { TableDataRow } from "src/ui/components/segments/Table/TableDataRow/TableDataRow.tsx";
 import { TableHeaderRow } from "src/ui/components/segments/Table/TableHeaderRow/TableHeaderRow.tsx";
-import { useRef, useState } from "react";
+import { CSSProperties, useRef, useState } from "react";
 import { Virtuoso } from "react-virtuoso";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 
@@ -23,6 +23,7 @@ interface ITableProps<T> {
     selectedIndex?: number | null;
     dynamicRowHeight?: boolean;
     headerRowHasBorderRadius?: boolean;
+    tableHeaderRowStickyTop?: CSSProperties["top"];
 }
 
 export const Table = observer(<T extends object>(props: ITableProps<T>) => {
@@ -43,6 +44,9 @@ export const Table = observer(<T extends object>(props: ITableProps<T>) => {
                 onScroll={(event) => {
                     event.preventDefault();
                 }}
+                style={{
+                    top: props.tableHeaderRowStickyTop,
+                }}
             >
                 <TableHeaderRow
                     columns={columns}
@@ -55,6 +59,7 @@ export const Table = observer(<T extends object>(props: ITableProps<T>) => {
                     tableSettings={props.tableSettings}
                     onChangeTableSettings={props.onChangeTableSettings}
                     headerRowHasBorderRadius={props.headerRowHasBorderRadius}
+                    tableHeaderRowStickyTop={props.tableHeaderRowStickyTop}
                 />
             </div>
             {!props.data.length && (

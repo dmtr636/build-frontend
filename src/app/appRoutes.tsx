@@ -57,25 +57,28 @@ export const appRoutes: RouteObject[] = [
                 element: <OrganizationsPage />,
             },
             {
-                path: "/admin/registry",
+                path: "/admin/dictionaries",
                 element: <RegistryPage />,
                 children: [
                     {
                         index: true,
                         element: (
-                            <Navigate to={"/admin/registry/regulatory-documents"} replace={true} />
+                            <Navigate
+                                to={"/admin/dictionaries/normative-documents"}
+                                replace={true}
+                            />
                         ),
                     },
                     {
-                        path: "/admin/registry/regulatory-documents",
+                        path: "/admin/dictionaries/normative-documents",
                         element: <RegulatoryDocuments />,
                     },
                     {
-                        path: "/admin/registry/violations",
+                        path: "/admin/dictionaries/construction-violations",
                         element: <Violations />,
                     },
                     {
-                        path: "/admin/registry/works",
+                        path: "/admin/dictionaries/construction-works",
                         element: <Works />,
                     },
                 ],

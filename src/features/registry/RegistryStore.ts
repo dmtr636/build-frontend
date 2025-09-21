@@ -1,10 +1,16 @@
 import { makeAutoObservable } from "mobx";
-import { IRegistryDocument } from "src/features/registry/types.ts";
+import {
+    ConstructionViolation,
+    ConstructionWork,
+    NormativeDocument,
+} from "src/features/registry/types.ts";
 import { ITableSettings } from "src/ui/components/segments/Table/Table.types.ts";
+import { ApiClient } from "src/shared/api/ApiClient.ts";
+import { endpoints } from "src/shared/api/endpoints.ts";
 
 export class RegistryStore {
     documentsSearch = "";
-    documents: IRegistryDocument[] = [];
+    documents: NormativeDocument[] = [];
     documentsTableSettings: ITableSettings = {
         compactMode: true,
         quickView: false,
@@ -12,7 +18,29 @@ export class RegistryStore {
         columns: ["index", "statement", "name"],
         columnWidths: {},
     };
+
+    violationsSearch = "";
+    violations: ConstructionViolation[] = [];
+    violationsTableSettings: ITableSettings = {
+        compactMode: true,
+        quickView: false,
+        openPageInNewTab: true,
+        columns: ["index", "category", "kind", "severityType", "name", "remediationDueDays"],
+        columnWidths: {},
+    };
+
+    worksSearch = "";
+    works: ConstructionWork[] = [];
+    worksTableSettings: ITableSettings = {
+        compactMode: true,
+        quickView: false,
+        openPageInNewTab: true,
+        columns: ["index", "name", "unit", "classificationCode"],
+        columnWidths: {},
+    };
+
     loading = false;
+    apiClient = new ApiClient();
 
     constructor() {
         makeAutoObservable(this);
@@ -26,7 +54,7 @@ export class RegistryStore {
                     document.name
                         .toLowerCase()
                         .includes(this.documentsSearch.trim().toLowerCase()) ||
-                    document.statement
+                    document.regulation
                         .toLowerCase()
                         .includes(this.documentsSearch.trim().toLowerCase())
                 );
@@ -35,25 +63,74 @@ export class RegistryStore {
         return documents;
     }
 
+    get filteredViolations() {
+        let violations = this.violations.slice();
+        if (this.violationsSearch) {
+            violations = violations.filter((violation) => {
+                return (
+                    violation.name
+                        .toLowerCase()
+                        .includes(this.violationsSearch.trim().toLowerCase()) ||
+                    violation.kind
+                        .toLowerCase()
+                        .includes(this.violationsSearch.trim().toLowerCase()) ||
+                    violation.category
+                        ?.toLowerCase()
+                        .includes(this.violationsSearch.trim().toLowerCase()) ||
+                    violation.severityType
+                        .toLowerCase()
+                        .includes(this.violationsSearch.trim().toLowerCase())
+                );
+            });
+        }
+        return violations;
+    }
+
+    get filteredWorks() {
+        let works = this.works.slice();
+        if (this.worksSearch) {
+            works = works.filter((work) => {
+                return (
+                    work.name.toLowerCase().includes(this.worksSearch.trim().toLowerCase()) ||
+                    work.classificationCode
+                        ?.toLowerCase()
+                        .includes(this.worksSearch.trim().toLowerCase())
+                );
+            });
+        }
+        return works;
+    }
+
     async fetchAllDocuments() {
         this.loading = true;
-        this.documents = [
-            {
-                id: "1",
-                statement: "П. 6.25. СП82.13330.2016",
-                name: "«Благоустройство территорий»",
-            },
-            {
-                id: "2",
-                statement: "П. 5.5.2. ГОСТ 13015-2012",
-                name: "«Изделия бетонные и железобетонные для строительства. Общие технические требования. Правила приёмки, маркировки, транспортирования и хранения»",
-            },
-            {
-                id: "3",
-                statement: "П. 4.1.3.8. Постановление Правительства Москвы от 10.09.2002 №743-ПП",
-                name: "«Правила создания, содержания и охраны зеленых насаждений и природных сообществ г. Москвы»",
-            },
-        ];
+        const response = await this.apiClient.get<NormativeDocument[]>(
+            endpoints.dictionaries.normativeDocuments,
+        );
+        if (response.status) {
+            this.documents = response.data;
+        }
+        this.loading = false;
+    }
+
+    async fetchAllViolations() {
+        this.loading = true;
+        const response = await this.apiClient.get<ConstructionViolation[]>(
+            endpoints.dictionaries.constructionViolations,
+        );
+        if (response.status) {
+            this.violations = response.data;
+        }
+        this.loading = false;
+    }
+
+    async fetchAllWorks() {
+        this.loading = true;
+        const response = await this.apiClient.get<ConstructionWork[]>(
+            endpoints.dictionaries.constructionWorks,
+        );
+        if (response.status) {
+            this.works = response.data;
+        }
         this.loading = false;
     }
 }
