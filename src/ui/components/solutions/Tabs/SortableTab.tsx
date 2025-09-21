@@ -6,7 +6,7 @@ import styles from "src/ui/components/solutions/Tabs/Tabs.module.scss";
 import { TypoVariant } from "src/ui/components/atoms/Typo/Typo.types.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
-import React, { cloneElement, isValidElement, ReactNode } from "react";
+import React, { cloneElement, CSSProperties, isValidElement, ReactNode } from "react";
 import { observer } from "mobx-react-lite";
 
 export interface SortableTabProps<T> {
@@ -20,6 +20,7 @@ export interface SortableTabProps<T> {
     reorderCard?: boolean;
     noBottomBorder?: boolean;
     compact?: boolean;
+    tabPaddingBottom?: CSSProperties["paddingBottom"];
 }
 
 export const SortableTab = observer(<T,>(props: SortableTabProps<T>) => {
@@ -73,6 +74,9 @@ export const SortableTab = observer(<T,>(props: SortableTabProps<T>) => {
                         noBottomBorder && styles.noBottomBorder,
                     )}
                     key={tab.name}
+                    style={{
+                        paddingBottom: props.tabPaddingBottom,
+                    }}
                 >
                     {renderTabContent(tab)}
                 </div>

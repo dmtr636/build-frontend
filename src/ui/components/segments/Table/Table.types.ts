@@ -4,9 +4,11 @@ export interface ITableColumn<T> {
     name: ReactNode;
     field: string;
     width: number;
-    render: (data: T) => ReactNode;
+    render: (data: T, hovered?: boolean) => ReactNode;
     index?: boolean;
     sort?: boolean;
+    resizable?: boolean;
+    wrap?: boolean;
 }
 
 export type ITableSize = "large" | "compact";

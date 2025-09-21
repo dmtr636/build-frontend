@@ -103,7 +103,7 @@ const Header = () => {
                             <div className={styles.linkItemIcon}>
                                 <IconInfo />
                             </div>
-                            Реестр
+                            Справочники
                         </div>
                     )}
                 </NavLink>

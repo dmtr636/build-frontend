@@ -17,6 +17,7 @@ interface IProps<T> {
     setActiveSortDirection?: (activeSort: string) => void;
     tableSettings: ITableSettings;
     onChangeTableSettings: (settings: ITableSettings) => void;
+    headerRowHasBorderRadius?: boolean;
 }
 
 export const TableHeaderCell = observer(<T,>(props: IProps<T>) => {
@@ -99,6 +100,7 @@ export const TableHeaderCell = observer(<T,>(props: IProps<T>) => {
                     isActive && styles.active,
                     props.column.index && styles.index,
                     props.scrolledX && styles.scrolledX,
+                    props.headerRowHasBorderRadius && styles.headerRowHasBorderRadius,
                 )}
                 style={{
                     width,
@@ -120,6 +122,9 @@ export const TableHeaderCell = observer(<T,>(props: IProps<T>) => {
                     onMouseDown={handleMouseDown}
                     className={styles.dragHandleContainer}
                     onClick={(e) => e.stopPropagation()}
+                    style={{
+                        pointerEvents: (props.column.resizable ?? true) ? undefined : "none",
+                    }}
                 >
                     <div className={styles.dragHandle} />
                 </div>
@@ -133,6 +138,7 @@ export const TableHeaderCell = observer(<T,>(props: IProps<T>) => {
                 styles.cell,
                 props.column.index && styles.index,
                 props.scrolledX && styles.scrolledX,
+                props.headerRowHasBorderRadius && styles.headerRowHasBorderRadius,
             )}
             style={{
                 width,
@@ -145,6 +151,9 @@ export const TableHeaderCell = observer(<T,>(props: IProps<T>) => {
                 onMouseDown={handleMouseDown}
                 className={styles.dragHandleContainer}
                 onClick={(e) => e.stopPropagation()}
+                style={{
+                    pointerEvents: (props.column.resizable ?? true) ? undefined : "none",
+                }}
             >
                 <div className={styles.dragHandle} />
             </div>

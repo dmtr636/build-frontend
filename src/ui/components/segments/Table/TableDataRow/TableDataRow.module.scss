@@ -5,13 +5,27 @@
 
     &.large {
         height: var(--row-height-large, 76px);
+
+        &.dynamicRowHeight {
+            height: auto;
+            min-height: var(--row-height-large, 76px);
+        }
     }
 
     &.compact {
         height: 41px;
+
+        &.dynamicRowHeight {
+            height: auto;
+            min-height: 41px;
+        }
     }
 
     &:not(&.last) {
         border-bottom: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    }
+
+    &.clickable {
+        cursor: pointer;
     }
 }

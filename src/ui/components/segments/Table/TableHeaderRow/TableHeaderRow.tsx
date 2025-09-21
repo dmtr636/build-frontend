@@ -14,6 +14,7 @@ interface IProps<T> {
     setActiveSortDirection?: (activeSort: string) => void;
     tableSettings: ITableSettings;
     onChangeTableSettings: (settings: ITableSettings) => void;
+    headerRowHasBorderRadius?: boolean;
 }
 
 export const TableHeaderRow = observer(<T,>(props: IProps<T>) => {
@@ -30,11 +31,18 @@ export const TableHeaderRow = observer(<T,>(props: IProps<T>) => {
                 flexGrow={index === props.columns.length - 1 ? 1 : 0}
                 tableSettings={props.tableSettings}
                 onChangeTableSettings={props.onChangeTableSettings}
+                headerRowHasBorderRadius={props.headerRowHasBorderRadius}
             />
         ));
 
     return (
-        <div className={clsx(styles.row, props.scrolledY && styles.scrolledY)}>
+        <div
+            className={clsx(
+                styles.row,
+                props.scrolledY && styles.scrolledY,
+                props.headerRowHasBorderRadius && styles.headerRowHasBorderRadius,
+            )}
+        >
             {renderContent()}
         </div>
     );

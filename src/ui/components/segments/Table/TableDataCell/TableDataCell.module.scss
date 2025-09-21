@@ -26,5 +26,18 @@
     &:not(:last-child) {
         border-right: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
     }
+
+    &.dynamicRowHeight {
+        padding-top: 9px;
+        padding-bottom: 9px;
+        height: auto;
+    }
 }
 
+div:hover > .cell {
+    background: darker-hover($objects-background-contrast-primary);
+}
+
+div:active > .cell {
+    background: darker-pressing($objects-background-contrast-primary);
+}

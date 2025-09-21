@@ -46,6 +46,7 @@ export interface TabsProps<T> {
     reorderCard?: boolean;
     noBottomBorder?: boolean;
     compact?: boolean;
+    tabPaddingBottom?: CSSProperties["paddingBottom"];
 }
 
 export const Tabs = observer(<T = string,>(props: TabsProps<T>) => {

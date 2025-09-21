@@ -14,12 +14,15 @@ interface ITableProps<T> {
     tableSettings: ITableSettings;
     onChangeTableSettings: (settings: ITableSettings) => void;
     onRowSelect?: (data: T, index: number) => void;
+    onRowClick?: (data: T, index: number) => void;
     rowLink?: (data: T) => string;
     activeSortField?: string;
     setActiveSortField?: (activeSort: string) => void;
     activeSortDirection?: string;
     setActiveSortDirection?: (activeSort: string) => void;
     selectedIndex?: number | null;
+    dynamicRowHeight?: boolean;
+    headerRowHasBorderRadius?: boolean;
 }
 
 export const Table = observer(<T extends object>(props: ITableProps<T>) => {
@@ -32,7 +35,10 @@ export const Table = observer(<T extends object>(props: ITableProps<T>) => {
     return (
         <div className={styles.tableWrapper}>
             <div
-                className={styles.tableHeaderWrapper}
+                className={clsx(
+                    styles.tableHeaderWrapper,
+                    props.headerRowHasBorderRadius && styles.headerRowHasBorderRadius,
+                )}
                 ref={tableHeaderWrapperRef}
                 onScroll={(event) => {
                     event.preventDefault();
@@ -48,6 +54,7 @@ export const Table = observer(<T extends object>(props: ITableProps<T>) => {
                     setActiveSortDirection={props.setActiveSortDirection}
                     tableSettings={props.tableSettings}
                     onChangeTableSettings={props.onChangeTableSettings}
+                    headerRowHasBorderRadius={props.headerRowHasBorderRadius}
                 />
             </div>
             {!props.data.length && (
@@ -79,12 +86,18 @@ export const Table = observer(<T extends object>(props: ITableProps<T>) => {
                                     ? (data) => props.onRowSelect?.(data, index)
                                     : undefined
                             }
+                            onRowClick={
+                                props.onRowClick
+                                    ? (data) => props.onRowClick?.(data, index)
+                                    : undefined
+                            }
                             rowLink={props.rowLink}
                             tableSettings={props.tableSettings}
                             scrolledX={scrolledX}
                             selected={props.selectedIndex === index}
                             key={"id" in props.data[index] ? `${props.data[index]["id"]}` : index}
                             last={index === props.data.length - 1}
+                            dynamicRowHeight={props.dynamicRowHeight}
                         />
                     )}
                     onScroll={(event) => {

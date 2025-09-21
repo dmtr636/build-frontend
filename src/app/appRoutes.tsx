@@ -8,7 +8,10 @@ import { LoginPageWrapper } from "src/features/auth/LoginPageWrapper.tsx";
 import { EventsPage } from "src/features/events/EventsPage";
 import { OrganizationsPage } from "src/features/organizations/OrganizationsPage.tsx";
 import UserPage from "src/features/users/pages/UserPage/UserPage.tsx";
-import { RegistryPage } from "src/features/registry";
+import { RegistryPage } from "src/features/registry/pages";
+import { RegulatoryDocuments } from "src/features/registry/pages/regulatoryDocuments";
+import { Violations } from "src/features/registry/pages/violations";
+import { Works } from "src/features/registry/pages/works";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -56,6 +59,26 @@ export const appRoutes: RouteObject[] = [
             {
                 path: "/admin/registry",
                 element: <RegistryPage />,
+                children: [
+                    {
+                        index: true,
+                        element: (
+                            <Navigate to={"/admin/registry/regulatory-documents"} replace={true} />
+                        ),
+                    },
+                    {
+                        path: "/admin/registry/regulatory-documents",
+                        element: <RegulatoryDocuments />,
+                    },
+                    {
+                        path: "/admin/registry/violations",
+                        element: <Violations />,
+                    },
+                    {
+                        path: "/admin/registry/works",
+                        element: <Works />,
+                    },
+                ],
             },
         ],
     },

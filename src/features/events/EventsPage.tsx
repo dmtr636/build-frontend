@@ -294,6 +294,7 @@ export const EventsPage = observer(() => {
                                             render: (data: IEvent) => {
                                                 return getUserLink(data.userId);
                                             },
+                                            resizable: false,
                                         },
                                         {
                                             name: "Дата и время",
@@ -321,6 +322,7 @@ export const EventsPage = observer(() => {
                                                     </Grid>
                                                 );
                                             },
+                                            resizable: false,
                                         },
                                         ...(eventsStore.tab === "work"
                                             ? [
@@ -331,6 +333,7 @@ export const EventsPage = observer(() => {
                                                       render: (data: IEvent) => {
                                                           return data.objectId;
                                                       },
+                                                      resizable: false,
                                                   },
                                               ]
                                             : []),
@@ -376,6 +379,7 @@ export const EventsPage = observer(() => {
                                                     </Typo>
                                                 );
                                             },
+                                            resizable: false,
                                         },
                                     ]}
                                 />

@@ -58,13 +58,15 @@
 }
 
 .containerError {
-    margin-top: 40px;
+    margin-top: 80px;
     width: 278px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     align-self: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .iconError {
