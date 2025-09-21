@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { appStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore } from "src/app/AppStore.ts";
 import UserItemList from "src/features/users/components/UserItemList/UserItemList.tsx";
 import styles from "./UsersPage.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
@@ -588,7 +588,12 @@ export const UsersPage = observer(() => {
                         </SingleDropdownList>
                     </div>
                 </div>
-                <div className={clsx(styles.containerHeader, { [styles.scrolled]: scrolled })}>
+                <div
+                    className={clsx(styles.containerHeader, {
+                        [styles.scrolled]: scrolled,
+                        [styles.windowScrolled]: layoutStore.scrolled,
+                    })}
+                >
                     {filteredUsers.length > 0 && (
                         <div className={styles.headFilters}>
                             <div className={styles.count}>

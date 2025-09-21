@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Header from "src/features/layout/components/Header/Header.tsx";
 import { Outlet } from "react-router-dom";
 import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvider.tsx";
-import { appStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore } from "src/app/AppStore.ts";
 import styles from "./styles.module.scss";
 import { observer } from "mobx-react-lite";
 import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
@@ -28,15 +28,21 @@ const AdminPageWrapper = observer(() => {
             );
         };
 
+        const checkScrolling = () => {
+            layoutStore.scrolled = document.documentElement.scrollTop > 0;
+        };
+
         const ro = new ResizeObserver(() => {
             checkOverflowed();
         });
         if (containerRef.current) {
             ro.observe(containerRef.current);
         }
+        document.addEventListener("scroll", checkScrolling);
 
         return () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
+            document.removeEventListener("scroll", checkScrolling);
             if (containerRef.current) {
                 ro.unobserve(containerRef.current);
             }
