@@ -3,7 +3,7 @@ export interface User {
     login: string;
     password?: string;
     role: "ROOT" | "ADMIN" | "USER";
-    position?: string;
+    position?: string | null;
     name?: string;
     lastName?: string | null;
     firstName?: string | null;
