@@ -80,6 +80,33 @@
     }
 }
 
+.emptyForm {
+    display: flex;
+    width: 294px;
+    position: relative;
+    height: 650px;
+    flex-direction: column;
+    /*
+  justify-content: center;
+  */
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #f9fafb;
+    color: var(--objects-text-neutral-tertiary, #444d5f);
+    text-align: center;
+
+    /* Subhead/XL */
+    font-family: Manrope;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%; /* 22.1px */
+    @media screen and (min-width: 1500px) {
+        width: 400px;
+    }
+}
+
 .errorText {
     width: 206px;
     text-align: center;

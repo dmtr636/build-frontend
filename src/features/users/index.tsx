@@ -33,6 +33,9 @@ import { Helmet } from "react-helmet";
 import UserForm from "src/features/users/components/UserForm/UserForm.tsx";
 import { formatDateShort } from "src/shared/utils/date.ts";
 import { clsx } from "clsx";
+import { IconBuildArrow, IconBuildPhoto } from "src/features/users/components/UserCard/assets";
+import { IconPlaceholderArrow, IconPlaceholderFlag } from "src/features/organizations/assets";
+import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 
 export interface SortOption {
     field: "createDate" | "name" | "group" | "role";
@@ -608,8 +611,34 @@ export const UsersPage = observer(() => {
                 <div className={clsx(styles.containerList)}>{renderContent}</div>
             </div>
             <div className={styles.userCard}>
-                {currentUser && (
+                {currentUser ? (
                     <UserCard clearUser={() => setCurrentUser(undefined)} userId={currentUser.id} />
+                ) : (
+                    <div className={styles.emptyForm}>
+                        <FlexColumn
+                            gap={6}
+                            align={"center"}
+                            style={{ position: "absolute", top: 293 }}
+                        >
+                            <IconBuildArrow
+                                style={{
+                                    position: "absolute",
+                                    top: -65,
+                                    transform: "translate(-10px, 0)",
+                                }}
+                            />
+                            <IconBuildPhoto />
+
+                            <Typo
+                                variant={"subheadXL"}
+                                type={"tertiary"}
+                                mode={"neutral"}
+                                style={{ textAlign: "center" }}
+                            >
+                                {"Выберите пользователя\nиз списка"}
+                            </Typo>
+                        </FlexColumn>
+                    </div>
                 )}
             </div>
             <UserForm open={openCreate} setOpen={setOpenCreate} />
