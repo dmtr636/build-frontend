@@ -51,7 +51,7 @@ const Header = () => {
                             <div className={styles.linkItemIcon}>
                                 <IconProject />
                             </div>
-                            Журнал
+                            Объекты
                         </div>
                     )}
                 </NavLink>
