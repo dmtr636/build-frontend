@@ -36,6 +36,8 @@ import { Divider } from "src/ui/components/atoms/Divider/Divider.tsx";
 import { OrganizationForm } from "src/features/organizations/OrganizationForm/OrganizationForm.tsx";
 import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
 import UserForm from "src/features/users/components/UserForm/UserForm.tsx";
+import { clsx } from "clsx";
+import { IconPlaceholderArrow, IconPlaceholderFlag } from "src/features/organizations/assets";
 
 export const OrganizationsPage = observer(() => {
     const [showSortDropdown, setShowSortDropdown] = useState(false);
@@ -191,44 +193,76 @@ export const OrganizationsPage = observer(() => {
                 <title>Организации – Build</title>
             </Helmet>
             <div className={styles.leftCol}>
-                <div className={styles.searchRow}>
-                    <Button
-                        fullWidth={true}
-                        size={"large"}
-                        mode={"neutral"}
-                        iconBefore={<IconPlus />}
-                        onClick={() => {
-                            organizationsStore.showAddOverlay = true;
-                        }}
-                    >
-                        Новая организация
-                    </Button>
-                    <ExplorationInput
-                        onInputChange={(value) => (organizationsStore.search = value)}
-                        inputValue={organizationsStore.search}
-                        size={"large"}
-                        inputPlaceholder={"Найти по названию"}
-                    />
-                    <SingleDropdownList
-                        show={showSortDropdown}
-                        setShow={setShowSortDropdown}
-                        options={dropDownSortOptions}
-                        maxHeight={500}
-                        hideTip={true}
-                        tipPosition={"top-right"}
-                    >
-                        <span>
-                            <Tooltip header={showSortDropdown ? "" : "Сортировка"} delay={500}>
-                                <Button
-                                    size={"large"}
-                                    iconBefore={showSortDropdown ? <IconClose /> : <IconSorting />}
-                                    type={showSortDropdown ? "primary" : "outlined"}
-                                    mode={"neutral"}
-                                ></Button>
-                            </Tooltip>
-                        </span>
-                    </SingleDropdownList>
-                </div>
+                <FlexColumn gap={12} className={styles.searchRowWrapper}>
+                    <div className={styles.searchRow}>
+                        <Button
+                            fullWidth={true}
+                            size={"large"}
+                            mode={"neutral"}
+                            iconBefore={<IconPlus />}
+                            onClick={() => {
+                                organizationsStore.showAddOverlay = true;
+                            }}
+                        >
+                            Новая организация
+                        </Button>
+                        <ExplorationInput
+                            onInputChange={(value) => (organizationsStore.search = value)}
+                            inputValue={organizationsStore.search}
+                            size={"large"}
+                            inputPlaceholder={"Найти по названию"}
+                        />
+                        <SingleDropdownList
+                            show={showSortDropdown}
+                            setShow={setShowSortDropdown}
+                            options={dropDownSortOptions}
+                            maxHeight={500}
+                            hideTip={true}
+                            tipPosition={"top-right"}
+                        >
+                            <span>
+                                <Tooltip header={showSortDropdown ? "" : "Сортировка"} delay={500}>
+                                    <Button
+                                        size={"large"}
+                                        iconBefore={
+                                            showSortDropdown ? <IconClose /> : <IconSorting />
+                                        }
+                                        type={showSortDropdown ? "primary" : "outlined"}
+                                        mode={"neutral"}
+                                    ></Button>
+                                </Tooltip>
+                            </span>
+                        </SingleDropdownList>
+                    </div>
+                    {organizationsStore.filteredOrganizations.length > 0 && (
+                        <div className={styles.headFilters}>
+                            <div className={styles.count}>
+                                <span style={{ opacity: 0.6 }}>Отображается</span>
+                                <span className={styles.countItem}>
+                                    {organizationsStore.filteredOrganizations.length}{" "}
+                                    {numDecl(organizationsStore.filteredOrganizations.length, [
+                                        "организация",
+                                        "организации",
+                                        "организаций",
+                                    ])}
+                                </span>
+                            </div>
+
+                            <div className={styles.count} style={{ marginLeft: "auto" }}>
+                                <span style={{ opacity: 0.6 }}>Сортируется</span>
+                                <span className={styles.countItem}>
+                                    {organizationsStore.sort.field === "name" &&
+                                        `По алфавиту, от ${organizationsStore.sort.direction === "asc" ? "А - Я" : "Я - А"}`}
+                                    {organizationsStore.sort.field === "date" &&
+                                        `По дате создания, ${organizationsStore.sort.direction === "asc" ? "сначала старые" : "сначала новые"}`}
+                                    {organizationsStore.sort.field === "count" &&
+                                        `По количеству сотрудников, ${organizationsStore.sort.direction === "asc" ? "по возрастанию" : "по убыванию"}`}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                </FlexColumn>
+
                 {organizationsStore.search && !organizationsStore.filteredOrganizations.length && (
                     <div className={styles.containerError}>
                         <IconError className={styles.iconError} />
@@ -272,6 +306,29 @@ export const OrganizationsPage = observer(() => {
                     ))}
                 </div>
             </div>
+            {!currentOrg && (
+                <div className={clsx(styles.orgCard, styles.placeholder)}>
+                    <FlexColumn gap={6} align={"center"} style={{ position: "absolute" }}>
+                        <IconPlaceholderArrow
+                            style={{
+                                position: "absolute",
+                                top: -65,
+                                transform: "translate(-10px, 0)",
+                            }}
+                        />
+                        <IconPlaceholderFlag />
+
+                        <Typo
+                            variant={"subheadXL"}
+                            type={"tertiary"}
+                            mode={"neutral"}
+                            style={{ textAlign: "center" }}
+                        >
+                            {"Выберите организацию\nиз списка"}
+                        </Typo>
+                    </FlexColumn>
+                </div>
+            )}
             {organizationsStore.currentOrganizationId && currentOrg && (
                 <div ref={orgCardRef} className={`${styles.orgCard}`}>
                     <Tooltip header={"Редактировать"} delay={500}>
