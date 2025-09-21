@@ -259,7 +259,7 @@ const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
                     </div>
                     <div style={{ display: "flex", gap: 4 }}>
                         <span style={{ opacity: 0.5 }}>Пользователь добавлен </span>
-                        {formatDateShort(user?.createDate)}
+                        {formatDateShort(user?.createdAt)}
                     </div>
                 </div>
             </div>

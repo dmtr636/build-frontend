@@ -38,7 +38,7 @@ import { IconPlaceholderArrow, IconPlaceholderFlag } from "src/features/organiza
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 
 export interface SortOption {
-    field: "createDate" | "name" | "group" | "role";
+    field: "createdAt" | "name" | "group" | "role";
     order: "asc" | "desc";
     label: string;
 }
@@ -80,9 +80,9 @@ function sortItems(items: User[], sortOption: { field: string; order: "asc" | "d
 
             aValue = getFullName(a);
             bValue = getFullName(b);
-        } else if (field === "createDate") {
-            const aDate = a.createDate ? new Date(a.createDate).getTime() : 0;
-            const bDate = b.createDate ? new Date(b.createDate).getTime() : 0;
+        } else if (field === "createdAt") {
+            const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
             return order === "desc" ? aDate - bDate : bDate - aDate;
         } else {
             aValue = (a as any)[field] ?? "";
@@ -154,11 +154,11 @@ export const UsersPage = observer(() => {
             name: "Сначала новые",
             mode: "neutral",
             pale: true,
-            disabled: isSelected("createDate", "asc"),
-            iconAfter: isSelected("createDate", "asc") ? <IconCheckmark /> : undefined,
+            disabled: isSelected("createdAt", "asc"),
+            iconAfter: isSelected("createdAt", "asc") ? <IconCheckmark /> : undefined,
             onClick: () => {
                 onChangeSort({
-                    field: "createDate",
+                    field: "createdAt",
                     order: "asc",
                     label: "По дате создания, сначала новые",
                 });
@@ -168,11 +168,11 @@ export const UsersPage = observer(() => {
             name: "Сначала старые",
             mode: "neutral",
             pale: true,
-            disabled: isSelected("createDate", "desc"),
-            iconAfter: isSelected("createDate", "desc") ? <IconCheckmark /> : undefined,
+            disabled: isSelected("createdAt", "desc"),
+            iconAfter: isSelected("createdAt", "desc") ? <IconCheckmark /> : undefined,
             onClick: () => {
                 onChangeSort({
-                    field: "createDate",
+                    field: "createdAt",
                     order: "desc",
                     label: "По дате создания, сначала старые",
                 });
@@ -454,7 +454,7 @@ export const UsersPage = observer(() => {
             displayLabel: "Личный телефон",
         },
         {
-            key: "createDate",
+            key: "createdAt",
             displayLabel: "Регистрация в системе",
             width: 25,
         },

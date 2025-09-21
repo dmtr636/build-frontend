@@ -298,7 +298,7 @@ export const EventsPage = observer(() => {
                                         },
                                         {
                                             name: "Дата и время",
-                                            field: "date",
+                                            field: "createdAt",
                                             width: 152,
                                             sort: true,
                                             render: (data: IEvent) => {
@@ -309,7 +309,7 @@ export const EventsPage = observer(() => {
                                                         align={"center"}
                                                     >
                                                         <Typo variant={"bodyL"}>
-                                                            {formatDateShort(data.date)}
+                                                            {formatDateShort(data.createdAt)}
                                                         </Typo>
                                                         <Typo
                                                             variant={"bodyL"}
@@ -317,7 +317,7 @@ export const EventsPage = observer(() => {
                                                             mode={"neutral"}
                                                             style={{ textAlign: "center" }}
                                                         >
-                                                            {formatTime(data.date)}
+                                                            {formatTime(data.createdAt)}
                                                         </Typo>
                                                     </Grid>
                                                 );

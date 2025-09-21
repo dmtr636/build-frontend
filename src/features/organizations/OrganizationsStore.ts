@@ -44,11 +44,11 @@ export class OrganizationsStore {
                     ? b.name.localeCompare(a.name)
                     : a.name.localeCompare(b.name);
             });
-        } else if (this.sort.field === "date") {
+        } else if (this.sort.field === "createdAt") {
             organizations.sort((a, b) => {
                 return this.sort.direction === "desc"
-                    ? b.date.localeCompare(a.date)
-                    : a.date.localeCompare(b.date);
+                    ? b.createdAt.localeCompare(a.createdAt)
+                    : a.createdAt.localeCompare(b.createdAt);
             });
         } else if (this.sort.field === "count") {
             organizations.sort((a, b) => {

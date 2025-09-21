@@ -22,7 +22,7 @@ interface UserItemCardProps {
     enabled?: boolean;
     onClick?: () => void;
     onClickChat?: () => void;
-    createDate?: string;
+    createdAt?: string;
     sortByDate?: boolean;
     isOpen?: boolean;
     user?: User;
@@ -55,7 +55,7 @@ const UserItemCard = observer(
     }: UserItemCardProps) => {
         const ref = useRef<HTMLDivElement | null>(null);
         const additionalRow =
-            sortOption?.field === "createDate" ||
+            sortOption?.field === "createdAt" ||
             (sortOption?.field === "role" && sortOption.order === "desc");
         const initials = position
             ?.split(" ")
@@ -153,7 +153,7 @@ const UserItemCard = observer(
                     {sortByDate && (
                         <div className={styles.date}>
                             <span style={{ opacity: 0.5 }}>Пользователь добавлен </span>
-                            <span>{formatDateShort(user?.createDate ?? "")}</span>
+                            <span>{formatDateShort(user?.createdAt ?? "")}</span>
                         </div>
                     )}
                     {sortOption?.field === "role" && sortOption.order === "desc" && (

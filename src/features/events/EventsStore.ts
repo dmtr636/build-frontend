@@ -27,7 +27,7 @@ export class EventsStore {
     loading = false;
     apiClient = new ApiClient();
     sort = {
-        field: "date",
+        field: "createdAt",
         direction: "desc",
     };
     filters = initialFilter;
@@ -37,7 +37,7 @@ export class EventsStore {
         compactMode: true,
         quickView: false,
         openPageInNewTab: true,
-        columns: ["userId", "date", "objectId", "action"],
+        columns: ["userId", "createdAt", "objectId", "action"],
         columnWidths: {},
     };
 
@@ -71,8 +71,8 @@ export class EventsStore {
         } else {
             events.sort((a, b) => {
                 return this.sort.direction === "desc"
-                    ? b.date.localeCompare(a.date)
-                    : a.date.localeCompare(b.date);
+                    ? b.createdAt.localeCompare(a.createdAt)
+                    : a.createdAt.localeCompare(b.createdAt);
             });
         }
         return events;
@@ -93,8 +93,8 @@ export class EventsStore {
                 const user = userStore.usersMap.get(event.userId);
                 const userInitials = getNameInitials(user);
                 const userFullName = getFullName(user);
-                const date = formatDateShort(event.date);
-                const time = formatTime(event.date);
+                const date = formatDateShort(event.createdAt);
+                const time = formatTime(event.createdAt);
                 const localizedAction = event.objectName
                     ? eventActionLocale[event.objectName][event.action]
                     : "";
@@ -110,7 +110,7 @@ export class EventsStore {
         }
         if (this.filters.date) {
             const dateLocaleString = formatDate(this.filters.date);
-            events = events.filter((event) => formatDate(event.date) === dateLocaleString);
+            events = events.filter((event) => formatDate(event.createdAt) === dateLocaleString);
         }
         if (this.filters.userIds?.length) {
             events = events.filter((event) => this.filters.userIds.includes(event.userId));

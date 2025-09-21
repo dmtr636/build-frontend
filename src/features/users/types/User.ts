@@ -14,8 +14,8 @@ export interface User {
     personalPhone?: string;
     imageId?: string;
     organizationId?: string | null;
-    createDate?: string; // ISO date-time
-    updateDate?: string; // ISO date-time
+    createdAt?: string; // ISO date-time
+    updatedAt?: string; // ISO date-time
     info?: Record<string, unknown>;
     company?: string;
 }

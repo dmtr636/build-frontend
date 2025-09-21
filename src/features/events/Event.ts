@@ -5,6 +5,6 @@ export interface IEvent {
     actionType: "system" | "work";
     objectName?: "user" | "organization" | "organization-employees";
     objectId?: string;
-    date: string;
+    createdAt: string;
     info: object;
 }

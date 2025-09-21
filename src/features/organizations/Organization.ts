@@ -5,5 +5,5 @@ export interface Organization {
     name: string;
     employees: User[];
     imageId: string | null;
-    date: string;
+    createdAt: string;
 }

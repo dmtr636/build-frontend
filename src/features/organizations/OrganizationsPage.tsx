@@ -100,11 +100,11 @@ export const OrganizationsPage = observer(() => {
             name: "Сначала новые",
             mode: "neutral",
             pale: true,
-            disabled: isSelected("date", "desc"),
-            iconAfter: isSelected("date", "desc") ? <IconCheckmark /> : undefined,
+            disabled: isSelected("createdAt", "desc"),
+            iconAfter: isSelected("createdAt", "desc") ? <IconCheckmark /> : undefined,
             onClick: () => {
                 organizationsStore.sort = {
-                    field: "date",
+                    field: "createdAt",
                     direction: "desc",
                 };
             },
@@ -113,11 +113,11 @@ export const OrganizationsPage = observer(() => {
             name: "Сначала старые",
             mode: "neutral",
             pale: true,
-            disabled: isSelected("date", "asc"),
-            iconAfter: isSelected("date", "asc") ? <IconCheckmark /> : undefined,
+            disabled: isSelected("createdAt", "asc"),
+            iconAfter: isSelected("createdAt", "asc") ? <IconCheckmark /> : undefined,
             onClick: () => {
                 organizationsStore.sort = {
-                    field: "date",
+                    field: "createdAt",
                     direction: "asc",
                 };
             },
@@ -253,7 +253,7 @@ export const OrganizationsPage = observer(() => {
                                 <span className={styles.countItem}>
                                     {organizationsStore.sort.field === "name" &&
                                         `По алфавиту, от ${organizationsStore.sort.direction === "asc" ? "А - Я" : "Я - А"}`}
-                                    {organizationsStore.sort.field === "date" &&
+                                    {organizationsStore.sort.field === "createdAt" &&
                                         `По дате создания, ${organizationsStore.sort.direction === "asc" ? "сначала старые" : "сначала новые"}`}
                                     {organizationsStore.sort.field === "count" &&
                                         `По количеству сотрудников, ${organizationsStore.sort.direction === "asc" ? "по возрастанию" : "по убыванию"}`}

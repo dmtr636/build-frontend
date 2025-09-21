@@ -22,7 +22,7 @@ const UserItemList = observer(
         const onlineIds = Object.entries<any>(usersOnline)
             .filter(([_, value]) => value.status === "online")
             .map(([id]) => id);
-        type SortField = "createDate" | "name" | "group" | "role";
+        type SortField = "createdAt" | "name" | "group" | "role";
         type SortOrder = "asc" | "desc";
         console.log(appStore.organizationsStore.organizationById(""));
 
@@ -58,7 +58,7 @@ const UserItemList = observer(
                                             onClick={() => onClick(u)}
                                             key={index}
                                             name={splitFullName(u)}
-                                            sortByDate={sortOption.field === "createDate"}
+                                            sortByDate={sortOption.field === "createdAt"}
                                             position={u.position}
                                             sortOption={sortOption}
                                             image={u.imageId}
@@ -103,7 +103,7 @@ const UserItemList = observer(
                                                 onClick={() => onClick(u)}
                                                 key={index}
                                                 name={splitFullName(u)}
-                                                sortByDate={sortOption.field === "createDate"}
+                                                sortByDate={sortOption.field === "createdAt"}
                                                 position={u.position}
                                                 sortOption={sortOption}
                                                 image={u.imageId}
@@ -123,7 +123,7 @@ const UserItemList = observer(
                                         onClick={() => onClick(u)}
                                         key={index}
                                         name={splitFullName(u)}
-                                        sortByDate={sortOption.field === "createDate"}
+                                        sortByDate={sortOption.field === "createdAt"}
                                         position={u.position}
                                         sortOption={sortOption}
                                         image={u.imageId}
@@ -135,7 +135,7 @@ const UserItemList = observer(
                         );
                     }
 
-                case "createDate":
+                case "createdAt":
                 case "name":
                 default:
                     return (
@@ -146,7 +146,7 @@ const UserItemList = observer(
                                     onClick={() => onClick(u)}
                                     key={index}
                                     name={splitFullName(u)}
-                                    sortByDate={sortOption.field === "createDate"}
+                                    sortByDate={sortOption.field === "createdAt"}
                                     position={u.position}
                                     sortOption={sortOption}
                                     image={u.imageId}

@@ -28,7 +28,7 @@ interface UserItemCardProps {
     onClick?: () => void;
     onClickChat?: () => void;
     onDelete?: () => void;
-    createDate?: string;
+    createdAt?: string;
     sortByDate?: boolean;
     isOpen?: boolean;
     user?: User;
@@ -53,7 +53,7 @@ const UserItemCard = observer(
         enabled,
         onClick,
         onClickChat,
-        createDate,
+        createdAt,
         sortByDate,
         isOpen,
         user,
@@ -165,7 +165,7 @@ const UserItemCard = observer(
                     </Tooltip>
                     {sortByDate && (
                         <div className={styles.date}>
-                            Пользователь добавлен <span>{createDate}</span>
+                            Пользователь добавлен <span>{createdAt}</span>
                         </div>
                     )}
                     <div className={styles.otherInfo}>
