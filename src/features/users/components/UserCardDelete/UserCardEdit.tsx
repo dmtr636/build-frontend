@@ -25,6 +25,11 @@ interface UserFormProps {
     currentUser: User;
 }
 
+const normalizePhone = (value?: string | null): string => {
+    if (!value || value.trim() === "" || value === "+7") return "";
+    return value;
+};
+
 const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
     const [userImg, setUserImg] = useState<string | null>(null);
     const [firstName, setFirstName] = useState<string>("");
@@ -120,17 +125,17 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
     }, [currentUser]);
     const shouldBlockButton = (): boolean => {
         return (
-            userImg !== (currentUser.imageId ?? null) ||
-            firstName !== (currentUser.firstName ?? "") ||
-            lastName !== (currentUser.lastName ?? "") ||
-            patronymic !== (currentUser.patronymic ?? "") ||
-            email !== (currentUser.email ?? "") ||
-            messager !== (currentUser.messenger ?? "") ||
-            phone !== (currentUser.personalPhone ?? "") ||
-            workphone !== (currentUser.workPhone ?? "") ||
-            position !== (currentUser.position ?? null) ||
-            company !== (currentUser.organizationId ?? "") ||
-            role !== currentUser.role
+            userImg !== (currentUser?.imageId ?? null) ||
+            firstName !== (currentUser?.firstName ?? "") ||
+            lastName !== (currentUser?.lastName ?? "") ||
+            patronymic !== (currentUser?.patronymic ?? "") ||
+            email !== (currentUser?.email ?? "") ||
+            messager !== (currentUser?.messenger ?? "") ||
+            normalizePhone(phone) !== normalizePhone(currentUser?.personalPhone) ||
+            normalizePhone(workphone) !== normalizePhone(currentUser?.workPhone) ||
+            position !== currentUser?.position ||
+            company !== currentUser?.organizationId ||
+            role !== currentUser?.role
         );
     };
 
