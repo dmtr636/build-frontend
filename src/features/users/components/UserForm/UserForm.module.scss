@@ -2,14 +2,22 @@
     display: flex;
     width: 976px;
     gap: 24px;
+    position: relative;
+    overflow: auto;
+
+    max-height: 80vh;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .contentPersonal {
     display: flex;
     flex: 1;
     /*
-  justify-content: space-between;
-  */
+justify-content: space-between;
+*/
     gap: 16px;
 }
 
@@ -47,7 +55,7 @@
     flex-wrap: wrap;
     gap: 16px;
     margin-top: 16px;
-    margin-bottom: 100px;
+    margin-bottom: 40px;
 }
 
 .inputContact {
@@ -55,14 +63,30 @@
 }
 
 .footer {
-    position: absolute;
+    /* position: sticky;
+   align-self: flex-end;
+
+   bottom: 0;
+   left: 0;
+   width: 1040px;
+   padding: 20px 32px;
+   display: flex;
+   justify-content: end;
+   gap: 16px;
+   margin-left: -32px;
+   border-radius: 0 0 16px 16px;
+   background: var(--objects-background-neutral-tertiary, #f9fafb);*/
+
+    position: sticky;
     bottom: 0;
-    width: 1040px;
-    padding: 20px 32px;
     display: flex;
-    justify-content: end;
-    gap: 16px;
-    margin-left: -32px;
+    height: 84px;
+    padding: 20px 24px;
+    margin: 0 -32px -24px -32px;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 163px;
+    flex-shrink: 0;
     border-radius: 0 0 16px 16px;
     background: var(--objects-background-neutral-tertiary, #f9fafb);
 }

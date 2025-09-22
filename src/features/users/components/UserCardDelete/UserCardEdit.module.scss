@@ -2,6 +2,14 @@
     display: flex;
     width: 976px;
     gap: 24px;
+    position: relative;
+    overflow: auto;
+
+    max-height: 80vh;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .contentPersonal {
@@ -55,14 +63,16 @@ justify-content: space-between;
 }
 
 .footer {
-    position: absolute;
+    position: sticky;
     bottom: 0;
-    width: 1040px;
-    padding: 20px 32px;
     display: flex;
+    height: 84px;
+    padding: 20px 24px;
+    margin: 0 -32px -24px -32px;
     justify-content: space-between;
-    gap: 16px;
-    margin-left: -32px;
+    align-items: flex-start;
+    gap: 163px;
+    flex-shrink: 0;
     border-radius: 0 0 16px 16px;
     background: var(--objects-background-neutral-tertiary, #f9fafb);
 }
