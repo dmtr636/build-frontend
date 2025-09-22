@@ -13,7 +13,7 @@ import {
     IconSorting,
 } from "src/ui/assets/icons";
 import { ExplorationInput } from "src/ui/components/segments/Exploration/ExplorationInput.tsx";
-import { appStore, eventsStore, organizationsStore, userStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, organizationsStore } from "src/app/AppStore.ts";
 import { DropdownListOption } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
@@ -21,9 +21,7 @@ import OrganizationListCard from "src/features/organizations/OrganizationListCar
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { fileUrl } from "src/shared/utils/file.ts";
-import { Badge } from "src/ui/components/info/Badge/Badge.tsx";
 import { numDecl } from "src/shared/utils/numDecl.ts";
-import { Status } from "src/ui/components/info/Status/Status.tsx";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import { getFullName, getNameInitials } from "src/shared/utils/getFullName.ts";
@@ -193,7 +191,13 @@ export const OrganizationsPage = observer(() => {
                 <title>Организации – Build</title>
             </Helmet>
             <div className={styles.leftCol}>
-                <FlexColumn gap={12} className={styles.searchRowWrapper}>
+                <FlexColumn
+                    gap={12}
+                    className={clsx(
+                        styles.searchRowWrapper,
+                        layoutStore.scrolled && styles.windowScrolled,
+                    )}
+                >
                     <div className={styles.searchRow}>
                         <Button
                             fullWidth={true}
