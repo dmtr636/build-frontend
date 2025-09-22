@@ -18,6 +18,10 @@ export class RegistryStore {
         columns: ["index", "statement", "name"],
         columnWidths: {},
     };
+    documentsForm: Partial<NormativeDocument> = {};
+    editingDocument: NormativeDocument | null = null;
+    deletingDocument: NormativeDocument | null = null;
+    showAddOverlay = false;
 
     violationsSearch = "";
     violations: ConstructionViolation[] = [];
@@ -131,6 +135,30 @@ export class RegistryStore {
         if (response.status) {
             this.works = response.data;
         }
+        this.loading = false;
+    }
+
+    async addDocument(document: Partial<NormativeDocument>) {
+        this.loading = true;
+        await this.apiClient.post<NormativeDocument>(
+            endpoints.dictionaries.normativeDocuments,
+            document,
+        );
+        this.loading = false;
+    }
+
+    async updateDocument(document: Partial<NormativeDocument>) {
+        this.loading = true;
+        await this.apiClient.put<NormativeDocument>(
+            endpoints.dictionaries.normativeDocuments,
+            document,
+        );
+        this.loading = false;
+    }
+
+    async deleteDocument(document: NormativeDocument) {
+        this.loading = true;
+        await this.apiClient.delete(endpoints.dictionaries.normativeDocuments, document.id ?? "");
         this.loading = false;
     }
 }

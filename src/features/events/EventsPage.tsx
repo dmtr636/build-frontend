@@ -290,6 +290,7 @@ export const EventsPage = observer(() => {
                                     setActiveSortField={(activeSort) =>
                                         (eventsStore.sort.field = activeSort)
                                     }
+                                    loading={eventsStore.loading}
                                     columns={[
                                         {
                                             name: "Пользователь",
