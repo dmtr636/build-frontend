@@ -77,7 +77,10 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
             setCompany(initialOrgId);
         }
     }, [initialOrgId]);
-
+    useEffect(() => {
+        resetFields();
+        return () => resetFields();
+    }, [open]);
     const userForm: Partial<User> = {
         firstName,
         lastName,
@@ -109,7 +112,13 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
     const usersEmail = users.map((user) => user.email);
     const emailIsInvalid = !emailValidate(email) || usersEmail.includes(email);
     return (
-        <Overlay open={open} onClose={() => setOpen(false)} title={"Новый пользователь"}>
+        <Overlay
+            open={open}
+            onClose={() => {
+                setOpen(false);
+            }}
+            title={"Новый пользователь"}
+        >
             <div className={styles.container}>
                 <div>
                     <Media
@@ -190,7 +199,11 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
                                     onValueChange={(e) => setPositionValue(e)}
                                     options={usersPositionOptions}
                                     multiple={false}
-                                    placeholder={"Начните писать или выберите из списка"}
+                                    placeholder={
+                                        role === "USER"
+                                            ? "Начните писать или выберите из списка"
+                                            : ""
+                                    }
                                     formName={"Должность"}
                                 ></SingleAutocomplete>
                             </div>

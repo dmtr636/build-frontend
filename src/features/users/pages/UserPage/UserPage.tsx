@@ -218,7 +218,11 @@ const UserPage = observer(() => {
                                         onValueChange={(e) => setPositionValue(e)}
                                         options={usersPositionOptions}
                                         multiple={false}
-                                        placeholder={"Начните писать или выберите из списка"}
+                                        placeholder={
+                                            role === "USER"
+                                                ? "Начните писать или выберите из списка"
+                                                : ""
+                                        }
                                         formName={"Должность"}
                                     ></SingleAutocomplete>
                                 </div>
