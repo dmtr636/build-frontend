@@ -3,7 +3,7 @@ import { Client } from "@stomp/stompjs";
 import { DEBUG, domain } from "src/shared/config/domain.ts";
 import { throttle } from "src/shared/utils/throttle.ts";
 import { store } from "storybook-dark-mode/dist/ts/Tool";
-import { accountStore, organizationsStore, userStore } from "src/app/AppStore.ts";
+import { accountStore, organizationsStore, registryStore, userStore } from "src/app/AppStore.ts";
 import { User } from "src/features/users/types/User.ts";
 
 export interface IWebsocketEvent {
@@ -139,6 +139,54 @@ export class WebsocketStore {
                     }
                     if (event.type === "DELETE") {
                         organizationsStore.organizations = organizationsStore.organizations.filter(
+                            (o) => o.id !== event.data.id,
+                        );
+                    }
+                }
+
+                if (event.objectName === "normative-document") {
+                    if (event.type === "CREATE") {
+                        registryStore.documents.push(event.data);
+                    }
+                    if (event.type === "UPDATE") {
+                        registryStore.documents = registryStore.documents.map((o) =>
+                            o.id === event.data.id ? event.data : o,
+                        );
+                    }
+                    if (event.type === "DELETE") {
+                        registryStore.documents = registryStore.documents.filter(
+                            (o) => o.id !== event.data.id,
+                        );
+                    }
+                }
+
+                if (event.objectName === "construction-violation") {
+                    if (event.type === "CREATE") {
+                        registryStore.violations.push(event.data);
+                    }
+                    if (event.type === "UPDATE") {
+                        registryStore.violations = registryStore.violations.map((o) =>
+                            o.id === event.data.id ? event.data : o,
+                        );
+                    }
+                    if (event.type === "DELETE") {
+                        registryStore.violations = registryStore.violations.filter(
+                            (o) => o.id !== event.data.id,
+                        );
+                    }
+                }
+
+                if (event.objectName === "construction-work") {
+                    if (event.type === "CREATE") {
+                        registryStore.works.push(event.data);
+                    }
+                    if (event.type === "UPDATE") {
+                        registryStore.works = registryStore.works.map((o) =>
+                            o.id === event.data.id ? event.data : o,
+                        );
+                    }
+                    if (event.type === "DELETE") {
+                        registryStore.works = registryStore.works.filter(
                             (o) => o.id !== event.data.id,
                         );
                     }

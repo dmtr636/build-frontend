@@ -7,6 +7,8 @@ import { TableHeaderRow } from "src/ui/components/segments/Table/TableHeaderRow/
 import { CSSProperties, useRef, useState } from "react";
 import { Virtuoso } from "react-virtuoso";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
+import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
+import { SkeletonList } from "src/ui/components/info/Skeleton/SkeletonList.tsx";
 
 interface ITableProps<T> {
     data: T[];
@@ -24,6 +26,7 @@ interface ITableProps<T> {
     dynamicRowHeight?: boolean;
     headerRowHasBorderRadius?: boolean;
     tableHeaderRowStickyTop?: CSSProperties["top"];
+    loading?: boolean;
 }
 
 export const Table = observer(<T extends object>(props: ITableProps<T>) => {
@@ -66,14 +69,14 @@ export const Table = observer(<T extends object>(props: ITableProps<T>) => {
                 <Typo
                     variant={"bodyL"}
                     style={{
-                        padding: "10px 24px",
+                        padding: "12px 24px",
                         borderLeft: "1px solid var(--objects-stroke-neutral-tertiary, #E8EAED)",
                         borderRight: "1px solid var(--objects-stroke-neutral-tertiary, #E8EAED)",
                         borderBottom: "1px solid var(--objects-stroke-neutral-tertiary, #E8EAED)",
                         borderRadius: "0 0 12px 12px",
                     }}
                 >
-                    Здесь пока пусто
+                    {props.loading ? <SkeletonList /> : "Здесь пока пусто"}
                 </Typo>
             )}
             {!!props.data.length && (
