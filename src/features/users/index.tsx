@@ -12,6 +12,7 @@ import {
     IconSearch,
     IconSorting,
     IconUpdate,
+    IconXlsx,
 } from "src/ui/assets/icons";
 import React, { useLayoutEffect, useMemo, useState } from "react";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
@@ -502,7 +503,10 @@ export const UsersPage = observer(() => {
                         fullWidth={true}
                         size={"small"}
                         type={"outlined"}
-                        iconBefore={<IconImport />}
+                        /*
+                        iconBefore={<IconXlsx />}
+*/
+                        customIconBefore={<IconXlsx />}
                         mode={"neutral"}
                         onClick={downloadExcel}
                     >

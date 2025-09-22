@@ -130,8 +130,10 @@ import IconResume from "./Resume.svg?react";
 import IconDote from "./Dote.svg?react";
 import IconUpdate from "./Update.svg?react";
 import IconFlag from "./Flag.svg?react";
+import IconXlsx from "./simple-icons_googlesheets.svg?react";
 
 export {
+    IconXlsx,
     IconUpdate,
     IconDote,
     IconStar,
