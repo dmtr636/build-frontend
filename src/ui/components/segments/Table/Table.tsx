@@ -27,6 +27,7 @@ interface ITableProps<T> {
     headerRowHasBorderRadius?: boolean;
     tableHeaderRowStickyTop?: CSSProperties["top"];
     loading?: boolean;
+    filter?: Record<string, string[]>;
 }
 
 export const Table = observer(<T extends object>(props: ITableProps<T>) => {
@@ -63,6 +64,7 @@ export const Table = observer(<T extends object>(props: ITableProps<T>) => {
                     onChangeTableSettings={props.onChangeTableSettings}
                     headerRowHasBorderRadius={props.headerRowHasBorderRadius}
                     tableHeaderRowStickyTop={props.tableHeaderRowStickyTop}
+                    filter={props.filter}
                 />
             </div>
             {!props.data.length && (

@@ -3,10 +3,13 @@ import { ITableColumn, ITableSettings } from "src/ui/components/segments/Table/T
 import { clsx } from "clsx";
 import styles from "./TableHeaderCell.module.scss";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
-import { IconSorting } from "src/ui/assets/icons";
+import { IconFilter, IconSorting } from "src/ui/assets/icons";
 import { useCallback, useEffect, useState } from "react";
 import { throttle } from "src/shared/utils/throttle.ts";
 import { TooltipTypo } from "src/ui/components/info/TooltipTypo/TooltipTypo.tsx";
+import { PopoverBase } from "src/ui/components/solutions/PopoverBase/PopoverBase.tsx";
+import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
+import { ListItem } from "src/ui/components/controls/ListItem/ListItem.tsx";
 
 interface IProps<T> {
     column: ITableColumn<T>;
@@ -19,6 +22,7 @@ interface IProps<T> {
     tableSettings: ITableSettings;
     onChangeTableSettings: (settings: ITableSettings) => void;
     headerRowHasBorderRadius?: boolean;
+    filter?: Record<string, string[]>;
 }
 
 export const TableHeaderCell = observer(<T,>(props: IProps<T>) => {
@@ -85,6 +89,44 @@ export const TableHeaderCell = observer(<T,>(props: IProps<T>) => {
                                 styles.activeSortingDesc,
                         )}
                     />
+                )}
+                {props.column.filterable && (
+                    <PopoverBase
+                        content={
+                            <FlexColumn style={{ padding: 8 }}>
+                                {props.column.filterOptions?.map((o) => (
+                                    <ListItem
+                                        key={o}
+                                        checked={props.filter?.[props.column.field]?.includes(o)}
+                                        onClick={() => {
+                                            if (props.filter?.[props.column.field]?.includes(o)) {
+                                                props.filter[props.column.field] = props.filter[
+                                                    props.column.field
+                                                ].filter((_o) => _o !== o);
+                                            } else {
+                                                props.filter?.[props.column.field]?.push(o);
+                                            }
+                                        }}
+                                        size={"large"}
+                                        mode={"neutral"}
+                                    >
+                                        {o}
+                                    </ListItem>
+                                ))}
+                            </FlexColumn>
+                        }
+                        triggerEvent={"click"}
+                        mode={"contrast"}
+                    >
+                        <span>
+                            <IconFilter
+                                className={clsx(
+                                    styles.iconFilter,
+                                    props.filter?.[props.column.field]?.length && styles.active,
+                                )}
+                            />
+                        </span>
+                    </PopoverBase>
                 )}
             </>
         );

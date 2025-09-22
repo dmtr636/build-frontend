@@ -36,6 +36,11 @@ export class RegistryStore {
     editingViolation: ConstructionViolation | null = null;
     deletingViolation: ConstructionViolation | null = null;
     addedViolationCategory = "";
+    violationFilter: Record<string, string[]> = {
+        category: [],
+        kind: [],
+        severityType: [],
+    };
 
     worksSearch = "";
     works: ConstructionWork[] = [];
@@ -108,6 +113,14 @@ export class RegistryStore {
         return documents;
     }
 
+    get hasActiveViolationsFilters() {
+        return !!(
+            this.violationFilter.category?.length ||
+            this.violationFilter.kind?.length ||
+            this.violationFilter.severityType?.length
+        );
+    }
+
     get filteredViolations() {
         let violations = this.violations.slice();
         if (this.violationsSearch) {
@@ -127,6 +140,21 @@ export class RegistryStore {
                         .includes(this.violationsSearch.trim().toLowerCase())
                 );
             });
+        }
+        if (this.violationFilter.category?.length) {
+            violations = violations.filter((violation) =>
+                this.violationFilter.category.includes(violation.category),
+            );
+        }
+        if (this.violationFilter.kind?.length) {
+            violations = violations.filter((violation) =>
+                this.violationFilter.kind.includes(violation.kind),
+            );
+        }
+        if (this.violationFilter.severityType?.length) {
+            violations = violations.filter((violation) =>
+                this.violationFilter.severityType.includes(violation.severityType),
+            );
         }
         return violations;
     }

@@ -9,6 +9,8 @@ export interface ITableColumn<T> {
     sort?: boolean;
     resizable?: boolean;
     wrap?: boolean;
+    filterable?: boolean;
+    filterOptions?: string[];
 }
 
 export type ITableSize = "large" | "compact";

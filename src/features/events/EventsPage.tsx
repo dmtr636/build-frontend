@@ -382,7 +382,9 @@ export const EventsPage = observer(() => {
                                                                     data.objectId,
                                                                 )
                                                                     ? ` «${organizationsStore.organizationsMap.get(data.objectId)?.name}»`
-                                                                    : ` «${data.info.name}»`)}
+                                                                    : data.info.name
+                                                                      ? ` «${data.info.name}»`
+                                                                      : "")}
                                                             {data.objectName ===
                                                                 "organization-employees" &&
                                                                 data.objectId &&
@@ -390,7 +392,9 @@ export const EventsPage = observer(() => {
                                                                     data.objectId,
                                                                 )
                                                                     ? ` «${organizationsStore.organizationsMap.get(data.objectId)?.name}»`
-                                                                    : ` «${data.info.name}»`)}
+                                                                    : data.info.name
+                                                                      ? ` «${data.info.name}»`
+                                                                      : "")}
                                                             {data.objectName ===
                                                                 "normative-document" &&
                                                                 data.objectId &&

@@ -25,3 +25,12 @@
     text-align: center;
     margin-top: 8px;
 }
+
+.chipDeleteIcon {
+    opacity: 0.6;
+    margin-left: 4px;
+
+    path {
+        fill: var(--objects-graphic-neutral-tertiary) !important;
+    }
+}

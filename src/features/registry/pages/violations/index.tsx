@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { RegistryHeader } from "src/features/registry/components/RegistryHeader/RegistryHeader.tsx";
-import { registryStore } from "src/app/AppStore.ts";
+import { eventsStore, registryStore, userStore } from "src/app/AppStore.ts";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
 import { ConstructionViolation } from "src/features/registry/types.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { IconBasket, IconEdit, IconError } from "src/ui/assets/icons";
+import { IconBasket, IconClose, IconEdit, IconError } from "src/ui/assets/icons";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import styles from "./styles.module.scss";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
@@ -21,6 +21,10 @@ import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
 import { Select } from "src/ui/components/inputs/Select/Select.tsx";
 import TextArea from "src/ui/components/inputs/Textarea/TextArea.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
+import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";
+import { formatDateShort } from "src/shared/utils/date.ts";
+import { getNameInitials } from "src/shared/utils/getFullName.ts";
+import { eventActionLocale } from "src/features/events/eventsLocale.ts";
 
 export const Violations = observer(() => {
     return (
@@ -61,6 +65,61 @@ export const Violations = observer(() => {
                     </Button>
                 </div>
             )}
+            {registryStore.hasActiveViolationsFilters && (
+                <Flex
+                    gap={8}
+                    wrap={"wrap"}
+                    style={{
+                        marginBottom: "20px",
+                    }}
+                >
+                    {registryStore.violationFilter.category?.map((category) => (
+                        <Chip
+                            key={category}
+                            size={"small"}
+                            onClick={() => {
+                                registryStore.violationFilter.category =
+                                    registryStore.violationFilter.category.filter(
+                                        (id) => id !== category,
+                                    );
+                            }}
+                            iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                        >
+                            {category}
+                        </Chip>
+                    ))}
+                    {registryStore.violationFilter.kind?.map((category) => (
+                        <Chip
+                            key={category}
+                            size={"small"}
+                            onClick={() => {
+                                registryStore.violationFilter.kind =
+                                    registryStore.violationFilter.kind.filter(
+                                        (id) => id !== category,
+                                    );
+                            }}
+                            iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                        >
+                            {category}
+                        </Chip>
+                    ))}
+                    {registryStore.violationFilter.severityType?.map((category) => (
+                        <Chip
+                            key={category}
+                            size={"small"}
+                            onClick={() => {
+                                registryStore.violationFilter.severityType =
+                                    registryStore.violationFilter.severityType.filter(
+                                        (id) => id !== category,
+                                    );
+                            }}
+                            iconAfter={<IconClose className={styles.chipDeleteIcon} />}
+                        >
+                            {category}
+                        </Chip>
+                    ))}
+                </Flex>
+            )}
             {(!!registryStore.filteredViolations.length || !registryStore.violationsSearch) && (
                 <Table<ConstructionViolation>
                     data={registryStore.filteredViolations}
@@ -76,6 +135,7 @@ export const Violations = observer(() => {
                     }}
                     tableHeaderRowStickyTop={119}
                     loading={registryStore.loading}
+                    filter={registryStore.violationFilter}
                     columns={[
                         {
                             name: "",
@@ -108,6 +168,8 @@ export const Violations = observer(() => {
                             sort: false,
                             wrap: true,
                             resizable: false,
+                            filterable: true,
+                            filterOptions: registryStore.violationCategories,
                             render: (data: ConstructionViolation) => {
                                 return data.category;
                             },
@@ -119,6 +181,8 @@ export const Violations = observer(() => {
                             sort: false,
                             wrap: true,
                             resizable: false,
+                            filterable: true,
+                            filterOptions: registryStore.violationKinds,
                             render: (data: ConstructionViolation) => {
                                 return data.kind;
                             },
@@ -130,6 +194,8 @@ export const Violations = observer(() => {
                             sort: false,
                             wrap: true,
                             resizable: false,
+                            filterable: true,
+                            filterOptions: registryStore.violationTypes,
                             render: (data: ConstructionViolation) => {
                                 return data.severityType;
                             },

@@ -89,3 +89,24 @@
         }
     }
 }
+
+.iconFilter {
+    width: 20px;
+    height: 20px;
+
+    path {
+        fill: var(--objects-graphic-neutral-secondary);
+    }
+
+    opacity: 0.5;
+
+    cursor: pointer;
+
+    &:hover {
+        opacity: 0.8;
+    }
+
+    &.active {
+        opacity: 1;
+    }
+}
