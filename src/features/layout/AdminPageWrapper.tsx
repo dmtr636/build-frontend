@@ -13,6 +13,9 @@ const AdminPageWrapper = observer(() => {
     useEffect(() => {
         appStore.userStore.fetchUsers();
         appStore.organizationsStore.fetchOrganizations();
+        appStore.registryStore.fetchAllDocuments();
+        appStore.registryStore.fetchAllViolations();
+        appStore.registryStore.fetchAllWorks();
         appStore.websocketStore.connectToSocket();
 
         const handleBeforeUnload = () => {

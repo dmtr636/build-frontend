@@ -1,16 +1,15 @@
 import { observer } from "mobx-react-lite";
 import { RegistryHeader } from "src/features/registry/components/RegistryHeader/RegistryHeader.tsx";
-import { organizationsStore, registryStore } from "src/app/AppStore.ts";
+import { registryStore } from "src/app/AppStore.ts";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
 import { NormativeDocument } from "src/features/registry/types.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { IconBasket, IconEdit, IconError } from "src/ui/assets/icons";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
-import styles from "src/features/organizations/OrganizationsPage.module.scss";
+import styles from "./styles.module.scss";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
-import React, { useEffect } from "react";
+import React from "react";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
-import { Helmet } from "react-helmet";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
@@ -18,15 +17,8 @@ import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { deepEquals } from "src/shared/utils/deepEquals.ts";
 import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
-import * as vm from "node:vm";
 
 export const RegulatoryDocuments = observer(() => {
-    useEffect(() => {
-        if (!registryStore.documents.length) {
-            registryStore.fetchAllDocuments();
-        }
-    }, []);
-
     return (
         <FlexColumn
             style={{

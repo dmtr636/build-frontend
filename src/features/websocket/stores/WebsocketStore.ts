@@ -3,7 +3,13 @@ import { Client } from "@stomp/stompjs";
 import { DEBUG, domain } from "src/shared/config/domain.ts";
 import { throttle } from "src/shared/utils/throttle.ts";
 import { store } from "storybook-dark-mode/dist/ts/Tool";
-import { accountStore, organizationsStore, registryStore, userStore } from "src/app/AppStore.ts";
+import {
+    accountStore,
+    eventsStore,
+    organizationsStore,
+    registryStore,
+    userStore,
+} from "src/app/AppStore.ts";
 import { User } from "src/features/users/types/User.ts";
 
 export interface IWebsocketEvent {
@@ -187,6 +193,22 @@ export class WebsocketStore {
                     }
                     if (event.type === "DELETE") {
                         registryStore.works = registryStore.works.filter(
+                            (o) => o.id !== event.data.id,
+                        );
+                    }
+                }
+
+                if (event.objectName === "event") {
+                    if (event.type === "CREATE") {
+                        eventsStore.events.push(event.data);
+                    }
+                    if (event.type === "UPDATE") {
+                        eventsStore.events = eventsStore.events.map((o) =>
+                            o.id === event.data.id ? event.data : o,
+                        );
+                    }
+                    if (event.type === "DELETE") {
+                        eventsStore.events = eventsStore.events.filter(
                             (o) => o.id !== event.data.id,
                         );
                     }

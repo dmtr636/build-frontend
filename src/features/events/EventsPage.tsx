@@ -7,7 +7,13 @@ import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
-import { appStore, eventsStore, organizationsStore, userStore } from "src/app/AppStore.ts";
+import {
+    appStore,
+    eventsStore,
+    organizationsStore,
+    registryStore,
+    userStore,
+} from "src/app/AppStore.ts";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { ExplorationInput } from "src/ui/components/segments/Exploration/ExplorationInput.tsx";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
@@ -385,6 +391,36 @@ export const EventsPage = observer(() => {
                                                                 )
                                                                     ? ` «${organizationsStore.organizationsMap.get(data.objectId)?.name}»`
                                                                     : ` «${data.info.name}»`)}
+                                                            {data.objectName ===
+                                                                "normative-document" &&
+                                                                data.objectId &&
+                                                                (registryStore.documentsMap.has(
+                                                                    data.objectId,
+                                                                )
+                                                                    ? ` «${registryStore.documentsMap.get(data.objectId)?.name}»`
+                                                                    : data.info.name
+                                                                      ? ` «${data.info.name}»`
+                                                                      : "")}
+                                                            {data.objectName ===
+                                                                "construction-violation" &&
+                                                                data.objectId &&
+                                                                (registryStore.violationsMap.has(
+                                                                    data.objectId,
+                                                                )
+                                                                    ? ` «${registryStore.violationsMap.get(data.objectId)?.name}»`
+                                                                    : data.info.name
+                                                                      ? ` «${data.info.name}»`
+                                                                      : "")}
+                                                            {data.objectName ===
+                                                                "construction-work" &&
+                                                                data.objectId &&
+                                                                (registryStore.worksMap.has(
+                                                                    data.objectId,
+                                                                )
+                                                                    ? ` «${registryStore.worksMap.get(data.objectId)?.name}»`
+                                                                    : data.info.name
+                                                                      ? ` «${data.info.name}»`
+                                                                      : "")}
                                                         </Typo>
                                                     </Typo>
                                                 );

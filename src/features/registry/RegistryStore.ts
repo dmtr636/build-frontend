@@ -35,6 +35,7 @@ export class RegistryStore {
     violationsForm: Partial<ConstructionViolation> = {};
     editingViolation: ConstructionViolation | null = null;
     deletingViolation: ConstructionViolation | null = null;
+    addedViolationCategory = "";
 
     worksSearch = "";
     works: ConstructionWork[] = [];
@@ -48,6 +49,7 @@ export class RegistryStore {
     worksForm: Partial<ConstructionWork> = {};
     editingWork: ConstructionWork | null = null;
     deletingWork: ConstructionWork | null = null;
+    addedWorkCode = "";
 
     loading = false;
     apiClient = new ApiClient();
@@ -58,6 +60,9 @@ export class RegistryStore {
 
     get violationCategories() {
         const set = new Set(this.violations.map((v) => v.category).filter(Boolean) as string[]);
+        if (this.addedViolationCategory) {
+            set.add(this.addedViolationCategory);
+        }
         return [...set];
     }
 
@@ -68,6 +73,21 @@ export class RegistryStore {
 
     get violationTypes() {
         const set = new Set(this.violations.map((v) => v.severityType).filter(Boolean) as string[]);
+        return [...set];
+    }
+
+    get worksCodes() {
+        const set = new Set(
+            this.works.map((v) => v.classificationCode).filter(Boolean) as string[],
+        );
+        if (this.addedWorkCode) {
+            set.add(this.addedWorkCode);
+        }
+        return [...set];
+    }
+
+    get worksUnits() {
+        const set = new Set(this.works.map((v) => v.unit).filter(Boolean) as string[]);
         return [...set];
     }
 
@@ -124,6 +144,18 @@ export class RegistryStore {
             });
         }
         return works;
+    }
+
+    get documentsMap() {
+        return new Map(this.documents.map((document) => [document.id, document]));
+    }
+
+    get violationsMap() {
+        return new Map(this.violations.map((violation) => [violation.id, violation]));
+    }
+
+    get worksMap() {
+        return new Map(this.works.map((work) => [work.id, work]));
     }
 
     async fetchAllDocuments() {

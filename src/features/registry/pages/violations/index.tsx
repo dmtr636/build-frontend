@@ -6,7 +6,7 @@ import { ConstructionViolation } from "src/features/registry/types.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { IconBasket, IconEdit, IconError } from "src/ui/assets/icons";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
-import styles from "src/features/organizations/OrganizationsPage.module.scss";
+import styles from "./styles.module.scss";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import React, { useEffect } from "react";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
@@ -23,12 +23,6 @@ import TextArea from "src/ui/components/inputs/Textarea/TextArea.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 
 export const Violations = observer(() => {
-    useEffect(() => {
-        if (!registryStore.violations.length) {
-            registryStore.fetchAllViolations();
-        }
-    }, []);
-
     return (
         <FlexColumn
             style={{
@@ -159,7 +153,7 @@ export const Violations = observer(() => {
                             wrap: true,
                             resizable: false,
                             render: (data: ConstructionViolation) => {
-                                return data.remediationDueDays;
+                                return data.remediationDueDays ?? "-";
                             },
                         },
                     ]}
@@ -228,6 +222,10 @@ export const Violations = observer(() => {
                         placeholder={"Введите или выберите из списка"}
                         zIndex={100}
                         required={true}
+                        addButtonLabel={"Добавить категорию"}
+                        onAddButtonClick={(value) => {
+                            registryStore.addedViolationCategory = value;
+                        }}
                     />
                     <Grid gap={16} columns={"1fr 1fr"}>
                         <Select
