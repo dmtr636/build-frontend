@@ -42,7 +42,6 @@ function getShortName(fullName: string): string {
 const UserItemCard = observer(
     ({
         name,
-        company,
         position,
         image,
         enabled,
@@ -170,8 +169,12 @@ const UserItemCard = observer(
                         ) : (
                             position
                         )}
-                        {position && company && <IconDote />}
-                        {company}
+                        {user?.position && user?.organizationId && (
+                            <IconDote className={styles.dote} />
+                        )}
+                        {user?.organizationId &&
+                            appStore.organizationsStore.organizationById(user?.organizationId ?? "")
+                                ?.name}
                     </div>
                 </div>
                 <div className={styles.buttonsBlock}>

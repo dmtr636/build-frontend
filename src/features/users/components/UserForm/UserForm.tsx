@@ -117,6 +117,9 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
             onClose={() => {
                 setOpen(false);
             }}
+            /*
+            styles={{ card: { marginTop: 24, marginBottom: 24 } }}
+*/
             title={"Новый пользователь"}
         >
             <div className={styles.container}>
@@ -277,26 +280,26 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
                         </div>
                     </div>
                 </div>
-                <div className={styles.footer}>
-                    <Button mode={"neutral"} type={"outlined"} onClick={() => setOpen(false)}>
-                        Отменить
-                    </Button>
-                    <Button
-                        disabled={
-                            !email ||
-                            !role ||
-                            !firstName ||
-                            emailIsInvalid ||
-                            (!position && role === "USER") ||
-                            !lastName
-                        }
-                        mode={"neutral"}
-                        type={"primary"}
-                        onClick={onClick}
-                    >
-                        Создать пользователя
-                    </Button>
-                </div>
+            </div>
+            <div className={styles.footer}>
+                <Button mode={"neutral"} type={"outlined"} onClick={() => setOpen(false)}>
+                    Отменить
+                </Button>
+                <Button
+                    disabled={
+                        !email ||
+                        !role ||
+                        !firstName ||
+                        emailIsInvalid ||
+                        (!position && role === "USER") ||
+                        !lastName
+                    }
+                    mode={"neutral"}
+                    type={"primary"}
+                    onClick={onClick}
+                >
+                    Создать пользователя
+                </Button>
             </div>
         </Overlay>
     );
