@@ -6,6 +6,7 @@ import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { IconSorting } from "src/ui/assets/icons";
 import { useCallback, useEffect, useState } from "react";
 import { throttle } from "src/shared/utils/throttle.ts";
+import { TooltipTypo } from "src/ui/components/info/TooltipTypo/TooltipTypo.tsx";
 
 interface IProps<T> {
     column: ITableColumn<T>;
@@ -71,9 +72,7 @@ export const TableHeaderCell = observer(<T,>(props: IProps<T>) => {
     const renderContent = () => {
         return (
             <>
-                <Typo variant={"actionL"} noWrap={true}>
-                    {props.column.name}
-                </Typo>
+                <TooltipTypo variant={"actionL"}>{props.column.name}</TooltipTypo>
                 {props.column.sort && (
                     <IconSorting
                         className={clsx(

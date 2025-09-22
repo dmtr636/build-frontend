@@ -263,7 +263,9 @@ const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
                     </div>
                 </div>
             </div>
-            {user && <UserCardEdit open={openModal} setOpen={setOpenModal} currentUser={user} />}
+            {user && openModal && (
+                <UserCardEdit open={openModal} setOpen={setOpenModal} currentUser={user} />
+            )}
             <Overlay
                 open={openModalDelete}
                 mode={"negative"}

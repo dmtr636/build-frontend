@@ -32,6 +32,9 @@ export class RegistryStore {
         columns: ["index", "category", "kind", "severityType", "name", "remediationDueDays"],
         columnWidths: {},
     };
+    violationsForm: Partial<ConstructionViolation> = {};
+    editingViolation: ConstructionViolation | null = null;
+    deletingViolation: ConstructionViolation | null = null;
 
     worksSearch = "";
     works: ConstructionWork[] = [];
@@ -42,12 +45,30 @@ export class RegistryStore {
         columns: ["index", "name", "unit", "classificationCode"],
         columnWidths: {},
     };
+    worksForm: Partial<ConstructionWork> = {};
+    editingWork: ConstructionWork | null = null;
+    deletingWork: ConstructionWork | null = null;
 
     loading = false;
     apiClient = new ApiClient();
 
     constructor() {
         makeAutoObservable(this);
+    }
+
+    get violationCategories() {
+        const set = new Set(this.violations.map((v) => v.category).filter(Boolean) as string[]);
+        return [...set];
+    }
+
+    get violationKinds() {
+        const set = new Set(this.violations.map((v) => v.kind).filter(Boolean) as string[]);
+        return [...set];
+    }
+
+    get violationTypes() {
+        const set = new Set(this.violations.map((v) => v.severityType).filter(Boolean) as string[]);
+        return [...set];
     }
 
     get filteredDocuments() {
@@ -159,6 +180,57 @@ export class RegistryStore {
     async deleteDocument(document: NormativeDocument) {
         this.loading = true;
         await this.apiClient.delete(endpoints.dictionaries.normativeDocuments, document.id ?? "");
+        this.loading = false;
+    }
+
+    async addViolation(document: Partial<ConstructionViolation>) {
+        this.loading = true;
+        await this.apiClient.post<ConstructionViolation>(
+            endpoints.dictionaries.constructionViolations,
+            document,
+        );
+        this.loading = false;
+    }
+
+    async updateViolation(document: Partial<ConstructionViolation>) {
+        this.loading = true;
+        await this.apiClient.put<ConstructionViolation>(
+            endpoints.dictionaries.constructionViolations,
+            document,
+        );
+        this.loading = false;
+    }
+
+    async deleteViolation(document: ConstructionViolation) {
+        this.loading = true;
+        await this.apiClient.delete(
+            endpoints.dictionaries.constructionViolations,
+            document.id ?? "",
+        );
+        this.loading = false;
+    }
+
+    async addWork(document: Partial<ConstructionWork>) {
+        this.loading = true;
+        await this.apiClient.post<ConstructionWork>(
+            endpoints.dictionaries.constructionWorks,
+            document,
+        );
+        this.loading = false;
+    }
+
+    async updateWork(document: Partial<ConstructionWork>) {
+        this.loading = true;
+        await this.apiClient.put<ConstructionWork>(
+            endpoints.dictionaries.constructionWorks,
+            document,
+        );
+        this.loading = false;
+    }
+
+    async deleteWork(document: ConstructionWork) {
+        this.loading = true;
+        await this.apiClient.delete(endpoints.dictionaries.constructionWorks, document.id ?? "");
         this.loading = false;
     }
 }

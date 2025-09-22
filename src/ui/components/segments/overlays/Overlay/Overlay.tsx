@@ -72,7 +72,15 @@ export const Overlay = observer((props: OverlayProps) => {
         }
         return () => {
             document.removeEventListener("mouseup", handleDocumentMouseUp);
-            document.documentElement.style.overflow = "initial";
+            setTimeout(() => {
+                if (
+                    window.location.search.includes("overlay=open") ||
+                    window.location.search.includes("overlay2=open")
+                ) {
+                    return;
+                }
+                document.documentElement.style.overflow = "initial";
+            });
         };
     }, [open]);
 

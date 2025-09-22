@@ -6,11 +6,11 @@ export interface NormativeDocument {
 
 export interface ConstructionViolation {
     id: string;
-    category: string | null;
+    category: string;
     kind: string;
     severityType: string;
     name: string;
-    remediationDueDays: number;
+    remediationDueDays: number | null;
 }
 
 export interface ConstructionWork {
