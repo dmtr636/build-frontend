@@ -12,6 +12,9 @@ import { RegistryPage } from "src/features/registry/pages";
 import { RegulatoryDocuments } from "src/features/registry/pages/regulatoryDocuments";
 import { Violations } from "src/features/registry/pages/violations";
 import { Works } from "src/features/registry/pages/works";
+import { ObjectPage } from "src/features/journal/pages/ObjectPage/ObjectPage.tsx";
+import AboutObjectPage from "src/features/journal/pages/AboutObjectPage/AboutObjectPage.tsx";
+import ObjectUsersPage from "src/features/journal/pages/ObjectUsersPage/ObjectUsersPage.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -35,6 +38,22 @@ export const appRoutes: RouteObject[] = [
             {
                 path: "/admin/journal",
                 element: <JournalPage />,
+            },
+            {
+                path: "/admin/journal/:id",
+                element: <ObjectPage />,
+                children: [
+                    { index: true, element: <Navigate to="review" replace /> },
+                    { path: "review", element: <></> },
+                    { path: "about", element: <AboutObjectPage /> },
+                    { path: "docs", element: <></> },
+                    { path: "status", element: <></> },
+                    { path: "positions", element: <></> },
+                    { path: "users", element: <ObjectUsersPage /> },
+                    { path: "materials", element: <></> },
+                    { path: "visits", element: <></> },
+                    { path: "violations", element: <></> },
+                ],
             },
             {
                 path: "/admin/users",

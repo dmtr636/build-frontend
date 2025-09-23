@@ -1,0 +1,73 @@
+.iconHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    background: var(--graphic-neutral-primary, #111317);
+}
+
+.header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--text-neutral-tertiary, #444d5f);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 28.8px */
+}
+
+.container {
+    margin-top: 40px;
+}
+
+.formContainer {
+    width: 100%;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.objectForm {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    background: #fcfcfd;
+    display: flex;
+    padding: 8px;
+    padding-right: 24px;
+    gap: 24px;
+    margin-top: 24px;
+    margin-bottom: 40px;
+}
+
+.formHead {
+    display: flex;
+    /*
+  flex: 1;
+  */
+    gap: 12px;
+    width: 100%;
+    align-items: end;
+}
+
+.containerType {
+    display: flex;
+    width: calc(100% - 211px);
+    gap: 12px;
+}
+
+.containerDate {
+    display: flex;
+    gap: 16px;
+}
+
+.dateCounter {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}

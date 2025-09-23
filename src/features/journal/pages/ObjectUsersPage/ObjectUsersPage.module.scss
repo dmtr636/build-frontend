@@ -1,0 +1,64 @@
+.iconHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    background: var(--graphic-neutral-primary, #111317);
+
+    svg path {
+        fill: white;
+    }
+}
+
+.header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--text-neutral-tertiary, #444d5f);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 28.8px */
+}
+
+.container {
+    margin-top: 40px;
+}
+
+.content {
+    margin-top: 24px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.itemForm {
+    display: flex;
+    width: 612px;
+    padding: 24px 24px 28px 24px;
+    flex-direction: column;
+    /*
+  align-items: center;
+  */
+    gap: 24px;
+    border-radius: 12px;
+    background: #f9fafb;
+    height: auto;
+}
+
+.formName {
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 24px */
+}
+
+.usersArray {
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+    gap: 16px;
+}

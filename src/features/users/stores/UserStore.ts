@@ -112,12 +112,11 @@ export class UserStore {
         this.position = [...orgs];
     }
 
+    userById(id: string | null) {
+        return this.users.find((user) => user.id === id);
+    }
+
     clearPersistedFilters() {
-        /* this.sortOption = {
-            field: "name",
-            order: "asc",
-            label: "По алфавиту, от А - Я",
-        };*/
         this.roles = [];
         this.company = [];
         this.position = [];

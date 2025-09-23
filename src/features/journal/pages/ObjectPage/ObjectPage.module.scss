@@ -1,0 +1,72 @@
+@import "src/ui/styles/functions";
+
+.subheader {
+    height: 60px;
+    border-bottom: 1px solid var(--stroke-neutral-secondary, #d6d9e0);
+    border-top: 1px solid var(--stroke-neutral-secondary, #d6d9e0);
+    background: var(--background-neutral-tertiary, #f9fafb);
+    position: sticky;
+    top: 60px;
+    margin-left: calc(-50vw + 620px);
+    padding-left: calc(50vw - 620px);
+    display: flex;
+    align-items: end;
+    z-index: 3;
+
+    @media screen and (min-width: 1500px) {
+        margin-left: calc(-50vw + 720px);
+        padding-left: calc(50vw - 720px);
+    }
+}
+
+.container {
+    width: 1240px;
+
+    @media screen and (min-width: 1500px) {
+        width: 1440px;
+    }
+}
+
+.buttonIcon {
+    border-radius: 7px;
+    background: #ececec;
+    display: flex;
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    svg {
+        width: 16px;
+        height: 16px;
+        opacity: 0.7;
+
+        path {
+            fill: lighter-pale($objects-graphic-neutral-primary);
+        }
+    }
+}
+
+.buttonBack {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #e8eaed;
+    cursor: pointer;
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    padding-top: 8px;
+    padding-right: 20px;
+    margin-right: 20px;
+    color: lighter-pale($objects-text-neutral-primary);
+
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.15px;
+}

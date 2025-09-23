@@ -1,0 +1,50 @@
+.container {
+    width: 1240px;
+    display: flex;
+    margin-top: 40px;
+    gap: 24px;
+    position: relative;
+    height: calc(100vh - 100px);
+
+    @media screen and (min-width: 1500px) {
+        width: 1440px;
+    }
+}
+
+.filterBlock {
+    width: 398px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
+
+    @media screen and (min-width: 1500px) {
+        width: 506px;
+    }
+}
+
+.userlistBlock {
+    width: 818px;
+    @media screen and (min-width: 1500px) {
+        width: 994px;
+    }
+}
+
+.sortContainer {
+    display: flex;
+    gap: 12px;
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
+}
+
+.renderHeader {
+    color: var(--text-neutral-primary, #111317);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 19.2px */
+    padding: 12.5px 16px;
+}

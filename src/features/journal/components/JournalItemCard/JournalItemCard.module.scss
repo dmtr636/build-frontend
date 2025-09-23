@@ -1,0 +1,225 @@
+.container {
+    border-radius: 8px;
+    border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    background: var(--background-neutral-tertiary, #f9fafb);
+    padding: 4px 20px 4px 4px;
+    display: flex;
+    gap: 20px;
+    cursor: pointer;
+}
+
+.noImg {
+    width: 200px;
+    height: 291px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--s, 8px);
+    border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
+
+    box-shadow: 0 0 6px 0 rgba(11, 59, 154, 0.12) inset;
+
+    svg {
+        opacity: 0.24;
+
+        width: var(--icons-height-5xl, 96px);
+        height: var(--icons-height-5xl, 96px);
+        flex-shrink: 0;
+
+        path {
+            fill: var(--objects-graphic-neutral-tertiary, #f9fafb);
+        }
+    }
+}
+
+.img {
+    width: 200px;
+    height: 291px;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatarImg {
+    object-fit: cover;
+    width: 200px;
+    height: 291px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form {
+    width: 100%;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.location {
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+
+    svg {
+        width: 18px;
+        height: 18px;
+
+        path {
+            fill: var(--objects-graphic-accent-primary);
+        }
+    }
+}
+
+.userItem {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.itemLogo {
+    width: 36px;
+    height: 36px;
+    /*
+  flex-shrink: 0;
+  */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+}
+
+.imgLogoItem {
+    border-radius: 8px;
+
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+}
+
+.noImgItem {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--objects-background-neutral-secondary, #e8eaed);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+        width: 20px;
+        height: 20px;
+
+        path {
+            fill: #5f6a81;
+        }
+    }
+}
+
+.itemName {
+    color: var(--objects-text-accent-primary, #2053d5);
+    text-align: justify;
+
+    /* Body/M */
+    font-family: Manrope;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%; /* 18.2px */
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.userBlock {
+    display: flex;
+    gap: 48px;
+    margin-top: auto;
+    margin-bottom: 21px;
+}
+
+.userBlockContractor {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.userBlockHeader {
+    margin-bottom: 3px;
+    color: var(--text-neutral-secondary, #2c313a);
+    text-align: justify;
+
+    /* Subhead/S */
+    font-family: Manrope;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%; /* 16.9px */
+    opacity: 0.8;
+}
+
+.footerBlock {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #d5d9e0;
+    background: #f3f5f7;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 16px;
+}
+
+.footerItemHead {
+    color: var(--text-neutral-secondary, #2c313a);
+    text-align: justify;
+
+    /* Body/S */
+    font-family: Manrope;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%; /* 16.8px */
+    opacity: 0.5;
+}
+
+.footerItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: 16px;
+    border-right: 1px rgba(95, 106, 129, 0.2) solid;
+
+    &:last-child {
+        border-right: none;
+    }
+}
+
+.footerItemText {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-neutral-tertiary, #444d5f);
+    text-align: justify;
+
+    /* Body/M */
+    font-family: Manrope;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%; /* 18.2px */
+    svg {
+        width: 18px;
+        height: 18px;
+        opacity: 0.36;
+    }
+}

@@ -131,8 +131,13 @@ import IconDote from "./Dote.svg?react";
 import IconUpdate from "./Update.svg?react";
 import IconFlag from "./Flag.svg?react";
 import IconXlsx from "./simple-icons_googlesheets.svg?react";
+import IconApartment from "./apartment.svg?react";
+
+import IconGroupBuild from "./groupBuild.svg?react";
 
 export {
+    IconGroupBuild,
+    IconApartment,
     IconXlsx,
     IconUpdate,
     IconDote,

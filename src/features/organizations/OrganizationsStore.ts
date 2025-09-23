@@ -31,7 +31,7 @@ export class OrganizationsStore {
         return new Map<string, Organization>(this.organizations.map((org) => [org.id, org]));
     }
 
-    organizationById(id: string) {
+    organizationById(id?: string | null) {
         return this.organizations.find((org) => org.id === id);
     }
 
