@@ -361,7 +361,7 @@ export const EventsPage = observer(() => {
                                                 return (
                                                     <Typo variant={"bodyL"} noWrap={true}>
                                                         {
-                                                            eventActionLocale[data.objectName][
+                                                            eventActionLocale[data.objectName]?.[
                                                                 data.action
                                                             ]
                                                         }
