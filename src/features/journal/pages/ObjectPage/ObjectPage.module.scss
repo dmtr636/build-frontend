@@ -69,4 +69,30 @@
     font-weight: 600;
     line-height: 20px;
     letter-spacing: 0.15px;
+
+    &:hover {
+        color: lighter-hover($objects-text-neutral-primary);
+
+        .buttonIcon {
+            border-radius: 7px;
+            background: lighter-hover(#ececec);
+            display: flex;
+            width: 28px;
+            height: 28px;
+            padding: 4px;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+
+            svg {
+                width: 16px;
+                height: 16px;
+                opacity: 0.7;
+
+                path {
+                    fill: lighter-hover($objects-graphic-neutral-primary);
+                }
+            }
+        }
+    }
 }
