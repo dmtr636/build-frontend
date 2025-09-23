@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { RegistryHeader } from "src/features/registry/components/RegistryHeader/RegistryHeader.tsx";
-import { registryStore } from "src/app/AppStore.ts";
+import { layoutStore, registryStore } from "src/app/AppStore.ts";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
 import { NormativeDocument } from "src/features/registry/types.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
@@ -65,7 +65,7 @@ export const RegulatoryDocuments = observer(() => {
                         registryStore.documentsTableSettings = settings;
                     }}
                     dynamicRowHeight={true}
-                    headerRowHasBorderRadius={true}
+                    headerRowHasBorderRadius={layoutStore.scrollTop < 114}
                     onRowClick={(data) => {
                         registryStore.editingDocument = data;
                         registryStore.documentsForm = deepCopy(data);

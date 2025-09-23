@@ -10,6 +10,7 @@ export interface ITableColumn<T> {
     resizable?: boolean;
     wrap?: boolean;
     filterable?: boolean;
+    counterValue?: number;
     filterOptions?: string[];
 }
 

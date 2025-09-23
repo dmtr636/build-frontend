@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { RegistryHeader } from "src/features/registry/components/RegistryHeader/RegistryHeader.tsx";
-import { registryStore } from "src/app/AppStore.ts";
+import { layoutStore, registryStore } from "src/app/AppStore.ts";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
 import { ConstructionWork } from "src/features/registry/types.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
@@ -67,7 +67,7 @@ export const Works = observer(() => {
                         registryStore.worksTableSettings = settings;
                     }}
                     dynamicRowHeight={true}
-                    headerRowHasBorderRadius={true}
+                    headerRowHasBorderRadius={layoutStore.scrollTop < 114}
                     onRowClick={(data) => {
                         registryStore.editingWork = data;
                         registryStore.worksForm = deepCopy(data);
@@ -293,6 +293,10 @@ export const Works = observer(() => {
                         placeholder={"Введите или выберите из списка"}
                         zIndex={100}
                         required={true}
+                        addButtonLabel={"Добавить КПГЗ"}
+                        onAddButtonClick={(value) => {
+                            registryStore.addedWorkCode = value;
+                        }}
                     />
                     <TextArea
                         value={registryStore.worksForm.name}

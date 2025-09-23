@@ -10,6 +10,7 @@ import { TooltipTypo } from "src/ui/components/info/TooltipTypo/TooltipTypo.tsx"
 import { PopoverBase } from "src/ui/components/solutions/PopoverBase/PopoverBase.tsx";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { ListItem } from "src/ui/components/controls/ListItem/ListItem.tsx";
+import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
 
 interface IProps<T> {
     column: ITableColumn<T>;
@@ -127,6 +128,14 @@ export const TableHeaderCell = observer(<T,>(props: IProps<T>) => {
                             />
                         </span>
                     </PopoverBase>
+                )}
+                {!!props.column.counterValue && (
+                    <Counter
+                        size={"tiny"}
+                        mode={"neutral"}
+                        type={"primary"}
+                        value={props.column.counterValue}
+                    />
                 )}
             </>
         );

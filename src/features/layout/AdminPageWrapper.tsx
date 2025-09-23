@@ -6,6 +6,7 @@ import { appStore, layoutStore } from "src/app/AppStore.ts";
 import styles from "./styles.module.scss";
 import { observer } from "mobx-react-lite";
 import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
+import { throttle } from "src/shared/utils/throttle.ts";
 
 const AdminPageWrapper = observer(() => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -28,9 +29,10 @@ const AdminPageWrapper = observer(() => {
                 document.documentElement.scrollHeight > document.documentElement.clientHeight;
         };
 
-        const checkScrolling = () => {
+        const checkScrolling = throttle(() => {
             layoutStore.scrolled = document.documentElement.scrollTop > 0;
-        };
+            layoutStore.scrollTop = document.documentElement.scrollTop;
+        }, 50);
 
         const ro = new ResizeObserver(() => {
             checkOverflowed();
