@@ -52,7 +52,7 @@ export const ObjectPage = observer(() => {
                             value: "docs",
                         },
                         {
-                            name: "Статус и график",
+                            name: "Состав работ",
                             value: "status",
                         },
                         {
