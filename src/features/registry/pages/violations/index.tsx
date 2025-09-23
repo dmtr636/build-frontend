@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { RegistryHeader } from "src/features/registry/components/RegistryHeader/RegistryHeader.tsx";
-import { eventsStore, registryStore, userStore } from "src/app/AppStore.ts";
+import { layoutStore, registryStore } from "src/app/AppStore.ts";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
 import { ConstructionViolation } from "src/features/registry/types.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
@@ -8,7 +8,7 @@ import { IconBasket, IconClose, IconEdit, IconError } from "src/ui/assets/icons"
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import styles from "./styles.module.scss";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
-import React, { useEffect } from "react";
+import React, { useRef } from "react";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
@@ -22,11 +22,10 @@ import { Select } from "src/ui/components/inputs/Select/Select.tsx";
 import TextArea from "src/ui/components/inputs/Textarea/TextArea.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";
-import { formatDateShort } from "src/shared/utils/date.ts";
-import { getNameInitials } from "src/shared/utils/getFullName.ts";
-import { eventActionLocale } from "src/features/events/eventsLocale.ts";
 
 export const Violations = observer(() => {
+    const chipsRowRef = useRef<HTMLDivElement>(null);
+
     return (
         <FlexColumn
             style={{
@@ -67,6 +66,7 @@ export const Violations = observer(() => {
             )}
             {registryStore.hasActiveViolationsFilters && (
                 <Flex
+                    ref={chipsRowRef}
                     gap={8}
                     wrap={"wrap"}
                     style={{
@@ -128,7 +128,12 @@ export const Violations = observer(() => {
                         registryStore.violationsTableSettings = settings;
                     }}
                     dynamicRowHeight={true}
-                    headerRowHasBorderRadius={true}
+                    headerRowHasBorderRadius={
+                        layoutStore.scrollTop <
+                        114 +
+                            (chipsRowRef.current?.offsetHeight ?? 0) +
+                            (registryStore.hasActiveViolationsFilters ? 19 : 0)
+                    }
                     onRowClick={(data) => {
                         registryStore.editingViolation = data;
                         registryStore.violationsForm = deepCopy(data);
@@ -170,6 +175,7 @@ export const Violations = observer(() => {
                             resizable: false,
                             filterable: true,
                             filterOptions: registryStore.violationCategories,
+                            counterValue: registryStore.violationFilter.category.length,
                             render: (data: ConstructionViolation) => {
                                 return data.category;
                             },
@@ -183,6 +189,7 @@ export const Violations = observer(() => {
                             resizable: false,
                             filterable: true,
                             filterOptions: registryStore.violationKinds,
+                            counterValue: registryStore.violationFilter.kind.length,
                             render: (data: ConstructionViolation) => {
                                 return data.kind;
                             },
@@ -190,12 +197,13 @@ export const Violations = observer(() => {
                         {
                             name: "Тип",
                             field: "severityType",
-                            width: 96,
+                            width: 115,
                             sort: false,
                             wrap: true,
                             resizable: false,
                             filterable: true,
                             filterOptions: registryStore.violationTypes,
+                            counterValue: registryStore.violationFilter.severityType.length,
                             render: (data: ConstructionViolation) => {
                                 return data.severityType;
                             },
@@ -203,7 +211,7 @@ export const Violations = observer(() => {
                         {
                             name: "Наименование нарушения",
                             field: "name",
-                            width: 604,
+                            width: 585,
                             sort: false,
                             wrap: true,
                             resizable: false,

@@ -5,6 +5,7 @@ export class LayoutStore {
     tabBarHeight = 0;
     scrolled = false;
     overflowed = false;
+    scrollTop = 0;
 
     constructor() {
         makeAutoObservable(this);
