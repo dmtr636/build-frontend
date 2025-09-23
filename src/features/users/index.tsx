@@ -35,7 +35,6 @@ import UserForm from "src/features/users/components/UserForm/UserForm.tsx";
 import { formatDateShort } from "src/shared/utils/date.ts";
 import { clsx } from "clsx";
 import { IconBuildArrow, IconBuildPhoto } from "src/features/users/components/UserCard/assets";
-import { IconPlaceholderArrow, IconPlaceholderFlag } from "src/features/organizations/assets";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 
 export interface SortOption {
@@ -232,7 +231,6 @@ export const UsersPage = observer(() => {
             },
         },
     ];
-    console.log(appStore.userStore.roles);
     const [rolesValue, setRolesValue] = useState<string[]>(appStore.userStore.roles);
     const [positionValue, setPositionValue] = useState<string[]>(appStore.userStore.position);
     const [onlineOnly, setOnlineOnly] = useState(false);
@@ -349,6 +347,7 @@ export const UsersPage = observer(() => {
         });
     }, [filteredUsersByFilter, name]);
     const resetFilters = () => {
+        appStore.userStore.clearPersistedFilters();
         setPositionValue([]);
         setCompany([]);
         setOnlineOnly(false);
