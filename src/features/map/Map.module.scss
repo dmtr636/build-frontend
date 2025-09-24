@@ -1,0 +1,32 @@
+.mapWrapper {
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.switchWrapper {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 8px 14px 8px 8px;
+    border-radius: 32px;
+    background-color: white;
+    z-index: 1000;
+    box-shadow: 0 12px 28px 4px rgba(17, 19, 23, 0.12);
+}
+
+.tooltip {
+    width: auto !important;
+    min-width: auto !important;
+    max-width: 240px !important;
+    border-radius: var(--padding-s, 8px) !important;
+    padding: 8px 12px !important;
+    filter: drop-shadow(0px 12px 28px rgba(17, 19, 23, 0.18)) !important;
+    box-shadow: none !important;
+
+    &::before {
+        margin-bottom: -16px !important;
+        margin-left: -8px !important;
+        border-width: 8px !important;
+    }
+}

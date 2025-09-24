@@ -6,6 +6,7 @@ export class LayoutStore {
     scrolled = false;
     overflowed = false;
     scrollTop = 0;
+    overflowHidden = false;
 
     constructor() {
         makeAutoObservable(this);

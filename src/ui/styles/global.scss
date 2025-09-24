@@ -141,3 +141,15 @@ html > iframe {
         overflow: hidden;
     }
 }
+
+.leaflet-control-attribution {
+    display: none;
+}
+
+.leaflet-control-layers-toggle {
+    display: none;
+}
+
+.leaflet-control-layers.leaflet-control {
+    display: none;
+}
