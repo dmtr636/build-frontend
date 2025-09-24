@@ -288,10 +288,22 @@ export class RegistryStore {
 
     async addWork(document: Partial<ConstructionWork>) {
         this.loading = true;
-        await this.apiClient.post<ConstructionWork>(
+        const response = await this.apiClient.post<ConstructionWork>(
             endpoints.dictionaries.constructionWorks,
             document,
         );
+        if (response.status) {
+            for (const stage of this.worksStagesForm) {
+                await this.apiClient.post<ConstructionWorkStage>(
+                    endpoints.dictionaries.constructionWorkStages,
+                    {
+                        ...stage,
+                        stageName: stage.stageName || `Этап ${stage.stageNumber}`,
+                        workId: response.data.id,
+                    },
+                );
+            }
+        }
         this.loading = false;
     }
 
@@ -302,10 +314,26 @@ export class RegistryStore {
             document,
         );
         for (const stage of this.worksStagesForm) {
-            if (!this.workStages.some((_s) => _s.id === stage.id)) {
+            const found = this.workStages.find((_s) => _s.id === stage.id);
+            if (!found) {
                 await this.apiClient.post<ConstructionWorkStage>(
                     endpoints.dictionaries.constructionWorkStages,
-                    stage,
+                    {
+                        ...stage,
+                        stageName: stage.stageName || `Этап ${stage.stageNumber}`,
+                    },
+                );
+            }
+            if (
+                found &&
+                (found.stageName !== stage.stageName || found.stageNumber !== stage.stageNumber)
+            ) {
+                await this.apiClient.put<ConstructionWorkStage>(
+                    endpoints.dictionaries.constructionWorkStages,
+                    {
+                        ...stage,
+                        stageName: stage.stageName || `Этап ${stage.stageNumber}`,
+                    },
                 );
             }
         }
@@ -322,6 +350,9 @@ export class RegistryStore {
 
     async deleteWork(document: ConstructionWork) {
         this.loading = true;
+        for (const stage of this.workStages) {
+            await this.apiClient.delete(endpoints.dictionaries.constructionWorkStages, stage.id);
+        }
         await this.apiClient.delete(endpoints.dictionaries.constructionWorks, document.id ?? "");
         this.loading = false;
     }

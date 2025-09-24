@@ -234,6 +234,45 @@ export const Works = observer(() => {
                         required={true}
                         zIndex={100}
                     />
+                    <div className={styles.stages}>
+                        <FlexColumn gap={8}>
+                            <Typo variant={"subheadXL"}>Этапы</Typo>
+                            <Typo variant={"bodyM"} type={"quaternary"} mode={"neutral"}>
+                                Будут добавляться автоматически при выборе типа работы.
+                            </Typo>
+                        </FlexColumn>
+                        {registryStore.worksStagesForm.map((stage) => (
+                            <WorkStageRow
+                                key={stage.id}
+                                workStage={stage}
+                                onDelete={() => {
+                                    registryStore.worksStagesForm =
+                                        registryStore.worksStagesForm.filter(
+                                            (_stage) => _stage.id !== stage.id,
+                                        );
+                                    registryStore.worksStagesForm.forEach((stage, index) => {
+                                        stage.stageNumber = `${index + 1}`;
+                                    });
+                                }}
+                            />
+                        ))}
+                        <div>
+                            <Button
+                                type={"text"}
+                                iconBefore={<IconPlus />}
+                                onClick={() => {
+                                    registryStore.worksStagesForm.push({
+                                        id: crypto.randomUUID(),
+                                        workId: "",
+                                        stageName: "",
+                                        stageNumber: `${registryStore.worksStagesForm.length + 1}`,
+                                    });
+                                }}
+                            >
+                                Добавить этап
+                            </Button>
+                        </div>
+                    </div>
                 </FlexColumn>
             </Overlay>
 
@@ -360,6 +399,9 @@ export const Works = observer(() => {
                                         registryStore.worksStagesForm.filter(
                                             (_stage) => _stage.id !== stage.id,
                                         );
+                                    registryStore.worksStagesForm.forEach((stage, index) => {
+                                        stage.stageNumber = `${index + 1}`;
+                                    });
                                 }}
                             />
                         ))}
