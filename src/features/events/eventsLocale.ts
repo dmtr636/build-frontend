@@ -41,6 +41,7 @@ export const eventActionLocale = {
     "normative-document": eventNormativeDocumentActionLocale,
     "construction-violation": eventConstructionViolationActionLocale,
     "construction-work": eventConstructionWorkActionLocale,
+    "construction-work-stage": eventConstructionWorkActionLocale,
     project: projectActionLocale,
 };
 

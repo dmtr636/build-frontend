@@ -251,7 +251,7 @@ export const Works = observer(() => {
                                             (_stage) => _stage.id !== stage.id,
                                         );
                                     registryStore.worksStagesForm.forEach((stage, index) => {
-                                        stage.stageNumber = `${index + 1}`;
+                                        stage.stageNumber = index + 1;
                                     });
                                 }}
                             />
@@ -265,7 +265,7 @@ export const Works = observer(() => {
                                         id: crypto.randomUUID(),
                                         workId: "",
                                         stageName: "",
-                                        stageNumber: `${registryStore.worksStagesForm.length + 1}`,
+                                        stageNumber: registryStore.worksStagesForm.length + 1,
                                     });
                                 }}
                             >
@@ -400,7 +400,7 @@ export const Works = observer(() => {
                                             (_stage) => _stage.id !== stage.id,
                                         );
                                     registryStore.worksStagesForm.forEach((stage, index) => {
-                                        stage.stageNumber = `${index + 1}`;
+                                        stage.stageNumber = index + 1;
                                     });
                                 }}
                             />
@@ -414,7 +414,7 @@ export const Works = observer(() => {
                                         id: crypto.randomUUID(),
                                         workId: registryStore.editingWork?.id ?? "",
                                         stageName: "",
-                                        stageNumber: `${registryStore.worksStagesForm.length + 1}`,
+                                        stageNumber: registryStore.worksStagesForm.length + 1,
                                     });
                                 }}
                             >

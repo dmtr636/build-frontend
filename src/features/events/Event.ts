@@ -9,7 +9,8 @@ export interface IEvent {
         | "organization-employees"
         | "normative-document"
         | "construction-violation"
-        | "construction-work";
+        | "construction-work"
+        | "construction-work-stage";
     objectId?: string;
     createdAt: string;
     info: Record<string, string>;

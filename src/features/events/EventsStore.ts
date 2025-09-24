@@ -58,6 +58,9 @@ export class EventsStore {
             });
         }
         events = events.filter((event) => event.actionType === this.tab);
+
+        events = events.filter((event) => event.objectName !== "construction-work-stage");
+
         if (this.sort.field === "userId") {
             events.sort((a, b) => {
                 const aUser = userStore.usersMap.get(a.userId);

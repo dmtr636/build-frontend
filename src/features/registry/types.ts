@@ -23,6 +23,6 @@ export interface ConstructionWork {
 export interface ConstructionWorkStage {
     id: string;
     workId: string;
-    stageNumber: string;
+    stageNumber: number;
     stageName: string;
 }
