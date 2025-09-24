@@ -310,6 +310,9 @@ export default function MapObjectsEditor({
                 size={"small"}
                 onClick={() => {
                     mapRef.current?.zoomOut();
+                    if ((mapRef.current?.getZoom() ?? 0) < 10) {
+                        return;
+                    }
                 }}
                 style={{
                     position: "absolute",

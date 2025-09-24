@@ -58,7 +58,7 @@ export const ObjectPage = observer(() => {
                         },
                         {
                             name: "Местоположение",
-                            value: "positions",
+                            value: "location",
                         },
                         {
                             name: "Участники",
