@@ -143,7 +143,7 @@ const JournalItemCard = ({ project }: journalItemCardProps) => {
                                 {customerOrg ? (
                                     <Link
                                         onClick={(event) => event.stopPropagation()}
-                                        to={`/admin/organizations/${contractorOrg?.id}`}
+                                        to={`/admin/organizations/${customerOrg?.id}`}
                                         className={styles.itemName}
                                     >
                                         {customerOrg?.name}

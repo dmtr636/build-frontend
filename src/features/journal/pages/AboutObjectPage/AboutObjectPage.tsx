@@ -12,11 +12,12 @@ import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 import { extractImageMetadata } from "src/shared/utils/extractMeta.ts";
 import exifr from "exifr";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { UpdateProjectDTO } from "src/features/journal/types/Object.ts";
 import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
 
 function getDaysBetween(startDate: string, endDate: string): string {
     const start = new Date(startDate);
@@ -45,6 +46,7 @@ const AboutObjectPage = observer(() => {
         { value: "Школа", name: "Школа" },
         { value: "ТЦ", name: "ТЦ" },
     ];
+    const navigate = useNavigate();
     const { id } = useParams();
     useEffect(() => {
         appStore.objectStore.fetchObjects();
@@ -98,6 +100,8 @@ const AboutObjectPage = observer(() => {
                 snackbarStore.showNeutralPositiveSnackbar("Изменения сохранены");
             });
     };
+    const [showDelete, setShowDelete] = useState(false);
+
     return (
         <div className={styles.container}>
             {shouldBlockButton && (
@@ -164,6 +168,7 @@ const AboutObjectPage = observer(() => {
                                 mode={"negative"}
                                 size={"large"}
                                 iconBefore={<IconBasket />}
+                                onClick={() => setShowDelete(true)}
                             >
                                 Удалить объект
                             </Button>
@@ -226,6 +231,20 @@ const AboutObjectPage = observer(() => {
                     </div>
                 </div>
             </div>
+            <DeleteOverlay
+                open={showDelete}
+                deleteButtonLabel={"Удалить"}
+                title={"Удаление объекта"}
+                info={currentOrg?.name}
+                subtitle={`Вы действительно хотите удалить объект`}
+                onDelete={() => {
+                    appStore.objectStore.deleteObject(currentOrg?.id ?? "").then(() => {
+                        snackbarStore.showNeutralPositiveSnackbar("Объект успешно удален");
+                        navigate("/admin/journal");
+                    });
+                }}
+                onCancel={() => setShowDelete(false)}
+            />
         </div>
     );
 });

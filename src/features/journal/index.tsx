@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { Helmet } from "react-helmet";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./journal.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { appStore, registryStore } from "src/app/AppStore.ts";
@@ -27,14 +27,16 @@ import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
 import { getFullName } from "src/shared/utils/getFullName.ts";
 import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
-import { useNavigate } from "react-router-dom";
-import JournalItemCard from "src/features/journal/components/JournalItemCard/JournalItemCard.tsx";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import MapObjectsEditor, { MapObject } from "src/features/map/Map.tsx";
 
 export const JournalPage = observer(() => {
     const loginUser = appStore.accountStore.currentUser;
+    const [searchParams] = useSearchParams();
+    const userId = searchParams.get("userId");
+    console.log(userId);
     const [sortOption, setSortOption] = useState<SortOption>({
         field: "name",
         order: "asc",
@@ -342,6 +344,9 @@ export const JournalPage = observer(() => {
     ]);
     const [newObjName, setNewObjName] = useState("");
     const navigate = useNavigate();
+    useEffect(() => {
+        if (userId) setHaveUser((prevState) => [...prevState, userId]);
+    }, [userId]);
     const onChangeSort = (sort: SortOption) => {
         setSortOption(sort);
         appStore.objectStore.setSortOption(sort);
@@ -563,6 +568,7 @@ export const JournalPage = observer(() => {
                                 onClick={async () => {
                                     const response = await appStore.objectStore.createObject({
                                         name: newObjName,
+                                        status: "Await",
                                     });
                                     if (response) {
                                         navigate(`/admin/journal/${response.data.id}`);
