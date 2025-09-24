@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import styles from "./ObjectUsersPage.module.scss";
 import { IconGroupBuild, IconPlus } from "src/ui/assets/icons";
 import { appStore } from "src/app/AppStore.ts";
@@ -9,6 +9,10 @@ import { Divider } from "src/ui/components/atoms/Divider/Divider.tsx";
 import { observer } from "mobx-react-lite";
 import UserCardItem from "src/features/journal/components/UserCardItem/UserCardItem.tsx";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
+import { useParams } from "react-router-dom";
+import { ObjectDTO, ProjectUserDTO, UpdateProjectDTO } from "src/features/journal/types/Object.ts";
+import { Button } from "src/ui/components/controls/Button/Button.tsx";
+import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 const ObjectUsersPage = observer(() => {
     const organisationOptions = appStore.organizationsStore.organizations.map((org) => ({
@@ -17,7 +21,11 @@ const ObjectUsersPage = observer(() => {
     }));
     useLayoutEffect(() => {
         appStore.userStore.fetchOnlineUser();
+        appStore.objectStore.fetchObjects();
     }, []);
+    const { id } = useParams();
+    const currentobj = appStore.objectStore.ObjectMap.get(id ?? "");
+
     const [customerOrganizations, setCustomerOrganizations] = useState<string | null>(null);
     const [contractorOrganizations, setContractorOrganizations] = useState<string | null>(null);
     const [responsibleCutomerUser, setResponsibleCutomerUser] = useState<string | null>(null);
@@ -28,6 +36,124 @@ const ObjectUsersPage = observer(() => {
     const contractorOrg = appStore.organizationsStore.organizationById(contractorOrganizations);
     const respCustUser = appStore.userStore.userById(responsibleCutomerUser);
     const respContrUser = appStore.userStore.userById(responibleContractorUser);
+    const setInitialValue = () => {
+        if (currentobj) {
+            setCustomerOrganizations(currentobj.customerOrganization);
+            setContractorOrganizations(currentobj.contractorOrganization);
+            setResponsibleCutomerUser(
+                currentobj.projectUsers.find(
+                    (user) => user.isResponsible && user.side === "CUSTOMER",
+                )?.id ?? null,
+            );
+            setResponsibleContractorUser(
+                currentobj.projectUsers.find(
+                    (user) => user.isResponsible && user.side === "CONTRUCTOR",
+                )?.id ?? null,
+            );
+            setContractorArrayUser(
+                currentobj.projectUsers
+                    .filter((user) => user.side === "CONTRUCTOR")
+                    .map((user) => user.id),
+            );
+            setCustomArrayUser(
+                currentobj.projectUsers
+                    .filter((user) => user.side === "CUSTOMER")
+                    .map((user) => user.id),
+            );
+        }
+    };
+    useEffect(() => {
+        setInitialValue();
+    }, [currentobj]);
+
+    function buildProjectUsers(): ProjectUserDTO[] {
+        const users: ProjectUserDTO[] = [];
+
+        // CUSTOMER
+        for (const userId of customArrayUser) {
+            const user = appStore.userStore.userById(userId);
+            if (!user) continue;
+
+            users.push({
+                id: user.id,
+                firstName: user.firstName as string,
+                lastName: user.lastName as string,
+                patronymic: user.patronymic as string,
+                position: user.position as string,
+                side: "CUSTOMER",
+                isResponsible: responsibleCutomerUser === userId,
+            });
+        }
+
+        // CONTRACTOR
+        for (const userId of contractorArrayUser) {
+            const user = appStore.userStore.userById(userId);
+            if (!user) continue;
+
+            users.push({
+                id: user.id,
+                firstName: user.firstName as string,
+                lastName: user.lastName as string,
+                patronymic: user.patronymic as string,
+                position: user.position as string,
+                side: "CONTRUCTOR",
+                isResponsible: responibleContractorUser === userId,
+            });
+        }
+
+        return users;
+    }
+
+    const objForm: UpdateProjectDTO = {
+        ...currentobj,
+        customerOrganization: customerOrganizations as string,
+        contractorOrganization: contractorOrganizations as string,
+        projectUsers: buildProjectUsers(),
+    };
+    const shouldBlockButton = useMemo(() => {
+        if (!currentobj) return false;
+
+        const initialCustomerOrg = currentobj.customerOrganization ?? null;
+        const initialContractorOrg = currentobj.contractorOrganization ?? null;
+
+        const initialResponsibleCustomer =
+            currentobj.projectUsers.find((u) => u.isResponsible && u.side === "CUSTOMER")?.id ??
+            null;
+
+        const initialResponsibleContractor =
+            currentobj.projectUsers.find((u) => u.isResponsible && u.side === "CONTRUCTOR")?.id ??
+            null;
+
+        const initialCustomerArray = currentobj.projectUsers
+            .filter((u) => u.side === "CUSTOMER")
+            .map((u) => u.id)
+            .sort();
+
+        const initialContractorArray = currentobj.projectUsers
+            .filter((u) => u.side === "CONTRUCTOR")
+            .map((u) => u.id)
+            .sort();
+
+        const currentCustomerArray = [...customArrayUser].sort();
+        const currentContractorArray = [...contractorArrayUser].sort();
+
+        return (
+            initialCustomerOrg !== customerOrganizations ||
+            initialContractorOrg !== contractorOrganizations ||
+            initialResponsibleCustomer !== responsibleCutomerUser ||
+            initialResponsibleContractor !== responibleContractorUser ||
+            initialCustomerArray.join(",") !== currentCustomerArray.join(",") ||
+            initialContractorArray.join(",") !== currentContractorArray.join(",")
+        );
+    }, [
+        currentobj,
+        customerOrganizations,
+        contractorOrganizations,
+        responsibleCutomerUser,
+        responibleContractorUser,
+        customArrayUser,
+        contractorArrayUser,
+    ]);
 
     const users = appStore.userStore.users;
     const usersOptions = users.map((org) => ({
@@ -38,8 +164,36 @@ const ObjectUsersPage = observer(() => {
     const onlineIds = Object.entries<any>(usersOnline)
         .filter(([_, value]) => value.status === "online")
         .map(([id]) => id);
+    const onClick = async () => {
+        if (objForm) {
+            await appStore.objectStore.updateObject(objForm).then(() => {
+                snackbarStore.showNeutralPositiveSnackbar("Изменения сохранены");
+            });
+        }
+    };
     return (
         <div className={styles.container}>
+            {shouldBlockButton && (
+                <div className={styles.footer}>
+                    <div style={{ display: "flex", gap: 16 }}>
+                        <Button
+                            mode={"neutral"}
+                            type={"outlined"}
+                            onClick={() => setInitialValue()}
+                        >
+                            Отменить
+                        </Button>
+                        <Button
+                            disabled={!shouldBlockButton}
+                            mode={"neutral"}
+                            type={"primary"}
+                            onClick={onClick}
+                        >
+                            Сохранить изменения
+                        </Button>
+                    </div>
+                </div>
+            )}
             <div className={styles.header}>
                 <div className={styles.iconHeader}>
                     <IconGroupBuild />

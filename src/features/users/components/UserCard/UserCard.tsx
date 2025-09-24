@@ -96,6 +96,7 @@ const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
     const [openModal, setOpenModal] = useState(false);
     const [openModalDelete, setOpenModalDelete] = useState(false);
     const navigate = useNavigate();
+    const userObjects = appStore.objectStore.getObjectsByUserId(userId);
     const moreOptions: DropdownListOptions = [
         {
             name: "Выгрузить объекты (XLSX)",
@@ -170,16 +171,21 @@ const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
                 </div>
                 <div className={styles.position}>{user.position}</div>
                 {userOrg && <div className={styles.role}>{userOrg?.name}</div>}
-                <Button
-                    style={{ marginTop: 16 }}
-                    size={"small"}
-                    type={"primary"}
-                    mode={"neutral"}
-                    fullWidth={true}
-                    counter={12}
-                >
-                    Объекты
-                </Button>
+                {userObjects.length > 0 && (
+                    <Button
+                        style={{ marginTop: 16 }}
+                        size={"small"}
+                        type={"primary"}
+                        mode={"neutral"}
+                        fullWidth={true}
+                        counter={userObjects.length}
+                        onClick={() => {
+                            navigate(`/admin/journal?userId=${userId}`);
+                        }}
+                    >
+                        Объекты
+                    </Button>
+                )}
                 <div className={styles.messengers}>
                     {user.messenger && (
                         <div className={styles.messengerItem}>
