@@ -171,7 +171,7 @@ const UserItemList = observer(
 
         return (
             <div ref={containerRef} className={clsx(styles.container)} onScroll={handleScroll}>
-                {groupUsers(users, sortOption.field, sortOption.order)}
+                {groupUsers(users, sortOption.field as any, sortOption.order)}
             </div>
         );
     },

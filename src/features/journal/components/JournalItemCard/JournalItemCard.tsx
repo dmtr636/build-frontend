@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styles from "./JournalItemCard.module.scss";
 import {
     IconCheckmark,
@@ -7,6 +7,7 @@ import {
     IconImage,
     IconInfo,
     IconPin,
+    IconPlus,
     IconTime,
     IconUser,
 } from "src/ui/assets/icons";
@@ -15,6 +16,13 @@ import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { Link, useNavigate } from "react-router-dom";
 import { appStore } from "src/app/AppStore.ts";
 import { getFullName } from "src/shared/utils/getFullName.ts";
+import { ObjectDTO } from "src/features/journal/types/Object.ts";
+import { formatDateShort } from "src/shared/utils/date.ts";
+import { clsx } from "clsx";
+import {
+    IconDangerous,
+    IconHardware,
+} from "src/features/journal/components/JournalItemCard/assets";
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
@@ -23,38 +31,51 @@ function formatDate(dateStr: string): string {
     return `${month}.${year}`;
 }
 
-const JournalItemCard = () => {
-    const id = 12345;
-    const project = {
-        name: "Стройка Центрального района",
-        number: "CP-2025-002",
-        address: "ул. Ленина, д. 14",
-        district: "Центральный",
-        latitude: 55.7558,
-        longitude: 37.6173,
-        responsibleCustomerUserId: "35bd4d27-6493-4324-9c5f-cff2f198ddab",
-        responsibleContractorUserId: "bce832a2-3c3c-481d-af38-853d3a186c79",
+interface journalItemCardProps {
+    project: ObjectDTO;
+}
 
-        contractorOrganizationId: "5267f5d9-6393-4740-97ca-64226dfdd211",
-
-        customerOrganizationId: "019ec5bf-4d76-455f-95ec-4ef39fe04c8c",
-        startDate: "2025-10-01",
-        endDate: "2026-12-31",
-        imageId: null,
-    };
+const JournalItemCard = ({ project }: journalItemCardProps) => {
     const navigate = useNavigate();
-    const customerOrg = appStore.organizationsStore.organizationById(
-        project.customerOrganizationId,
-    );
+    const customerOrg = appStore.organizationsStore.organizationById(project?.customerOrganization);
     const contractorOrg = appStore.organizationsStore.organizationById(
-        project.contractorOrganizationId,
+        project?.contractorOrganization,
     );
-    const customerUser = appStore.userStore.userById(project.responsibleCustomerUserId);
-    const contractUser = appStore.userStore.userById(project.responsibleContractorUserId);
+
+    const customerUser = appStore.userStore.userById(
+        project?.projectUsers.find((user) => user.side === "CUSTOMER" && user.isResponsible)?.id ??
+            "",
+    );
+    const contractUser = appStore.userStore.userById(
+        project?.projectUsers.find((user) => user.side === "CONTRUCTOR" && user.isResponsible)
+            ?.id ?? "",
+    );
+    const statusBadge = useMemo(() => {
+        switch (project.status) {
+            case "IN_PROGRESS":
+                return (
+                    <div className={clsx(styles.badge, styles.progress)}>
+                        <IconHardware /> Стройка
+                    </div>
+                );
+
+            default:
+                return null;
+        }
+    }, [project.status]);
+
     return (
-        <div className={styles.container} onClick={() => navigate(`/admin/journal/${id}`)}>
+        <div className={styles.container} onClick={() => navigate(`/admin/journal/${project.id}`)}>
+            <div className={styles.badgeArray}>
+                {project.hasViolations && (
+                    <div className={clsx(styles.badge, styles.error)}>
+                        <IconDangerous /> Есть нарушения
+                    </div>
+                )}
+                {statusBadge}
+            </div>
             <div className={styles.img}>
-                {project.imageId ? (
+                {project?.imageId ? (
                     <div className={styles.avatarImg}>
                         <img src={`${GET_FILES_ENDPOINT}/${project?.imageId}`} />
                     </div>
@@ -73,15 +94,24 @@ const JournalItemCard = () => {
                             color: "rgba(0, 0, 0, 0.39)",
                         }}
                         variant={"subheadXL"}
-                    >{`№ ${project.number}`}</Typo>
+                    >{`№ ${project.objectNumber}`}</Typo>
                 </div>
-                <div className={styles.location}>
-                    <IconPin />
-                    <Typo
-                        variant={"subheadS"}
-                        mode={"accent"}
-                    >{`Москва, ${project.district}, ${project.address}, ${project.latitude}, ${project.longitude}`}</Typo>
-                </div>
+                {(project.address || project.centroid) && (
+                    <div className={styles.location}>
+                        <IconPin />
+                        <Typo variant="subheadS" mode="accent">
+                            {[
+                                project.address?.city,
+                                project.address?.street,
+                                project.address?.house,
+                                project.centroid?.latitude,
+                                project.centroid?.longitude,
+                            ]
+                                .filter(Boolean)
+                                .join(", ")}
+                        </Typo>
+                    </div>
+                )}
                 <div className={styles.userBlock}>
                     <div className={styles.userBlockContractor}>
                         <div className={styles.userBlockHeader}>Заказчик</div>
@@ -94,7 +124,13 @@ const JournalItemCard = () => {
                                     />
                                 ) : (
                                     <div className={styles.noImgItem}>
-                                        <IconFlag />
+                                        {customerOrg ? (
+                                            <IconFlag />
+                                        ) : (
+                                            <div className={styles.plus}>
+                                                <IconPlus />
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -104,13 +140,23 @@ const JournalItemCard = () => {
                                         Организация
                                     </Typo>
                                 </div>
-                                <Link
-                                    onClick={(event) => event.stopPropagation()}
-                                    to={`/admin/organizations/${contractorOrg?.id}`}
-                                    className={styles.itemName}
-                                >
-                                    {customerOrg?.name}
-                                </Link>
+                                {customerOrg ? (
+                                    <Link
+                                        onClick={(event) => event.stopPropagation()}
+                                        to={`/admin/organizations/${contractorOrg?.id}`}
+                                        className={styles.itemName}
+                                    >
+                                        {customerOrg?.name}
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        onClick={(event) => event.stopPropagation()}
+                                        className={styles.itemName}
+                                        to={`/admin/journal/${project?.id}/users`}
+                                    >
+                                        Нужно выбрать
+                                    </Link>
+                                )}
                             </div>
                         </div>
                         <div className={styles.userItem}>
@@ -122,7 +168,13 @@ const JournalItemCard = () => {
                                     />
                                 ) : (
                                     <div className={styles.noImgItem}>
-                                        <IconUser />
+                                        {customerUser ? (
+                                            <IconUser />
+                                        ) : (
+                                            <div className={styles.plus}>
+                                                <IconPlus />
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -132,13 +184,23 @@ const JournalItemCard = () => {
                                         Ответственный на объекте
                                     </Typo>
                                 </div>
-                                <Link
-                                    onClick={(event) => event.stopPropagation()}
-                                    to={`/admin/users/${customerUser?.id}`}
-                                    className={styles.itemName}
-                                >
-                                    {getFullName(customerUser)}
-                                </Link>
+                                {customerUser ? (
+                                    <Link
+                                        onClick={(event) => event.stopPropagation()}
+                                        to={`/admin/users/${customerUser?.id}`}
+                                        className={styles.itemName}
+                                    >
+                                        {getFullName(customerUser)}
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        onClick={(event) => event.stopPropagation()}
+                                        className={styles.itemName}
+                                        to={`/admin/journal/${project?.id}/users`}
+                                    >
+                                        Нужно назначить
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -153,7 +215,13 @@ const JournalItemCard = () => {
                                     />
                                 ) : (
                                     <div className={styles.noImgItem}>
-                                        <IconFlag />
+                                        {contractorOrg ? (
+                                            <IconFlag />
+                                        ) : (
+                                            <div className={styles.plus}>
+                                                <IconPlus />
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -163,13 +231,23 @@ const JournalItemCard = () => {
                                         Организация
                                     </Typo>
                                 </div>
-                                <Link
-                                    onClick={(event) => event.stopPropagation()}
-                                    to={`/admin/organizations/${contractorOrg?.id}`}
-                                    className={styles.itemName}
-                                >
-                                    {contractorOrg?.name}
-                                </Link>
+                                {contractorOrg ? (
+                                    <Link
+                                        onClick={(event) => event.stopPropagation()}
+                                        to={`/admin/organizations/${contractorOrg?.id}`}
+                                        className={styles.itemName}
+                                    >
+                                        {contractorOrg?.name}
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        onClick={(event) => event.stopPropagation()}
+                                        className={styles.itemName}
+                                        to={`/admin/journal/${project?.id}/users`}
+                                    >
+                                        Нужно выбрать
+                                    </Link>
+                                )}
                             </div>
                         </div>
                         <div className={styles.userItem}>
@@ -181,7 +259,13 @@ const JournalItemCard = () => {
                                     />
                                 ) : (
                                     <div className={styles.noImgItem}>
-                                        <IconUser />
+                                        {contractUser ? (
+                                            <IconUser />
+                                        ) : (
+                                            <div className={styles.plus}>
+                                                <IconPlus />
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -191,38 +275,56 @@ const JournalItemCard = () => {
                                         Ответственный на объекте
                                     </Typo>
                                 </div>
-                                <Link
-                                    onClick={(event) => event.stopPropagation()}
-                                    to={`/admin/users/${contractUser?.id}`}
-                                    className={styles.itemName}
-                                >
-                                    {getFullName(contractUser)}
-                                </Link>
+                                {contractUser ? (
+                                    <Link
+                                        onClick={(event) => event.stopPropagation()}
+                                        to={`/admin/users/${contractUser?.id}`}
+                                        className={styles.itemName}
+                                    >
+                                        {getFullName(contractUser)}
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        onClick={(event) => event.stopPropagation()}
+                                        className={styles.itemName}
+                                        to={`/admin/journal/${project?.id}/users`}
+                                    >
+                                        Нужно назначить
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className={styles.footerBlock}>
-                    <div className={styles.footerItem}>
-                        <div className={styles.footerItemHead}>Последняя проверка</div>
-                        <div className={styles.footerItemText}>
-                            <IconCheckmark /> 05.05.2025
-                        </div>
+                {(project.lastInspection || project.plannedPeriod || project.type) && (
+                    <div className={styles.footerBlock}>
+                        {project.lastInspection && (
+                            <div className={styles.footerItem}>
+                                <div className={styles.footerItemHead}>Последняя проверка</div>
+                                <div className={styles.footerItemText}>
+                                    <IconCheckmark /> {formatDateShort(project.lastInspection)}
+                                </div>
+                            </div>
+                        )}
+                        {project.plannedPeriod?.start && project.plannedPeriod?.end && (
+                            <div className={styles.footerItem}>
+                                <div className={styles.footerItemHead}>Период строительства</div>
+                                <div className={styles.footerItemText}>
+                                    <IconTime />{" "}
+                                    {`${formatDate(project.plannedPeriod?.start)} - ${formatDate(project.plannedPeriod?.end)}`}
+                                </div>
+                            </div>
+                        )}
+                        {project.type && (
+                            <div className={styles.footerItem}>
+                                <div className={styles.footerItemHead}>Тип объекта</div>
+                                <div className={styles.footerItemText}>
+                                    <IconInfo /> {project.type}
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    <div className={styles.footerItem}>
-                        <div className={styles.footerItemHead}>Период строительства</div>
-                        <div className={styles.footerItemText}>
-                            <IconTime />{" "}
-                            {`${formatDate(project.startDate)} - ${formatDate(project.endDate)}`}
-                        </div>
-                    </div>
-                    <div className={styles.footerItem}>
-                        <div className={styles.footerItemHead}>Тип объекта</div>
-                        <div className={styles.footerItemText}>
-                            <IconInfo /> Парк
-                        </div>
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     );

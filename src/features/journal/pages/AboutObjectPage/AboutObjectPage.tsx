@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import styles from "./AboutObjectPage.module.scss";
 import { IconApartment, IconBasket } from "src/ui/assets/icons";
 import { Media } from "src/ui/components/solutions/Media/Media.tsx";
@@ -12,6 +12,11 @@ import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 import { extractImageMetadata } from "src/shared/utils/extractMeta.ts";
 import exifr from "exifr";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
+import { useParams } from "react-router-dom";
+import { observer } from "mobx-react-lite";
+import { UpdateProjectDTO } from "src/features/journal/types/Object.ts";
+import { User } from "src/features/users/types/User.ts";
+import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 function getDaysBetween(startDate: string, endDate: string): string {
     const start = new Date(startDate);
@@ -33,35 +38,89 @@ function getDaysBetween(startDate: string, endDate: string): string {
     return `${days} ${getDayWord(days)}`;
 }
 
-const AboutObjectPage = () => {
-    const project = {
-        name: "Стройка Центрального района",
-        number: "CP-2025-002",
-        address: "ул. Ленина, д. 14",
-        district: "Центральный",
-        latitude: 55.7558,
-        longitude: 37.6173,
-        responsibleUserId: "59cf95ac-261e-4c05-ab86-43e699d7b7d6",
-        customerOrganizationId: "fd649e29-757b-4f89-bf0a-6350bd778e99",
-        contractorOrganizationId: "7c4a300e-a83c-4bcd-98ab-8d610a7ee065",
-        startDate: "2025-10-01",
-        endDate: "2026-12-31",
-        imageId: null,
-    };
+const AboutObjectPage = observer(() => {
     const constructionObjects = [
-        { value: "park", name: "Парк" },
-        { value: "residential_complex", name: "ЖК" },
-        { value: "school", name: "Школа" },
-        { value: "shopping_mall", name: "ТЦ" },
+        { value: "Парк", name: "Парк" },
+        { value: "ЖК", name: "ЖК" },
+        { value: "Школа", name: "Школа" },
+        { value: "ТЦ", name: "ТЦ" },
     ];
-    const [type, setType] = useState<string | null>(null);
-    const [objPreview, setObjPreview] = useState<string | null>(null);
-    const [objName, setObjName] = useState<string | null>(null);
-    const [startDate, setStartDate] = useState<string | null>(null);
-    const [endDate, setEndDate] = useState<string | null>(null);
-    console.log(startDate);
+    const { id } = useParams();
+    useEffect(() => {
+        appStore.objectStore.fetchObjects();
+    }, []);
+    const currentOrg = appStore.objectStore.ObjectMap.get(id ?? "");
+    const [type, setType] = useState<string | null>(currentOrg?.type ?? null);
+    const [objPreview, setObjPreview] = useState<string | null>(currentOrg?.imageId ?? null);
+    const [objName, setObjName] = useState<string | null>(currentOrg?.name ?? null);
+    const [startDate, setStartDate] = useState<string | null>(
+        currentOrg?.plannedPeriod?.start ?? null,
+    );
+    const [endDate, setEndDate] = useState<string | null>(currentOrg?.plannedPeriod?.end ?? null);
+
+    const shouldBlockButton = useMemo(() => {
+        if (!currentOrg) return false;
+
+        return (
+            type !== (currentOrg.type ?? null) ||
+            objPreview !== (currentOrg.imageId ?? null) ||
+            objName !== (currentOrg.name ?? null) ||
+            startDate !== (currentOrg.plannedPeriod?.start ?? null) ||
+            endDate !== (currentOrg.plannedPeriod?.end ?? null)
+        );
+    }, [type, objPreview, objName, startDate, endDate, currentOrg]);
+    const setInitialValue = () => {
+        if (currentOrg) {
+            setType(currentOrg.type ?? null);
+            setObjPreview(currentOrg.imageId ?? null);
+            setObjName(currentOrg.name ?? null);
+            setStartDate(currentOrg.plannedPeriod?.start ?? null);
+            setEndDate(currentOrg.plannedPeriod?.end ?? null);
+        }
+    };
+    useEffect(() => {
+        setInitialValue();
+    }, [currentOrg]);
+
+    const objForm: UpdateProjectDTO = {
+        ...currentOrg,
+        type: type as string,
+        imageId: objPreview as string,
+        name: objName as string,
+        plannedPeriod: {
+            start: startDate as string,
+            end: endDate as string,
+        },
+    };
+    const onClick = () => {
+        if (objForm)
+            appStore.objectStore.updateObject(objForm).then(() => {
+                snackbarStore.showNeutralPositiveSnackbar("Изменения сохранены");
+            });
+    };
     return (
         <div className={styles.container}>
+            {shouldBlockButton && (
+                <div className={styles.footer}>
+                    <div style={{ display: "flex", gap: 16 }}>
+                        <Button
+                            mode={"neutral"}
+                            type={"outlined"}
+                            onClick={() => setInitialValue()}
+                        >
+                            Отменить
+                        </Button>
+                        <Button
+                            disabled={!shouldBlockButton || !objName}
+                            mode={"neutral"}
+                            type={"primary"}
+                            onClick={onClick}
+                        >
+                            Сохранить изменения
+                        </Button>
+                    </div>
+                </div>
+            )}
             <div className={styles.header}>
                 <div className={styles.iconHeader}>
                     <IconApartment />
@@ -126,7 +185,7 @@ const AboutObjectPage = () => {
                                 size={"large"}
                                 formName={"Номер объекта"}
                                 onChange={() => {}}
-                                value={"564-543"}
+                                value={currentOrg?.objectNumber}
                                 readonly={true}
                             />
                         </div>
@@ -169,6 +228,6 @@ const AboutObjectPage = () => {
             </div>
         </div>
     );
-};
+});
 
 export default AboutObjectPage;

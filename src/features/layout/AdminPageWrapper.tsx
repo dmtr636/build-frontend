@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Header from "src/features/layout/components/Header/Header.tsx";
 import { Outlet } from "react-router-dom";
 import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvider.tsx";
-import { appStore, layoutStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, objectStore } from "src/app/AppStore.ts";
 import styles from "./styles.module.scss";
 import { observer } from "mobx-react-lite";
 import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
@@ -18,6 +18,7 @@ const AdminPageWrapper = observer(() => {
         appStore.registryStore.fetchAllViolations();
         appStore.registryStore.fetchAllWorks();
         appStore.websocketStore.connectToSocket();
+        appStore.objectStore.fetchObjects();
 
         const handleBeforeUnload = () => {
             appStore.accountStore.fetchUserIsOffline(true);

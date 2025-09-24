@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { Helmet } from "react-helmet";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styles from "./ObjectPage.module.scss";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
-import { layoutStore, registryStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, registryStore } from "src/app/AppStore.ts";
 import { Tabs } from "src/ui/components/solutions/Tabs/Tabs.tsx";
 import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
 import { IconArrowLeft, IconBack } from "src/ui/assets/icons";
@@ -14,6 +14,7 @@ export const ObjectPage = observer(() => {
     const navigate = useNavigate();
     const [scrollBarWidth] = useState(getScrollBarWidth());
     const { id } = useParams();
+
     return (
         <div>
             <Helmet>

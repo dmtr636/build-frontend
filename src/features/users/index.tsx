@@ -38,7 +38,7 @@ import { IconBuildArrow, IconBuildPhoto } from "src/features/users/components/Us
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 
 export interface SortOption {
-    field: "createdAt" | "name" | "group" | "role";
+    field: "createdAt" | "name" | "group" | "role" | "updatedAt" | "lastInspection";
     order: "asc" | "desc";
     label: string;
 }
@@ -103,6 +103,7 @@ export const UsersPage = observer(() => {
     const [currentUser, setCurrentUser] = useState<User | undefined>();
     const users = appStore.userStore.users;
     const loginUser = appStore.accountStore.currentUser;
+    const objects = appStore.objectStore.objects;
     const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
     const usersPositionOptions: SelectOption<string>[] = userPosition.map((user) => ({
         name: user ?? "",
@@ -119,6 +120,10 @@ export const UsersPage = observer(() => {
         setSortOption(sort);
         appStore.userStore.setSortOption(sort);
     };
+    const objectOptions: SelectOption<string>[] = objects.map((obj) => ({
+        name: obj.name,
+        value: obj.id,
+    }));
     const dropDownSortOptions: DropdownListOption<string>[] = [
         {
             name: "По алфавиту",
@@ -238,7 +243,9 @@ export const UsersPage = observer(() => {
     const [sortIsOpen, setSortIsOpen] = useState<boolean>(false);
     const [openCreate, setOpenCreate] = useState(false);
     const [company, setCompany] = useState<SelectOption<string>[]>(appStore.userStore.company);
+    const [obj, setObj] = useState<string[]>([]);
     useLayoutEffect(() => {
+        appStore.objectStore.fetchObjects();
         appStore.userStore.fetchOnlineUser();
     }, []);
     const chipArray = useMemo(() => {
@@ -319,6 +326,16 @@ export const UsersPage = observer(() => {
             if (
                 positionValue.length > 0 &&
                 (!user.position || !positionValue.includes(user.position))
+            ) {
+                return false;
+            }
+            if (
+                obj.length > 0 &&
+                !obj.some((item) =>
+                    appStore.objectStore.ObjectMap.get(item)?.projectUsers.some(
+                        (u) => u.id === user.id,
+                    ),
+                )
             ) {
                 return false;
             }
@@ -547,10 +564,10 @@ export const UsersPage = observer(() => {
                         ></MultipleSelect>
                         <MultipleAutocomplete
                             formName={"Объекты"}
-                            options={companyOptions}
+                            options={objectOptions}
                             placeholder={"Все"}
-                            values={rolesValue}
-                            onValuesChange={setRolesValue}
+                            values={obj}
+                            onValuesChange={setObj}
                             multiple={true}
                         />
                         <Checkbox

@@ -1,0 +1,75 @@
+.filterBlock {
+    width: 298px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
+
+    @media screen and (min-width: 1500px) {
+        width: 358px;
+    }
+}
+
+.containerHeader {
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    position: sticky;
+    top: 152px;
+    align-self: flex-start;
+    background-color: white;
+    z-index: 2;
+
+    &.scrolled {
+        padding-bottom: 8px;
+        border-box: none;
+        margin-bottom: 12px;
+    }
+
+    &.windowScrolled {
+        &::after {
+            position: absolute;
+            content: "";
+            left: 0;
+            right: 0;
+            bottom: -20px;
+            height: 20px;
+            background: linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(95, 95, 95, 0.1) 100%
+            );
+        }
+    }
+}
+
+.countItem {
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+}
+
+.headFilters {
+    display: flex;
+}
+
+.count {
+    display: flex;
+    gap: 4px;
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; /* 142.857% */
+}
+
+.list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
