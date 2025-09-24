@@ -19,3 +19,10 @@ export interface ConstructionWork {
     unit: string | null;
     classificationCode: string | null;
 }
+
+export interface ConstructionWorkStage {
+    id: string;
+    workId: string;
+    stageNumber: string;
+    stageName: string;
+}

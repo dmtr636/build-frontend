@@ -2,11 +2,13 @@ import { makeAutoObservable } from "mobx";
 import {
     ConstructionViolation,
     ConstructionWork,
+    ConstructionWorkStage,
     NormativeDocument,
 } from "src/features/registry/types.ts";
 import { ITableSettings } from "src/ui/components/segments/Table/Table.types.ts";
 import { ApiClient } from "src/shared/api/ApiClient.ts";
 import { endpoints } from "src/shared/api/endpoints.ts";
+import { deepCopy } from "src/shared/utils/deepCopy.ts";
 
 export class RegistryStore {
     documentsSearch = "";
@@ -44,6 +46,7 @@ export class RegistryStore {
 
     worksSearch = "";
     works: ConstructionWork[] = [];
+    workStages: ConstructionWorkStage[] = [];
     worksTableSettings: ITableSettings = {
         compactMode: true,
         quickView: false,
@@ -52,6 +55,7 @@ export class RegistryStore {
         columnWidths: {},
     };
     worksForm: Partial<ConstructionWork> = {};
+    worksStagesForm: ConstructionWorkStage[] = [];
     editingWork: ConstructionWork | null = null;
     deletingWork: ConstructionWork | null = null;
     addedWorkCode = "";
@@ -219,6 +223,18 @@ export class RegistryStore {
         this.loading = false;
     }
 
+    async fetchStages(workId: string) {
+        this.loading = true;
+        const response = await this.apiClient.get<ConstructionWorkStage[]>(
+            endpoints.dictionaries.constructionWorkStages + `/search?workId=${workId}`,
+        );
+        if (response.status) {
+            this.workStages = response.data;
+            this.worksStagesForm = deepCopy(response.data);
+        }
+        this.loading = false;
+    }
+
     async addDocument(document: Partial<NormativeDocument>) {
         this.loading = true;
         await this.apiClient.post<NormativeDocument>(
@@ -285,6 +301,22 @@ export class RegistryStore {
             endpoints.dictionaries.constructionWorks,
             document,
         );
+        for (const stage of this.worksStagesForm) {
+            if (!this.workStages.some((_s) => _s.id === stage.id)) {
+                await this.apiClient.post<ConstructionWorkStage>(
+                    endpoints.dictionaries.constructionWorkStages,
+                    stage,
+                );
+            }
+        }
+        for (const stage of this.workStages) {
+            if (!this.worksStagesForm.some((_s) => _s.id === stage.id)) {
+                await this.apiClient.delete(
+                    endpoints.dictionaries.constructionWorkStages,
+                    stage.id,
+                );
+            }
+        }
         this.loading = false;
     }
 
