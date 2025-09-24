@@ -48,6 +48,12 @@
     object-fit: cover;
     width: 200px;
     height: 291px;
+
+    img {
+        width: 200px;
+        height: 291px;
+        object-fit: cover;
+    }
 }
 
 .header {
