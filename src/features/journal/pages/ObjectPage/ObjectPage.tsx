@@ -23,7 +23,7 @@ export const ObjectPage = observer(() => {
             <div
                 className={styles.subheader}
                 style={{
-                    width: `calc(100vw - ${layoutStore.overflowed ? scrollBarWidth : 0}px)`,
+                    width: `calc(100vw - ${layoutStore.overflowed && !layoutStore.overflowHidden ? scrollBarWidth : 0}px)`,
                 }}
             >
                 <div className={styles.buttonBack} onClick={() => navigate(`/admin/journal`)}>

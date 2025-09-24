@@ -26,9 +26,12 @@ import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/Mult
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
 import { getFullName } from "src/shared/utils/getFullName.ts";
-import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
 import { useNavigate } from "react-router-dom";
+import JournalItemCard from "src/features/journal/components/JournalItemCard/JournalItemCard.tsx";
+import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
+import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
+import MapObjectsEditor, { MapObject } from "src/features/map/Map.tsx";
 
 export const JournalPage = observer(() => {
     const loginUser = appStore.accountStore.currentUser;
@@ -37,6 +40,69 @@ export const JournalPage = observer(() => {
         order: "asc",
         label: "По алфавиту, от А - Я",
     });
+    const [showMapsOverlay, setShowMapsOverlay] = useState(false);
+    const [objects, setObjects] = useState<MapObject[]>([
+        {
+            id: "t1",
+            name: "Тест 1",
+            marker: { lat: 55.7578, lng: 37.6156 },
+            polygon: [
+                { lat: 55.7603, lng: 37.6116 },
+                { lat: 55.7603, lng: 37.6196 },
+                { lat: 55.7553, lng: 37.6196 },
+                { lat: 55.7553, lng: 37.6116 },
+            ],
+            color: "#FA0032",
+        },
+        {
+            id: "t2",
+            name: "Тест 2",
+            marker: { lat: 55.7487, lng: 37.5905 },
+            polygon: [
+                { lat: 55.7512, lng: 37.5855 },
+                { lat: 55.7512, lng: 37.5955 },
+                { lat: 55.7462, lng: 37.5955 },
+                { lat: 55.7462, lng: 37.5855 },
+            ],
+            color: "#FA0032",
+        },
+        {
+            id: "t3",
+            name: "Тест 3",
+            marker: { lat: 55.7517, lng: 37.628 },
+            polygon: [
+                { lat: 55.7542, lng: 37.6225 },
+                { lat: 55.7542, lng: 37.6335 },
+                { lat: 55.7492, lng: 37.6335 },
+                { lat: 55.7492, lng: 37.6225 },
+            ],
+            color: "#FA0032",
+        },
+        {
+            id: "t4",
+            name: "Тест 4",
+            marker: { lat: 55.7643, lng: 37.5931 },
+            polygon: [
+                { lat: 55.7668, lng: 37.5881 },
+                { lat: 55.7668, lng: 37.5981 },
+                { lat: 55.7618, lng: 37.5981 },
+                { lat: 55.7618, lng: 37.5881 },
+            ],
+            color: "#FA0032",
+        },
+        {
+            id: "t5",
+            name: "Тест 5",
+            marker: { lat: 55.7489, lng: 37.5366 },
+            polygon: [
+                { lat: 55.7514, lng: 37.5316 },
+                { lat: 55.7514, lng: 37.5416 },
+                { lat: 55.7464, lng: 37.5416 },
+                { lat: 55.7464, lng: 37.5316 },
+            ],
+            color: "#FA0032",
+        },
+    ]);
 
     const isSelected = (field: string, order: "asc" | "desc") =>
         sortOption?.field === field && sortOption?.order === order;
@@ -78,7 +144,7 @@ export const JournalPage = observer(() => {
             disabled: isSelected("createDate", "asc"),
             iconAfter: isSelected("createDate", "asc") ? <IconCheckmark /> : undefined,
             onClick: () => {
-                onChangeSort({
+                setSortOption({
                     field: "createdAt",
                     order: "asc",
                     label: "По дате создания, сначала новые",
@@ -428,12 +494,15 @@ export const JournalPage = observer(() => {
                         />
                     </div>
                     <div>
-                        <Button
-                            size={"large"}
-                            iconBefore={<IconPin />}
-                            type={"outlined"}
-                            mode={"neutral"}
-                        ></Button>
+                        <Tooltip header={"Карта"} delay={500}>
+                            <Button
+                                size={"large"}
+                                iconBefore={<IconPin />}
+                                type={"outlined"}
+                                mode={"neutral"}
+                                onClick={() => setShowMapsOverlay(true)}
+                            ></Button>
+                        </Tooltip>
                     </div>
                     <div>
                         <SingleDropdownList
@@ -517,6 +586,21 @@ export const JournalPage = observer(() => {
                     />
                 </div>
             </Overlay>
+
+            {showMapsOverlay && (
+                <Overlay
+                    open={showMapsOverlay}
+                    onClose={() => setShowMapsOverlay(false)}
+                    title={"Карта"}
+                    styles={{
+                        card: {
+                            width: "65vw",
+                        },
+                    }}
+                >
+                    <MapObjectsEditor objects={objects} />
+                </Overlay>
+            )}
         </div>
     );
 });

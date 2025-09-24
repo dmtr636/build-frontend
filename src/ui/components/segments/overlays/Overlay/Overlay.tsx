@@ -69,6 +69,7 @@ export const Overlay = observer((props: OverlayProps) => {
             translate.current = { x: 0, y: 0 };
             document.addEventListener("mouseup", handleDocumentMouseUp);
             document.documentElement.style.overflow = "hidden";
+            layoutStore.overflowHidden = true;
         }
         return () => {
             document.removeEventListener("mouseup", handleDocumentMouseUp);
@@ -80,6 +81,7 @@ export const Overlay = observer((props: OverlayProps) => {
                     return;
                 }
                 document.documentElement.style.overflow = "initial";
+                layoutStore.overflowHidden = false;
             });
         };
     }, [open]);
