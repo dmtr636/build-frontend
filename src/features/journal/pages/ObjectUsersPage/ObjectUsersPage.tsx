@@ -155,8 +155,15 @@ const ObjectUsersPage = observer(() => {
         contractorArrayUser,
     ]);
 
-    const users = appStore.userStore.users;
-    const usersOptions = users.map((org) => ({
+    const usersCust =
+        appStore.organizationsStore.organizationById(customerOrganizations)?.employees;
+    const userContr =
+        appStore.organizationsStore.organizationById(contractorOrganizations)?.employees;
+    const usersCustOptions = usersCust?.map((org) => ({
+        name: getFullName(org),
+        value: org.id,
+    }));
+    const usersContrOptions = userContr?.map((org) => ({
         name: getFullName(org),
         value: org.id,
     }));
@@ -171,6 +178,7 @@ const ObjectUsersPage = observer(() => {
             });
         }
     };
+
     return (
         <div className={styles.container}>
             {shouldBlockButton && (
@@ -206,7 +214,11 @@ const ObjectUsersPage = observer(() => {
                     <div style={{ width: "100%" }}>
                         {customerOrganizations && customerOrg ? (
                             <CompanyCardItem
-                                onClear={() => setCustomerOrganizations(null)}
+                                onClear={() => {
+                                    setCustomArrayUser([]);
+                                    setResponsibleCutomerUser(null);
+                                    setCustomerOrganizations(null);
+                                }}
                                 organization={customerOrg}
                             />
                         ) : (
@@ -227,11 +239,18 @@ const ObjectUsersPage = observer(() => {
                         <Autocomplete
                             size={"large"}
                             iconBefore={<IconPlus />}
+                            disabled={
+                                usersCustOptions?.filter(
+                                    (org) => !customArrayUser.some((item) => org.value === item),
+                                ).length === 0 || !customerOrganizations
+                            }
+                            options={
+                                usersCustOptions?.filter(
+                                    (org) => !customArrayUser.some((item) => org.value === item),
+                                ) ?? []
+                            }
                             formName={"Добавить пользователя в объект"}
                             placeholder={"Введите имя или выберите из списка"}
-                            options={usersOptions.filter(
-                                (org) => !customArrayUser.some((item) => org.value === item),
-                            )}
                             value={null}
                             onValueChange={(value) => {
                                 if (customArrayUser.length === 0) {
@@ -350,7 +369,11 @@ const ObjectUsersPage = observer(() => {
                     <div style={{ width: "100%" }}>
                         {contractorOrganizations && contractorOrg ? (
                             <CompanyCardItem
-                                onClear={() => setContractorOrganizations(null)}
+                                onClear={() => {
+                                    setContractorArrayUser([]);
+                                    setResponsibleContractorUser(null);
+                                    setContractorOrganizations(null);
+                                }}
                                 organization={contractorOrg}
                             />
                         ) : (
@@ -373,9 +396,18 @@ const ObjectUsersPage = observer(() => {
                             iconBefore={<IconPlus />}
                             formName={"Добавить пользователя в объект"}
                             placeholder={"Введите имя или выберите из списка"}
-                            options={usersOptions.filter(
-                                (org) => !contractorArrayUser.some((item) => org.value === item),
-                            )}
+                            disabled={
+                                usersContrOptions?.filter(
+                                    (org) =>
+                                        !contractorArrayUser.some((item) => org.value === item),
+                                ).length === 0 || !contractorOrganizations
+                            }
+                            options={
+                                usersContrOptions?.filter(
+                                    (org) =>
+                                        !contractorArrayUser.some((item) => org.value === item),
+                                ) ?? []
+                            }
                             value={null}
                             onValueChange={(value) => {
                                 if (contractorArrayUser.length === 0) {
