@@ -134,6 +134,7 @@ import IconXlsx from "./simple-icons_googlesheets.svg?react";
 import IconApartment from "./apartment.svg?react";
 
 import IconGroupBuild from "./groupBuild.svg?react";
+import IconDistance from "./distance.svg?react";
 
 export {
     IconGroupBuild,
@@ -268,4 +269,5 @@ export {
     IconFlagUSA,
     IconBulletedList,
     IconFlag,
+    IconDistance,
 };

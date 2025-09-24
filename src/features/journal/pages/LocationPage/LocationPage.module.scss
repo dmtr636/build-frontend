@@ -1,0 +1,30 @@
+.iconHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    background: var(--graphic-neutral-primary, #111317);
+}
+
+.header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--text-neutral-tertiary, #444d5f);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 28.8px */
+}
+
+.container {
+    margin-top: 40px;
+}
+
+.mapWrapper {
+    width: 777px;
+    height: 459px;
+    margin-top: 24px;
+}
