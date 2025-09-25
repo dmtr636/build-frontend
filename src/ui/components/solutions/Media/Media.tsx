@@ -1,6 +1,7 @@
 import styles from "./Media.module.scss";
 import {
     IconBasket,
+    IconDocument,
     IconError,
     IconImage,
     IconImport,
@@ -29,10 +30,11 @@ import { observer } from "mobx-react-lite";
 
 const defaultImageFormats = ["png", "jpg", "jpeg", "webp", "gif"];
 const defaultVideoFormats = ["mp4", "webm", "ogg"];
+const defaultDocFormats = ["pdf", "pptx"];
 
 export const Media = observer(
     (props: {
-        type: "image" | "video" | "photoGrid";
+        type: "image" | "video" | "photoGrid" | "doc";
         resolution?: [number, number];
         maxSizeMB?: number;
         url?: string | null;
@@ -60,7 +62,9 @@ export const Media = observer(
         const allowedFormats =
             props.type === "image" || props.type === "photoGrid"
                 ? defaultImageFormats
-                : defaultVideoFormats;
+                : props.type === "doc"
+                  ? defaultDocFormats
+                  : defaultVideoFormats;
         const containerRef = useRef<HTMLDivElement>(null);
         const [collapseButtons, setCollapseButtons] = useState(false);
         const multipleInsertFileInputRef = useRef<HTMLInputElement>(null);
@@ -119,12 +123,8 @@ export const Media = observer(
             e.preventDefault();
             const file = e.dataTransfer?.files.item(0);
             if (file) {
-                const format = file.name.split(".").pop();
-                if (!format) {
-                    setError({ type: "WRONG_FORMAT" });
-                    return;
-                }
-                if (!allowedFormats.includes(format)) {
+                const format = file.name.split(".").pop()?.toLowerCase();
+                if (!format || !allowedFormats.map((f) => f.toLowerCase()).includes(format)) {
                     setError({ type: "WRONG_FORMAT" });
                     return;
                 }
@@ -134,6 +134,7 @@ export const Media = observer(
                 }
                 setDragActive(false);
                 if (
+                    props.type === "image" &&
                     props.enableCropper &&
                     format !== "gif" &&
                     !(format === "webp" && (await isAnimatedWebP(file)))
@@ -172,12 +173,8 @@ export const Media = observer(
             const files = event.target.files;
             if (files && files[0]) {
                 const file = files[0];
-                const format = file.name.split(".").pop();
-                if (!format) {
-                    setError({ type: "WRONG_FORMAT" });
-                    return;
-                }
-                if (!allowedFormats.includes(format)) {
+                const format = file.name.split(".").pop()?.toLowerCase();
+                if (!format || !allowedFormats.map((f) => f.toLowerCase()).includes(format)) {
                     setError({ type: "WRONG_FORMAT" });
                     return;
                 }
@@ -186,6 +183,7 @@ export const Media = observer(
                     return;
                 }
                 if (
+                    props.type === "image" &&
                     props.enableCropper &&
                     format !== "gif" &&
                     !(format === "webp" && (await isAnimatedWebP(file)))
@@ -220,6 +218,56 @@ export const Media = observer(
         }
 
         const renderPlaceholder = () => {
+            // Специальный стартовый экран для документов
+            if (props.type === "doc") {
+                if (props.readonly) {
+                    return (
+                        <div
+                            className={styles.imagePlaceholderContainer}
+                            style={{ cursor: "default" }}
+                        >
+                            <IconUserRounded
+                                className={styles.imagePlaceholder}
+                                style={{ width: 48, height: 48 }}
+                            />
+                        </div>
+                    );
+                }
+                return (
+                    <div
+                        style={{ width: "100%" }}
+                        onClick={() => {
+                            setShowOverlay(true);
+                            if (isMobile) {
+                                if (!fileInputRef.current) return;
+                                fileInputRef.current.value = "";
+                                fileInputRef.current?.click();
+                            }
+                        }}
+                        onMouseEnter={() => setHover(true)}
+                        onMouseLeave={() => setHover(false)}
+                    >
+                        <Button
+                            size={"large"}
+                            fullWidth={true}
+                            type={"primary"}
+                            mode={"neutral"}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowOverlay(true);
+                                if (isMobile) {
+                                    if (!fileInputRef.current) return;
+                                    fileInputRef.current.value = "";
+                                    fileInputRef.current?.click();
+                                }
+                            }}
+                        >
+                            Загрузить файл (PDF, PPTX)
+                        </Button>
+                    </div>
+                );
+            }
+
             if (props.plusPlaceholder && ["video", "image"].includes(props.type)) {
                 return (
                     <div
@@ -332,7 +380,9 @@ export const Media = observer(
                     </Typo>
                 )}
                 <div
-                    className={clsx(styles.container, props.readonly && styles.readonly)}
+                    className={clsx(styles.container, props.readonly && styles.readonly, {
+                        [styles.typeDoc]: props.type === "doc",
+                    })}
                     style={{
                         ...props.style,
                         height: props.style?.height,
@@ -344,7 +394,7 @@ export const Media = observer(
                             <></>
                         ) : props.type === "image" ? (
                             <img src={props.url ?? ""} alt={""} style={props.imgStyle} />
-                        ) : (
+                        ) : props.type === "video" ? (
                             <video
                                 src={props.url ?? ""}
                                 muted={true}
@@ -354,7 +404,25 @@ export const Media = observer(
                                 width={"100%"}
                                 style={{ objectFit: "cover" }}
                             />
-                        )
+                        ) : props.type === "doc" ? (
+                            <Flex
+                                align={"center"}
+                                justify={"center"}
+                                style={{ width: "100%", height: "100%" }}
+                            >
+                                <Button
+                                    mode={"neutral"}
+                                    size={"small"}
+                                    onClick={() => {
+                                        if (props.url) {
+                                            window.open(props.url, "_blank", "noopener,noreferrer");
+                                        }
+                                    }}
+                                >
+                                    Открыть документ
+                                </Button>
+                            </Flex>
+                        ) : null
                     ) : (
                         renderPlaceholder()
                     )}
@@ -499,6 +567,8 @@ export const Media = observer(
                                             <IconImage className={styles.imagePlaceholder} />
                                         ) : props.type === "photoGrid" ? (
                                             <IconPhotoGrid className={styles.imagePlaceholder} />
+                                        ) : props.type === "doc" ? (
+                                            <IconDocument className={styles.imagePlaceholder} />
                                         ) : (
                                             <IconVideo className={styles.imagePlaceholder} />
                                         )}
@@ -506,7 +576,9 @@ export const Media = observer(
                                             <Typo variant={"bodyXL"} style={{ marginTop: 12 }}>
                                                 {props.type === "image"
                                                     ? "Перетащите изображение сюда или"
-                                                    : "Перетащите видео сюда или"}
+                                                    : props.type === "doc"
+                                                      ? "Перетащите документ сюда или"
+                                                      : "Перетащите видео сюда или"}
                                             </Typo>
                                             <Button
                                                 mode={"neutral"}
@@ -531,7 +603,7 @@ export const Media = observer(
                                                     Формат:{" "}
                                                 </span>
                                                 {allowedFormats.join(", ")}
-                                                {props.resolution && (
+                                                {props.resolution && props.type !== "doc" && (
                                                     <>
                                                         {"\n"}
                                                         <span
@@ -583,7 +655,9 @@ export const Media = observer(
                                         <Typo variant={"actionXL"} mode={"brand"} type={"tertiary"}>
                                             {props.type === "image"
                                                 ? "Перетащите изображение сюда и отпустите его"
-                                                : "Перетащите видео сюда и отпустите его"}
+                                                : props.type === "doc"
+                                                  ? "Перетащите документ сюда и отпустите его"
+                                                  : "Перетащите видео сюда и отпустите его"}
                                         </Typo>
                                     </div>
                                 )}

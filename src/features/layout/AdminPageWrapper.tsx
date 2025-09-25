@@ -6,7 +6,9 @@ import { appStore, layoutStore, objectStore } from "src/app/AppStore.ts";
 import styles from "./styles.module.scss";
 import { observer } from "mobx-react-lite";
 import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
+import { ProgressBar } from "src/ui/components/solutions/ProgressBar/ProgressBar.tsx";
 import { throttle } from "src/shared/utils/throttle.ts";
+import { fileStore } from "src/features/users/stores/FileStore.ts";
 
 const AdminPageWrapper = observer(() => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -60,6 +62,16 @@ const AdminPageWrapper = observer(() => {
                 <Outlet />
             </div>
             <SnackbarProvider centered={true} />
+            <ProgressBar
+                show={fileStore.uploading}
+                title={"Загрузка файла..."}
+                text={fileStore.uploadingFileName}
+                progress={Math.min(fileStore.uploadProgressPercent, 99)}
+                onCancel={() => {
+                    fileStore.uploadAbortController.abort();
+                    fileStore.uploading = false;
+                }}
+            />
         </div>
     );
 });

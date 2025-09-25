@@ -36,7 +36,6 @@ export const JournalPage = observer(() => {
     const loginUser = appStore.accountStore.currentUser;
     const [searchParams] = useSearchParams();
     const userId = searchParams.get("userId");
-    console.log(userId);
     const [sortOption, setSortOption] = useState<SortOption>({
         field: "name",
         order: "asc",

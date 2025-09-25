@@ -35,6 +35,10 @@
     &.readonly {
         pointer-events: none;
     }
+
+    &.typeDoc {
+        width: 100%;
+    }
 }
 
 .imagePlaceholderContainer {
