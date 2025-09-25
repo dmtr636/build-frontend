@@ -42,68 +42,7 @@ export const JournalPage = observer(() => {
         label: "По алфавиту, от А - Я",
     });
     const [showMapsOverlay, setShowMapsOverlay] = useState(false);
-    const [objects, setObjects] = useState<MapObject[]>([
-        {
-            id: "t1",
-            name: "Тест 1",
-            marker: { lat: 55.7578, lng: 37.6156 },
-            polygon: [
-                { lat: 55.7603, lng: 37.6116 },
-                { lat: 55.7603, lng: 37.6196 },
-                { lat: 55.7553, lng: 37.6196 },
-                { lat: 55.7553, lng: 37.6116 },
-            ],
-            color: "#FA0032",
-        },
-        {
-            id: "t2",
-            name: "Тест 2",
-            marker: { lat: 55.7487, lng: 37.5905 },
-            polygon: [
-                { lat: 55.7512, lng: 37.5855 },
-                { lat: 55.7512, lng: 37.5955 },
-                { lat: 55.7462, lng: 37.5955 },
-                { lat: 55.7462, lng: 37.5855 },
-            ],
-            color: "#FA0032",
-        },
-        {
-            id: "t3",
-            name: "Тест 3",
-            marker: { lat: 55.7517, lng: 37.628 },
-            polygon: [
-                { lat: 55.7542, lng: 37.6225 },
-                { lat: 55.7542, lng: 37.6335 },
-                { lat: 55.7492, lng: 37.6335 },
-                { lat: 55.7492, lng: 37.6225 },
-            ],
-            color: "#FA0032",
-        },
-        {
-            id: "t4",
-            name: "Тест 4",
-            marker: { lat: 55.7643, lng: 37.5931 },
-            polygon: [
-                { lat: 55.7668, lng: 37.5881 },
-                { lat: 55.7668, lng: 37.5981 },
-                { lat: 55.7618, lng: 37.5981 },
-                { lat: 55.7618, lng: 37.5881 },
-            ],
-            color: "#FA0032",
-        },
-        {
-            id: "t5",
-            name: "Тест 5",
-            marker: { lat: 55.7489, lng: 37.5366 },
-            polygon: [
-                { lat: 55.7514, lng: 37.5316 },
-                { lat: 55.7514, lng: 37.5416 },
-                { lat: 55.7464, lng: 37.5416 },
-                { lat: 55.7464, lng: 37.5316 },
-            ],
-            color: "#FA0032",
-        },
-    ]);
+    const [objects, setObjects] = useState<MapObject[]>([]);
 
     const isSelected = (field: string, order: "asc" | "desc") =>
         sortOption?.field === field && sortOption?.order === order;
@@ -341,6 +280,28 @@ export const JournalPage = observer(() => {
         haveUser,
         sortOption,
     ]);
+
+    useEffect(() => {
+        setObjects(
+            filteredJournalList
+                .filter((item) => item.centroid?.longitude && item.centroid.latitude)
+                .map((item) => ({
+                    id: item.objectNumber,
+                    name: item.name,
+                    color: "#FA0032",
+                    marker: {
+                        lat: item.centroid?.latitude ?? 0,
+                        lng: item.centroid?.longitude ?? 0,
+                    },
+                    polygon:
+                        item.polygon?.map((point) => ({
+                            lat: point?.latitude ?? 0,
+                            lng: point?.longitude ?? 0,
+                        })) ?? [],
+                })),
+        );
+    }, [filteredJournalList]);
+
     const [newObjName, setNewObjName] = useState("");
     const navigate = useNavigate();
     useEffect(() => {
@@ -599,7 +560,7 @@ export const JournalPage = observer(() => {
                     title={"Карта"}
                     styles={{
                         card: {
-                            width: "65vw",
+                            width: "calc(min(80vw, 1100px))",
                         },
                     }}
                 >

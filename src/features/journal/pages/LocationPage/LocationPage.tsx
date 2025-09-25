@@ -1,8 +1,8 @@
 import { observer } from "mobx-react-lite";
 import styles from "./LocationPage.module.scss";
-import { IconArrowDown, IconClose, IconDistance, IconPin, IconUp } from "src/ui/assets/icons";
+import { IconClose, IconDistance, IconPin, IconUp } from "src/ui/assets/icons";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import MapEditor, { MapEditorValue } from "src/features/map/MapEditor.tsx";
+import { MapEditor, MapEditorValue } from "src/features/map/MapEditor.tsx";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
@@ -13,8 +13,6 @@ import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
-import { ConstructionWorkStage } from "src/features/registry/types.ts";
-import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { CoordinateDTO } from "src/features/journal/types/Object.ts";
 
 export const LocationPage = observer(() => {

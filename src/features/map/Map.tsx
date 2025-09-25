@@ -80,7 +80,7 @@ export default function MapObjectsEditor({
     objects,
     center = { lat: 55.75, lng: 37.62 },
     zoom = 10,
-    height = "75vh",
+    height = "calc(min(100vh - 250px, 850px))",
     onObjectsChange,
 }: Props) {
     const objectsRef = useRef<MapObject[]>(objects);
