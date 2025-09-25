@@ -1,6 +1,7 @@
 import styles from "./Media.module.scss";
 import {
     IconBasket,
+    IconDocument,
     IconError,
     IconImage,
     IconImport,
@@ -567,7 +568,7 @@ export const Media = observer(
                                         ) : props.type === "photoGrid" ? (
                                             <IconPhotoGrid className={styles.imagePlaceholder} />
                                         ) : props.type === "doc" ? (
-                                            <IconImport className={styles.imagePlaceholder} />
+                                            <IconDocument className={styles.imagePlaceholder} />
                                         ) : (
                                             <IconVideo className={styles.imagePlaceholder} />
                                         )}
