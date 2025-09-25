@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import styles from "./LocationPage.module.scss";
-import { IconDistance, IconPin } from "src/ui/assets/icons";
+import { IconArrowDown, IconClose, IconDistance, IconPin, IconUp } from "src/ui/assets/icons";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import MapEditor, { MapEditorValue } from "src/features/map/MapEditor.tsx";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
@@ -12,6 +12,10 @@ import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
+import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
+import { ConstructionWorkStage } from "src/features/registry/types.ts";
+import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
+import { CoordinateDTO } from "src/features/journal/types/Object.ts";
 
 export const LocationPage = observer(() => {
     const [mapObj, setMapObj] = useState<MapEditorValue>({
@@ -25,11 +29,10 @@ export const LocationPage = observer(() => {
             house: "",
         },
     });
+    const [ready, setReady] = useState(false);
+    const [showPolygon, setShowPolygon] = useState(false);
 
     useLayoutEffect(() => {
-        if (!appStore.objectStore.objects.length) {
-            appStore.objectStore.fetchObjects();
-        }
         setTimeout(() => {
             setMapObj({
                 ...mapObj,
@@ -41,10 +44,21 @@ export const LocationPage = observer(() => {
     const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
 
     useEffect(() => {
-        if (!currentObj) {
+        if (!currentObj || ready) {
             return;
         }
         setInitial();
+        setTimeout(() => {
+            mapObj.marker = null;
+            mapObj.polygon = null;
+            setMapObj({
+                ...mapObj,
+            });
+        }, 15);
+        setTimeout(() => {
+            setInitial();
+            setReady(true);
+        }, 30);
     }, [currentObj]);
 
     const setInitial = () => {
@@ -78,7 +92,7 @@ export const LocationPage = observer(() => {
     };
 
     const checkShowSaveButton = () => {
-        if (!currentObj) {
+        if (!currentObj || !ready) {
             return false;
         }
         if (
@@ -103,21 +117,23 @@ export const LocationPage = observer(() => {
                     point.latitude !== mapObj.polygon?.[index]?.lat ||
                     point.longitude !== mapObj.polygon?.[index]?.lng,
             )
-        )
+        ) {
+            return true;
+        }
+        if (
+            currentObj.address?.city !== mapObj.address?.city ||
+            currentObj.address?.street !== mapObj.address?.street ||
+            currentObj.address?.house !== mapObj.address?.house
+        ) {
             if (
-                currentObj.address?.city !== mapObj.address?.city ||
-                currentObj.address?.street !== mapObj.address?.street ||
-                currentObj.address?.house !== mapObj.address?.house
+                currentObj.address === null &&
+                mapObj.address?.city === "" &&
+                mapObj.address?.street === mapObj.address?.house
             ) {
-                if (
-                    currentObj.address === null &&
-                    mapObj.address?.city === "" &&
-                    mapObj.address?.street === mapObj.address?.house
-                ) {
-                    return false;
-                }
-                return true;
+                return false;
             }
+            return true;
+        }
         return false;
     };
 
@@ -145,10 +161,13 @@ export const LocationPage = observer(() => {
             </div>
             <div className={styles.grid}>
                 <div className={styles.mapWrapper}>
-                    <MapEditor value={mapObj} onChange={setMapObj} height={459} />
+                    <MapEditor value={mapObj} onChange={setMapObj} height={459} readyProp={ready} />
                 </div>
                 <div className={styles.rightColumn}>
-                    {mapObj?.marker?.lng && mapObj.marker?.lat && (
+                    {((mapObj?.marker?.lng && mapObj.marker?.lat) ||
+                        (!ready &&
+                            currentObj?.centroid?.longitude &&
+                            currentObj.centroid.latitude)) && (
                         <Button
                             type={"outlined"}
                             mode={"neutral"}
@@ -240,6 +259,7 @@ export const LocationPage = observer(() => {
                                     formName={"Широта"}
                                     placeholder={"..."}
                                     number={true}
+                                    readonly={true}
                                 />
                                 <Input
                                     onChange={(event) => {
@@ -262,26 +282,104 @@ export const LocationPage = observer(() => {
                                     formName={"Долгота"}
                                     placeholder={"..."}
                                     number={true}
+                                    readonly={true}
                                 />
                             </Grid>
-                            {(!mapObj?.marker?.lng || !mapObj.marker.lat) && (
-                                <Typo
-                                    variant={"bodyM"}
-                                    type={"tertiary"}
-                                    mode={"neutral"}
-                                    style={{
-                                        marginTop: -2,
-                                        marginBottom: -7,
-                                    }}
-                                >
-                                    Введите координаты вручную или воспользуйтесь кнопкой
-                                    «Разместить объект на карте», чтобы данные подставились
-                                    в&nbsp;зависимости от выбранного места.
-                                </Typo>
-                            )}
+                            {(!mapObj?.marker?.lng || !mapObj.marker.lat) &&
+                                (ready ||
+                                    !currentObj?.centroid?.longitude ||
+                                    !currentObj?.centroid.latitude) && (
+                                    <Typo
+                                        variant={"bodyM"}
+                                        type={"tertiary"}
+                                        mode={"neutral"}
+                                        style={{
+                                            marginTop: 16,
+                                            marginBottom: -8,
+                                        }}
+                                    >
+                                        Воспользуйтесь кнопкой «Разместить объект на карте», чтобы
+                                        данные подставились в&nbsp;зависимости от выбранного места.
+                                    </Typo>
+                                )}
                         </FlexColumn>
                     </div>
                 </div>
+                {mapObj.marker?.lng && mapObj.marker.lat && (
+                    <div className={styles.polygonContainer}>
+                        <div>
+                            {showPolygon && (
+                                <Button
+                                    type={"text"}
+                                    size={"large"}
+                                    iconBefore={<IconClose />}
+                                    onClick={() => {
+                                        setShowPolygon(false);
+                                    }}
+                                >
+                                    Скрыть координаты полигона
+                                </Button>
+                            )}
+                            {!showPolygon && (
+                                <Button
+                                    type={"text"}
+                                    size={"large"}
+                                    iconBefore={<IconUp style={{ transform: "rotate(-180deg)" }} />}
+                                    onClick={() => {
+                                        setShowPolygon(true);
+                                    }}
+                                >
+                                    Показать координаты полигона
+                                </Button>
+                            )}
+                        </div>
+                        {showPolygon && (
+                            <div className={styles.polygonCard}>
+                                <FlexColumn gap={12}>
+                                    <Flex>
+                                        <Typo
+                                            variant={"actionXL"}
+                                            type={"tertiary"}
+                                            mode={"neutral"}
+                                        >
+                                            Широта
+                                        </Typo>
+                                        <Typo
+                                            variant={"actionXL"}
+                                            type={"tertiary"}
+                                            mode={"neutral"}
+                                            style={{
+                                                marginLeft: 328,
+                                            }}
+                                        >
+                                            Долгота
+                                        </Typo>
+                                    </Flex>
+                                    {mapObj.polygon?.map((point, index, points) => (
+                                        <PolygonPointRow
+                                            key={index}
+                                            point={{
+                                                longitude: point.lng,
+                                                latitude: point.lat,
+                                            }}
+                                            index={index}
+                                            onDelete={
+                                                points.length > 2
+                                                    ? () => {
+                                                          mapObj.polygon?.splice(index, 1);
+                                                          setMapObj({
+                                                              ...deepCopy(mapObj),
+                                                          });
+                                                      }
+                                                    : undefined
+                                            }
+                                        />
+                                    ))}
+                                </FlexColumn>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
             {showSaveButton && (
                 <div className={styles.footer}>
@@ -290,7 +388,19 @@ export const LocationPage = observer(() => {
                             mode={"neutral"}
                             type={"outlined"}
                             onClick={() => {
+                                setReady(false);
                                 setInitial();
+                                setTimeout(() => {
+                                    mapObj.marker = null;
+                                    mapObj.polygon = null;
+                                    setMapObj({
+                                        ...mapObj,
+                                    });
+                                }, 15);
+                                setTimeout(() => {
+                                    setInitial();
+                                    setReady(true);
+                                }, 30);
                             }}
                         >
                             Отменить
@@ -337,3 +447,47 @@ export const LocationPage = observer(() => {
         </div>
     );
 });
+
+export const PolygonPointRow = observer(
+    (props: { point: CoordinateDTO; index: number; onDelete?: () => void }) => {
+        return (
+            <Grid columns={"12px 1fr 1fr"} gap={12} align={"center"}>
+                <Typo
+                    variant={"actionL"}
+                    style={{
+                        textAlign: "center",
+                    }}
+                >
+                    {props.index + 1}
+                </Typo>
+                <Input
+                    onChange={(event) => {
+                        props.point.latitude = event.target.value ? Number(event.target.value) : 0;
+                    }}
+                    value={props.point.latitude || ""}
+                    placeholder={"..."}
+                    number={true}
+                    readonly={true}
+                />
+                <Input
+                    onChange={(event) => {
+                        props.point.longitude = event.target.value ? Number(event.target.value) : 0;
+                    }}
+                    value={props.point.longitude || ""}
+                    placeholder={"..."}
+                    number={true}
+                    readonly={true}
+                />
+                {/*<Tooltip header={"Удалить точку"} delay={500}>*/}
+                {/*    <Button*/}
+                {/*        type={"outlined"}*/}
+                {/*        mode={"neutral"}*/}
+                {/*        iconBefore={<IconClose />}*/}
+                {/*        onClick={props.onDelete}*/}
+                {/*        disabled={!props.onDelete}*/}
+                {/*    />*/}
+                {/*</Tooltip>*/}
+            </Grid>
+        );
+    },
+);

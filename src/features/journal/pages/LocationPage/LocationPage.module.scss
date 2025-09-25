@@ -21,6 +21,7 @@
 
 .container {
     margin-top: 40px;
+    padding-bottom: 140px;
 }
 
 .grid {
@@ -37,6 +38,7 @@
 .mapWrapper {
     width: 777px;
     height: 459px;
+    z-index: 1;
 
     @media screen and (min-width: 1500px) {
         width: 977px;
@@ -72,4 +74,20 @@
     background: var(--objects-background-neutral-tertiary, #f9fafb);
 
     box-shadow: 0 8px 20px 1px rgba(17, 19, 23, 0.12);
+}
+
+.polygonContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.polygonCard {
+    display: flex;
+    width: 100%;
+    padding: 16px 20px 24px 20px;
+    flex-direction: column;
+    gap: 12px;
+    border-radius: 8px;
+    background: #f3f4f7;
 }

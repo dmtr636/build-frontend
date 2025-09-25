@@ -65,9 +65,7 @@ export const EventsPage = observer(() => {
     }, [userIdSearchParam]);
 
     useEffect(() => {
-        if (!appStore.eventsStore.events.length) {
-            appStore.eventsStore.fetchEvents();
-        }
+        appStore.eventsStore.fetchEvents();
     }, []);
 
     return (
