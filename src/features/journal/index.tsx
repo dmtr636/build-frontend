@@ -238,10 +238,10 @@ export const JournalPage = observer(() => {
         return journalList
             .filter((obj) => {
                 if (value) {
-                    const lower = value.toLowerCase();
+                    const lower = value.toLowerCase().replace(/-/g, "");
                     if (
-                        !obj.name?.toLowerCase().includes(lower) &&
-                        !obj.objectNumber?.toLowerCase().includes(lower) &&
+                        !obj.name?.toLowerCase().replace(/-/g, "").includes(lower) &&
+                        !obj.objectNumber?.toLowerCase().replace(/-/g, "").includes(lower) &&
                         !obj.objectNumber?.toLowerCase().replace(/-/g, "").includes(lower)
                     ) {
                         return false;

@@ -18,6 +18,7 @@ import { UpdateProjectDTO } from "src/features/journal/types/Object.ts";
 import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
+import { formatObjNumber } from "src/shared/utils/formatObjNumber.ts";
 
 function getDaysBetween(startDate: string, endDate: string): string {
     const start = new Date(startDate);
@@ -190,7 +191,7 @@ const AboutObjectPage = observer(() => {
                                 size={"large"}
                                 formName={"Номер объекта"}
                                 onChange={() => {}}
-                                value={currentOrg?.objectNumber}
+                                value={formatObjNumber(currentOrg?.objectNumber ?? "")}
                                 readonly={true}
                             />
                         </div>

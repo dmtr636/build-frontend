@@ -23,6 +23,7 @@ import {
     IconDangerous,
     IconHardware,
 } from "src/features/journal/components/JournalItemCard/assets";
+import { formatObjNumber } from "src/shared/utils/formatObjNumber.ts";
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
@@ -94,7 +95,7 @@ const JournalItemCard = ({ project }: journalItemCardProps) => {
                             color: "rgba(0, 0, 0, 0.39)",
                         }}
                         variant={"subheadXL"}
-                    >{`№ ${project.objectNumber}`}</Typo>
+                    >{`№ ${formatObjNumber(project.objectNumber)}`}</Typo>
                 </div>
                 {(project.address || project.centroid) && (
                     <div className={styles.location}>
