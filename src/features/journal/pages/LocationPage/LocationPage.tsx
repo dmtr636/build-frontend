@@ -346,6 +346,7 @@ export const LocationPage = observer(() => {
                                             variant={"actionXL"}
                                             type={"tertiary"}
                                             mode={"neutral"}
+                                            className={styles.latitudeLabel}
                                             style={{
                                                 marginLeft: 328,
                                             }}

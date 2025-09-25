@@ -91,3 +91,9 @@
     border-radius: 8px;
     background: #f3f4f7;
 }
+
+.latitudeLabel {
+    @media screen and (min-width: 1500px) {
+        margin-left: 426px !important;
+    }
+}
