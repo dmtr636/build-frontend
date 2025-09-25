@@ -2,13 +2,13 @@ import { observer } from "mobx-react-lite";
 import { RegistryHeader } from "src/features/registry/components/RegistryHeader/RegistryHeader.tsx";
 import { layoutStore, registryStore } from "src/app/AppStore.ts";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
-import { ConstructionWork } from "src/features/registry/types.ts";
+import { ConstructionWork, ConstructionWorkStage } from "src/features/registry/types.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { IconBasket, IconEdit, IconError } from "src/ui/assets/icons";
+import { IconBasket, IconClose, IconEdit, IconError, IconPlus } from "src/ui/assets/icons";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import styles from "./styles.module.scss";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
@@ -19,8 +19,16 @@ import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import { Select } from "src/ui/components/inputs/Select/Select.tsx";
 import TextArea from "src/ui/components/inputs/Textarea/TextArea.tsx";
+import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
+import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 
 export const Works = observer(() => {
+    useLayoutEffect(() => {
+        if (registryStore.editingWork?.id) {
+            registryStore.fetchStages(registryStore.editingWork.id);
+        }
+    }, [registryStore.editingWork?.id]);
+
     return (
         <FlexColumn
             style={{
@@ -141,6 +149,8 @@ export const Works = observer(() => {
                 title={"Добавить работу"}
                 onClose={() => {
                     registryStore.worksForm = {};
+                    registryStore.worksStagesForm = [];
+                    registryStore.workStages = [];
                     registryStore.showAddOverlay = false;
                 }}
                 styles={{
@@ -156,6 +166,8 @@ export const Works = observer(() => {
                             mode={"neutral"}
                             onClick={() => {
                                 registryStore.worksForm = {};
+                                registryStore.worksStagesForm = [];
+                                registryStore.workStages = [];
                                 registryStore.showAddOverlay = false;
                             }}
                         >
@@ -171,6 +183,8 @@ export const Works = observer(() => {
                                 snackbarStore.showNeutralPositiveSnackbar("Работа добавлена");
                                 registryStore.showAddOverlay = false;
                                 registryStore.worksForm = {};
+                                registryStore.worksStagesForm = [];
+                                registryStore.workStages = [];
                             }}
                         >
                             Добавить
@@ -220,6 +234,45 @@ export const Works = observer(() => {
                         required={true}
                         zIndex={100}
                     />
+                    <div className={styles.stages}>
+                        <FlexColumn gap={8}>
+                            <Typo variant={"subheadXL"}>Этапы</Typo>
+                            <Typo variant={"bodyM"} type={"quaternary"} mode={"neutral"}>
+                                Будут добавляться автоматически при выборе типа работы.
+                            </Typo>
+                        </FlexColumn>
+                        {registryStore.worksStagesForm.map((stage) => (
+                            <WorkStageRow
+                                key={stage.id}
+                                workStage={stage}
+                                onDelete={() => {
+                                    registryStore.worksStagesForm =
+                                        registryStore.worksStagesForm.filter(
+                                            (_stage) => _stage.id !== stage.id,
+                                        );
+                                    registryStore.worksStagesForm.forEach((stage, index) => {
+                                        stage.stageNumber = index + 1;
+                                    });
+                                }}
+                            />
+                        ))}
+                        <div>
+                            <Button
+                                type={"text"}
+                                iconBefore={<IconPlus />}
+                                onClick={() => {
+                                    registryStore.worksStagesForm.push({
+                                        id: crypto.randomUUID(),
+                                        workId: "",
+                                        stageName: "",
+                                        stageNumber: registryStore.worksStagesForm.length + 1,
+                                    });
+                                }}
+                            >
+                                Добавить этап
+                            </Button>
+                        </div>
+                    </div>
                 </FlexColumn>
             </Overlay>
 
@@ -230,6 +283,8 @@ export const Works = observer(() => {
                 onClose={() => {
                     registryStore.worksForm = {};
                     registryStore.editingWork = null;
+                    registryStore.worksStagesForm = [];
+                    registryStore.workStages = [];
                 }}
                 styles={{
                     card: {
@@ -254,6 +309,8 @@ export const Works = observer(() => {
                             onClick={() => {
                                 registryStore.worksForm = {};
                                 registryStore.editingWork = null;
+                                registryStore.worksStagesForm = [];
+                                registryStore.workStages = [];
                             }}
                         >
                             Отменить
@@ -264,13 +321,19 @@ export const Works = observer(() => {
                             loading={registryStore.loading}
                             disabled={
                                 !registryStore.worksForm.name ||
-                                deepEquals(registryStore.worksForm, registryStore.editingWork)
+                                (deepEquals(registryStore.worksForm, registryStore.editingWork) &&
+                                    deepEquals(
+                                        registryStore.workStages,
+                                        registryStore.worksStagesForm.filter((s) => !!s.stageName),
+                                    ))
                             }
                             onClick={async () => {
                                 await registryStore.updateWork(registryStore.worksForm);
                                 snackbarStore.showNeutralPositiveSnackbar("Работа сохранена");
                                 registryStore.worksForm = {};
                                 registryStore.editingWork = null;
+                                registryStore.worksStagesForm = [];
+                                registryStore.workStages = [];
                             }}
                         >
                             Сохранить изменения
@@ -320,6 +383,45 @@ export const Works = observer(() => {
                         required={true}
                         zIndex={100}
                     />
+                    <div className={styles.stages}>
+                        <FlexColumn gap={8}>
+                            <Typo variant={"subheadXL"}>Этапы</Typo>
+                            <Typo variant={"bodyM"} type={"quaternary"} mode={"neutral"}>
+                                Будут добавляться автоматически при выборе типа работы.
+                            </Typo>
+                        </FlexColumn>
+                        {registryStore.worksStagesForm.map((stage) => (
+                            <WorkStageRow
+                                key={stage.id}
+                                workStage={stage}
+                                onDelete={() => {
+                                    registryStore.worksStagesForm =
+                                        registryStore.worksStagesForm.filter(
+                                            (_stage) => _stage.id !== stage.id,
+                                        );
+                                    registryStore.worksStagesForm.forEach((stage, index) => {
+                                        stage.stageNumber = index + 1;
+                                    });
+                                }}
+                            />
+                        ))}
+                        <div>
+                            <Button
+                                type={"text"}
+                                iconBefore={<IconPlus />}
+                                onClick={() => {
+                                    registryStore.worksStagesForm.push({
+                                        id: crypto.randomUUID(),
+                                        workId: registryStore.editingWork?.id ?? "",
+                                        stageName: "",
+                                        stageNumber: registryStore.worksStagesForm.length + 1,
+                                    });
+                                }}
+                            >
+                                Добавить этап
+                            </Button>
+                        </div>
+                    </div>
                 </FlexColumn>
             </Overlay>
             <DeleteOverlay
@@ -345,3 +447,35 @@ export const Works = observer(() => {
         </FlexColumn>
     );
 });
+
+export const WorkStageRow = observer(
+    (props: { workStage: ConstructionWorkStage; onDelete: () => void }) => {
+        return (
+            <Grid columns={"12px 1fr auto"} gap={12} align={"center"}>
+                <Typo
+                    variant={"actionL"}
+                    style={{
+                        textAlign: "center",
+                    }}
+                >
+                    {props.workStage.stageNumber}
+                </Typo>
+                <Input
+                    onChange={(event) => {
+                        props.workStage.stageName = event.target.value;
+                    }}
+                    value={props.workStage.stageName}
+                    placeholder={"Введите описание этапа"}
+                />
+                <Tooltip header={"Удалить этап"} delay={500}>
+                    <Button
+                        type={"outlined"}
+                        mode={"neutral"}
+                        iconBefore={<IconClose />}
+                        onClick={props.onDelete}
+                    />
+                </Tooltip>
+            </Grid>
+        );
+    },
+);

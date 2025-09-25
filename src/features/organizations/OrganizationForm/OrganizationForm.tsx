@@ -85,6 +85,97 @@ export const OrganizationForm = observer((props: Props) => {
                         width: 758,
                     },
                 }}
+                actions={[
+                    <div className={styles.overlayFooter} key={"1"}>
+                        {props.type === "add" ? (
+                            <Flex gap={16} justify={"end"} width={"100%"}>
+                                <Button
+                                    type={"outlined"}
+                                    mode={"neutral"}
+                                    onClick={() => {
+                                        props.setShow(false);
+                                    }}
+                                >
+                                    Отменить
+                                </Button>
+                                <Button
+                                    mode={"neutral"}
+                                    onClick={async () => {
+                                        const result = await organizationsStore.createOrganization(
+                                            vm.form,
+                                        );
+                                        if (result) {
+                                            snackbarStore.showNeutralPositiveSnackbar(
+                                                "Организация создана",
+                                            );
+                                            props.setShow(false);
+                                        }
+                                    }}
+                                    loading={organizationsStore.loading}
+                                    disabled={!vm.form.name}
+                                >
+                                    Создать организацию
+                                </Button>
+                            </Flex>
+                        ) : (
+                            <Flex gap={16} width={"100%"}>
+                                <Button
+                                    mode={"negative"}
+                                    type={"secondary"}
+                                    iconBefore={<IconBasket />}
+                                    onClick={() => {
+                                        organizationsStore.deletingOrganization = vm.organization;
+                                        vm.showDeleteOverlay = true;
+                                    }}
+                                >
+                                    Удалить организацию
+                                </Button>
+                                {(vm.form.name !== vm.organization?.name ||
+                                    vm.form.imageId !== vm.organization?.imageId ||
+                                    vm.form.employees?.some(
+                                        (e) =>
+                                            !vm.organization?.employees.find(
+                                                (_e) => _e.id === e.id,
+                                            ),
+                                    ) ||
+                                    vm.organization?.employees?.some(
+                                        (e) => !vm.form?.employees?.find((_e) => _e.id === e.id),
+                                    )) && (
+                                    <Flex gap={16} style={{ marginLeft: "auto" }}>
+                                        <Button
+                                            type={"outlined"}
+                                            mode={"neutral"}
+                                            onClick={() => {
+                                                vm.form = deepCopy(vm.organization ?? {});
+                                            }}
+                                        >
+                                            Отменить
+                                        </Button>
+                                        <Button
+                                            mode={"neutral"}
+                                            onClick={async () => {
+                                                if (vm.organization) {
+                                                    await organizationsStore.updateOrganization(
+                                                        vm.form as Organization,
+                                                        vm.organization,
+                                                    );
+                                                    snackbarStore.showNeutralPositiveSnackbar(
+                                                        "Изменения сохранены",
+                                                    );
+                                                    props.setShow(false);
+                                                }
+                                            }}
+                                            loading={organizationsStore.loading}
+                                            disabled={!vm.form.name}
+                                        >
+                                            Сохранить изменения
+                                        </Button>
+                                    </Flex>
+                                )}
+                            </Flex>
+                        )}
+                    </div>,
+                ]}
             >
                 <Flex gap={24}>
                     <Media
@@ -210,16 +301,7 @@ export const OrganizationForm = observer((props: Props) => {
                             </>
                         )}
                         {!!vm.filteredCurrentOrgUsers?.length && (
-                            <FlexColumn
-                                gap={8}
-                                style={{
-                                    height: organizationsStore.overlaySearch ? 299 : 260,
-                                    overflowY: "auto",
-                                    overflowX: "hidden",
-                                    paddingRight: 32,
-                                    marginRight: -32,
-                                }}
-                            >
+                            <FlexColumn gap={8}>
                                 {vm.filteredCurrentOrgUsers?.map((u) => (
                                     <UserItemCard
                                         user={u}
@@ -238,98 +320,10 @@ export const OrganizationForm = observer((props: Props) => {
                                         }}
                                     />
                                 ))}
-                                <Spacing height={20} />
                             </FlexColumn>
                         )}
                     </FlexColumn>
                 )}
-                <div className={styles.gradient} />
-                <div className={styles.overlayFooter}>
-                    {props.type === "add" ? (
-                        <Flex gap={16} justify={"end"} width={"100%"}>
-                            <Button
-                                type={"outlined"}
-                                mode={"neutral"}
-                                onClick={() => {
-                                    props.setShow(false);
-                                }}
-                            >
-                                Отменить
-                            </Button>
-                            <Button
-                                mode={"neutral"}
-                                onClick={async () => {
-                                    const result = await organizationsStore.createOrganization(
-                                        vm.form,
-                                    );
-                                    if (result) {
-                                        snackbarStore.showNeutralPositiveSnackbar(
-                                            "Организация создана",
-                                        );
-                                        props.setShow(false);
-                                    }
-                                }}
-                                loading={organizationsStore.loading}
-                                disabled={!vm.form.name}
-                            >
-                                Создать организацию
-                            </Button>
-                        </Flex>
-                    ) : (
-                        <Flex gap={16} width={"100%"}>
-                            <Button
-                                mode={"negative"}
-                                type={"secondary"}
-                                iconBefore={<IconBasket />}
-                                onClick={() => {
-                                    organizationsStore.deletingOrganization = vm.organization;
-                                    vm.showDeleteOverlay = true;
-                                }}
-                            >
-                                Удалить организацию
-                            </Button>
-                            {(vm.form.name !== vm.organization?.name ||
-                                vm.form.imageId !== vm.organization?.imageId ||
-                                vm.form.employees?.some(
-                                    (e) => !vm.organization?.employees.find((_e) => _e.id === e.id),
-                                ) ||
-                                vm.organization?.employees?.some(
-                                    (e) => !vm.form?.employees?.find((_e) => _e.id === e.id),
-                                )) && (
-                                <Flex gap={16} style={{ marginLeft: "auto" }}>
-                                    <Button
-                                        type={"outlined"}
-                                        mode={"neutral"}
-                                        onClick={() => {
-                                            vm.form = deepCopy(vm.organization ?? {});
-                                        }}
-                                    >
-                                        Отменить
-                                    </Button>
-                                    <Button
-                                        mode={"neutral"}
-                                        onClick={async () => {
-                                            if (vm.organization) {
-                                                await organizationsStore.updateOrganization(
-                                                    vm.form as Organization,
-                                                    vm.organization,
-                                                );
-                                                snackbarStore.showNeutralPositiveSnackbar(
-                                                    "Изменения сохранены",
-                                                );
-                                                props.setShow(false);
-                                            }
-                                        }}
-                                        loading={organizationsStore.loading}
-                                        disabled={!vm.form.name}
-                                    >
-                                        Сохранить изменения
-                                    </Button>
-                                </Flex>
-                            )}
-                        </Flex>
-                    )}
-                </div>
             </Overlay>
             <DeleteOverlay
                 open={vm.showDeleteOverlay}

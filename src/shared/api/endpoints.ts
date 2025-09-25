@@ -19,6 +19,7 @@ export const endpoints = {
     dictionaries: {
         constructionViolations: transformUrl("/api/dictionaries/construction-violations"),
         constructionWorks: transformUrl("/api/dictionaries/construction-works"),
+        constructionWorkStages: transformUrl("/api/dictionaries/construction-works/stages"),
         normativeDocuments: transformUrl("/api/dictionaries/normative-documents"),
     },
 };

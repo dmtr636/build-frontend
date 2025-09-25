@@ -151,6 +151,41 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                 setOpen(false);
             }}
             title={"Редактировать пользователя"}
+            actions={[
+                <div className={styles.footer} key={"1"}>
+                    <div>
+                        <Button
+                            mode={"negative"}
+                            iconBefore={<IconBasket />}
+                            type={"secondary"}
+                            onClick={() => setOpenDelModal(true)}
+                        >
+                            Удалить
+                        </Button>
+                    </div>
+                    <div style={{ display: "flex", gap: 16 }}>
+                        <Button mode={"neutral"} type={"outlined"} onClick={() => setOpen(false)}>
+                            Отменить
+                        </Button>
+                        <Button
+                            disabled={
+                                !email ||
+                                !role ||
+                                !firstName ||
+                                !lastName ||
+                                emailIsInvalid ||
+                                (!position && role === "USER") ||
+                                !shouldBlockButton()
+                            }
+                            mode={"neutral"}
+                            type={"primary"}
+                            onClick={onClick}
+                        >
+                            Сохранить изменения
+                        </Button>
+                    </div>
+                </div>,
+            ]}
         >
             <div className={styles.container}>
                 <div>
@@ -325,39 +360,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                     </div>
                 </div>
             </div>
-            <div className={styles.footer}>
-                <div>
-                    <Button
-                        mode={"negative"}
-                        iconBefore={<IconBasket />}
-                        type={"secondary"}
-                        onClick={() => setOpenDelModal(true)}
-                    >
-                        Удалить
-                    </Button>
-                </div>
-                <div style={{ display: "flex", gap: 16 }}>
-                    <Button mode={"neutral"} type={"outlined"} onClick={() => setOpen(false)}>
-                        Отменить
-                    </Button>
-                    <Button
-                        disabled={
-                            !email ||
-                            !role ||
-                            !firstName ||
-                            !lastName ||
-                            emailIsInvalid ||
-                            (!position && role === "USER") ||
-                            !shouldBlockButton()
-                        }
-                        mode={"neutral"}
-                        type={"primary"}
-                        onClick={onClick}
-                    >
-                        Сохранить изменения
-                    </Button>
-                </div>
-            </div>
+
             <Overlay
                 open={openDelModal}
                 mode={"negative"}

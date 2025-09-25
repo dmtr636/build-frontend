@@ -1,6 +1,14 @@
 import styles from "./Overlay.module.scss";
 import { IconClose } from "src/ui/assets/icons";
-import React, { CSSProperties, ReactNode, useEffect, useRef } from "react";
+import React, {
+    CSSProperties,
+    ReactNode,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { createPortal } from "react-dom";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
@@ -10,6 +18,7 @@ import { observer } from "mobx-react-lite";
 import { layoutStore } from "src/app/AppStore.ts";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useNavigateBack } from "src/shared/hooks/useNavigateBack.ts";
+import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
 
 interface OverlayProps {
     open: boolean;
@@ -55,6 +64,7 @@ export const Overlay = observer((props: OverlayProps) => {
     const dragging = useRef(false);
     const translate = useRef({ x: 0, y: 0 });
     const cardRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
     const isMobile = layoutStore.isMobile;
     const [searchParams, setSearchParams] = useSearchParams();
     const searchParamsRef = useRef(searchParams);
@@ -63,6 +73,30 @@ export const Overlay = observer((props: OverlayProps) => {
     const linkedToRouting = useRef(false);
     const linkedToRouting2 = useRef(false);
     const location = useLocation();
+    const [overflowed, setOverflowed] = useState(false);
+    const scrollBarWidth = useMemo(() => getScrollBarWidth(), []);
+    const [scrolled, setScrolled] = useState(false);
+
+    useLayoutEffect(() => {
+        if (open) {
+            setScrolled(false);
+            setOverflowed(false);
+        }
+    }, [open]);
+
+    useEffect(() => {
+        const element = contentRef.current;
+        if (!element) {
+            return;
+        }
+        const checkOverflow = () => {
+            setOverflowed(element.scrollHeight > element.offsetHeight);
+        };
+        checkOverflow();
+        const resizeObserver = new ResizeObserver(checkOverflow);
+        resizeObserver.observe(element);
+        return () => resizeObserver.unobserve(element);
+    }, [contentRef.current]);
 
     useEffect(() => {
         if (open) {
@@ -174,7 +208,12 @@ export const Overlay = observer((props: OverlayProps) => {
             >
                 {props.title !== undefined && (
                     <div
-                        className={clsx(styles.header, styles[mode], draggable && styles.draggable)}
+                        className={clsx(
+                            styles.header,
+                            styles[mode],
+                            draggable && styles.draggable,
+                            overflowed && styles.overflowed,
+                        )}
                         onMouseDown={() => {
                             if (draggable) {
                                 dragging.current = true;
@@ -204,6 +243,7 @@ export const Overlay = observer((props: OverlayProps) => {
                                 <IconClose />
                             </ButtonIcon>
                         )}
+                        {overflowed && scrolled && <div className={styles.gradientTop} />}
                     </div>
                 )}
                 {onClose && noTitleClose && (
@@ -218,16 +258,35 @@ export const Overlay = observer((props: OverlayProps) => {
                         <IconClose />
                     </ButtonIcon>
                 )}
-                <div className={styles.content} style={props.styles?.content}>
+                <div
+                    className={styles.content}
+                    style={{
+                        ...props.styles?.content,
+                        paddingRight: `${32 - (overflowed ? scrollBarWidth : 0)}px`,
+                        paddingBottom: overflowed ? "40px" : undefined,
+                    }}
+                    ref={contentRef}
+                    onScroll={() => {
+                        setScrolled(!!contentRef.current?.scrollTop);
+                    }}
+                >
                     {children}
-                    {!!actions?.length && (
-                        <div className={styles.actions}>
-                            {actions.map((action, index) => (
-                                <div key={index}>{action}</div>
-                            ))}
-                        </div>
-                    )}
                 </div>
+                {!!actions?.length && (
+                    <div className={clsx(styles.actions, overflowed && styles.overflowed)}>
+                        {actions.map((action, index) => (
+                            <div
+                                key={index}
+                                style={{
+                                    width: actions.length === 1 ? "100%" : undefined,
+                                }}
+                            >
+                                {action}
+                            </div>
+                        ))}
+                        {overflowed && <div className={styles.gradient} />}
+                    </div>
+                )}
             </div>
         </div>,
         document.body,
