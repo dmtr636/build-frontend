@@ -56,9 +56,10 @@ const DocumentCard = ({ document, object }: DocumentCardProps) => {
     const onClickDelete = () => {
         const updatedDocument = object.documents.filter((doc) => doc.id !== document.id);
         const objectForm = { ...object, documents: updatedDocument };
-        appStore.objectStore
-            .updateObject(objectForm)
-            .then(() => snackbarStore.showNeutralPositiveSnackbar("Документ удален"));
+        appStore.objectStore.updateObject(objectForm).then(() => {
+            snackbarStore.showNeutralPositiveSnackbar("Документ удален");
+            setShowDelete(false);
+        });
     };
     return (
         <div className={clsx(styles.container)}>
