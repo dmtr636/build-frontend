@@ -5,6 +5,7 @@ import { throttle } from "src/shared/utils/throttle.ts";
 import { store } from "storybook-dark-mode/dist/ts/Tool";
 import {
     accountStore,
+    appStore,
     eventsStore,
     organizationsStore,
     registryStore,
@@ -209,6 +210,22 @@ export class WebsocketStore {
                     }
                     if (event.type === "DELETE") {
                         eventsStore.events = eventsStore.events.filter(
+                            (o) => o.id !== event.data.id,
+                        );
+                    }
+                }
+
+                if (event.objectName === "project") {
+                    if (event.type === "CREATE") {
+                        appStore.objectStore.objects.push(event.data);
+                    }
+                    if (event.type === "UPDATE") {
+                        appStore.objectStore.objects = appStore.objectStore.objects.map((o) =>
+                            o.id === event.data.id ? event.data : o,
+                        );
+                    }
+                    if (event.type === "DELETE") {
+                        appStore.objectStore.objects = appStore.objectStore.objects.filter(
                             (o) => o.id !== event.data.id,
                         );
                     }

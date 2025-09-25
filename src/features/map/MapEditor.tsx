@@ -17,11 +17,12 @@ import "leaflet-draw/dist/leaflet.draw.css";
 
 import styles from "./Map.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { IconMinus, IconPlus } from "src/ui/assets/icons";
+import { IconClose, IconMinus, IconPin, IconPlus } from "src/ui/assets/icons";
 import { Switch } from "src/ui/components/controls/Switch/Switch.tsx";
 import { IconMapPin } from "src/features/map/assets";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
+import { AddressDTO } from "src/features/journal/types/Object.ts";
 
 delete (L.Icon.Default as any).prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -35,9 +36,11 @@ L.Icon.Default.mergeOptions({
 
 export type MapEditorValue = {
     name?: string;
+    number?: string;
     marker?: LatLngLiteral | null;
     polygon?: LatLngLiteral[] | null;
     color?: string;
+    address?: AddressDTO | null;
 };
 
 type Props = {
@@ -100,23 +103,122 @@ export default function MapEditor({
     const polygonLayerRef = useRef<L.Polygon | null>(null);
     const isEditingRef = useRef(false);
     const valueRef = useRef(value);
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        // setReady(true);
+    }, []);
+
     useEffect(() => {
         valueRef.current = value;
     }, [value]);
 
+    const [{ zoomNow, minZoomNow, maxZoomNow }, setZoomState] = useState({
+        zoomNow: zoom,
+        minZoomNow: -Infinity,
+        maxZoomNow: Infinity,
+    });
+    const workGroupRef = useRef<L.FeatureGroup | null>(null);
+
+    useEffect(() => {
+        const map = mapRef.current;
+        if (!map || !ready) return;
+
+        const updateZoomState = () => {
+            setZoomState({
+                zoomNow: map.getZoom() ?? 0,
+                minZoomNow: map.getMinZoom() ?? -Infinity,
+                maxZoomNow: map.getMaxZoom() ?? Infinity,
+            });
+        };
+
+        updateZoomState();
+
+        map.on("zoomend", updateZoomState);
+        map.on("zoomlevelschange", updateZoomState);
+        map.on("baselayerchange", updateZoomState);
+
+        return () => {
+            map.off("zoomend", updateZoomState);
+            map.off("zoomlevelschange", updateZoomState);
+            map.off("baselayerchange", updateZoomState);
+        };
+    }, [ready]);
+
+    useEffect(() => {
+        const map = mapRef.current;
+        if (!map || !ready) return;
+
+        const el = map.getContainer();
+
+        const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+        const updateScale = () => {
+            const z = map.getZoom();
+            const zMin = map.getMinZoom() ?? 3;
+            const zMax = map.getMaxZoom() ?? 20;
+
+            // исходная линейка 0.65..1.15
+            const s0 = 0.65 + ((z - zMin) / Math.max(1, zMax - zMin)) * (1.15 - 0.65);
+
+            // УСИЛЕНИЕ ×2 относительно 1.0
+            const INTENSITY = 3;
+            const sAmp = 2 + INTENSITY * (s0 - 1);
+
+            // мягкие ограничения, чтобы точки не становились слишком мелкими/огромными
+            const s = clamp(sAmp, 0.4, 1.4);
+
+            el.style.setProperty("--vertex-scale", s.toFixed(3));
+        };
+
+        updateScale();
+        map.on("zoomend", updateScale);
+        map.on("zoomlevelschange", updateScale); // на случай смены слоя с другим maxZoom
+        map.on("baselayerchange", updateScale);
+
+        return () => {
+            map.off("zoomend", updateScale);
+            map.off("zoomlevelschange", updateScale);
+            map.off("baselayerchange", updateScale);
+        };
+    }, [ready]);
+
+    const canZoomIn = Number.isFinite(maxZoomNow) && zoomNow < maxZoomNow;
+    const canZoomOut = Number.isFinite(minZoomNow) && zoomNow > minZoomNow;
+
     const [showSatellite, setShowSatellite] = useState(false);
     const [placing, setPlacing] = useState(false);
 
+    const EDIT_COLOR = "#FA0032";
+
     const polyStyle: PathOptions = {
-        color: value.color ?? "#1971c2",
+        color: EDIT_COLOR,
         weight: 2,
+        dashArray: "6 4", // пунктир
         fillOpacity: 0.2,
+        fillColor: "rgba(250, 0, 50, 0.15)",
     };
+
+    useEffect(() => {
+        if (!polygonLayerRef.current) return;
+        if (isEditingRef.current) return; // не трогаем во время живого редактирования
+        (polygonLayerRef.current as any).setLatLngs(value.polygon ?? []);
+        (polygonLayerRef.current as any).setStyle(polyStyle);
+        (polygonLayerRef.current as any).redraw?.();
+    }, [value.polygon, polyStyle]);
 
     const mapCenter = useMemo(() => value.marker ?? center, [value.marker, center]);
 
     const commit = useCallback(
-        (patch: Partial<MapEditorValue>) => onChange({ ...valueRef.current, ...patch }),
+        (patch: Partial<MapEditorValue>) => {
+            const value = { ...valueRef.current, ...patch };
+            if (value.marker?.lat) {
+                value.marker.lat = Math.round(value.marker.lat * 10000) / 10000;
+            }
+            if (value.marker?.lng) {
+                value.marker.lng = Math.round(value.marker.lng * 10000) / 10000;
+            }
+            onChange({ ...value });
+        },
         [onChange],
     );
 
@@ -221,6 +323,7 @@ export default function MapEditor({
         <div className={styles.mapWrapper}>
             <MapContainer
                 ref={mapRef}
+                whenReady={() => setReady(true)}
                 center={mapCenter}
                 zoom={zoom}
                 style={{ height, width: "100%" }}
@@ -250,15 +353,19 @@ export default function MapEditor({
                         {value.name && (
                             <Tooltip
                                 direction="top"
-                                offset={[0, -10]}
+                                offset={[-16, -10]}
                                 opacity={1}
-                                sticky
                                 className={styles.tooltip}
                             >
                                 <FlexColumn gap={8}>
-                                    <Typo variant={"subheadM"} noWrap>
+                                    <Typo variant={"subheadM"} noWrap={true}>
                                         {value.name}
                                     </Typo>
+                                    {value.number && (
+                                        <Typo variant={"bodyM"} mode={"neutral"} type={"secondary"}>
+                                            {value.number}
+                                        </Typo>
+                                    )}
                                 </FlexColumn>
                             </Tooltip>
                         )}
@@ -282,6 +389,8 @@ export default function MapEditor({
                     left: 10,
                     zIndex: 500,
                     boxShadow: "0 8px 20px 1px rgba(17, 19, 23, 0.12)",
+                    opacity: canZoomIn ? 1 : 0.7,
+                    pointerEvents: canZoomIn ? undefined : "none",
                 }}
             />
             <Button
@@ -301,6 +410,8 @@ export default function MapEditor({
                     left: 10,
                     zIndex: 500,
                     boxShadow: "0 8px 20px 1px rgba(17, 19, 23, 0.12)",
+                    opacity: canZoomOut ? 1 : 0.7,
+                    pointerEvents: canZoomOut ? undefined : "none",
                 }}
             />
 
@@ -317,8 +428,9 @@ export default function MapEditor({
                 <Button
                     type={"primary"}
                     mode={"contrast"}
-                    size={"medium"}
+                    size={"large"}
                     onClick={handlePlaceRequest}
+                    iconBefore={<IconPin />}
                     style={{
                         position: "absolute",
                         right: 12,
@@ -331,19 +443,48 @@ export default function MapEditor({
                 </Button>
             )}
             {placing && (
-                <div
+                <Button
+                    type={"primary"}
+                    mode={"neutral"}
+                    size={"large"}
+                    onClick={() => {
+                        setPlacing(false);
+                    }}
+                    iconBefore={<IconClose />}
+                    className={styles.cancelButton}
                     style={{
                         position: "absolute",
                         right: 12,
                         bottom: 12,
                         zIndex: 600,
-                        background: "white",
-                        borderRadius: 8,
-                        padding: "8px 12px",
                         boxShadow: "0 8px 20px 1px rgba(17, 19, 23, 0.12)",
                     }}
                 >
-                    Кликните по карте для выбора точки
+                    Отменить
+                </Button>
+            )}
+            {placing && (
+                <div
+                    style={{
+                        position: "absolute",
+                        top: 10,
+                        left: 0,
+                        right: 0,
+                        zIndex: 600,
+                        display: "flex",
+                        justifyContent: "center",
+                    }}
+                >
+                    <div
+                        style={{
+                            background: "white",
+                            borderRadius: 8,
+                            padding: "8px 12px",
+                            boxShadow: "0 1px 3px 0 rgba(17, 19, 23, 0.12)",
+                        }}
+                    >
+                        <Typo variant={"subheadM"}>Кликните по карте для выбора точки</Typo>
+                    </div>
                 </div>
             )}
         </div>

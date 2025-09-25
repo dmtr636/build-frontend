@@ -2,9 +2,9 @@ export interface ObjectDTO {
     id: string; // uuid
     name: string;
     objectNumber: string;
-    address: AddressDTO;
-    centroid: CoordinateDTO;
-    polygon: CoordinateDTO[];
+    address: AddressDTO | null;
+    centroid: CoordinateDTO | null;
+    polygon: CoordinateDTO[] | null;
     customerOrganization: string; // uuid
     contractorOrganization: string; // uuid
     projectUsers: ProjectUserDTO[];
