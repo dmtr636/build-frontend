@@ -135,8 +135,10 @@ import IconApartment from "./apartment.svg?react";
 
 import IconGroupBuild from "./groupBuild.svg?react";
 import IconDistance from "./distance.svg?react";
+import IconSmartDisplay from "./smart_display.svg?react";
 
 export {
+    IconSmartDisplay,
     IconGroupBuild,
     IconApartment,
     IconXlsx,

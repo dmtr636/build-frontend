@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./DocumentsObjectPage.module.scss";
 import { v4 } from "uuid";
 
@@ -27,9 +27,7 @@ import { DropdownListOption } from "src/ui/components/solutions/DropdownList/Dro
 import { SortOption } from "src/features/users";
 import DocumentList from "src/features/journal/pages/DocumentsObjectPage/Components/DocumentList/DocumentList.tsx";
 import { Media } from "src/ui/components/solutions/Media/Media.tsx";
-import exifr from "exifr";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
-import { Select } from "src/ui/components/inputs/Select/Select.tsx";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
 import { ProjectDocumentDTO, UpdateProjectDTO } from "src/features/journal/types/Object.ts";
@@ -93,8 +91,8 @@ const DocumentsObjectPage = observer(() => {
             name: "Сначала новые",
             mode: "neutral",
             pale: true,
-            disabled: isSelected("createDate", "asc"),
-            iconAfter: isSelected("createDate", "asc") ? <IconCheckmark /> : undefined,
+            disabled: isSelected("createdAt", "asc"),
+            iconAfter: isSelected("createdAt", "asc") ? <IconCheckmark /> : undefined,
             onClick: () => {
                 setSortOption({
                     field: "createdAt",
@@ -107,8 +105,8 @@ const DocumentsObjectPage = observer(() => {
             name: "Сначала старые",
             mode: "neutral",
             pale: true,
-            disabled: isSelected("createDate", "desc"),
-            iconAfter: isSelected("createDate", "desc") ? <IconCheckmark /> : undefined,
+            disabled: isSelected("createdAt", "desc"),
+            iconAfter: isSelected("createdAt", "desc") ? <IconCheckmark /> : undefined,
             onClick: () => {
                 onChangeSort({
                     field: "createdAt",
@@ -157,7 +155,6 @@ const DocumentsObjectPage = observer(() => {
             userId: currentUser?.id,
         },
     };
-    console.log(currentDocName);
     const setInitialValue = () => {};
     const onClick = () => {
         const updateObjForm: UpdateProjectDTO = {
@@ -175,6 +172,103 @@ const DocumentsObjectPage = observer(() => {
             });
         }
     };
+    const filteredDocuments = useMemo(() => {
+        if (!documentList) return [];
+
+        const getTs = (value: any): number | null => {
+            if (!value) return null;
+            const t = new Date(value).getTime();
+            return Number.isNaN(t) ? null : t;
+        };
+
+        const mkDayRange = (dateStr: string) => {
+            // Ожидаем формат "YYYY-MM-DD" из DatePicker без времени
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                const [y, m, d] = dateStr.split("-").map(Number);
+                const start = new Date(y, m - 1, d, 0, 0, 0, 0).getTime();
+                const end = new Date(y, m - 1, d, 23, 59, 59, 999).getTime();
+                return { start, end };
+            }
+            // На всякий случай — если придёт ISO-строка
+            const d = new Date(dateStr);
+            const start = new Date(
+                d.getFullYear(),
+                d.getMonth(),
+                d.getDate(),
+                0,
+                0,
+                0,
+                0,
+            ).getTime();
+            const end = new Date(
+                d.getFullYear(),
+                d.getMonth(),
+                d.getDate(),
+                23,
+                59,
+                59,
+                999,
+            ).getTime();
+            return { start, end };
+        };
+
+        const dateRange = date ? mkDayRange(date) : null;
+
+        const filtered = documentList.filter((obj) => {
+            if (value) {
+                const lower = value.toLowerCase();
+                if (!obj.name?.toLowerCase().includes(lower)) return false;
+            }
+
+            if (groups.length > 0 && !groups.includes(obj?.documentGroup ?? "")) {
+                return false;
+            }
+
+            if (dateRange) {
+                const ts =
+                    getTs((obj as any).file.createdAt) ??
+                    getTs((obj as any).file.updatedAt) ??
+                    getTs((obj as any).file?.createdAt);
+
+                if (ts == null) return false;
+                if (ts < dateRange.start || ts > dateRange.end) return false;
+            }
+
+            return true;
+        });
+
+        const sorted = filtered.sort((a, b) => {
+            const { field, order } = sortOption;
+
+            // Если сортировка по дате — берем поле из a.file / b.file
+            let valueA: any;
+            let valueB: any;
+
+            if (field === "createdAt" || field === "updatedAt") {
+                valueA = getTs((a as any).file[field]);
+                valueB = getTs((b as any).file[field]);
+            } else {
+                valueA = (a as any)[field];
+                valueB = (b as any)[field];
+            }
+
+            // Если это строки — приводим к нижнему регистру
+            if (typeof valueA === "string") valueA = valueA.toLowerCase();
+            if (typeof valueB === "string") valueB = valueB.toLowerCase();
+
+            // Обработка null/undefined
+            if (valueA == null && valueB == null) return 0;
+            if (valueA == null) return order === "asc" ? 1 : -1;
+            if (valueB == null) return order === "asc" ? -1 : 1;
+
+            // Сравнение
+            if (valueA < valueB) return order === "asc" ? -1 : 1;
+            if (valueA > valueB) return order === "asc" ? 1 : -1;
+            return 0;
+        });
+
+        return sorted;
+    }, [documentList, value, groups, date, sortOption]);
     return (
         <div className={styles.container}>
             <Helmet>
@@ -222,7 +316,6 @@ const DocumentsObjectPage = observer(() => {
                                 );
 
                                 setFileId(imageId);
-                                console.log(imageId);
                                 if (file) {
                                     setOpenOverlay(true);
                                     setCurrentDocName(file.name);
@@ -304,7 +397,7 @@ const DocumentsObjectPage = observer(() => {
                     </div>
                     <div style={{ marginTop: 12 }}></div>
                     <DocumentList
-                        documentList={documentList}
+                        documentList={filteredDocuments}
                         sort={sortOption}
                         object={object as any}
                     />
@@ -313,7 +406,7 @@ const DocumentsObjectPage = observer(() => {
             <Overlay
                 onClose={() => setOpenOverlay(false)}
                 open={openOverlay}
-                title={"Файл загружен! "}
+                title={"Файл загружен!"}
                 titleMode={"positive"}
                 styles={{
                     card: {
@@ -354,11 +447,32 @@ const DocumentsObjectPage = observer(() => {
                         </div>
                     </div>
                     <div className={styles.buttonsOverlay}>
-                        <Button type={"secondary"} mode={"neutral"}>
+                        <Media
+                            docChange={true}
+                            type={"doc"}
+                            style={{ height: 52 }}
+                            onSelectFile={async (file) => {
+                                setFileData(file);
+                                const imageId = await appStore.accountStore.uploadMediaFile(
+                                    file,
+                                    "PROJECT_DOCUMENT",
+                                );
+
+                                setFileId(imageId);
+                                if (file) {
+                                    setCurrentDocName(file.name);
+                                }
+                            }}
+                            onRemoveFile={() => {
+                                setFileId(null);
+                            }}
+                            maxSizeMB={100}
+                        />
+                        <Button style={{ marginLeft: "auto" }} type={"secondary"} mode={"neutral"}>
                             Отмена
                         </Button>{" "}
                         <Button onClick={onClick} mode={"neutral"}>
-                            Сохранить
+                            Сохранить изменения
                         </Button>
                     </div>
                 </div>

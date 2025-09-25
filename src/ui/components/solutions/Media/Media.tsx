@@ -49,6 +49,7 @@ export const Media = observer(
         disableOverlay?: boolean;
         plusPlaceholder?: boolean;
         readonly?: boolean;
+        docChange?: boolean;
     }) => {
         const fileInputRef = useRef<HTMLInputElement>(null);
         const [showOverlay, setShowOverlay] = useState(false);
@@ -250,7 +251,8 @@ export const Media = observer(
                         <Button
                             size={"large"}
                             fullWidth={true}
-                            type={"primary"}
+                            type={props.docChange ? "text" : "primary"}
+                            iconBefore={props.docChange && <IconSwap />}
                             mode={"neutral"}
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -262,7 +264,7 @@ export const Media = observer(
                                 }
                             }}
                         >
-                            Загрузить файл (PDF, PPTX)
+                            {props.docChange ? "Заменить файл" : "Загрузить файл (PDF, PPTX)"}
                         </Button>
                     </div>
                 );

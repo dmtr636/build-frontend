@@ -4,6 +4,7 @@ import JournalItemCard from "src/features/journal/components/JournalItemCard/Jou
 import { SortOption } from "src/features/users";
 import DocumentCard from "src/features/journal/pages/DocumentsObjectPage/Components/DocumentCardPage/DocumentCard.tsx";
 import { ObjectDTO, ProjectDocumentDTO } from "src/features/journal/types/Object.ts";
+import { observer } from "mobx-react-lite";
 
 function pluralizeDocuments(count: number): string {
     const absCount = Math.abs(count) % 100;
@@ -27,7 +28,7 @@ interface DocumentListProps {
     sort: SortOption;
 }
 
-const DocumentList = ({ documentList, sort, object }: DocumentListProps) => {
+const DocumentList = observer(({ documentList, sort, object }: DocumentListProps) => {
     return (
         <div className={styles.container}>
             {documentList && documentList.length > 0 && (
@@ -54,6 +55,6 @@ const DocumentList = ({ documentList, sort, object }: DocumentListProps) => {
             )}
         </div>
     );
-};
+});
 
 export default DocumentList;

@@ -49,9 +49,19 @@ overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     width: 57px;
     height: 60px;
     border-radius: 8px;
+    color: var(--graphic-neutral-primary, #111317);
+
+    /* Body/S */
+    font-family: Manrope;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%; /* 16.8px */
+    opacity: 0.6;
 
     svg {
         width: 31px;
@@ -154,4 +164,26 @@ overflow: hidden;
     font-style: normal;
     font-weight: 500;
     line-height: 140%; /* 16.8px */
+}
+
+.inputOverlayContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.overlayContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.buttonsOverlay {
+    display: flex;
+    margin-top: 80px;
+    /*
+  margin-left: auto;
+  */
+    gap: 12px;
+    align-items: center;
 }
