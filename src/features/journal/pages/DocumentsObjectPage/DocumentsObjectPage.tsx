@@ -148,7 +148,7 @@ const DocumentsObjectPage = observer(() => {
 
     const documentForm: ProjectDocumentDTO = {
         id: fileId ?? "",
-        name: currentDocName.trim() === "" ? "Без Названия" : currentDocName,
+        name: currentDocName.trim() === "" ? "Без названия" : currentDocName,
         documentGroup: currentGroup ?? undefined,
         file: {
             id: fileId ?? "",
@@ -303,7 +303,11 @@ const DocumentsObjectPage = observer(() => {
                         </div>
                     </div>
                     <div style={{ marginTop: 12 }}></div>
-                    <DocumentList documentList={documentList} sort={sortOption} />
+                    <DocumentList
+                        documentList={documentList}
+                        sort={sortOption}
+                        object={object as any}
+                    />
                 </div>
             </div>
             <Overlay

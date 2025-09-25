@@ -3,7 +3,7 @@ import styles from "src/features/journal/components/JournalList/JournalList.modu
 import JournalItemCard from "src/features/journal/components/JournalItemCard/JournalItemCard.tsx";
 import { SortOption } from "src/features/users";
 import DocumentCard from "src/features/journal/pages/DocumentsObjectPage/Components/DocumentCardPage/DocumentCard.tsx";
-import { ProjectDocumentDTO } from "src/features/journal/types/Object.ts";
+import { ObjectDTO, ProjectDocumentDTO } from "src/features/journal/types/Object.ts";
 
 function pluralizeDocuments(count: number): string {
     const absCount = Math.abs(count) % 100;
@@ -23,10 +23,11 @@ function pluralizeDocuments(count: number): string {
 
 interface DocumentListProps {
     documentList?: ProjectDocumentDTO[];
+    object: ObjectDTO;
     sort: SortOption;
 }
 
-const DocumentList = ({ documentList, sort }: DocumentListProps) => {
+const DocumentList = ({ documentList, sort, object }: DocumentListProps) => {
     return (
         <div className={styles.container}>
             {documentList && documentList.length > 0 && (
@@ -47,7 +48,7 @@ const DocumentList = ({ documentList, sort }: DocumentListProps) => {
             {documentList && documentList.length > 0 && (
                 <div className={styles.list}>
                     {documentList.map((journal, index) => (
-                        <DocumentCard key={index} document={journal} />
+                        <DocumentCard key={index} document={journal} object={object} />
                     ))}
                 </div>
             )}

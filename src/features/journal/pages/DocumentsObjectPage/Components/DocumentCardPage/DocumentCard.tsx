@@ -1,5 +1,5 @@
-import React from "react";
-import { ProjectDocumentDTO } from "src/features/journal/types/Object.ts";
+import React, { useState } from "react";
+import { ObjectDTO, ProjectDocumentDTO } from "src/features/journal/types/Object.ts";
 import styles from "./DocumentCardPage.module.scss";
 import { useParams } from "react-router-dom";
 import { appStore } from "src/app/AppStore.ts";
@@ -21,9 +21,12 @@ import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx
 import { formatDate } from "@storybook/blocks";
 import { fileUrl } from "src/shared/utils/file.ts";
 import { formatDateShort } from "src/shared/utils/date.ts";
+import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
 
 interface DocumentCardProps {
     document: ProjectDocumentDTO;
+    object: ObjectDTO;
 }
 
 async function downloadFile(url: string, filename: string) {
@@ -48,8 +51,15 @@ async function downloadFile(url: string, filename: string) {
     }
 }
 
-const DocumentCard = ({ document }: DocumentCardProps) => {
-    const date = new Date();
+const DocumentCard = ({ document, object }: DocumentCardProps) => {
+    const [showDelete, setShowDelete] = useState(false);
+    const onClickDelete = () => {
+        const updatedDocument = object.documents.filter((doc) => doc.id !== document.id);
+        const objectForm = { ...object, documents: updatedDocument };
+        appStore.objectStore
+            .updateObject(objectForm)
+            .then(() => snackbarStore.showNeutralPositiveSnackbar("Документ удален"));
+    };
     return (
         <div className={clsx(styles.container)}>
             <div className={styles.imgBlock}>
@@ -61,14 +71,25 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
                 <div className={styles.name}>{document?.name ?? "Без названия"}</div>
                 <div className={styles.otherInfo}>
                     {document?.documentGroup}
-                    {document?.documentGroup && date && <IconDote className={styles.dote} />}
+                    {document?.documentGroup && <IconDote className={styles.dote} />}
                     {/* {user?.organizationId &&
                         appStore.organizationsStore.organizationById(user?.organizationId ?? "")
                             ?.name}*/}
-                    {formatDateShort(date.toString())}
+                    {formatDateShort(document.file.createdAt)}
                 </div>
             </div>
             <div className={styles.buttonsBlock}>
+                <Tooltip text={"Предпросмотр"} delay={500}>
+                    <ButtonIcon
+                        onClick={() => setShowDelete(true)}
+                        pale={true}
+                        mode={"negative"}
+                        size={"small"}
+                        type={"tertiary"}
+                    >
+                        <IconBasket />
+                    </ButtonIcon>
+                </Tooltip>
                 <Tooltip text={"Предпросмотр"} delay={500}>
                     <ButtonIcon
                         /*
@@ -105,6 +126,15 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
                     </ButtonIcon>
                 </Tooltip>
             </div>
+            <DeleteOverlay
+                open={showDelete}
+                title={"Удаление документа"}
+                subtitle={"Вы уверены что хотите удалить документ "}
+                deleteButtonLabel={"Удалить"}
+                info={document.name}
+                onDelete={onClickDelete}
+                onCancel={() => setShowDelete(false)}
+            />
         </div>
     );
 };
