@@ -79,7 +79,7 @@ const DocumentCard = ({ document, object }: DocumentCardProps) => {
                 </div>
             </div>
             <div className={styles.buttonsBlock}>
-                <Tooltip text={"Предпросмотр"} delay={500}>
+                <Tooltip text={"Удалить"} delay={500}>
                     <ButtonIcon
                         onClick={() => setShowDelete(true)}
                         pale={true}
