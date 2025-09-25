@@ -54,12 +54,22 @@ export interface ProjectImageDTO {
     takenAt: string; // date
 }
 
-export interface ProjectDocumentDTO {
-    id: string; // uuid
-    fileId: string; // uuid
-    documentGroup: string;
+export interface FileDto {
+    id?: string;
+    userId?: string;
+    originalFileName?: string;
+    size?: number;
+    type?: string;
+    createdAt?: string; // ISO date
+    updatedAt?: string; // ISO date
 }
 
-// 🔹 Утилиты для работы
+export interface ProjectDocumentDTO {
+    id: string;
+    name: string;
+    file: FileDto;
+    documentGroup?: string;
+}
+
 export type CreateProjectDTO = Partial<ObjectDTO>;
 export type UpdateProjectDTO = Partial<Omit<ObjectDTO, "id" | "createdAt" | "updatedAt">>;

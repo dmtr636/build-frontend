@@ -10,7 +10,8 @@ export type FileType =
     | "PROJECT_CONTENT_IMAGE"
     | "PROJECT_CONTENT_VIDEO"
     | "REPORT_ATTACHMENT_IMAGE"
-    | "REVIEW_IMAGE";
+    | "REVIEW_IMAGE"
+    | "PROJECT_DOCUMENT";
 
 export class FileStore {
     uploading = false;

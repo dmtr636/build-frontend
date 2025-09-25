@@ -91,6 +91,11 @@ export class AccountStore {
         this.initialized = initialized;
     }
 
+    /**
+     * Универсальная загрузка медиа/документов.
+     * Возвращает id загруженного файла (как возвращает fileStore.uploadFile).
+     * onUpload вызывается с (id, width, height). Для документов ширина/высота = 0.
+     */
     async uploadMediaFile(
         file: File,
         type: FileType,
@@ -113,77 +118,133 @@ export class AccountStore {
             }
         };
 
-        if (type === "PROJECT_CONTENT_VIDEO") {
+        const isImage = file.type.toLowerCase().startsWith("image/");
+        const isConvertibleImage = convertibleImageTypes.includes(file.type.toLowerCase());
+        const isVideoType = type === "PROJECT_CONTENT_VIDEO";
+        const isDocumentType = type === "PROJECT_DOCUMENT";
+
+        // 1) Видео
+        if (isVideoType) {
             const getVideoDimensions = (url: string) => {
-                return new Promise<{ width: number; height: number }>((resolve) => {
+                return new Promise<{ width: number; height: number }>((resolve, reject) => {
                     const video = document.createElement("video");
+                    const revoke = () => {
+                        try {
+                            URL.revokeObjectURL(url);
+                        } catch {
+                            /* empty */
+                        }
+                    };
                     video.addEventListener(
                         "loadedmetadata",
                         function () {
-                            const height = this.videoHeight;
-                            const width = this.videoWidth;
-
+                            const height = (this as HTMLVideoElement).videoHeight;
+                            const width = (this as HTMLVideoElement).videoWidth;
+                            revoke();
                             resolve({ height, width });
                         },
-                        false,
+                        { once: true },
+                    );
+                    video.addEventListener(
+                        "error",
+                        () => {
+                            revoke();
+                            reject(new Error("Failed to load video metadata"));
+                        },
+                        { once: true },
                     );
                     video.src = url;
                 });
             };
 
             const result = await fileStore.uploadFile(file, type);
+            console.log(result);
             try {
                 const { width, height } = await getVideoDimensions(URL.createObjectURL(file));
                 onUpload?.(result, width, height);
             } catch (e) {
                 console.error(e);
+                onUpload?.(result, 0, 0);
             }
             return result;
         }
 
-        if (!convertibleImageTypes.includes(file.type.toLowerCase())) {
-            const getHeightAndWidthFromDataUrl = (dataURL: string) =>
-                new Promise<{ width: number; height: number }>((resolve) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        resolve({
-                            height: img.height,
-                            width: img.width,
-                        });
-                    };
-                    img.src = dataURL;
-                });
+        // 2) Документы (PDF, PPTX и т.п.)
+        if (isDocumentType) {
             const result = await fileStore.uploadFile(file, type);
-            try {
-                const { width, height } = await getHeightAndWidthFromDataUrl(
-                    URL.createObjectURL(file),
-                );
-                onUpload?.(result, width, height);
-            } catch (e) {
-                console.error(e);
-            }
+            // Для документов размеров нет — отдаем 0,0
+            onUpload?.(result, 0, 0);
+            console.log(result);
             return result;
         }
 
+        // 3) Прочие НЕ-конвертируемые форматы
+        //    - Если это изображение (webp/gif/svg и т.д.), отдаем их как есть и постараемся получить размеры.
+        //    - Если это НЕ изображение (например, документ, архив и т.п.), просто загружаем без размеров.
+        if (!isConvertibleImage) {
+            const result = await fileStore.uploadFile(file, type);
+
+            if (isImage) {
+                const getHeightAndWidthFromDataUrl = (dataURL: string) =>
+                    new Promise<{ width: number; height: number }>((resolve, reject) => {
+                        const img = new Image();
+                        const revoke = () => {
+                            try {
+                                URL.revokeObjectURL(dataURL);
+                            } catch {
+                                /* empty */
+                            }
+                        };
+                        img.onload = () => {
+                            const width = img.width;
+                            const height = img.height;
+                            revoke();
+                            resolve({ width, height });
+                        };
+                        img.onerror = (err) => {
+                            revoke();
+                            reject(err);
+                        };
+                        img.src = dataURL;
+                    });
+
+                try {
+                    const { width, height } = await getHeightAndWidthFromDataUrl(
+                        URL.createObjectURL(file),
+                    );
+                    onUpload?.(result, width, height);
+                } catch (e) {
+                    console.error(e);
+                    onUpload?.(result, 0, 0);
+                }
+            } else {
+                // Не изображение — размеров нет
+                onUpload?.(result, 0, 0);
+            }
+
+            return result;
+        }
+
+        // 4) Конвертация конвертируемых изображений (jpeg/jpg/png) в webp
         let width = 0;
         let height = 0;
         const processedFile = await new Promise<File>((resolve, reject) => {
             const img = new Image();
+            const objectUrl = URL.createObjectURL(file);
             img.onload = async () => {
                 try {
                     const maxDimensions = getMaxDimensions();
 
-                    // Рассчет нового размера с сохранением пропорций
+                    // Сохраняем пропорции и не увеличиваем
                     const scale = Math.min(
                         maxDimensions.width / img.width,
                         maxDimensions.height / img.height,
-                        1, // Максимальный scale = 1 (не увеличиваем изображение)
+                        1,
                     );
 
-                    const newWidth = img.width * scale;
-                    const newHeight = img.height * scale;
+                    const newWidth = Math.round(img.width * scale);
+                    const newHeight = Math.round(img.height * scale);
 
-                    // Создание canvas для ресайза
                     const canvas = document.createElement("canvas");
                     canvas.width = newWidth;
                     canvas.height = newHeight;
@@ -194,14 +255,14 @@ export class AccountStore {
                     width = newWidth;
                     height = newHeight;
 
-                    // Конвертация в WebP с качеством 90%
                     canvas.toBlob(
-                        async (blob) => {
-                            if (!blob) return reject(new Error("Canvas error"));
-
-                            // Сохраняем оригинальное имя с заменой расширения
+                        (blob) => {
+                            if (!blob) {
+                                URL.revokeObjectURL(objectUrl);
+                                return reject(new Error("Canvas error"));
+                            }
                             const newName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
-
+                            URL.revokeObjectURL(objectUrl);
                             resolve(
                                 new File([blob], newName, {
                                     type: "image/webp",
@@ -213,15 +274,19 @@ export class AccountStore {
                         0.9,
                     );
                 } catch (err) {
+                    URL.revokeObjectURL(objectUrl);
                     reject(err);
                 }
             };
-
-            img.onerror = reject;
-            img.src = URL.createObjectURL(file);
+            img.onerror = (err) => {
+                URL.revokeObjectURL(objectUrl);
+                reject(err);
+            };
+            img.src = objectUrl;
         });
 
         const result = await fileStore.uploadFile(processedFile, type);
+        console.log(result);
         onUpload?.(result, width, height);
         return result;
     }

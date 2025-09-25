@@ -1,0 +1,110 @@
+.container {
+    margin-top: 40px;
+    position: relative;
+}
+
+.content {
+    margin-top: 24px;
+    display: flex;
+    gap: 24px;
+}
+
+.filterContainer {
+    padding: 20px 24px 28px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 12px;
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
+}
+
+.filterHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--objects-text-neutral-tertiary, #444d5f);
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+    height: 28px;
+}
+
+.filterBlock {
+    width: 298px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
+}
+
+.iconHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    background: var(--graphic-neutral-primary, #111317);
+
+    svg {
+        width: 20px;
+        height: 20px;
+
+        path {
+            fill: white;
+        }
+    }
+}
+
+.header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--text-neutral-tertiary, #444d5f);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 28.8px */
+}
+
+.userlistBlock {
+    width: 100%;
+}
+
+.sortContainer {
+    display: flex;
+    gap: 12px;
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
+}
+
+.renderHeader {
+    color: var(--text-neutral-primary, #111317);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 19.2px */
+    padding: 12.5px 16px;
+}
+
+.inputOverlayContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.overlayContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.buttonsOverlay {
+    display: flex;
+    margin-top: 80px;
+    margin-left: auto;
+    gap: 12px;
+}

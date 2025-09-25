@@ -16,6 +16,7 @@ import { ObjectPage } from "src/features/journal/pages/ObjectPage/ObjectPage.tsx
 import AboutObjectPage from "src/features/journal/pages/AboutObjectPage/AboutObjectPage.tsx";
 import ObjectUsersPage from "src/features/journal/pages/ObjectUsersPage/ObjectUsersPage.tsx";
 import { LocationPage } from "src/features/journal/pages/LocationPage/LocationPage.tsx";
+import DocumentsObjectPage from "src/features/journal/pages/DocumentsObjectPage/DocumentsObjectPage.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -47,7 +48,7 @@ export const appRoutes: RouteObject[] = [
                     { index: true, element: <Navigate to="review" replace /> },
                     { path: "review", element: <></> },
                     { path: "about", element: <AboutObjectPage /> },
-                    { path: "docs", element: <></> },
+                    { path: "docs", element: <DocumentsObjectPage /> },
                     { path: "status", element: <></> },
                     { path: "location", element: <LocationPage /> },
                     { path: "users", element: <ObjectUsersPage /> },
