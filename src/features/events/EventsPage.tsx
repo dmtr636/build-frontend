@@ -10,6 +10,7 @@ import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import {
     appStore,
     eventsStore,
+    objectStore,
     organizationsStore,
     registryStore,
     userStore,
@@ -54,6 +55,26 @@ export const EventsPage = observer(() => {
         );
     };
 
+    const getObjectLink = (objectId: string) => {
+        const object = objectStore.ObjectMap.get(objectId);
+        if (!object) {
+            return "-";
+        }
+        return (
+            <Button
+                type={"text"}
+                className={styles.linkButton}
+                href={`/admin/journal/${object.id}`}
+                target={"_blank"}
+                style={{
+                    maxWidth: "100%",
+                }}
+            >
+                {object.name}
+            </Button>
+        );
+    };
+
     const hasActiveFilters = eventsStore.hasActiveFilters;
 
     const userIdSearchParam = searchParams.get("userId");
@@ -65,9 +86,7 @@ export const EventsPage = observer(() => {
     }, [userIdSearchParam]);
 
     useEffect(() => {
-        if (!appStore.eventsStore.events.length) {
-            appStore.eventsStore.fetchEvents();
-        }
+        appStore.eventsStore.fetchEvents();
     }, []);
 
     return (
@@ -267,14 +286,14 @@ export const EventsPage = observer(() => {
                                         {
                                             name: "Рабочие процессы",
                                             value: "work",
-                                            disabled: !eventsStore.filteredEvents.some(
+                                            disabled: !eventsStore.filteredEventsWithoutTab.some(
                                                 (e) => e.actionType === "work",
                                             ),
                                         },
                                         {
                                             name: "Системные события",
                                             value: "system",
-                                            disabled: !eventsStore.filteredEvents.some(
+                                            disabled: !eventsStore.filteredEventsWithoutTab.some(
                                                 (e) => e.actionType === "system",
                                             ),
                                         },
@@ -342,9 +361,9 @@ export const EventsPage = observer(() => {
                                                   {
                                                       name: "Объект",
                                                       field: "objectId",
-                                                      width: 210,
+                                                      width: 290,
                                                       render: (data: IEvent) => {
-                                                          return data.objectId;
+                                                          return getObjectLink(data.objectId ?? "");
                                                       },
                                                       resizable: false,
                                                   },
@@ -353,7 +372,7 @@ export const EventsPage = observer(() => {
                                         {
                                             name: "Действие",
                                             field: "action",
-                                            width: 476,
+                                            width: 476 - (eventsStore.tab === "work" ? 80 : 0),
                                             render: (data: IEvent) => {
                                                 if (!data.objectName) {
                                                     return "-";

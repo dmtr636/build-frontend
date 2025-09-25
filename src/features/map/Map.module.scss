@@ -18,7 +18,7 @@
 .tooltip {
     width: auto !important;
     min-width: auto !important;
-    max-width: 240px !important;
+    max-width: 400px !important;
     border-radius: var(--padding-s, 8px) !important;
     padding: 8px 12px !important;
     filter: drop-shadow(0px 12px 28px rgba(17, 19, 23, 0.18)) !important;
@@ -29,4 +29,39 @@
         margin-left: -8px !important;
         border-width: 8px !important;
     }
+}
+
+.cancelButton {
+    &:not(&:hover) {
+        background-color: var(--background-contrast-tertiary, #2c313a);
+    }
+}
+
+/* Размер вершины будет масштабироваться через CSS-переменную */
+:global(.leaflet-editing-icon),
+:global(.leaflet-vertex-icon),
+:global(.leaflet-middle-icon) {
+    /* ваш стиль */
+    border-radius: 2px !important;
+    border: 1px solid #fff !important;
+    background: rgba(250, 0, 50, 0.8) !important;
+
+    /* базовый размер 13px, умножаем на масштаб */
+    width: calc(13px * var(--vertex-scale, 1)) !important;
+    height: calc(13px * var(--vertex-scale, 1)) !important;
+
+    /* корректно центрируем маркер над точкой (перебиваем inline-стили DivIcon) */
+    margin-left: calc((13px * var(--vertex-scale, 1)) / -2) !important;
+    margin-top: calc((13px * var(--vertex-scale, 1)) / -2) !important;
+
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+}
+
+/* Если хотите, чтобы «средние» точки между вершинами были чуть меньше: */
+:global(.leaflet-middle-icon) {
+    width: calc(11px * var(--vertex-scale, 1)) !important;
+    height: calc(11px * var(--vertex-scale, 1)) !important;
+    margin-left: calc((11px * var(--vertex-scale, 1)) / -2) !important;
+    margin-top: calc((11px * var(--vertex-scale, 1)) / -2) !important;
 }

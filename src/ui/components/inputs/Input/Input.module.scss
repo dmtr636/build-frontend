@@ -217,6 +217,7 @@ letter-spacing: 0.15px;
 
     &.readonly {
         border: 1px solid lighter-disabled($objects-stroke-neutral-secondary);
+        box-shadow: none;
 
         @media (hover: hover) and (pointer: fine) {
             &:hover {

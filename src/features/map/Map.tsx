@@ -80,16 +80,55 @@ export default function MapObjectsEditor({
     objects,
     center = { lat: 55.75, lng: 37.62 },
     zoom = 10,
-    height = "75vh",
+    height = "calc(min(100vh - 250px, 850px))",
     onObjectsChange,
 }: Props) {
     const objectsRef = useRef<MapObject[]>(objects);
     const mapRef = useRef<L.Map>(null);
     const [showSatellite, setShowSatellite] = useState(false);
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        setReady(true);
+    }, []);
 
     useEffect(() => {
         objectsRef.current = objects;
     }, [objects]);
+
+    const [{ zoomNow, minZoomNow, maxZoomNow }, setZoomState] = useState({
+        zoomNow: zoom,
+        minZoomNow: -Infinity,
+        maxZoomNow: Infinity,
+    });
+
+    useEffect(() => {
+        const map = mapRef.current;
+        if (!map || !ready) return;
+
+        const updateZoomState = () => {
+            setZoomState({
+                zoomNow: map.getZoom() ?? 0,
+                minZoomNow: map.getMinZoom() ?? -Infinity,
+                maxZoomNow: map.getMaxZoom() ?? Infinity,
+            });
+        };
+
+        updateZoomState();
+
+        map.on("zoomend", updateZoomState);
+        map.on("zoomlevelschange", updateZoomState);
+        map.on("baselayerchange", updateZoomState);
+
+        return () => {
+            map.off("zoomend", updateZoomState);
+            map.off("zoomlevelschange", updateZoomState);
+            map.off("baselayerchange", updateZoomState);
+        };
+    }, [ready]);
+
+    const canZoomIn = Number.isFinite(maxZoomNow) && zoomNow < maxZoomNow;
+    const canZoomOut = Number.isFinite(minZoomNow) && zoomNow > minZoomNow;
 
     const fgRef = useRef<L.FeatureGroup | null>(null);
 
@@ -301,6 +340,8 @@ export default function MapObjectsEditor({
                     left: 10,
                     zIndex: 500,
                     boxShadow: "0 8px 20px 1px rgba(17, 19, 23, 0.12)",
+                    opacity: canZoomIn ? 1 : 0.7,
+                    pointerEvents: canZoomIn ? undefined : "none",
                 }}
             />
             <Button
@@ -320,6 +361,8 @@ export default function MapObjectsEditor({
                     left: 10,
                     zIndex: 500,
                     boxShadow: "0 8px 20px 1px rgba(17, 19, 23, 0.12)",
+                    opacity: canZoomOut ? 1 : 0.7,
+                    pointerEvents: canZoomOut ? undefined : "none",
                 }}
             />
             <div className={styles.switchWrapper}>

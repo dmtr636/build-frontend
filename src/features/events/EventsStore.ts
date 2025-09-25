@@ -32,7 +32,7 @@ export class EventsStore {
     };
     filters = initialFilter;
     search = "";
-    tab = "system";
+    tab = "work";
     tableSettings: ITableSettings = {
         compactMode: true,
         quickView: false,
@@ -59,6 +59,40 @@ export class EventsStore {
         }
         events = events.filter((event) => event.actionType === this.tab);
 
+        events = events.filter((event) => event.objectName !== "construction-work-stage");
+
+        if (this.sort.field === "userId") {
+            events.sort((a, b) => {
+                const aUser = userStore.usersMap.get(a.userId);
+                const aNameInitials = getNameInitials(aUser);
+                const bUser = userStore.usersMap.get(b.userId);
+                const bNameInitials = getNameInitials(bUser);
+                return this.sort.direction === "desc"
+                    ? bNameInitials.localeCompare(aNameInitials)
+                    : aNameInitials.localeCompare(bNameInitials);
+            });
+        } else {
+            events.sort((a, b) => {
+                return this.sort.direction === "desc"
+                    ? b.createdAt.localeCompare(a.createdAt)
+                    : a.createdAt.localeCompare(b.createdAt);
+            });
+        }
+        return events;
+    }
+
+    get filteredEventsWithoutTab() {
+        let events = this.events.slice();
+        events = this.filterEvents(events);
+        if (
+            (this.search || this.hasActiveFilters) &&
+            events.length &&
+            !events.some((event) => event.actionType === this.tab)
+        ) {
+            runInAction(() => {
+                this.tab = this.tab === "system" ? "work" : "system";
+            });
+        }
         events = events.filter((event) => event.objectName !== "construction-work-stage");
 
         if (this.sort.field === "userId") {
