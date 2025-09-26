@@ -17,7 +17,7 @@ export type ProjectViolationDTO = {
     id: string;
     projectId: string;
     name: string;
-    dueDate: string; // date
+    dueDate: any; // date
     violationTime: string; // date-time
     status: ProjectViolationStatus;
     category: string;
@@ -30,7 +30,7 @@ export type ProjectViolationDTO = {
     photos: FileDto[];
     comments: ProjectViolationCommentDTO[];
     author: User;
-    assignee: FileDto;
+    assignee: User;
     createdAt: string; // date-time
     updatedAt: string; // date-time
 };

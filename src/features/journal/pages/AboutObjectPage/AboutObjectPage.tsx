@@ -140,7 +140,6 @@ const AboutObjectPage = observer(() => {
                     style={{ width: 213, height: 310 }}
                     url={fileUrl(objPreview)}
                     onSelectFile={async (file) => {
-                        await exifr.parse(file).then((output) => console.log(output));
                         const imageId = await appStore.accountStore.uploadMediaFile(
                             file,
                             "PROFILE_IMAGE",

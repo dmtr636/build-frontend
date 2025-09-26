@@ -7,15 +7,26 @@ import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
-import { appStore } from "src/app/AppStore.ts";
+import { appStore, registryStore } from "src/app/AppStore.ts";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 import { useParams } from "react-router-dom";
+import ViolationCardItem from "src/features/journal/pages/ViolationPage/components/ViolationCardItem/ViolationCardItem.tsx";
+import { observer } from "mobx-react-lite";
+import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
+import ViolationList from "src/features/journal/pages/ViolationPage/components/ViolationList/ViolationList.tsx";
+import { IconVeryHappy } from "src/features/journal/pages/ViolationPage/assets";
 
-const ViolationPage = () => {
+const ViolationPage = observer(() => {
     const loginUser = appStore.accountStore.currentUser;
     const { id } = useParams();
     const violations = appStore.violationStore.violations;
+    const categoryList = [...new Set(violations.map((item) => item.category))];
+    const categoryOptions = categoryList.map((item) => ({ name: item, value: item }));
+    const authorList = [
+        ...new Map(violations.map((item) => [item.author.id, item.author])).values(),
+    ];
+    const authorOptions = authorList.map((item) => ({ name: getFullName(item), value: item.id }));
     const [openCreate, setOpenCreate] = React.useState(false);
     const [activeTab, setActiveTab] = React.useState<number>(1);
     const [dateFilter, setDateFilter] = React.useState<string | null>(null);
@@ -23,11 +34,13 @@ const ViolationPage = () => {
     const [type, setType] = React.useState<string[]>([]);
     const [view, setView] = React.useState<string[]>([]);
     const [author, setAuthor] = React.useState<string[]>([]);
+    const object = appStore.objectStore.ObjectMap.get(id ?? "");
     useEffect(() => {
         if (id) {
             appStore.violationStore.fetchViolationByObj(id);
         }
     }, [id]);
+
     return (
         <div className={styles.container}>
             <Helmet>
@@ -88,7 +101,7 @@ const ViolationPage = () => {
                             values={category}
                             onValuesChange={setCategory}
                             placeholder={"Все"}
-                            options={[]}
+                            options={categoryOptions}
                             multiple={true}
                             formName={"Категория"}
                         ></MultipleSelect>
@@ -96,13 +109,19 @@ const ViolationPage = () => {
                             values={view}
                             onValuesChange={setView}
                             placeholder={"Все"}
-                            options={[]}
+                            options={[
+                                { name: "Простое", value: "Простое" },
+                                { name: "Грубое", value: "Грубое" },
+                            ]}
                             multiple={true}
                             formName={"Вид"}
                         ></MultipleSelect>
                         <MultipleAutocomplete
                             formName={"Тип"}
-                            options={[]}
+                            options={[
+                                { name: "Простое", value: "Простое" },
+                                { name: "Грубое", value: "Грубое" },
+                            ]}
                             placeholder={"Все"}
                             values={type}
                             onValuesChange={setType}
@@ -110,7 +129,7 @@ const ViolationPage = () => {
                         />
                         <MultipleAutocomplete
                             formName={"Автор"}
-                            options={[]}
+                            options={authorOptions}
                             placeholder={"Все"}
                             values={author}
                             onValuesChange={setAuthor}
@@ -174,9 +193,24 @@ const ViolationPage = () => {
                         mode={"positive"}
                     ></Button>
                 </div>
+                {violations.length > 0 ? (
+                    <ViolationList violationList={violations} />
+                ) : (
+                    <div className={styles.noViolContainer}>
+                        <div className={styles.noViol}>
+                            <IconVeryHappy />
+                            Нарушений нет
+                        </div>
+                    </div>
+                )}
             </div>
+            <AddViolationOverlay
+                object={object}
+                open={openCreate}
+                setOpen={() => setOpenCreate(false)}
+            />
         </div>
     );
-};
+});
 
 export default ViolationPage;
