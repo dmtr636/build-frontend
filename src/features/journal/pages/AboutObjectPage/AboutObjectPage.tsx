@@ -90,11 +90,13 @@ const AboutObjectPage = observer(() => {
         type: type as string,
         imageId: objPreview as string,
         name: objName as string,
+        objectNumber: currentOrg?.objectNumber,
         plannedPeriod: {
             start: startDate as string,
             end: endDate as string,
         },
     };
+    console.log(currentOrg?.objectNumber);
     const onClick = () => {
         if (objForm)
             appStore.objectStore.updateObject(objForm).then(() => {

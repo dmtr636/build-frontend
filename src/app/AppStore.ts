@@ -6,6 +6,7 @@ import { OrganizationsStore } from "src/features/organizations/OrganizationsStor
 import { WebsocketStore } from "src/features/websocket/stores/WebsocketStore.ts";
 import { RegistryStore } from "src/features/registry/RegistryStore.ts";
 import { ObjectStore } from "src/features/journal/stores/objectStore.ts";
+import { ViolationStore } from "src/features/journal/stores/violationStore.ts";
 
 export const layoutStore = new LayoutStore();
 export const accountStore = new AccountStore();
@@ -15,8 +16,10 @@ export const organizationsStore = new OrganizationsStore();
 export const websocketStore = new WebsocketStore();
 export const registryStore = new RegistryStore();
 export const objectStore = new ObjectStore();
+export const violationStore = new ViolationStore();
 export const appStore = {
     layoutStore,
+    violationStore,
     accountStore,
     userStore,
     eventsStore,

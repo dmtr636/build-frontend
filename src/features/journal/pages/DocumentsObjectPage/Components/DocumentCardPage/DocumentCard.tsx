@@ -30,7 +30,7 @@ import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
 import { Media } from "src/ui/components/solutions/Media/Media.tsx";
 
 interface DocumentCardProps {
-    document: ProjectDocumentDTO;
+    documentItem: ProjectDocumentDTO;
     object: ObjectDTO;
 }
 
@@ -43,39 +43,17 @@ export function getDocumentFormat(name?: string): string | null {
     return parts.pop()?.toLowerCase() ?? null;
 }
 
-async function downloadFile(url: string, filename: string) {
-    try {
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`Ошибка скачивания: ${response.status}`);
-        }
-
-        const blob = await response.blob();
-        const link = document.createElement("a");
-        const blobUrl = URL.createObjectURL(blob);
-        link.href = blobUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(blobUrl);
-    } catch (e) {
-        console.error(e);
-    }
-}
-
-const DocumentCard = ({ document, object }: DocumentCardProps) => {
+const DocumentCard = ({ documentItem, object }: DocumentCardProps) => {
     const [showDelete, setShowDelete] = useState(false);
     const onClickDelete = () => {
-        const updatedDocument = object.documents.filter((doc) => doc.id !== document.id);
+        const updatedDocument = object.documents.filter((doc) => doc.id !== documentItem.id);
         const objectForm = { ...object, documents: updatedDocument };
         appStore.objectStore.updateObject(objectForm).then(() => {
             snackbarStore.showNeutralPositiveSnackbar("Документ удален");
             setShowDelete(false);
         });
     };
-    const docFormat = getDocumentFormat(document.name);
+    const docFormat = getDocumentFormat(documentItem?.file.originalFileName);
 
     const [openOverlay, setOpenOverlay] = useState<boolean>(false);
     const [fileData, setFileData] = useState<File | null>(null);
@@ -99,7 +77,7 @@ const DocumentCard = ({ document, object }: DocumentCardProps) => {
         // Если новый файл не выбран → обновляем только имя и группу
         if (!fileId && !fileData) {
             return {
-                ...document,
+                ...documentItem,
                 name: currentDocName.trim() === "" ? "Без названия" : currentDocName,
                 documentGroup: currentGroup ?? undefined,
             };
@@ -107,7 +85,7 @@ const DocumentCard = ({ document, object }: DocumentCardProps) => {
 
         // Если новый файл выбран → используем documentForm (файл + метаданные)
         return documentForm;
-    }, [fileId, fileData, currentDocName, currentGroup, document, documentForm]);
+    }, [fileId, fileData, currentDocName, currentGroup, documentItem, documentForm]);
 
     useEffect(() => {
         const groupOptions = [
@@ -128,7 +106,7 @@ const DocumentCard = ({ document, object }: DocumentCardProps) => {
     }, [object]);
     const onClick = () => {
         const newDocuments = object.documents.map((doc) =>
-            doc.id === document.id ? updatedDocument : doc,
+            doc.id === documentItem.id ? updatedDocument : doc,
         );
 
         const objectForm = { ...object, documents: newDocuments };
@@ -148,12 +126,12 @@ const DocumentCard = ({ document, object }: DocumentCardProps) => {
                 </div>
             </div>
             <div className={clsx(styles.infoBlock)}>
-                <div className={styles.name}>{document?.name ?? "Без названия"}</div>
+                <div className={styles.name}>{documentItem?.name ?? "Без названия"}</div>
                 <div className={styles.otherInfo}>
-                    {document?.documentGroup ?? "Без группы"}
+                    {documentItem?.documentGroup ?? "Без группы"}
                     <IconDote className={styles.dote} />
 
-                    {formatDateShort(document.file.createdAt)}
+                    {formatDateShort(documentItem?.file.createdAt)}
                 </div>
             </div>
             <div className={styles.buttonsBlock}>
@@ -170,12 +148,10 @@ const DocumentCard = ({ document, object }: DocumentCardProps) => {
                         </ButtonIcon>
                     </Tooltip>
                 </div>
-                <div className={styles.buttonsBlockChat}>
+                {/* <div className={styles.buttonsBlockChat}>
                     <Tooltip text={"Предпросмотр"} delay={500}>
                         <ButtonIcon
-                            /*
                                                         onClick={handlePreview}
-                            */
                             pale={true}
                             mode={"neutral"}
                             size={"small"}
@@ -184,14 +160,15 @@ const DocumentCard = ({ document, object }: DocumentCardProps) => {
                             <IconShowPass />
                         </ButtonIcon>
                     </Tooltip>
-                </div>
+                </div>*/}
                 <div className={styles.buttonsBlockChat}>
                     <Tooltip text={"Скачать документ"} delay={500}>
                         <ButtonIcon
-                            onClick={() =>
-                                downloadFile(fileUrl(document.file.id) ?? "", document.name)
-                            }
-                            pale={true}
+                            onClick={() => {
+                                const url = fileUrl(documentItem.file.id);
+                                window.open(url, "_blank");
+                            }}
+                            pale
                             mode="neutral"
                             size="small"
                             type="tertiary"
@@ -204,8 +181,8 @@ const DocumentCard = ({ document, object }: DocumentCardProps) => {
                     <Tooltip text={"Редактировать"} delay={500}>
                         <ButtonIcon
                             onClick={() => {
-                                setCurrentDocName(document.name);
-                                setCurrentGroup(document.documentGroup ?? null);
+                                setCurrentDocName(documentItem.name);
+                                setCurrentGroup(documentItem.documentGroup ?? null);
                                 setOpenOverlay(true);
                             }}
                             pale={true}
@@ -306,7 +283,7 @@ const DocumentCard = ({ document, object }: DocumentCardProps) => {
                 title={"Удаление документа"}
                 subtitle={"Вы уверены что хотите удалить документ "}
                 deleteButtonLabel={"Удалить"}
-                info={document.name}
+                info={documentItem?.name}
                 onDelete={onClickDelete}
                 onCancel={() => setShowDelete(false)}
             />
