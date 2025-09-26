@@ -29,6 +29,7 @@ export const LocationPage = observer(() => {
     });
     const [ready, setReady] = useState(false);
     const [showPolygon, setShowPolygon] = useState(false);
+    const [mapKey, setMapKey] = useState(0);
 
     useLayoutEffect(() => {
         setTimeout(() => {
@@ -159,7 +160,13 @@ export const LocationPage = observer(() => {
             </div>
             <div className={styles.grid}>
                 <div className={styles.mapWrapper}>
-                    <MapEditor value={mapObj} onChange={setMapObj} height={459} readyProp={ready} />
+                    <MapEditor
+                        key={mapKey}
+                        value={mapObj}
+                        onChange={setMapObj}
+                        height={459}
+                        readyProp={ready}
+                    />
                 </div>
                 <div className={styles.rightColumn}>
                     {((mapObj?.marker?.lng && mapObj.marker?.lat) ||
@@ -177,6 +184,9 @@ export const LocationPage = observer(() => {
                                 setMapObj({
                                     ...mapObj,
                                 });
+                                setTimeout(() => {
+                                    setMapKey((mapKey) => ++mapKey);
+                                }, 50);
                             }}
                         >
                             Убрать объект с карты
@@ -387,19 +397,13 @@ export const LocationPage = observer(() => {
                             mode={"neutral"}
                             type={"outlined"}
                             onClick={() => {
-                                setReady(false);
                                 setInitial();
                                 setTimeout(() => {
-                                    mapObj.marker = null;
-                                    mapObj.polygon = null;
-                                    setMapObj({
-                                        ...mapObj,
+                                    setMapKey((mapKey) => ++mapKey);
+                                    setTimeout(() => {
+                                        setInitial();
                                     });
-                                }, 15);
-                                setTimeout(() => {
-                                    setInitial();
-                                    setReady(true);
-                                }, 30);
+                                }, 50);
                             }}
                         >
                             Отменить
