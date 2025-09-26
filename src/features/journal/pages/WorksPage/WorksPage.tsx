@@ -1,9 +1,9 @@
 import { observer } from "mobx-react-lite";
 import styles from "./WorksPage.module.scss";
-import { IconBarChart, IconSuccess } from "src/ui/assets/icons";
+import { IconBarChart, IconPlus, IconSuccess } from "src/ui/assets/icons";
 import React, { useEffect, useLayoutEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { appStore, objectStore } from "src/app/AppStore.ts";
+import { appStore, objectStore, worksStore } from "src/app/AppStore.ts";
 import { makeAutoObservable } from "mobx";
 import { ObjectDTO } from "src/features/journal/types/Object.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
@@ -20,9 +20,12 @@ import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { deepEquals } from "src/shared/utils/deepEquals.ts";
 import { Alert } from "src/ui/components/solutions/Alert/Alert.tsx";
+import { clsx } from "clsx";
+import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
 
 class VM {
     form: ObjectDTO | null = null;
+    tab = "works";
 
     constructor() {
         makeAutoObservable(this);
@@ -37,6 +40,7 @@ export const WorksPage = observer(() => {
     useLayoutEffect(() => {
         if (currentObj) {
             vm.form = deepCopy(currentObj);
+            worksStore.fetchWorks(currentObj.id);
         } else {
             vm.form = null;
         }
@@ -120,6 +124,49 @@ export const WorksPage = observer(() => {
                             "Планируется, что объект будет готов к сроку планового завершения"
                         }
                     />
+                </div>
+                <div className={styles.tasksArea}>
+                    <div className={styles.tasksAreaHeader}>
+                        <div
+                            className={styles.tasksAreaHeaderTab}
+                            onClick={() => {
+                                vm.tab = "works";
+                            }}
+                        >
+                            <Typo
+                                variant={"h5"}
+                                className={clsx(styles.text, vm.tab === "works" && styles.active)}
+                            >
+                                Работы
+                            </Typo>
+                            <Button
+                                iconBefore={<IconPlus />}
+                                size={"small"}
+                                mode={"neutral"}
+                                type={"primary"}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                }}
+                            />
+                        </div>
+                        <div
+                            className={styles.tasksAreaHeaderTab}
+                            onClick={() => {
+                                vm.tab = "checklists";
+                            }}
+                        >
+                            <Typo
+                                variant={"h5"}
+                                className={clsx(
+                                    styles.text,
+                                    vm.tab === "checklists" && styles.active,
+                                )}
+                            >
+                                Чек-листы
+                            </Typo>
+                            <Counter value={3} mode={"neutral"} size={"medium"} />
+                        </div>
+                    </div>
                 </div>
             </div>
             {showSaveButton && currentObj && (

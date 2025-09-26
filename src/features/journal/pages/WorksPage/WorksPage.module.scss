@@ -77,3 +77,44 @@
 
     box-shadow: 0 8px 20px 1px rgba(17, 19, 23, 0.12);
 }
+
+.tasksArea {
+    border-radius: 12px;
+    border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    background: #f9fafb;
+}
+
+.tasksAreaHeader {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+}
+
+.tasksAreaHeaderTab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    cursor: pointer;
+
+    .text {
+        opacity: 0.6;
+
+        &.active {
+            opacity: 1;
+        }
+    }
+
+    &:hover:not(:has(button:hover)) {
+        .text {
+            opacity: 0.8;
+
+            &.active {
+                opacity: 1;
+            }
+        }
+    }
+}

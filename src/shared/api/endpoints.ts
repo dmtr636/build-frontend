@@ -16,6 +16,7 @@ export const endpoints = {
     files: transformUrl("/api/files"),
     status: transformUrl("/api/admin/users/status"),
     projects: transformUrl("/api/projects"),
+    projectWorks: transformUrl("/api/projects/works"),
     violations: transformUrl("/api/projects/violations"),
     dictionaries: {
         constructionViolations: transformUrl("/api/dictionaries/construction-violations"),

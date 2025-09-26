@@ -7,6 +7,7 @@ import { WebsocketStore } from "src/features/websocket/stores/WebsocketStore.ts"
 import { RegistryStore } from "src/features/registry/RegistryStore.ts";
 import { ObjectStore } from "src/features/journal/stores/objectStore.ts";
 import { ViolationStore } from "src/features/journal/stores/violationStore.ts";
+import { WorksStore } from "src/features/journal/pages/WorksPage/ProjectWorksStore.ts";
 
 export const layoutStore = new LayoutStore();
 export const accountStore = new AccountStore();
@@ -17,6 +18,7 @@ export const websocketStore = new WebsocketStore();
 export const registryStore = new RegistryStore();
 export const objectStore = new ObjectStore();
 export const violationStore = new ViolationStore();
+export const worksStore = new WorksStore();
 export const appStore = {
     layoutStore,
     violationStore,
@@ -27,4 +29,5 @@ export const appStore = {
     websocketStore,
     registryStore,
     objectStore,
+    worksStore,
 };

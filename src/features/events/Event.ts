@@ -10,7 +10,9 @@ export interface IEvent {
         | "normative-document"
         | "construction-violation"
         | "construction-work"
-        | "construction-work-stage";
+        | "construction-work-stage"
+        | "project"
+        | "project-violation";
     objectId?: string;
     createdAt: string;
     info: Record<string, string>;

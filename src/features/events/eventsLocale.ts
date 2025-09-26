@@ -34,6 +34,12 @@ export const projectActionLocale: Record<string, string> = {
     delete: "Удаление объекта",
 };
 
+export const projectViolationActionLocale: Record<string, string> = {
+    create: "Создание нарушения",
+    update: "Редактирование нарушения",
+    delete: "Удаление нарушения",
+};
+
 export const eventActionLocale = {
     user: eventUserActionLocale,
     organization: eventOrganizationActionLocale,
@@ -43,6 +49,7 @@ export const eventActionLocale = {
     "construction-work": eventConstructionWorkActionLocale,
     "construction-work-stage": eventConstructionWorkActionLocale,
     project: projectActionLocale,
+    "project-violation": projectViolationActionLocale,
 };
 
 export const autocompleteActionLocaleOptions = Object.entries(eventActionLocale)
