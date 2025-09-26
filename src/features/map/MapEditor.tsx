@@ -90,6 +90,16 @@ function ClickToPlace({
     return null;
 }
 
+const EDIT_COLOR = "#FA0032";
+
+const polyStyle: PathOptions = {
+    color: EDIT_COLOR,
+    weight: 2,
+    dashArray: "6 4", // пунктир
+    fillOpacity: 0.1,
+    fillColor: EDIT_COLOR,
+};
+
 export const MapEditor = observer(
     ({
         value,
@@ -192,16 +202,6 @@ export const MapEditor = observer(
         const [showSatellite, setShowSatellite] = useState(false);
         const [placing, setPlacing] = useState(false);
 
-        const EDIT_COLOR = "#FA0032";
-
-        const polyStyle: PathOptions = {
-            color: EDIT_COLOR,
-            weight: 2,
-            dashArray: "6 4", // пунктир
-            fillOpacity: 0.2,
-            fillColor: "rgba(250, 0, 50, 0.15)",
-        };
-
         useEffect(() => {
             if (!polygonLayerRef.current) return;
             if (isEditingRef.current) return; // не трогаем во время живого редактирования
@@ -249,65 +249,6 @@ export const MapEditor = observer(
             [commit],
         );
 
-        // Создание/удаление полигона ИМПЕРАТИВНО, без <Polygon/>
-        // useEffect(() => {
-        //     const map = mapRef.current;
-        //     if (!map) return;
-        //
-        //     // если нет полигона — очистим слой
-        //     if (!value.polygon || value.polygon.length === 0) {
-        //         if (polygonLayerRef.current) {
-        //             polygonLayerRef.current.off();
-        //             map.removeLayer(polygonLayerRef.current);
-        //             polygonLayerRef.current = null;
-        //         }
-        //         return;
-        //     }
-        //
-        //     // создать или обновить слой
-        //     if (!polygonLayerRef.current) {
-        //         const layer = L.polygon(value.polygon, polyStyle).addTo(map);
-        //         polygonLayerRef.current = layer as L.Polygon;
-        //
-        //         // включить редактирование вершин (Leaflet.Draw internal API)
-        //         (layer as any).editing?.enable?.();
-        //
-        //         // хэндлеры редактирования
-        //         layer.on("editstart", () => {
-        //             isEditingRef.current = true;
-        //         });
-        //
-        //         // во время перетаскивания вершины — отдаём наружу «живые» координаты
-        //         layer.on("edit", () => {
-        //             const coords = toCoords((layer as any).getLatLngs());
-        //             commit({ polygon: coords });
-        //         });
-        //
-        //         // по завершении — синхронизируем слой с последним состоянием
-        //         layer.on("editend", () => {
-        //             const coords = toCoords((layer as any).getLatLngs());
-        //             isEditingRef.current = false;
-        //             (layer as any).setLatLngs(coords);
-        //             (layer as any).redraw();
-        //             commit({ polygon: coords });
-        //         });
-        //     } else if (!isEditingRef.current) {
-        //         // если пришли новые coords извне и мы НЕ редактируем — обновим слой
-        //         (polygonLayerRef.current as any).setLatLngs(value.polygon);
-        //         (polygonLayerRef.current as any).setStyle(polyStyle);
-        //         (polygonLayerRef.current as any).redraw();
-        //     } else {
-        //         // если сейчас редактируем — внешний апдейт игнорируем, чтобы не было рассинхрона
-        //     }
-        //
-        //     return () => {
-        //         // на размонтировании убираем слой
-        //         if (polygonLayerRef.current && !map.hasLayer(polygonLayerRef.current)) {
-        //             polygonLayerRef.current = null;
-        //         }
-        //     };
-        // }, [value.polygon, value.color]); // style тоже обновляем
-
         // Размер стартового квадрата ~20% меньшей стороны вьюпорта
         const viewportSquareSideMeters = useCallback((atLat: number) => {
             const map = mapRef.current;
@@ -327,52 +268,6 @@ export const MapEditor = observer(
             const poly = squareFromCenterMeters(latlng, side);
             commit({ marker: latlng, polygon: poly });
             setPlacing(false);
-        };
-
-        const teardownPolygonLayer = (map: L.Map, layer: L.Polygon) => {
-            const anyLayer = layer as any;
-
-            // 1) выключить редактирование (это удалит маркеры-вершины)
-            if (anyLayer.editing?.enabled?.()) {
-                try {
-                    anyLayer.editing.disable();
-                } catch {
-                    /* noop */
-                }
-            }
-
-            // 2) на всякий случай подчистить внутренние группы/маркеры (у разных версий по-разному)
-            try {
-                anyLayer.editing?._markerGroup?.clearLayers?.();
-            } catch {
-                /* noop */
-            }
-            try {
-                if (Array.isArray(anyLayer.editing?._markers)) {
-                    anyLayer.editing._markers.forEach((m: L.Layer) => {
-                        try {
-                            map.removeLayer(m);
-                        } catch {
-                            /* noop */
-                        }
-                    });
-                    anyLayer.editing._markers = [];
-                }
-            } catch {
-                /* noop */
-            }
-
-            // 3) снять события и убрать слой
-            try {
-                layer.off();
-            } catch {
-                /* noop */
-            }
-            try {
-                map.removeLayer(layer);
-            } catch {
-                /* noop */
-            }
         };
 
         // Храним предыдущее «пусто/не пусто»
