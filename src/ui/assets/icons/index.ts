@@ -136,6 +136,7 @@ import IconApartment from "./apartment.svg?react";
 import IconGroupBuild from "./groupBuild.svg?react";
 import IconDistance from "./distance.svg?react";
 import IconSmartDisplay from "./smart_display.svg?react";
+import IconBarChart from "./bar_chart.svg?react";
 
 export {
     IconSmartDisplay,
@@ -272,4 +273,5 @@ export {
     IconBulletedList,
     IconFlag,
     IconDistance,
+    IconBarChart,
 };

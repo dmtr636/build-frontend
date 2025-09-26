@@ -18,6 +18,7 @@ import ObjectUsersPage from "src/features/journal/pages/ObjectUsersPage/ObjectUs
 import { LocationPage } from "src/features/journal/pages/LocationPage/LocationPage.tsx";
 import DocumentsObjectPage from "src/features/journal/pages/DocumentsObjectPage/DocumentsObjectPage.tsx";
 import ViolationPage from "src/features/journal/pages/ViolationPage/ViolationPage.tsx";
+import { WorksPage } from "src/features/journal/pages/WorksPage/WorksPage.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -50,7 +51,7 @@ export const appRoutes: RouteObject[] = [
                     { path: "review", element: <></> },
                     { path: "about", element: <AboutObjectPage /> },
                     { path: "docs", element: <DocumentsObjectPage /> },
-                    { path: "status", element: <></> },
+                    { path: "status", element: <WorksPage /> },
                     { path: "location", element: <LocationPage /> },
                     { path: "users", element: <ObjectUsersPage /> },
                     { path: "materials", element: <></> },
