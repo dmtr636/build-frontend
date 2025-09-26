@@ -27,6 +27,7 @@ import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { clsx } from "clsx";
 import { Select } from "src/ui/components/inputs/Select/Select.tsx";
 import { observer } from "mobx-react-lite";
+import { ButtonSize } from "src/ui/components/controls/Button/Button.types.ts";
 
 const defaultImageFormats = ["png", "jpg", "jpeg", "webp", "gif"];
 const defaultVideoFormats = ["mp4", "webm", "ogg"];
@@ -50,6 +51,7 @@ export const Media = observer(
         plusPlaceholder?: boolean;
         readonly?: boolean;
         docChange?: boolean;
+        buttonSize?: ButtonSize;
     }) => {
         const fileInputRef = useRef<HTMLInputElement>(null);
         const [showOverlay, setShowOverlay] = useState(false);
@@ -249,7 +251,7 @@ export const Media = observer(
                         onMouseLeave={() => setHover(false)}
                     >
                         <Button
-                            size={"large"}
+                            size={props.buttonSize ?? "large"}
                             fullWidth={true}
                             type={props.docChange ? "text" : "primary"}
                             iconBefore={props.docChange && <IconSwap />}

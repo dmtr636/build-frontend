@@ -269,6 +269,50 @@ const DocumentsObjectPage = observer(() => {
 
         return sorted;
     }, [documentList, value, groups, date, sortOption]);
+    const onClose = () => {
+        setFileId(null);
+        setFileData(null);
+        setCurrentDocName("");
+        setCurrentGroup(null);
+        setOpenOverlay(false);
+    };
+    if (documentList?.length === 0 && !openOverlay) {
+        return (
+            <div className={styles.container}>
+                <Helmet>
+                    <title>Объекты – Build</title>
+                </Helmet>
+                <div className={styles.noDocs}>
+                    <div className={styles.textNoDocs}>
+                        <IconDocument />
+                        Пока документы <br /> не добавлены
+                    </div>
+                    <Media
+                        type={"doc"}
+                        buttonSize={"small"}
+                        style={{ height: 36, width: 298, marginBottom: 60 }}
+                        onSelectFile={async (file) => {
+                            setFileData(file);
+                            const imageId = await appStore.accountStore.uploadMediaFile(
+                                file,
+                                "PROJECT_DOCUMENT",
+                            );
+
+                            setFileId(imageId);
+                            if (file) {
+                                setOpenOverlay(true);
+                                setCurrentDocName(file.name);
+                            }
+                        }}
+                        onRemoveFile={() => {
+                            setFileId(null);
+                        }}
+                        maxSizeMB={100}
+                    ></Media>
+                </div>
+            </div>
+        );
+    }
     return (
         <div className={styles.container}>
             <Helmet>
@@ -468,7 +512,12 @@ const DocumentsObjectPage = observer(() => {
                             }}
                             maxSizeMB={100}
                         />
-                        <Button style={{ marginLeft: "auto" }} type={"secondary"} mode={"neutral"}>
+                        <Button
+                            style={{ marginLeft: "auto" }}
+                            type={"secondary"}
+                            mode={"neutral"}
+                            onClick={onClose}
+                        >
                             Отмена
                         </Button>{" "}
                         <Button onClick={onClick} mode={"neutral"}>
