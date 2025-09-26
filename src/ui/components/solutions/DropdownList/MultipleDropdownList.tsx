@@ -26,6 +26,7 @@ export interface MultipleDropdownListProps<T>
     size?: DropdownListSize;
     multiple: true;
     footer?: ReactNode;
+    zIndex?: number;
     footerNoPadding?: boolean;
 }
 

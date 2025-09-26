@@ -21,8 +21,8 @@
     align-self: flex-start;
 
     /* @media screen and (min-width: 1500px) {
-     width: 506px;
-   }*/
+   width: 506px;
+ }*/
 }
 
 .userlistBlock {
@@ -72,4 +72,28 @@
 .tabs {
     display: flex;
     gap: 8px;
+}
+
+.noViolContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.noViol {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    color: var(--objects-text-brand-expfolio-primary, #184d28);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.32px;
 }

@@ -32,6 +32,7 @@ export interface DatePickerProps
     readonly?: boolean;
     disabled?: boolean;
     width?: CSSProperties["width"];
+    zIndex?: number;
 }
 
 export const DatePicker = (props: DatePickerProps) => {
@@ -49,6 +50,7 @@ export const DatePicker = (props: DatePickerProps) => {
         manualInput,
         disableClear,
         readonly,
+        zIndex,
         disabled,
     }: DatePickerProps = props;
     const [showCalendar, setShowCalendar] = useState(false);
@@ -113,6 +115,7 @@ export const DatePicker = (props: DatePickerProps) => {
     return (
         <PopoverBase
             mode={"contrast"}
+            zIndex={zIndex}
             triggerEvent={manualInput || readonly || disabled ? "none" : "click"}
             content={
                 <Calendar

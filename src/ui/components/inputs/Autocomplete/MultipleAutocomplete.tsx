@@ -33,6 +33,7 @@ export interface MultipleAutocompleteProps {
     brand?: boolean;
     fullWidth?: boolean;
     tipPosition?: TipPosition;
+    zIndex?: number;
 }
 
 export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
@@ -134,6 +135,7 @@ export const MultipleAutocomplete = (props: MultipleAutocompleteProps) => {
             multiple={true}
             footer={renderFooter()}
             closeOnSecondClick={false}
+            zIndex={props.zIndex}
             tipPosition={tipPosition}
         >
             <Input
