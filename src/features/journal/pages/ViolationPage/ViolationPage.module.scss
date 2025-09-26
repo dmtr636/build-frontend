@@ -1,0 +1,75 @@
+.container {
+    width: 1240px;
+    display: flex;
+    margin-top: 40px;
+    gap: 24px;
+    position: relative;
+    /*height: calc(100vh - 100px);*/
+
+    @media screen and (min-width: 1500px) {
+        width: 1440px;
+    }
+}
+
+.filterBlock {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: sticky;
+    top: 140px;
+    align-self: flex-start;
+
+    /* @media screen and (min-width: 1500px) {
+     width: 506px;
+   }*/
+}
+
+.userlistBlock {
+    width: 818px;
+    @media screen and (min-width: 1500px) {
+        width: 994px;
+    }
+}
+
+.sortContainer {
+    display: flex;
+    gap: 12px;
+    position: sticky;
+    top: 160px;
+    align-self: flex-start;
+}
+
+.renderHeader {
+    color: var(--text-neutral-primary, #111317);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 19.2px */
+    padding: 12.5px 16px;
+}
+
+.filterContainer {
+    padding: 20px 24px 28px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 12px;
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
+}
+
+.filterHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--objects-text-neutral-tertiary, #444d5f);
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+    height: 28px;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+}

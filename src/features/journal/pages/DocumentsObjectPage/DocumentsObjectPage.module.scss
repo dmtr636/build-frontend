@@ -105,6 +105,47 @@
 .buttonsOverlay {
     display: flex;
     margin-top: 80px;
-    margin-left: auto;
+    /*
+  margin-left: auto;
+  */
     gap: 12px;
+}
+
+.noDocs {
+    width: 100%;
+    height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 60px;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.textNoDocs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    color: var(--text-neutral-secondary, #2c313a);
+    text-align: center;
+
+    /* Action/XL */
+    font-family: Manrope;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.32px;
+
+    svg {
+        opacity: 0.4;
+        width: 48px;
+        height: 48px;
+
+        path {
+            fill: #5f6a81;
+        }
+    }
 }
