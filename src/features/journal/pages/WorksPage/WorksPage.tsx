@@ -86,7 +86,7 @@ export const WorksPage = observer(() => {
                                     Плановое начало работ
                                 </Typo>
                                 <Typo variant={"bodyM"}>
-                                    {formatDate(vm.form?.plannedPeriod.start ?? "")}
+                                    {formatDate(vm.form?.plannedPeriod?.start ?? "") || "-"}
                                 </Typo>
                             </div>
                         </div>
@@ -95,7 +95,7 @@ export const WorksPage = observer(() => {
                                 Плановое завершение
                             </Typo>
                             <Typo variant={"bodyM"}>
-                                {formatDate(vm.form?.plannedPeriod.end ?? "")}
+                                {formatDate(vm.form?.plannedPeriod?.end ?? "") || "-"}
                             </Typo>
                         </div>
                     </div>

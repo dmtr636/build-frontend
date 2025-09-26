@@ -4,9 +4,7 @@ import styles from "./EventsPage.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { IconClose, IconError } from "src/ui/assets/icons";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
-import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
-import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import {
     appStore,
     eventsStore,
@@ -15,7 +13,6 @@ import {
     registryStore,
     userStore,
 } from "src/app/AppStore.ts";
-import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { ExplorationInput } from "src/ui/components/segments/Exploration/ExplorationInput.tsx";
 import { Table } from "src/ui/components/segments/Table/Table.tsx";
 import { IEvent } from "src/features/events/Event.ts";
@@ -23,11 +20,10 @@ import { getNameInitials } from "src/shared/utils/getFullName.ts";
 import {
     autocompleteActionLocaleOptions,
     eventActionLocale,
-    eventUserActionLocale,
 } from "src/features/events/eventsLocale.ts";
 import { Tabs } from "src/ui/components/solutions/Tabs/Tabs.tsx";
 import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
-import { formatDate, formatDateShort, formatTime } from "src/shared/utils/date.ts";
+import { formatDateShort, formatTime } from "src/shared/utils/date.ts";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
 import { Chip } from "src/ui/components/controls/Chip/Chip.tsx";

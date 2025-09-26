@@ -1,4 +1,5 @@
-export const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString();
+export const formatDate = (dateStr: string) =>
+    dateStr ? new Date(dateStr).toLocaleDateString() : "";
 
 export const formatDateShort = (dateStr?: string): string => {
     if (!dateStr) {
