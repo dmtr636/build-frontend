@@ -14,7 +14,7 @@ import {
 } from "src/ui/assets/icons";
 import { observer } from "mobx-react-lite";
 import { useParams } from "react-router-dom";
-import { appStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore } from "src/app/AppStore.ts";
 import { Helmet } from "react-helmet";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
@@ -32,7 +32,23 @@ import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
 import { ProjectDocumentDTO, UpdateProjectDTO } from "src/features/journal/types/Object.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { clsx } from "clsx";
 
+function pluralizeDocuments(count: number): string {
+    const absCount = Math.abs(count) % 100;
+    const lastDigit = absCount % 10;
+
+    if (absCount > 10 && absCount < 20) {
+        return `${count} документов`;
+    }
+    if (lastDigit > 1 && lastDigit < 5) {
+        return `${count} документа`;
+    }
+    if (lastDigit === 1) {
+        return `${count} документ`;
+    }
+    return `${count} документов`;
+}
 const DocumentsObjectPage = observer(() => {
     const { id } = useParams();
     const object = appStore.objectStore.ObjectMap.get(id ?? "");
@@ -435,16 +451,44 @@ const DocumentsObjectPage = observer(() => {
                                     iconBefore={sortIsOpen ? <IconClose /> : <IconSorting />}
                                     type={sortIsOpen ? "primary" : "outlined"}
                                     mode={"neutral"}
-                                ></Button>
+                                />
                             </SingleDropdownList>
                         </div>
                     </div>
-                    <div style={{ marginTop: 12 }}></div>
-                    <DocumentList
-                        documentList={filteredDocuments}
-                        sort={sortOption}
-                        object={object as any}
-                    />
+
+                    <div
+                        className={clsx(styles.containerHeader, {
+                            [styles.windowScrolled]: layoutStore.scrolled,
+                        })}
+                    >
+                        {documentList && documentList.length > 0 && (
+                            <div className={styles.headFilters}>
+                                <div className={styles.count}>
+                                    <span style={{ opacity: 0.6 }}>Отображается</span>
+                                    <span className={styles.countItem}>
+                                        {pluralizeDocuments(documentList.length)}
+                                    </span>
+                                </div>
+
+                                <div className={styles.count} style={{ marginLeft: "auto" }}>
+                                    <span style={{ opacity: 0.6 }}>Сортируется</span>
+                                    <span className={styles.countItem}>{sortOption.label}</span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* {chipArray && chipArray?.length > 0 && (
+                            <div className={styles.chipsArray}>{chipArray}</div>
+                        )}*/}
+                    </div>
+
+                    <div className={clsx(styles.containerList)}>
+                        <DocumentList
+                            documentList={filteredDocuments}
+                            sort={sortOption}
+                            object={object as any}
+                        />
+                    </div>
                 </div>
             </div>
             <Overlay
