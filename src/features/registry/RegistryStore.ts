@@ -190,6 +190,10 @@ export class RegistryStore {
         return new Map(this.works.map((work) => [work.id, work]));
     }
 
+    get worksNameMap() {
+        return new Map(this.works.map((work) => [work.name, work]));
+    }
+
     async fetchAllDocuments() {
         this.loading = true;
         const response = await this.apiClient.get<NormativeDocument[]>(

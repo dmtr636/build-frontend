@@ -76,7 +76,7 @@ export const Calendar = memo((props: CalendarProps) => {
                 minutes,
             );
             setSelectedDate(newDate);
-            onChange(newDate.toISOString(), "timeInput");
+            onChange(newDate.toISOString().replace(/\.\d{3}Z$/, "Z"), "timeInput");
         }
     }, [time]);
 
@@ -202,7 +202,7 @@ export const Calendar = memo((props: CalendarProps) => {
                                 selectedDate.getMinutes(),
                             );
                             setSelectedDate(newDate);
-                            onChange(newDate.toISOString(), "clickDay");
+                            onChange(newDate.toISOString().replace(/\.\d{3}Z$/, "Z"), "clickDay");
                         }}
                         disabled={
                             (disablePast && new Date(year, month, day + 1) < todayDate) ||
