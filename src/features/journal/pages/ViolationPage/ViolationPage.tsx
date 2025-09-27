@@ -40,7 +40,13 @@ const ViolationPage = observer(() => {
             appStore.violationStore.fetchViolationByObj(id);
         }
     }, [id]);
-
+    const resetFilters = () => {
+        setView([]);
+        setAuthor([]);
+        setDateFilter(null);
+        setCategory([]);
+        setType([]);
+    };
     return (
         <div className={styles.container}>
             <Helmet>
@@ -75,11 +81,13 @@ const ViolationPage = observer(() => {
                 <div className={styles.filterContainer}>
                     <div className={styles.filterHead}>
                         <span style={{ opacity: 0.6 }}>Фильтры</span>
-                        {true && (
+                        {(dateFilter ||
+                            category.length > 0 ||
+                            view.length > 0 ||
+                            type.length > 0 ||
+                            author.length > 0) && (
                             <Button
-                                /*
-                                                                onClick={resetFilters}
-                                */
+                                onClick={resetFilters}
                                 size={"tiny"}
                                 type={"outlined"}
                                 mode={"neutral"}

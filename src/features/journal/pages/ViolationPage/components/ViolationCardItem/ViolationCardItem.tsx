@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { ProjectViolationDTO } from "src/features/journal/types/Violation.ts";
 import styles from "./ViolationCardItem.module.scss";
 import {
@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
+import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
 
 interface ViolationCardItemProps {
     violation: ProjectViolationDTO;
@@ -54,7 +55,6 @@ function formatDateTime(dateString: string): { date: string; time: string } {
 function getShortName(fullName: string): string {
     const parts = fullName.trim().split(/\s+/); // разделяем по пробелам
     const [lastName = "", firstName = "", patronymic = ""] = parts;
-
     const firstInitial = firstName ? `${firstName[0].toUpperCase()}.` : "";
     const patronymicInitial = patronymic ? `${patronymic[0].toUpperCase()}.` : "";
 
@@ -62,6 +62,8 @@ function getShortName(fullName: string): string {
 }
 
 const ViolationCardItem = observer(({ violation }: ViolationCardItemProps) => {
+    const [open, setOpen] = useState(false);
+
     const renderStatusButton = useMemo(() => {
         switch (violation?.status) {
             case "TODO":
@@ -220,6 +222,7 @@ const ViolationCardItem = observer(({ violation }: ViolationCardItemProps) => {
                     Комментарии
                 </Button>
                 <Button
+                    onClick={() => setOpen(true)}
                     type={"outlined"}
                     mode={"neutral"}
                     size={"small"}
@@ -233,6 +236,12 @@ const ViolationCardItem = observer(({ violation }: ViolationCardItemProps) => {
                     <IconNext />
                 </ButtonIcon>
             </div>
+            <AddViolationOverlay
+                open={open}
+                setOpen={setOpen}
+                editingViolation={violation}
+                isEditing={true}
+            />
         </div>
     );
 });
