@@ -94,8 +94,6 @@
     color: var(--objects-text-neutral-tertiary, #444d5f);
     text-align: center;
 
-    /* Subhead/XL */
-    font-family: Manrope;
     font-size: 17px;
     font-style: normal;
     font-weight: 600;
@@ -164,11 +162,11 @@ margin-left: 8px;
     background-color: white;
     z-index: 2;
 
-    &.scrolled {
+    /*&.scrolled {
         padding-bottom: 8px;
         border-box: none;
         margin-bottom: 12px;
-    }
+    }*/
 
     &.windowScrolled {
         &::after {
