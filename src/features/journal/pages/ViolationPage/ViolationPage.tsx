@@ -16,6 +16,7 @@ import { observer } from "mobx-react-lite";
 import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
 import ViolationList from "src/features/journal/pages/ViolationPage/components/ViolationList/ViolationList.tsx";
 import { IconVeryHappy } from "src/features/journal/pages/ViolationPage/assets";
+import ViolationCard from "src/features/journal/pages/ViolationPage/components/ViolationCard/ViolationCard.tsx";
 
 const ViolationPage = observer(() => {
     const loginUser = appStore.accountStore.currentUser;
@@ -211,6 +212,9 @@ const ViolationPage = observer(() => {
                         </div>
                     </div>
                 )}
+            </div>
+            <div className={styles.violationCard}>
+                {/*  <ViolationCard violation={violations[0]} />*/}
             </div>
             <AddViolationOverlay
                 object={object}
