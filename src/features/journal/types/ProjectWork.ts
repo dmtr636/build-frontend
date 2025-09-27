@@ -25,5 +25,5 @@ export interface ProjectWorkStage {
     name: string;
     orderNumber: number;
     status: string;
-    date: string;
+    date: string | null;
 }

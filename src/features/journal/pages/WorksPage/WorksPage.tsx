@@ -1,9 +1,9 @@
 import { observer } from "mobx-react-lite";
 import styles from "./WorksPage.module.scss";
-import { IconBarChart, IconPlus, IconSuccess } from "src/ui/assets/icons";
+import { IconBarChart, IconClose, IconPlus, IconSuccess } from "src/ui/assets/icons";
 import React, { useEffect, useLayoutEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { appStore, objectStore, worksStore } from "src/app/AppStore.ts";
+import { appStore, objectStore, registryStore, worksStore } from "src/app/AppStore.ts";
 import { makeAutoObservable } from "mobx";
 import { ObjectDTO } from "src/features/journal/types/Object.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
@@ -13,7 +13,6 @@ import {
     IconBuildClock,
     IconHardware,
 } from "src/features/journal/components/JournalItemCard/assets";
-import { icon } from "leaflet";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { formatDate } from "src/shared/utils/date.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
@@ -22,13 +21,37 @@ import { deepEquals } from "src/shared/utils/deepEquals.ts";
 import { Alert } from "src/ui/components/solutions/Alert/Alert.tsx";
 import { clsx } from "clsx";
 import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
+import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
+import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
+import { ProjectWork, ProjectWorkStage } from "src/features/journal/types/ProjectWork.ts";
+import { Flex } from "src/ui/components/atoms/Flex/Flex";
+import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
+import { Input } from "src/ui/components/inputs/Input/Input.tsx";
+import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
+import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
+import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 
 class VM {
     form: ObjectDTO | null = null;
     tab = "works";
+    showAddOverlay = false;
+    addForm: Partial<ProjectWork> = {};
+    addFormUnit = "";
 
     constructor() {
         makeAutoObservable(this);
+    }
+
+    get workOptions() {
+        const names = registryStore.works.map((work) => work.name);
+        const set = new Set(names);
+        if (this.addForm.name) {
+            set.add(this.addForm.name);
+        }
+        return [...set].map((name) => ({
+            name: name,
+            value: name,
+        }));
     }
 }
 
@@ -45,6 +68,28 @@ export const WorksPage = observer(() => {
             vm.form = null;
         }
     }, [currentObj]);
+
+    useEffect(() => {
+        if (!vm.addForm.name) {
+            return;
+        }
+        const workFromRegistry = registryStore.worksNameMap.get(vm.addForm.name ?? "");
+        if (workFromRegistry) {
+            registryStore.fetchStages(workFromRegistry.id).then(() => {
+                if (registryStore.workStages?.length) {
+                    vm.addForm.stages = registryStore.workStages.map((stage) => ({
+                        id: crypto.randomUUID(),
+                        name: stage.stageName,
+                        status: "IN_PROGRESS",
+                        orderNumber: stage.stageNumber,
+                        date: null,
+                    }));
+                } else {
+                    vm.addForm.stages = [];
+                }
+            });
+        }
+    }, [vm.addForm.name]);
 
     const statusOptions: SelectOption<string>[] = [
         { name: "Ожидание", value: "AWAIT", listItemIcon: <IconBuildClock /> },
@@ -146,6 +191,16 @@ export const WorksPage = observer(() => {
                                 type={"primary"}
                                 onClick={(event) => {
                                     event.stopPropagation();
+                                    vm.addForm = {};
+                                    vm.addForm.workVersion = {
+                                        workId: "",
+                                        active: true,
+                                        startDate: "",
+                                        endDate: "",
+                                        versionNumber: 1,
+                                    };
+                                    vm.addForm.projectId = currentObj?.id ?? "";
+                                    vm.showAddOverlay = true;
                                 }}
                             />
                         </div>
@@ -166,6 +221,59 @@ export const WorksPage = observer(() => {
                             </Typo>
                             <Counter value={3} mode={"neutral"} size={"medium"} />
                         </div>
+                    </div>
+                    <div className={styles.tasksAreaContent}>
+                        {!!worksStore.worksOnCheck.length && (
+                            <Typo
+                                variant={"subheadM"}
+                                type={"tertiary"}
+                                mode={"neutral"}
+                                style={{ marginBottom: 8, marginTop: 16 }}
+                            >
+                                На проверке у службы строительного контроля
+                            </Typo>
+                        )}
+                        {!!worksStore.worksOnCheck.length && (
+                            <FlexColumn gap={20}>
+                                {worksStore.worksOnCheck.map((item) => (
+                                    <WorkCard work={item} key={item.id} />
+                                ))}
+                            </FlexColumn>
+                        )}
+                        {!!worksStore.worksInProgress.length && (
+                            <Typo
+                                variant={"subheadM"}
+                                type={"tertiary"}
+                                mode={"neutral"}
+                                style={{ marginBottom: 8, marginTop: 16 }}
+                            >
+                                В процессе
+                            </Typo>
+                        )}
+                        {!!worksStore.worksInProgress.length && (
+                            <FlexColumn gap={20}>
+                                {worksStore.worksInProgress.map((item) => (
+                                    <WorkCard work={item} key={item.id} />
+                                ))}
+                            </FlexColumn>
+                        )}
+                        {!!worksStore.finishedWorks.length && (
+                            <Typo
+                                variant={"subheadM"}
+                                type={"tertiary"}
+                                mode={"neutral"}
+                                style={{ marginBottom: 8, marginTop: 16 }}
+                            >
+                                Завершённые
+                            </Typo>
+                        )}
+                        {!!worksStore.finishedWorks.length && (
+                            <FlexColumn gap={20}>
+                                {worksStore.finishedWorks.map((item) => (
+                                    <WorkCard work={item} key={item.id} />
+                                ))}
+                            </FlexColumn>
+                        )}
                     </div>
                 </div>
             </div>
@@ -201,6 +309,209 @@ export const WorksPage = observer(() => {
                     </div>
                 </div>
             )}
+            {vm.showAddOverlay && (
+                <Overlay
+                    title={"Добавить работу"}
+                    open={vm.showAddOverlay}
+                    onClose={() => (vm.showAddOverlay = false)}
+                    actions={[
+                        <Flex justify={"end"} gap={16} key={"0"}>
+                            <Button
+                                mode={"neutral"}
+                                type={"secondary"}
+                                onClick={() => {
+                                    vm.showAddOverlay = false;
+                                    vm.addForm = {};
+                                }}
+                            >
+                                Отмена
+                            </Button>
+                            <Button
+                                loading={worksStore.loading}
+                                disabled={
+                                    !vm.addForm.name ||
+                                    !vm.addForm.plannedVolume ||
+                                    !vm.addForm.workVersion?.startDate ||
+                                    !vm.addForm.workVersion.endDate
+                                }
+                                mode={"neutral"}
+                                type={"primary"}
+                                onClick={async () => {
+                                    vm.addForm.stages = vm.addForm.stages?.filter(
+                                        (stage) => !!stage.name,
+                                    );
+                                    vm.addForm.stages?.forEach((stage, index) => {
+                                        stage.orderNumber = index + 1;
+                                    });
+                                    const result = await worksStore.createWork(vm.addForm);
+                                    if (result) {
+                                        snackbarStore.showNeutralPositiveSnackbar(
+                                            "Работа добавлена",
+                                        );
+                                        vm.showAddOverlay = false;
+                                    }
+                                }}
+                            >
+                                Добавить
+                            </Button>
+                        </Flex>,
+                    ]}
+                    styles={{
+                        card: {
+                            width: 564,
+                        },
+                    }}
+                >
+                    <FlexColumn gap={16}>
+                        <Autocomplete
+                            options={vm.workOptions}
+                            value={vm.addForm?.name}
+                            onValueChange={(value) => {
+                                const workFromRegistry = registryStore.worksNameMap.get(
+                                    value ?? "",
+                                );
+                                if (workFromRegistry) {
+                                    vm.addFormUnit = workFromRegistry.unit ?? "";
+                                } else {
+                                    vm.addFormUnit = "";
+                                }
+                                vm.addForm.name = value || undefined;
+                            }}
+                            size={"large"}
+                            addButtonLabel={"Добавить"}
+                            onAddButtonClick={(value) => {
+                                vm.addForm.name = value;
+                            }}
+                            zIndex={100}
+                            placeholder={"Введите или выберите из списка"}
+                            formName={"Наименование работы"}
+                            required={true}
+                        />
+                        <Input
+                            onChange={(event) => {
+                                vm.addForm.plannedVolume = event.target.value
+                                    ? Number(event.target.value)
+                                    : undefined;
+                            }}
+                            value={vm.addForm.plannedVolume}
+                            size={"large"}
+                            placeholder={"Введите число"}
+                            formName={`План${vm.addFormUnit ? ` (${vm.addFormUnit.toLowerCase()})` : ""}`}
+                            number={true}
+                            required={true}
+                        />
+                        {!!registryStore.workStages?.length &&
+                            registryStore.worksNameMap.has(vm.addForm.name ?? "") && (
+                                <div className={styles.stages}>
+                                    <Typo variant={"subheadXL"}>Этапы</Typo>
+                                    {vm.addForm.stages?.map((stage) => (
+                                        <WorkStageRow
+                                            key={stage.id}
+                                            workStage={stage}
+                                            onDelete={() => {
+                                                vm.addForm.stages = vm.addForm.stages?.filter(
+                                                    (_stage) => _stage.id !== stage.id,
+                                                );
+                                                vm.addForm.stages?.forEach((stage, index) => {
+                                                    stage.orderNumber = index + 1;
+                                                });
+                                            }}
+                                        />
+                                    ))}
+                                    <div>
+                                        <Button
+                                            type={"text"}
+                                            iconBefore={<IconPlus />}
+                                            onClick={() => {
+                                                if (!vm.addForm.stages) {
+                                                    vm.addForm.stages = [];
+                                                }
+                                                vm.addForm.stages?.push({
+                                                    id: crypto.randomUUID(),
+                                                    orderNumber: vm.addForm.stages.length + 1,
+                                                    name: "",
+                                                    date: null,
+                                                    status: "IN_PROGRESS",
+                                                });
+                                            }}
+                                        >
+                                            Добавить этап
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        <Grid gap={16} columns={"1fr 1fr"}>
+                            <DatePicker
+                                value={vm.addForm.workVersion?.startDate ?? null}
+                                onChange={(value) => {
+                                    if (!vm.addForm.workVersion) {
+                                        return;
+                                    }
+                                    vm.addForm.workVersion.startDate = value ?? "";
+                                }}
+                                disableTime={true}
+                                size={"large"}
+                                formName={"Начало исполнения"}
+                                width={242}
+                                zIndex={100}
+                                required={true}
+                            />
+                            <DatePicker
+                                value={vm.addForm.workVersion?.endDate ?? null}
+                                onChange={(value) => {
+                                    console.log(value);
+                                    if (!vm.addForm.workVersion) {
+                                        return;
+                                    }
+                                    vm.addForm.workVersion.endDate = value ?? "";
+                                }}
+                                disableTime={true}
+                                size={"large"}
+                                formName={"Завершение"}
+                                width={242}
+                                zIndex={100}
+                                required={true}
+                            />
+                        </Grid>
+                    </FlexColumn>
+                </Overlay>
+            )}
         </div>
     );
+});
+
+export const WorkStageRow = observer(
+    (props: { workStage: ProjectWorkStage; onDelete: () => void }) => {
+        return (
+            <Grid columns={"12px 1fr auto"} gap={12} align={"center"}>
+                <Typo
+                    variant={"actionL"}
+                    style={{
+                        textAlign: "center",
+                    }}
+                >
+                    {props.workStage.orderNumber}
+                </Typo>
+                <Input
+                    onChange={(event) => {
+                        props.workStage.name = event.target.value;
+                    }}
+                    value={props.workStage.name}
+                    placeholder={"Введите описание этапа"}
+                />
+                <Tooltip header={"Удалить этап"} delay={500}>
+                    <Button
+                        type={"outlined"}
+                        mode={"neutral"}
+                        iconBefore={<IconClose />}
+                        onClick={props.onDelete}
+                    />
+                </Tooltip>
+            </Grid>
+        );
+    },
+);
+
+export const WorkCard = observer((props: { work: ProjectWork }) => {
+    return <div className={styles.workCard}>{props.work.name}</div>;
 });

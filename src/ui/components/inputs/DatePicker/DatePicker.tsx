@@ -141,11 +141,9 @@ export const DatePicker = (props: DatePickerProps) => {
                         if (isValidFullDate(event.target.value)) {
                             const [day, month, year] = event.target.value.split(".");
                             handleChange(
-                                new Date(
-                                    Number(year),
-                                    Number(month) - 1,
-                                    Number(day),
-                                ).toISOString(),
+                                new Date(Number(year), Number(month) - 1, Number(day))
+                                    .toISOString()
+                                    .replace(/\.\d{3}Z$/, "Z"),
                             );
                         }
                     }

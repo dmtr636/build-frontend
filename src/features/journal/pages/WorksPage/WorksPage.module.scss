@@ -118,3 +118,24 @@
         }
     }
 }
+
+.tasksAreaContent {
+    overflow-y: auto;
+    max-height: calc(min(633px, 100vh - 173px));
+    padding: 0 24px 16px 24px;
+}
+
+.stages {
+    border-radius: 8px;
+    background: #f3f4f7;
+    display: flex;
+    padding: 12px 16px 16px 16px;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.workCard {
+    border-radius: 10px;
+    border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    background: var(--objects-background-contrast-primary, #fff);
+}
