@@ -1,7 +1,14 @@
 import { observer } from "mobx-react-lite";
 import styles from "./WorksPage.module.scss";
-import { IconBarChart, IconClose, IconPlus, IconSuccess } from "src/ui/assets/icons";
-import React, { useEffect, useLayoutEffect, useMemo } from "react";
+import {
+    IconArrowUp,
+    IconBarChart,
+    IconClose,
+    IconEdit,
+    IconPlus,
+    IconSuccess,
+} from "src/ui/assets/icons";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { appStore, objectStore, registryStore, worksStore } from "src/app/AppStore.ts";
 import { makeAutoObservable } from "mobx";
@@ -30,11 +37,18 @@ import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
+import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
+import CircularProgress from "src/features/journal/pages/WorksPage/components/CircularProgress.tsx";
+import { Divider } from "src/ui/components/atoms/Divider/Divider.tsx";
+import { Spacing } from "src/ui/components/atoms/Spacing/Spacing.tsx";
 
 class VM {
     form: ObjectDTO | null = null;
     tab = "works";
     showAddOverlay = false;
+    showEditOverlay = false;
+    editingWork: ProjectWork | null = null;
+    editForm: ProjectWork | null = null;
     addForm: Partial<ProjectWork> = {};
     addFormUnit = "";
 
@@ -54,6 +68,12 @@ class VM {
         }));
     }
 }
+
+const unitMap: Record<string, string> = {
+    "Квадратный метр": "кв.м",
+    "Погонный метр": "п.м",
+    Штука: "шт",
+};
 
 export const WorksPage = observer(() => {
     const { id } = useParams();
@@ -103,6 +123,21 @@ export const WorksPage = observer(() => {
 
     const showSaveButton = !deepEquals(vm.form, currentObj);
 
+    const tasksAreaContentRef = useRef<HTMLDivElement | null>(null);
+    const [showGradient, setShowGradient] = useState(false);
+
+    useEffect(() => {
+        if (tasksAreaContentRef.current) {
+            setShowGradient(
+                tasksAreaContentRef.current.scrollHeight >
+                    tasksAreaContentRef.current.clientHeight &&
+                    tasksAreaContentRef.current.scrollTop <
+                        tasksAreaContentRef.current.scrollHeight -
+                            tasksAreaContentRef.current.clientHeight,
+            );
+        }
+    }, [tasksAreaContentRef]);
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -146,13 +181,11 @@ export const WorksPage = observer(() => {
                     </div>
                     <div className={styles.leftColCard}>
                         <Select
-                            options={[
-                                {
-                                    name: "26.09.2025",
-                                    value: "26.09.2025",
-                                },
-                            ]}
-                            value={"26.09.2025"}
+                            options={worksStore.workVersions.map((version) => ({
+                                name: formatDate(version.createdAt),
+                                value: version.versionNumber,
+                            }))}
+                            value={worksStore.currentWorkVersion}
                             formName={"Версия графика"}
                             size={"large"}
                             onValueChange={(value) => {
@@ -198,6 +231,7 @@ export const WorksPage = observer(() => {
                                         startDate: "",
                                         endDate: "",
                                         versionNumber: 1,
+                                        createdAt: "",
                                     };
                                     vm.addForm.projectId = currentObj?.id ?? "";
                                     vm.showAddOverlay = true;
@@ -222,8 +256,23 @@ export const WorksPage = observer(() => {
                             <Counter value={3} mode={"neutral"} size={"medium"} />
                         </div>
                     </div>
-                    <div className={styles.tasksAreaContent}>
-                        {!!worksStore.worksOnCheck.length && (
+                    <div
+                        className={styles.tasksAreaContent}
+                        ref={tasksAreaContentRef}
+                        onScroll={() => {
+                            if (!tasksAreaContentRef.current) {
+                                return;
+                            }
+                            setShowGradient(
+                                tasksAreaContentRef.current.scrollHeight >
+                                    tasksAreaContentRef.current.clientHeight &&
+                                    tasksAreaContentRef.current.scrollTop <
+                                        tasksAreaContentRef.current.scrollHeight -
+                                            tasksAreaContentRef.current.clientHeight,
+                            );
+                        }}
+                    >
+                        {!!worksStore.worksFormOnCheck.length && (
                             <Typo
                                 variant={"subheadM"}
                                 type={"tertiary"}
@@ -233,14 +282,14 @@ export const WorksPage = observer(() => {
                                 На проверке у службы строительного контроля
                             </Typo>
                         )}
-                        {!!worksStore.worksOnCheck.length && (
+                        {!!worksStore.worksFormOnCheck.length && (
                             <FlexColumn gap={20}>
-                                {worksStore.worksOnCheck.map((item) => (
-                                    <WorkCard work={item} key={item.id} />
+                                {worksStore.worksFormOnCheck.map((item) => (
+                                    <WorkCard work={item} key={item.id} vm={vm} />
                                 ))}
                             </FlexColumn>
                         )}
-                        {!!worksStore.worksInProgress.length && (
+                        {!!worksStore.worksFormInProgress.length && (
                             <Typo
                                 variant={"subheadM"}
                                 type={"tertiary"}
@@ -250,14 +299,14 @@ export const WorksPage = observer(() => {
                                 В процессе
                             </Typo>
                         )}
-                        {!!worksStore.worksInProgress.length && (
+                        {!!worksStore.worksFormInProgress.length && (
                             <FlexColumn gap={20}>
-                                {worksStore.worksInProgress.map((item) => (
-                                    <WorkCard work={item} key={item.id} />
+                                {worksStore.worksFormInProgress.map((item) => (
+                                    <WorkCard work={item} key={item.id} vm={vm} />
                                 ))}
                             </FlexColumn>
                         )}
-                        {!!worksStore.finishedWorks.length && (
+                        {!!worksStore.finishedWorksForm.length && (
                             <Typo
                                 variant={"subheadM"}
                                 type={"tertiary"}
@@ -267,14 +316,15 @@ export const WorksPage = observer(() => {
                                 Завершённые
                             </Typo>
                         )}
-                        {!!worksStore.finishedWorks.length && (
+                        {!!worksStore.finishedWorksForm.length && (
                             <FlexColumn gap={20}>
-                                {worksStore.finishedWorks.map((item) => (
-                                    <WorkCard work={item} key={item.id} />
+                                {worksStore.finishedWorksForm.map((item) => (
+                                    <WorkCard work={item} key={item.id} vm={vm} />
                                 ))}
                             </FlexColumn>
                         )}
                     </div>
+                    {showGradient && <div className={styles.gradient} />}
                 </div>
             </div>
             {showSaveButton && currentObj && (
@@ -393,10 +443,10 @@ export const WorksPage = observer(() => {
                                     ? Number(event.target.value)
                                     : undefined;
                             }}
-                            value={vm.addForm.plannedVolume}
+                            value={vm.addForm.plannedVolume ?? ""}
                             size={"large"}
                             placeholder={"Введите число"}
-                            formName={`План${vm.addFormUnit ? ` (${vm.addFormUnit.toLowerCase()})` : ""}`}
+                            formName={`План${vm.addFormUnit ? ` (${unitMap[vm.addFormUnit] || vm.addFormUnit.toLowerCase()})` : ""}`}
                             number={true}
                             required={true}
                         />
@@ -459,7 +509,6 @@ export const WorksPage = observer(() => {
                             <DatePicker
                                 value={vm.addForm.workVersion?.endDate ?? null}
                                 onChange={(value) => {
-                                    console.log(value);
                                     if (!vm.addForm.workVersion) {
                                         return;
                                     }
@@ -512,6 +561,262 @@ export const WorkStageRow = observer(
     },
 );
 
-export const WorkCard = observer((props: { work: ProjectWork }) => {
-    return <div className={styles.workCard}>{props.work.name}</div>;
+export const WorkCard = observer((props: { work: ProjectWork; vm: VM }) => {
+    const [collapsed, setCollapsed] = useState(false);
+
+    const progressStages = props.work.stages.filter((stage) => stage.status !== "FINISHED");
+    const finishedStages = props.work.stages.filter((stage) => stage.status === "FINISHED");
+
+    const renderStage = (stage: ProjectWorkStage, index: number, stages: ProjectWorkStage[]) => {
+        return (
+            <FlexColumn gap={16}>
+                <Checkbox
+                    onChange={(checked) => {
+                        if (checked) {
+                            stage.status = "READY_TO_CHECK";
+                        } else {
+                            stage.status = "IN_PROGRESS";
+                        }
+                    }}
+                    size={"medium"}
+                    checked={stage.status !== "IN_PROGRESS"}
+                    title={stage.name}
+                    disabled={props.work.status === "ON_CHECK" || props.work.status === "FINISHED"}
+                />
+                {index !== stages.length - 1 && (
+                    <Divider
+                        direction={"horizontal"}
+                        type={"tertiary"}
+                        noMargin={true}
+                        style={{
+                            marginBottom: 16,
+                        }}
+                    />
+                )}
+            </FlexColumn>
+        );
+    };
+
+    const workVersion =
+        props.work.workVersions[
+            Math.min(worksStore.currentWorkVersion, props.work.workVersions.length) - 1
+        ];
+
+    return (
+        <div className={styles.workCard}>
+            <div
+                className={styles.workCardHeader}
+                style={{
+                    gridTemplateColumns:
+                        !!progressStages.length || !!finishedStages.length
+                            ? "auto 1fr auto"
+                            : "1fr auto",
+                }}
+            >
+                {(!!progressStages.length || !!finishedStages.length) && (
+                    <Button
+                        mode={"neutral"}
+                        type={"outlined"}
+                        size={"small"}
+                        onClick={() => {
+                            setCollapsed(!collapsed);
+                        }}
+                    >
+                        <IconArrowUp
+                            style={{
+                                transition: "transform 0.1s",
+                                transform: collapsed ? "rotate(180deg)" : "rotate(0deg)",
+                            }}
+                        />
+                    </Button>
+                )}
+                <Checkbox
+                    onChange={(checked) => {
+                        if (checked) {
+                            props.work.status = "READY_TO_CHECK";
+                        } else {
+                            props.work.status = "IN_PROGRESS";
+                        }
+                    }}
+                    title={props.work.name}
+                    size={"large"}
+                    checked={props.work.status !== "IN_PROGRESS"}
+                    disabled={
+                        props.work.stages.some(
+                            (stage) =>
+                                stage.status === "IN_PROGRESS" || stage.status === "ON_CHECK",
+                        ) ||
+                        props.work.status === "ON_CHECK" ||
+                        props.work.status === "FINISHED"
+                    }
+                    style={
+                        {
+                            // pointerEvents: props.work.status === "IN_PROGRESS" ? undefined : "none",
+                        }
+                    }
+                />
+                <Flex gap={8} align={"center"}>
+                    <CircularProgress value={props.work.completionPercent} />
+                    <Typo variant={"subheadM"}>{props.work.completionPercent}%</Typo>
+                </Flex>
+            </div>
+            {(!!progressStages.length || !!finishedStages.length) && !collapsed && (
+                <div className={styles.workCardStages}>
+                    {!!progressStages.length && (
+                        <Typo
+                            variant={"subheadL"}
+                            type={"quaternary"}
+                            mode={"neutral"}
+                            style={{ opacity: 0.8, marginBottom: 16 }}
+                        >
+                            Этапы
+                        </Typo>
+                    )}
+                    {progressStages.map(renderStage)}
+                    {!!progressStages.length && !!finishedStages.length && <Spacing height={22} />}
+                    {!!finishedStages.length && (
+                        <Typo
+                            variant={"subheadL"}
+                            type={"quaternary"}
+                            mode={"neutral"}
+                            style={{ opacity: 0.8, marginBottom: 16 }}
+                        >
+                            Завершено
+                        </Typo>
+                    )}
+                    {finishedStages.map(renderStage)}
+                </div>
+            )}
+            <div className={styles.workCardBottomPanel}>
+                <Flex gap={8} align={"center"}>
+                    <DatePicker
+                        value={workVersion.startDate}
+                        onChange={(value) => {
+                            workVersion.endDate = value || workVersion.endDate;
+                        }}
+                        disableClear={true}
+                        disableTime={true}
+                        size={"medium"}
+                        width={133}
+                        style={{
+                            height: 36,
+                        }}
+                        inputStyle={{
+                            fontSize: 12,
+                        }}
+                        inputContentStyle={{
+                            padding: "0 12px",
+                            gap: 4,
+                        }}
+                        placeholder={"ДД.ММ.ГГГГ"}
+                    />
+                    <div
+                        style={{
+                            width: 12,
+                            borderTop: "1px solid var(--objects-stroke-neutral-primary)",
+                        }}
+                    />
+                    <DatePicker
+                        value={workVersion.startDate}
+                        onChange={(value) => {
+                            workVersion.endDate = value || workVersion.endDate;
+                        }}
+                        disableClear={true}
+                        disableTime={true}
+                        size={"medium"}
+                        width={133}
+                        style={{
+                            height: 36,
+                        }}
+                        inputStyle={{
+                            fontSize: 12,
+                        }}
+                        inputContentStyle={{
+                            padding: "0 12px",
+                            gap: 4,
+                        }}
+                        placeholder={"ДД.ММ.ГГГГ"}
+                    />
+                </Flex>
+                <Flex gap={6} align={"center"}>
+                    <Input
+                        onChange={(event) => {
+                            props.work.plannedVolume = event.target.value
+                                ? Number(event.target.value)
+                                : null;
+                        }}
+                        size={"medium"}
+                        value={props.work.plannedVolume ?? ""}
+                        number={true}
+                        placeholder={"План"}
+                        style={{
+                            height: 36,
+                            width: 70,
+                        }}
+                        inputContentStyle={{
+                            padding: "0 12px",
+                            gap: 4,
+                        }}
+                        inputStyle={{
+                            textAlign: "center",
+                        }}
+                    />
+                    <Input
+                        onChange={(event) => {
+                            props.work.actualVolume = event.target.value
+                                ? Number(event.target.value)
+                                : null;
+                        }}
+                        size={"medium"}
+                        value={props.work.actualVolume ?? ""}
+                        number={true}
+                        placeholder={"Факт"}
+                        style={{
+                            height: 36,
+                            width: 70,
+                        }}
+                        inputContentStyle={{
+                            padding: "0 12px",
+                            gap: 4,
+                        }}
+                        inputStyle={{
+                            textAlign: "center",
+                        }}
+                    />
+                    <div
+                        style={{
+                            borderRadius: 8,
+                            background: "#E9E9E9",
+                            height: 36,
+                            padding: "0 12px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            pointerEvents: "none",
+                        }}
+                    >
+                        <Typo variant={"actionM"}>
+                            {unitMap[props.work.volumeUnit] || props.work.volumeUnit || "кв.м"}
+                        </Typo>
+                    </div>
+                </Flex>
+                <Flex gap={12} align={"center"}>
+                    <Button type={"outlined"} size={"small"} mode={"neutral"}>
+                        Комментарии
+                    </Button>
+                    <Button
+                        type={"secondary"}
+                        size={"small"}
+                        mode={"neutral"}
+                        iconBefore={<IconEdit />}
+                        onClick={() => {
+                            props.vm.showEditOverlay = true;
+                            props.vm.editingWork = props.work;
+                            props.vm.editForm = deepCopy(props.work);
+                        }}
+                    />
+                </Flex>
+            </div>
+        </div>
+    );
 });
