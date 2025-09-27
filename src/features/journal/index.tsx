@@ -327,6 +327,17 @@ export const JournalPage = observer(() => {
         setSortOption(sort);
         appStore.objectStore.setSortOption(sort);
     };
+    const resetFilters = () => {
+        setTypes([]);
+        setObjectStatus([]);
+        setHasViolations(false);
+        setResponseCustomer([]);
+        setResponseContractor([]);
+        setContractorOrg([]);
+        setCustomerOrg([]);
+        setHaveUser([]);
+    };
+
     return (
         <div className={styles.container}>
             <Helmet>
@@ -363,11 +374,16 @@ export const JournalPage = observer(() => {
                 <div className={styles.filterContainer}>
                     <div className={styles.filterHead}>
                         <span style={{ opacity: 0.6 }}>Фильтры</span>
-                        {(types?.length > 0 || objectStatus.length > 0 || hasViolations) && (
+                        {(types.length > 0 ||
+                            objectStatus.length > 0 ||
+                            hasViolations ||
+                            responseCustomer.length > 0 ||
+                            responseContractor.length > 0 ||
+                            contractorOrg.length > 0 ||
+                            customerOrg.length > 0 ||
+                            haveUser.length > 0) && (
                             <Button
-                                /*
-                                                                onClick={resetFilters}
-                                */
+                                onClick={resetFilters}
                                 size={"tiny"}
                                 type={"outlined"}
                                 mode={"neutral"}
