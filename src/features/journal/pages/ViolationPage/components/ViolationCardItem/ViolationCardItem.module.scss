@@ -3,6 +3,11 @@
     background: var(--objects-background-neutral-tertiary, #f9fafb);
     padding: 20px;
     width: 590px;
+
+    &.active {
+        border: 1px solid var(--objects-stroke-accent-primary, #2053d5);
+        padding: 19px;
+    }
 }
 
 .badges {

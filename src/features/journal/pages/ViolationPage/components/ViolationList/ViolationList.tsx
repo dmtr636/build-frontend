@@ -5,13 +5,20 @@ import ViolationCardItem from "src/features/journal/pages/ViolationPage/componen
 
 interface violationListProps {
     violationList: ProjectViolationDTO[];
+    onClick: (v: ProjectViolationDTO) => void;
+    currentViolation: ProjectViolationDTO | null;
 }
 
-const ViolationList = ({ violationList }: violationListProps) => {
+const ViolationList = ({ violationList, onClick, currentViolation }: violationListProps) => {
     return (
         <div className={styles.container}>
             {violationList.map((violation, index) => (
-                <ViolationCardItem key={index} violation={violation} />
+                <ViolationCardItem
+                    active={currentViolation?.id === violation.id}
+                    onClick={() => onClick(violation)}
+                    key={index}
+                    violation={violation}
+                />
             ))}
         </div>
     );

@@ -261,7 +261,10 @@ const AddViolationOverlay = observer(
                         onClick={() => {
                             if (isEditing) {
                                 appStore.violationStore
-                                    .updateObject(violationForm as any, object?.id as string)
+                                    .updateObject(
+                                        violationForm as any,
+                                        editingViolation?.projectId as string,
+                                    )
                                     .then(() => {
                                         snackbarStore.showNeutralPositiveSnackbar(
                                             "Нарушение успешно обновлено",

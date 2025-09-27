@@ -15,8 +15,13 @@ import ViolationCardItem from "src/features/journal/pages/ViolationPage/componen
 import { observer } from "mobx-react-lite";
 import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
 import ViolationList from "src/features/journal/pages/ViolationPage/components/ViolationList/ViolationList.tsx";
-import { IconVeryHappy } from "src/features/journal/pages/ViolationPage/assets";
+import { IconReport, IconVeryHappy } from "src/features/journal/pages/ViolationPage/assets";
 import ViolationCard from "src/features/journal/pages/ViolationPage/components/ViolationCard/ViolationCard.tsx";
+import { ProjectViolationDTO } from "src/features/journal/types/Violation.ts";
+import UserCard from "src/features/users/components/UserCard/UserCard.tsx";
+import { IconBuildArrow, IconBuildPhoto } from "src/features/users/components/UserCard/assets";
+import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
+import { User } from "src/features/users/types/User.ts";
 
 const ViolationPage = observer(() => {
     const loginUser = appStore.accountStore.currentUser;
@@ -48,6 +53,49 @@ const ViolationPage = observer(() => {
         setCategory([]);
         setType([]);
     };
+    const [currentViolent, setCurrentViolent] = React.useState<ProjectViolationDTO | null>(null);
+    const onClickCard = (u: ProjectViolationDTO) => {
+        if (u.id !== currentViolent?.id || !currentViolent) {
+            setCurrentViolent(u);
+        } else {
+            setCurrentViolent(null);
+        }
+    };
+    const filteredViolations = React.useMemo(() => {
+        const normalize = (v?: string | null) => (v ?? "").trim().toLowerCase();
+        const sameDay = (a?: string | null, b?: string | null) => {
+            if (!a || !b) return false;
+            const da = new Date(a),
+                db = new Date(b);
+            if (isNaN(+da) || isNaN(+db)) return false;
+            return da.toISOString().slice(0, 10) === db.toISOString().slice(0, 10);
+        };
+
+        const tabToStatus: Record<number, ProjectViolationDTO["status"] | null> = {
+            1: null, // Все
+            2: "TODO",
+            3: "IN_PROGRESS",
+            4: "IN_REVIEW",
+            5: "DONE",
+        };
+
+        const statusRequired = tabToStatus[activeTab] ?? null;
+        const categorySet = new Set(category.map(normalize));
+        const viewSet = new Set(view.map(normalize)); // severityType
+        const typeSet = new Set(type.map(normalize)); // kind
+        const authorSet = new Set(author); // id автора
+
+        return violations.filter((v) => {
+            if (statusRequired && v.status !== statusRequired) return false;
+            if (dateFilter && !sameDay(v.violationTime, dateFilter)) return false;
+            if (categorySet.size && !categorySet.has(normalize(v.category))) return false;
+            if (viewSet.size && !viewSet.has(normalize(v.severityType))) return false;
+            if (typeSet.size && !typeSet.has(normalize(v.kind))) return false;
+            if (authorSet.size && !authorSet.has(v.author.id)) return false;
+            return true;
+        });
+    }, [violations, activeTab, dateFilter, category, view, type, author]);
+
     return (
         <div className={styles.container}>
             <Helmet>
@@ -203,7 +251,13 @@ const ViolationPage = observer(() => {
                     ></Button>
                 </div>
                 {violations.length > 0 ? (
-                    <ViolationList violationList={violations} />
+                    <ViolationList
+                        currentViolation={currentViolent}
+                        violationList={filteredViolations}
+                        onClick={(value: ProjectViolationDTO) => {
+                            onClickCard(value);
+                        }}
+                    />
                 ) : (
                     <div className={styles.noViolContainer}>
                         <div className={styles.noViol}>
@@ -214,7 +268,37 @@ const ViolationPage = observer(() => {
                 )}
             </div>
             <div className={styles.violationCard}>
-                {/*  <ViolationCard violation={violations[0]} />*/}
+                <div className={styles.userCard}>
+                    {currentViolent ? (
+                        <ViolationCard violation={currentViolent} />
+                    ) : (
+                        <div className={styles.emptyForm}>
+                            <FlexColumn
+                                gap={6}
+                                align={"center"}
+                                style={{ position: "absolute", top: 293 }}
+                            >
+                                <IconBuildArrow
+                                    style={{
+                                        position: "absolute",
+                                        top: -65,
+                                        transform: "translate(-10px, 0)",
+                                    }}
+                                />
+                                <IconReport />
+
+                                <Typo
+                                    variant={"subheadXL"}
+                                    type={"tertiary"}
+                                    mode={"neutral"}
+                                    style={{ textAlign: "center" }}
+                                >
+                                    {"Выберите нарушение\nиз списка"}
+                                </Typo>
+                            </FlexColumn>
+                        </div>
+                    )}
+                </div>
             </div>
             <AddViolationOverlay
                 object={object}

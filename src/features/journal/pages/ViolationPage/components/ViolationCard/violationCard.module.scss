@@ -3,6 +3,8 @@
     border-radius: 12px;
     background: #f9fafb;
     padding: 20px;
+    overflow: auto;
+    max-height: calc(100vh - 120px);
 }
 
 .tabs {
@@ -18,7 +20,11 @@
     font-style: normal;
     font-weight: 700;
     line-height: 120%; /* 24px */
-    cursor: pointer;
+
+    &:hover {
+        opacity: 0.8;
+        cursor: pointer;
+    }
 
     &.active {
         color: var(--objects-text-accent-primary, #2053d5);
@@ -30,7 +36,7 @@
         opacity: 1;
 
         &:hover {
-            opacity: 0.8;
+            opacity: 1;
         }
     }
 }
@@ -138,10 +144,84 @@
     min-height: 85px;
 }
 
-.text {
+.textForm {
     color: var(--objects-background-contrast-secondary, #444d5f);
     font-size: 15px;
     font-style: normal;
     font-weight: 500;
     line-height: 140%; /* 21px */
+    margin-bottom: 16px;
+}
+
+.textBlock {
+    border-radius: 8px;
+    background: #f0f0f0;
+    margin-top: 12px;
+    padding: 12px;
+    color: var(--objects-text-neutral-primary, #111317);
+
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%; /* 18.2px */
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.textBlockSubtext {
+    color: var(--objects-text-neutral-tertiary, #444d5f);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%; /* 18.2px */
+}
+
+.docsArray {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.docItem {
+    display: flex;
+    gap: 4px;
+    color: var(--text-brand-example-primary, #2053d5);
+
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; /* 142.857% */
+    svg {
+        opacity: 0.6;
+
+        path {
+            fill: var(--text-brand-example-primary, #2053d5);
+        }
+    }
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.imgItem {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: var(--s, 8px);
+    box-shadow: 0 0 6px 0 rgba(11, 59, 154, 0.12) inset;
+}
+
+.PhotoBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--objects-text-neutral-secondary, #2c313a);
+    margin-top: 16px;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%; /* 18.2px */
 }

@@ -1,11 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import styles from "./violationCard.module.scss";
 import { ProjectViolationDTO } from "src/features/journal/types/Violation.ts";
 import { clsx } from "clsx";
-import { IconCalendar, IconTime, IconUser } from "src/ui/assets/icons";
+import { IconCalendar, IconDocument, IconPin, IconTime, IconUser } from "src/ui/assets/icons";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { Link } from "react-router-dom";
 import { splitFullName } from "src/shared/utils/splitFullName.ts";
+import { Button } from "src/ui/components/controls/Button/Button.tsx";
+import { Media } from "src/ui/components/solutions/Media/Media.tsx";
+import { fileUrl } from "src/shared/utils/file.ts";
 
 interface ViolationCardProps {
     violation: ProjectViolationDTO;
@@ -37,8 +40,16 @@ function getShortName(fullName: string): string {
     return [lastName, firstInitial, patronymicInitial].filter(Boolean).join(" ");
 }
 
+function formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // месяцы идут с 0
+    const year = date.getFullYear();
+    return `${month}.${year}`;
+}
+
 const ViolationCard = ({ violation }: ViolationCardProps) => {
     const [activeTab, setActiveTab] = useState(1);
+    console.log(violation);
     return (
         <div className={styles.card}>
             <div className={styles.tabs}>
@@ -112,7 +123,32 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
                     </Link>
                 </div>
             </div>
-            <div className={styles.text}>{violation.name}</div>
+            <div className={styles.textForm}>{violation.name}</div>
+            <Button iconBefore={<IconPin />} size={"medium"} fullWidth={true} mode={"neutral"}>
+                Посмотреть место нарушения
+            </Button>
+            <div className={styles.textBlock}>
+                <div>Нужно исправить до</div>
+                <div className={styles.textBlockSubtext}>{formatDate(violation.dueDate)}</div>
+            </div>
+            <div className={styles.textBlock}>
+                <div>Нормативные документы</div>
+                <div className={styles.docsArray}>
+                    <Link
+                        to={`/admin/dictionaries/normative-documents}`}
+                        className={styles.docItem}
+                    >
+                        <IconDocument />
+                        Благоустройство территорий
+                    </Link>
+                </div>
+            </div>
+            <div className={styles.PhotoBlock}>
+                <div>Фотографии, подтверждающие факт нарушения</div>
+                {violation.photos.map((photo, index) => (
+                    <img className={styles.imgItem} key={index} src={fileUrl(photo.id)} />
+                ))}
+            </div>
         </div>
     );
 };

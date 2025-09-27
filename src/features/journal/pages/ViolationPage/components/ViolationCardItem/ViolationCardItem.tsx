@@ -23,6 +23,8 @@ import AddViolationOverlay from "src/features/journal/pages/ViolationPage/compon
 
 interface ViolationCardItemProps {
     violation: ProjectViolationDTO;
+    onClick: () => void;
+    active?: boolean;
 }
 
 function formatDueDate(dateArray: [number, number, number]): string {
@@ -61,7 +63,7 @@ function getShortName(fullName: string): string {
     return [lastName, firstInitial, patronymicInitial].filter(Boolean).join(" ");
 }
 
-const ViolationCardItem = observer(({ violation }: ViolationCardItemProps) => {
+const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCardItemProps) => {
     const [open, setOpen] = useState(false);
 
     const renderStatusButton = useMemo(() => {
@@ -102,7 +104,7 @@ const ViolationCardItem = observer(({ violation }: ViolationCardItemProps) => {
     }, []);
     if (!violation) return null;
     return (
-        <div className={styles.container}>
+        <div className={clsx(styles.container, { [styles.active]: active })} onClick={onClick}>
             <div className={styles.badges}>
                 <Tooltip
                     text={formatDateTime(violation?.violationTime).date}
