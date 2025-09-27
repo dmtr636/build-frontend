@@ -148,25 +148,44 @@ const DocumentCard = ({ documentItem, object }: DocumentCardProps) => {
                         </ButtonIcon>
                     </Tooltip>
                 </div>
-                {/* <div className={styles.buttonsBlockChat}>
-                    <Tooltip text={"Предпросмотр"} delay={500}>
-                        <ButtonIcon
-                                                        onClick={handlePreview}
-                            pale={true}
-                            mode={"neutral"}
-                            size={"small"}
-                            type={"tertiary"}
-                        >
-                            <IconShowPass />
-                        </ButtonIcon>
-                    </Tooltip>
-                </div>*/}
+                {docFormat === "pdf" && (
+                    <div className={styles.buttonsBlockChat}>
+                        <Tooltip text={"Предпросмотр"} delay={500}>
+                            <ButtonIcon
+                                onClick={() => {
+                                    const url = fileUrl(documentItem.file.id);
+                                    window.open(url, "_blank");
+                                }}
+                                pale={true}
+                                mode={"neutral"}
+                                size={"small"}
+                                type={"tertiary"}
+                            >
+                                <IconShowPass />
+                            </ButtonIcon>
+                        </Tooltip>
+                    </div>
+                )}
                 <div className={styles.buttonsBlockChat}>
                     <Tooltip text={"Скачать документ"} delay={500}>
                         <ButtonIcon
-                            onClick={() => {
-                                const url = fileUrl(documentItem.file.id);
-                                window.open(url, "_blank");
+                            onClick={async () => {
+                                const response = await fetch(
+                                    fileUrl(documentItem.file.id) as string,
+                                );
+                                const blob = await response.blob();
+                                const blobUrl = window.URL.createObjectURL(blob);
+
+                                const link = document.createElement("a");
+                                link.href = blobUrl;
+                                link.download = documentItem.name || "file";
+                                document.body.appendChild(link);
+                                link.click();
+                                link.remove();
+                                /*
+                                snackbarStore.showNeutralPositiveSnackbar("Скачивание файла");
+*/
+                                window.URL.revokeObjectURL(blobUrl);
                             }}
                             pale
                             mode="neutral"
