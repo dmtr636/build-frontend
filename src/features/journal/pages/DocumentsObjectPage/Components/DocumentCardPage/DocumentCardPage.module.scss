@@ -9,7 +9,7 @@
     background: var(--background-neutral-tertiary, #f9fafb);
     display: flex;
 
-    &:hover {
+    /*&:hover {
         background-color: darker-hover($objects-background-neutral-tertiary);
         border: 1px solid darker-hover($objects-stroke-neutral-tertiary);
         cursor: pointer;
@@ -21,7 +21,7 @@
 
     &.isOpen {
         border: 1px solid var(--objects-stroke-accent-primary, #2053d5);
-    }
+    }*/
 }
 
 .container:has(.buttonsBlockChat:hover) {

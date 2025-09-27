@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet";
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./journal.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { appStore, registryStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, registryStore } from "src/app/AppStore.ts";
 import {
     IconCheckmark,
     IconClose,
@@ -31,6 +31,22 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import MapObjectsEditor, { MapObject } from "src/features/map/Map.tsx";
+
+function pluralizeObjects(count: number): string {
+    const absCount = Math.abs(count) % 100;
+    const lastDigit = absCount % 10;
+
+    if (absCount > 10 && absCount < 20) {
+        return `${count} объектов`;
+    }
+    if (lastDigit > 1 && lastDigit < 5) {
+        return `${count} объекта`;
+    }
+    if (lastDigit === 1) {
+        return `${count} объект`;
+    }
+    return `${count} объектов`;
+}
 
 export const JournalPage = observer(() => {
     const loginUser = appStore.accountStore.currentUser;
@@ -311,6 +327,17 @@ export const JournalPage = observer(() => {
         setSortOption(sort);
         appStore.objectStore.setSortOption(sort);
     };
+    const resetFilters = () => {
+        setTypes([]);
+        setObjectStatus([]);
+        setHasViolations(false);
+        setResponseCustomer([]);
+        setResponseContractor([]);
+        setContractorOrg([]);
+        setCustomerOrg([]);
+        setHaveUser([]);
+    };
+
     return (
         <div className={styles.container}>
             <Helmet>
@@ -347,11 +374,16 @@ export const JournalPage = observer(() => {
                 <div className={styles.filterContainer}>
                     <div className={styles.filterHead}>
                         <span style={{ opacity: 0.6 }}>Фильтры</span>
-                        {(types?.length > 0 || objectStatus.length > 0 || hasViolations) && (
+                        {(types.length > 0 ||
+                            objectStatus.length > 0 ||
+                            hasViolations ||
+                            responseCustomer.length > 0 ||
+                            responseContractor.length > 0 ||
+                            contractorOrg.length > 0 ||
+                            customerOrg.length > 0 ||
+                            haveUser.length > 0) && (
                             <Button
-                                /*
-                                                                onClick={resetFilters}
-                                */
+                                onClick={resetFilters}
                                 size={"tiny"}
                                 type={"outlined"}
                                 mode={"neutral"}
@@ -458,6 +490,7 @@ export const JournalPage = observer(() => {
                             placeholder={"Найти по названию или номеру объекта"}
                         />
                     </div>
+
                     <div>
                         <Tooltip header={"Карта"} delay={500}>
                             <Button
@@ -466,9 +499,10 @@ export const JournalPage = observer(() => {
                                 type={"outlined"}
                                 mode={"neutral"}
                                 onClick={() => setShowMapsOverlay(true)}
-                            ></Button>
+                            />
                         </Tooltip>
                     </div>
+
                     <div>
                         <SingleDropdownList
                             hideTip={true}
@@ -482,16 +516,50 @@ export const JournalPage = observer(() => {
                                 iconBefore={sortIsOpen ? <IconClose /> : <IconSorting />}
                                 type={sortIsOpen ? "primary" : "outlined"}
                                 mode={"neutral"}
-                            ></Button>
+                            />
                         </SingleDropdownList>
                     </div>
                 </div>
-                <div style={{ marginTop: 12 }}></div>
-                <JournalList
-                    journalList={filteredJournalList}
-                    sort={appStore.objectStore.sortOption}
-                />
+
+                <div
+                    className={clsx(styles.containerHeader, {
+                        /*
+                        [styles.scrolled]: scrolled,
+*/
+                        [styles.windowScrolled]: layoutStore.scrolled,
+                    })}
+                >
+                    {journalList.length > 0 && (
+                        <div className={styles.headFilters}>
+                            <div className={styles.count}>
+                                <span style={{ opacity: 0.6 }}>Отображается</span>
+                                <span className={styles.countItem}>
+                                    {pluralizeObjects(journalList.length)}
+                                </span>
+                            </div>
+
+                            <div className={styles.count} style={{ marginLeft: "auto" }}>
+                                <span style={{ opacity: 0.6 }}>Сортируется</span>
+                                <span className={styles.countItem}>
+                                    {appStore.objectStore.sortOption.label}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* {chipArray && chipArray?.length > 0 && (
+                        <div className={styles.chipsArray}>{chipArray}</div>
+                    )}*/}
+                </div>
+
+                <div className={clsx(styles.containerList)}>
+                    <JournalList
+                        journalList={filteredJournalList}
+                        sort={appStore.objectStore.sortOption}
+                    />
+                </div>
             </div>
+
             <Overlay
                 styles={{
                     card: {

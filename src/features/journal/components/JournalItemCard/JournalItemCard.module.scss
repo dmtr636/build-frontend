@@ -140,6 +140,9 @@ flex-shrink: 0;
     font-style: normal;
     font-weight: 500;
     line-height: 140%; /* 18.2px */
+    &:hover {
+        opacity: 0.8;
+    }
 }
 
 .text {
