@@ -82,6 +82,7 @@
     border-radius: 12px;
     border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
     background: #f9fafb;
+    position: relative;
 }
 
 .tasksAreaHeader {
@@ -138,4 +139,46 @@
     border-radius: 10px;
     border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
     background: var(--objects-background-contrast-primary, #fff);
+}
+
+.workCardHeader {
+    padding: 16px 20px;
+    display: grid;
+    align-items: center;
+    gap: 12px;
+}
+
+.workCardStages {
+    padding: 4px 20px 24px 20px;
+}
+
+.workCardBottomPanel {
+    height: 68px;
+    border-radius: 0 0 10px 10px;
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+}
+
+.gradient {
+    position: absolute;
+    bottom: 0px;
+    right: 0;
+    width: 100%;
+    height: 20px;
+    flex-shrink: 0;
+    background: linear-gradient(0deg, rgba(95, 95, 95, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+    border-radius: 0 0 12px 12px;
 }

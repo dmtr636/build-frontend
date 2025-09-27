@@ -6,8 +6,8 @@ export interface ProjectWork {
     workVersion: ProjectWorkVersion;
     workVersions: ProjectWorkVersion[];
     completionPercent: number;
-    plannedVolume: number;
-    actualVolume: string;
+    plannedVolume: number | null;
+    actualVolume: number | null;
     volumeUnit: string;
     stages: ProjectWorkStage[];
 }
@@ -18,6 +18,7 @@ export interface ProjectWorkVersion {
     startDate: string;
     endDate: string;
     active: boolean;
+    createdAt: string;
 }
 
 export interface ProjectWorkStage {

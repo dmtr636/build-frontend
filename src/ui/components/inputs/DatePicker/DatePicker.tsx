@@ -33,6 +33,9 @@ export interface DatePickerProps
     disabled?: boolean;
     width?: CSSProperties["width"];
     zIndex?: number;
+    style?: CSSProperties | undefined;
+    inputStyle?: CSSProperties | undefined;
+    inputContentStyle?: CSSProperties | undefined;
 }
 
 export const DatePicker = (props: DatePickerProps) => {
@@ -208,7 +211,7 @@ export const DatePicker = (props: DatePickerProps) => {
                     [styles.disabled]: disabled,
                 })}
                 isFocused={showCalendar}
-                style={{ width: props.width ?? 320 }}
+                style={{ width: props.width ?? 320, ...props.style }}
                 maskType={manualInput ? "fulldate" : undefined}
                 onBlur={() => {
                     if (manualInput) {
@@ -220,6 +223,8 @@ export const DatePicker = (props: DatePickerProps) => {
                     setHover(false);
                 }}
                 showBacklight={props.showBacklight}
+                inputStyle={props.inputStyle}
+                inputContentStyle={props.inputContentStyle}
             />
         </PopoverBase>
     );
