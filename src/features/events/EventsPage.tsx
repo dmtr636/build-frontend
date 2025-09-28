@@ -51,8 +51,9 @@ export const EventsPage = observer(() => {
         );
     };
 
-    const getObjectLink = (objectId: string) => {
-        const object = objectStore.ObjectMap.get(objectId);
+    const getObjectLink = (objectId: string, fallbackId?: string) => {
+        const object =
+            objectStore.ObjectMap.get(objectId) ?? objectStore.ObjectMap.get(fallbackId ?? "");
         if (!object) {
             return "-";
         }
@@ -359,7 +360,10 @@ export const EventsPage = observer(() => {
                                                       field: "objectId",
                                                       width: 290,
                                                       render: (data: IEvent) => {
-                                                          return getObjectLink(data.objectId ?? "");
+                                                          return getObjectLink(
+                                                              data.objectId ?? "",
+                                                              data.info?.projectId,
+                                                          );
                                                       },
                                                       resizable: false,
                                                   },
