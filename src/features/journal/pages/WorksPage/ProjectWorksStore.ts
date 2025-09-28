@@ -181,7 +181,11 @@ export class WorksStore {
             ) {
                 continue;
             }
-            await this.apiClient.put(endpoints.projectWorks, work);
+            const clonedWork = deepCopy(work);
+            clonedWork.stages.forEach((stage) => {
+                (stage as any).id = null;
+            });
+            await this.apiClient.put(endpoints.projectWorks, clonedWork);
         }
         await this.fetchWorks(this.worksForm[0]?.projectId || this.works[0]?.projectId);
         this.loading = false;

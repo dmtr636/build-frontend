@@ -108,8 +108,8 @@ export class EventsStore {
         } else {
             events.sort((a, b) => {
                 return this.sort.direction === "desc"
-                    ? b.createdAt.localeCompare(a.createdAt)
-                    : a.createdAt.localeCompare(b.createdAt);
+                    ? b.createdAt?.localeCompare(a.createdAt)
+                    : a.createdAt?.localeCompare(b.createdAt);
             });
         }
         return events;
