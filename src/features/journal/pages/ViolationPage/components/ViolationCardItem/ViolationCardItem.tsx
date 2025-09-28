@@ -181,7 +181,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                             </div>
                         )}
                     </div>
-                    <div className={styles.userTexts}>
+                    <div className={styles.userTexts} onClick={(e) => e.stopPropagation()}>
                         <div className={styles.role}>Автор</div>
                         <Link
                             to={`/admin/users/${violation?.author.id}`}
@@ -205,7 +205,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                                 </div>
                             )}
                         </div>
-                        <div className={styles.userTexts}>
+                        <div className={styles.userTexts} onClick={(e) => e.stopPropagation()}>
                             <div className={styles.role}>Взял в работу</div>
                             <Link
                                 to={`/admin/users/${violation.assignee.id}`}
@@ -218,13 +218,16 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                 )}
             </div>
             <div className={styles.text}>{violation.name}</div>
-            <div className={styles.buttonBlock}>
+            <div className={styles.buttonBlock} onClick={(e) => e.stopPropagation()}>
                 {renderStatusButton}
                 <Button type={"outlined"} mode={"neutral"} size={"small"}>
                     Комментарии
                 </Button>
                 <Button
-                    onClick={() => setOpen(true)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setOpen(true);
+                    }}
                     type={"outlined"}
                     mode={"neutral"}
                     size={"small"}
