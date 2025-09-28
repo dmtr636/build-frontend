@@ -274,7 +274,8 @@ export const PopoverBase = observer((props: PopoverBaseProps) => {
                 offset -= ARROW_MARGIN - childrenSize / 2 + ARROW_WIDTH / 2;
             }
         }
-        const scrollBarWidth = getScrollbarWidth();
+        // const scrollBarWidth = getScrollbarWidth();
+        const scrollBarWidth = 0;
         if (fullWidth && scrollBarWidth && childrenSize !== popoverSize) {
             offset += scrollBarWidth / 2;
         }
@@ -378,7 +379,8 @@ export const PopoverBase = observer((props: PopoverBaseProps) => {
         const arrowClassName = clsx(styles.arrow, styles[arrowSide]);
         let width = fullWidth && childrenRef.current?.clientWidth;
         if (width) {
-            width += getScrollbarWidth();
+            // width += getScrollbarWidth();
+            width += 0;
         }
         return createPortal(
             <div
