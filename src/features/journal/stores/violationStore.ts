@@ -7,7 +7,10 @@ import {
     UpdateProjectDTO,
 } from "src/features/journal/types/Object.ts";
 import { SortOption } from "src/features/users";
-import { ProjectViolationDTO } from "src/features/journal/types/Violation.ts";
+import {
+    ProjectViolationDTO,
+    ProjectViolationStatus,
+} from "src/features/journal/types/Violation.ts";
 
 export class ViolationStore {
     sortOption: SortOption = {
@@ -40,6 +43,11 @@ export class ViolationStore {
 
     async deleteObject(id: string, idOrg: string) {
         await axios.delete(`${endpoints.violations}/${id}`);
+        this.fetchViolationByObj(idOrg);
+    }
+
+    async changeStatus(id: string, status: ProjectViolationStatus, idOrg: string) {
+        await axios.patch(`${endpoints.violations}/${id}/status?status=${status}`);
         this.fetchViolationByObj(idOrg);
     }
 }

@@ -65,6 +65,20 @@
         );
     }
 
+    &.lavender {
+        &:not(.iconVariant) {
+            /*  background-color: $objects-background-contrast-primary;*/
+        }
+
+        @include color-types-mixin(
+            $lavender-500,
+            $lavender-500,
+            $objects-background-neutral-primary,
+            #f6f0fe,
+            $objects-stroke-neutral-secondary
+        );
+    }
+
     &.neutralPale {
         &:not(.iconVariant) {
             /*  background-color: $objects-background-contrast-primary;*/
@@ -416,7 +430,7 @@
     }
 
     /* &.lowRounding {
-  border-radius: var(--s, 8px);
+border-radius: var(--s, 8px);
 }*/
 
     &.iconVariant {

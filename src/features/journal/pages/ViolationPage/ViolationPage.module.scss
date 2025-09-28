@@ -21,7 +21,7 @@
     align-self: flex-start;
 
     /* @media screen and (min-width: 1500px) {
- width: 506px;
+width: 506px;
 }*/
 }
 
@@ -123,9 +123,18 @@ justify-content: center;
     }
 }
 
+.violationContainer {
+    min-width: 590px;
+}
+
 .violationCard {
     position: sticky;
     top: 160px;
     align-self: flex-start;
     padding-bottom: 24px;
+}
+
+.counter {
+    border-radius: var(--XS, 4px);
+    padding: 2px 4px;
 }

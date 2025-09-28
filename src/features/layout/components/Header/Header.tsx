@@ -131,7 +131,11 @@ const Header = () => {
                         {getNameInitials(currentUser ?? undefined)}
 
                         <Avatar
-                            photoUrl={`${GET_FILES_ENDPOINT}/${currentUser?.imageId}`}
+                            photoUrl={
+                                currentUser?.imageId
+                                    ? `${GET_FILES_ENDPOINT}/${currentUser?.imageId}`
+                                    : undefined
+                            }
                             userName={currentUser?.name}
                         />
                     </div>

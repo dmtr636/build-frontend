@@ -133,7 +133,9 @@
 }
 
 .text {
-    margin-top: 12px;
+    /*
+  margin-top: 12px;
+  */
     color: var(--objects-background-contrast-secondary, #444d5f);
 
     /* Body/L */
@@ -146,6 +148,8 @@
 }
 
 .textForm {
+    margin-top: 12px;
+
     color: var(--objects-background-contrast-secondary, #444d5f);
     font-size: 15px;
     font-style: normal;
