@@ -80,7 +80,7 @@ function buildGanttTasks(works: ProjectWork[], currentWorkVersion: number): Gant
                     text: stage.name,
                     start_date: cursor,
                     duration: slot,
-                    progress: 0,
+                    progress: stage.status === "DONE" || stage.status === "FINISHED" ? 1 : 0,
                     parent: parentId,
                     status: stage.status,
                     open: false,

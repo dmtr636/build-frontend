@@ -118,32 +118,6 @@ export const WorksPage = observer(() => {
         }
     }, [vm.addForm.name]);
 
-    useEffect(() => {
-        if (!vm.editForm?.name) {
-            return;
-        }
-        const workFromRegistry = registryStore.worksNameMap.get(vm.editForm.name ?? "");
-        if (workFromRegistry) {
-            registryStore.fetchStages(workFromRegistry.id).then(() => {
-                if (registryStore.workStages?.length) {
-                    if (vm.editForm) {
-                        vm.editForm.stages = registryStore.workStages.map((stage) => ({
-                            id: crypto.randomUUID(),
-                            name: stage.stageName,
-                            status: "IN_PROGRESS",
-                            orderNumber: stage.stageNumber,
-                            date: null,
-                        }));
-                    }
-                } else {
-                    if (vm.editForm) {
-                        vm.editForm.stages = [];
-                    }
-                }
-            });
-        }
-    }, [vm.editForm?.name]);
-
     const statusOptions: SelectOption<string>[] = [
         { name: "Ожидание", value: "AWAIT", listItemIcon: <IconBuildClock /> },
         {
@@ -367,15 +341,6 @@ export const WorksPage = observer(() => {
                 </div>
             </div>
             <div className={styles.ganttWrapper}>
-                <Typo
-                    variant={"h4"}
-                    type={"secondary"}
-                    style={{
-                        marginBottom: 16,
-                    }}
-                >
-                    Диаграмма Ганта
-                </Typo>
                 <GanttWorks
                     currentWorkVersion={worksStore.currentWorkVersion}
                     works={worksStore.worksForm}
