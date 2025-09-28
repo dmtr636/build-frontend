@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import styles from "./WorksPage.module.scss";
 import {
     IconArrowUp,
+    IconAttention,
     IconBarChart,
     IconClose,
     IconEdit,
@@ -41,9 +42,8 @@ import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import CircularProgress from "src/features/journal/pages/WorksPage/components/CircularProgress.tsx";
 import { Divider } from "src/ui/components/atoms/Divider/Divider.tsx";
 import { Spacing } from "src/ui/components/atoms/Spacing/Spacing.tsx";
-import { Status } from "src/ui/components/info/Status/Status.tsx";
-import { Gantt } from "gantt-task-react";
 import GanttWorks from "src/features/gantt/Gantt.tsx";
+import dayjs from "dayjs";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -146,6 +146,18 @@ export const WorksPage = observer(() => {
         }
     }, [tasksAreaContentRef, vm.tab]);
 
+    const hasExpired = worksStore.worksForm.some((work) => {
+        const currVersion = work.workVersions[worksStore.currentWorkVersion - 1];
+        if (
+            currVersion.endDate &&
+            currentObj?.plannedPeriod.end &&
+            dayjs(currentObj.plannedPeriod.end).isBefore(dayjs(currVersion.endDate))
+        ) {
+            return true;
+        }
+        return false;
+    });
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -202,14 +214,25 @@ export const WorksPage = observer(() => {
                             disableClear={true}
                         />
                     </div>
-                    <Alert
-                        mode={"positive"}
-                        icon={<IconSuccess />}
-                        title={"Срок в работах соответствует планам"}
-                        subtitle={
-                            "Планируется, что объект будет готов к сроку планового завершения"
-                        }
-                    />
+                    {hasExpired ? (
+                        <Alert
+                            mode={"negative"}
+                            icon={<IconAttention />}
+                            title={"Срок в задачах не\xa0соответствует планам"}
+                            subtitle={
+                                "Есть риск, что объект не будет завершён к запланированному сроку"
+                            }
+                        />
+                    ) : (
+                        <Alert
+                            mode={"positive"}
+                            icon={<IconSuccess />}
+                            title={"Срок в работах соответствует планам"}
+                            subtitle={
+                                "Планируется, что объект будет готов к сроку планового завершения"
+                            }
+                        />
+                    )}
                 </div>
                 <div className={styles.tasksArea}>
                     <div className={styles.tasksAreaHeader}>
@@ -1067,7 +1090,7 @@ export const WorkCard = observer((props: { work: ProjectWork; vm: VM }) => {
                         }}
                     />
                     <DatePicker
-                        value={workVersion.startDate}
+                        value={workVersion.endDate}
                         onChange={(value) => {
                             workVersion.endDate = value || workVersion.endDate;
                         }}
