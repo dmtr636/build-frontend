@@ -61,6 +61,8 @@ export class EventsStore {
 
         events = events.filter((event) => event.objectName !== "construction-work-stage");
 
+        events.filter((event) => !!event.createdAt);
+
         if (this.sort.field === "userId") {
             events.sort((a, b) => {
                 const aUser = userStore.usersMap.get(a.userId);
@@ -74,8 +76,8 @@ export class EventsStore {
         } else {
             events.sort((a, b) => {
                 return this.sort.direction === "desc"
-                    ? b.createdAt.localeCompare(a.createdAt)
-                    : a.createdAt.localeCompare(b.createdAt);
+                    ? b.createdAt?.localeCompare(a.createdAt)
+                    : a.createdAt?.localeCompare(b.createdAt);
             });
         }
         return events;

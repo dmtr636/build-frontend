@@ -6,6 +6,7 @@ import {
     IconBarChart,
     IconClose,
     IconEdit,
+    IconGroup,
     IconPlus,
     IconSuccess,
 } from "src/ui/assets/icons";
@@ -31,7 +32,11 @@ import { clsx } from "clsx";
 import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
-import { ProjectWork, ProjectWorkStage } from "src/features/journal/types/ProjectWork.ts";
+import {
+    ProjectWork,
+    ProjectWorkComment,
+    ProjectWorkStage,
+} from "src/features/journal/types/ProjectWork.ts";
 import { Flex } from "src/ui/components/atoms/Flex/Flex";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
@@ -44,6 +49,7 @@ import { Divider } from "src/ui/components/atoms/Divider/Divider.tsx";
 import { Spacing } from "src/ui/components/atoms/Spacing/Spacing.tsx";
 import GanttWorks from "src/features/gantt/Gantt.tsx";
 import dayjs from "dayjs";
+import { WorkComments } from "src/features/journal/pages/WorksPage/components/WorkComments/WorkComments.tsx";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -144,7 +150,7 @@ export const WorksPage = observer(() => {
                             tasksAreaContentRef.current.clientHeight,
             );
         }
-    }, [tasksAreaContentRef, vm.tab]);
+    }, [tasksAreaContentRef, vm.tab, worksStore.worksForm.length]);
 
     const hasExpired = worksStore.worksForm.some((work) => {
         const currVersion = work.workVersions[worksStore.currentWorkVersion - 1];
@@ -212,26 +218,32 @@ export const WorksPage = observer(() => {
                                 console.log(value);
                             }}
                             disableClear={true}
+                            disabled={!worksStore.worksForm.length}
+                            placeholder={"-"}
                         />
                     </div>
-                    {hasExpired ? (
-                        <Alert
-                            mode={"negative"}
-                            icon={<IconAttention />}
-                            title={"Срок в задачах не\xa0соответствует планам"}
-                            subtitle={
-                                "Есть риск, что объект не будет завершён к запланированному сроку"
-                            }
-                        />
-                    ) : (
-                        <Alert
-                            mode={"positive"}
-                            icon={<IconSuccess />}
-                            title={"Срок в работах соответствует планам"}
-                            subtitle={
-                                "Планируется, что объект будет готов к сроку планового завершения"
-                            }
-                        />
+                    {worksStore.worksForm.length > 0 && (
+                        <>
+                            {hasExpired ? (
+                                <Alert
+                                    mode={"negative"}
+                                    icon={<IconAttention />}
+                                    title={"Срок в задачах не\xa0соответствует планам"}
+                                    subtitle={
+                                        "Есть риск, что объект не будет завершён к запланированному сроку"
+                                    }
+                                />
+                            ) : (
+                                <Alert
+                                    mode={"positive"}
+                                    icon={<IconSuccess />}
+                                    title={"Срок в работах соответствует планам"}
+                                    subtitle={
+                                        "Планируется, что объект будет готов к сроку планового завершения"
+                                    }
+                                />
+                            )}
+                        </>
                     )}
                 </div>
                 <div className={styles.tasksArea}>
@@ -305,6 +317,18 @@ export const WorksPage = observer(() => {
                     >
                         {vm.tab === "works" && (
                             <>
+                                {!worksStore.works.length && (
+                                    <div className={styles.noUsersInOrg}>
+                                        <IconBarChart className={styles.icon} />
+                                        <Typo
+                                            variant={"actionXL"}
+                                            type={"secondary"}
+                                            mode={"neutral"}
+                                        >
+                                            Пока нет работ <br />в объекте
+                                        </Typo>
+                                    </div>
+                                )}
                                 {!!worksStore.worksFormOnCheck.length && (
                                     <Typo
                                         variant={"subheadM"}
@@ -363,13 +387,15 @@ export const WorksPage = observer(() => {
                     {showGradient && <div className={styles.gradient} />}
                 </div>
             </div>
-            <div className={styles.ganttWrapper}>
-                <GanttWorks
-                    currentWorkVersion={worksStore.currentWorkVersion}
-                    works={worksStore.worksForm}
-                    initialScale={"month"}
-                />
-            </div>
+            {!!worksStore.worksForm.length && (
+                <div className={styles.ganttWrapper}>
+                    <GanttWorks
+                        currentWorkVersion={worksStore.currentWorkVersion}
+                        works={worksStore.worksForm}
+                        initialScale={"month"}
+                    />
+                </div>
+            )}
             {showSaveButton && currentObj && (
                 <div className={styles.footer}>
                     <div style={{ display: "flex", gap: 16 }}>
@@ -851,7 +877,7 @@ export const WorkCard = observer((props: { work: ProjectWork; vm: VM }) => {
                     />
                     {(stage.status === "ON_CHECK" || stage.date) && (
                         <Flex gap={8} style={{ flexShrink: 0 }}>
-                            {(stage.status === "ON_CHECK" || stage.date) && (
+                            {stage.status === "ON_CHECK" && stage.date && (
                                 <div>
                                     <Typo
                                         variant={"actionM"}
@@ -861,6 +887,23 @@ export const WorkCard = observer((props: { work: ProjectWork; vm: VM }) => {
                                             borderRadius: "12px",
                                             background:
                                                 "var(--objects-background-neutral-secondary)",
+                                        }}
+                                    >
+                                        {new Date(stage.date || "2025-09-28").toLocaleDateString()}
+                                    </Typo>
+                                </div>
+                            )}
+                            {stage.status === "DONE" && stage.date && (
+                                <div>
+                                    <Typo
+                                        variant={"actionM"}
+                                        style={{
+                                            height: "20px",
+                                            padding: "0 8px 1px 8px",
+                                            borderRadius: "12px",
+                                            background:
+                                                "var(--objects-background-positive-secondary, #D4F7EB)",
+                                            color: "var(--objects-text-positive-primary, #267D5F)",
                                         }}
                                     >
                                         {new Date(stage.date || "2025-09-28").toLocaleDateString()}
@@ -923,6 +966,16 @@ export const WorkCard = observer((props: { work: ProjectWork; vm: VM }) => {
     const onCheckCountStages = props.work.stages.filter(
         (stage) => stage.status === "ON_CHECK",
     ).length;
+
+    const [showComments, setShowComments] = useState(false);
+    const [commentsCount, setCommentsCount] = useState(0);
+
+    useEffect(() => {
+        if (showComments) {
+            return;
+        }
+        worksStore.fetchWorkCommentsCount(props.work.id).then((count) => setCommentsCount(count));
+    }, [props.work.id, showComments]);
 
     return (
         <div className={styles.workCard}>
@@ -1194,7 +1247,15 @@ export const WorkCard = observer((props: { work: ProjectWork; vm: VM }) => {
                     </div>
                 </Flex>
                 <Flex gap={12} align={"center"}>
-                    <Button type={"outlined"} size={"small"} mode={"neutral"}>
+                    <Button
+                        type={"outlined"}
+                        size={"small"}
+                        mode={"neutral"}
+                        onClick={() => {
+                            setShowComments(true);
+                        }}
+                        counter={commentsCount > 0 ? commentsCount : undefined}
+                    >
                         Комментарии
                     </Button>
                     <Tooltip header={"Редактировать"} delay={500}>
@@ -1213,6 +1274,9 @@ export const WorkCard = observer((props: { work: ProjectWork; vm: VM }) => {
                     </Tooltip>
                 </Flex>
             </div>
+            {showComments && (
+                <WorkComments show={showComments} setShow={setShowComments} work={props.work} />
+            )}
         </div>
     );
 });
