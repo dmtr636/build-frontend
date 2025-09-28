@@ -50,6 +50,7 @@ import { Spacing } from "src/ui/components/atoms/Spacing/Spacing.tsx";
 import GanttWorks from "src/features/gantt/Gantt.tsx";
 import dayjs from "dayjs";
 import { WorkComments } from "src/features/journal/pages/WorksPage/components/WorkComments/WorkComments.tsx";
+import { Helmet } from "react-helmet";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -166,6 +167,9 @@ export const WorksPage = observer(() => {
 
     return (
         <div className={styles.container}>
+            <Helmet>
+                <title>{currentObj?.name}</title>
+            </Helmet>
             <div className={styles.header}>
                 <div className={styles.iconHeader}>
                     <IconBarChart />

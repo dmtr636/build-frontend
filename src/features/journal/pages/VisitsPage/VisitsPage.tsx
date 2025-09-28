@@ -115,7 +115,7 @@ export const VisitsPage = observer(() => {
             </div>
             <div className={styles.container}>
                 <Helmet>
-                    <title>История – Build</title>
+                    <title>{currentObj?.name}</title>
                 </Helmet>
                 <div>
                     <div className={styles.filterContainer}>
