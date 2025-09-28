@@ -139,7 +139,7 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
                         className={styles.docItem}
                     >
                         <IconDocument />
-                        Благоустройство территорий
+                        <span style={{ marginTop: 1 }}>Благоустройство территорий </span>
                     </Link>
                 </div>
             </div>
