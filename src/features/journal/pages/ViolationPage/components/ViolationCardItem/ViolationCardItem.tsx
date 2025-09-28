@@ -4,6 +4,7 @@ import styles from "./ViolationCardItem.module.scss";
 import {
     IconArrowRight,
     IconCalendar,
+    IconClose,
     IconEdit,
     IconNext,
     IconSuccess,
@@ -218,9 +219,14 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                 )}
             </div>
             <div className={styles.text}>{violation.name}</div>
-            <div className={styles.buttonBlock} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.buttonBlock}>
                 {renderStatusButton}
-                <Button type={"outlined"} mode={"neutral"} size={"small"}>
+                <Button
+                    onClick={(e) => e.stopPropagation()}
+                    type={"outlined"}
+                    mode={"neutral"}
+                    size={"small"}
+                >
                     Комментарии
                 </Button>
                 <Button
@@ -237,8 +243,13 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                     <span style={{ opacity: 0.7 }}>Нужно исправить до</span>
                     <div className={styles.infoDate}>{formatDueDate(violation.dueDate)}</div>
                 </div>
-                <ButtonIcon rounding={"peak"} type={"primary"} mode={"neutral"} size={"small"}>
-                    <IconNext />
+                <ButtonIcon
+                    rounding={"peak"}
+                    type={active ? "outlined" : "primary"}
+                    mode={"neutral"}
+                    size={"small"}
+                >
+                    {active ? <IconClose /> : <IconNext />}
                 </ButtonIcon>
             </div>
             <AddViolationOverlay
