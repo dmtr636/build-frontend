@@ -184,4 +184,8 @@
 }
 
 .ganttWrapper {
+    margin-top: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
+    padding: 16px;
 }

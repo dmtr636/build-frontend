@@ -202,7 +202,7 @@ export default function GanttDXH() {
         };
 
         // (опционально) тултип для связей
-        gantt.templates.link_tooltip_text = function (link) {
+        gantt.templates.link_tooltip_text = function (link: any) {
             const s = gantt.getTask(link.source)?.text;
             const t = gantt.getTask(link.target)?.text;
             return `<b>Связь</b>: ${s} → ${t}<br/><b>Тип:</b> ${link.type}`;
@@ -215,7 +215,6 @@ export default function GanttDXH() {
 
         return () => {
             gantt.clearAll();
-            // @ts-ignore
             if (gantt.destructor) gantt.destructor();
         };
     }, []);

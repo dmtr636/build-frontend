@@ -42,6 +42,8 @@ import CircularProgress from "src/features/journal/pages/WorksPage/components/Ci
 import { Divider } from "src/ui/components/atoms/Divider/Divider.tsx";
 import { Spacing } from "src/ui/components/atoms/Spacing/Spacing.tsx";
 import { Status } from "src/ui/components/info/Status/Status.tsx";
+import { Gantt } from "gantt-task-react";
+import GanttWorks from "src/features/gantt/Gantt.tsx";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -364,7 +366,21 @@ export const WorksPage = observer(() => {
                     {showGradient && <div className={styles.gradient} />}
                 </div>
             </div>
-            <div className={styles.ganttWrapper}></div>
+            <div className={styles.ganttWrapper}>
+                <Typo
+                    variant={"h4"}
+                    style={{
+                        marginBottom: 8,
+                    }}
+                >
+                    Диаграма Ганта (в процессе)
+                </Typo>
+                <GanttWorks
+                    currentWorkVersion={worksStore.currentWorkVersion}
+                    works={worksStore.worksForm}
+                    initialScale={"month"}
+                />
+            </div>
             {showSaveButton && currentObj && (
                 <div className={styles.footer}>
                     <div style={{ display: "flex", gap: 16 }}>

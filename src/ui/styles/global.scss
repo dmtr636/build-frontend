@@ -171,7 +171,7 @@ html > iframe {
 
 /* Цвет выполненной части */
 .gantt_task_progress {
-    background: #2053D5 !important;
+    background: #2053d5 !important;
 }
 
 /* Для задач progress=100% красим целиком */
@@ -189,4 +189,9 @@ html > iframe {
 .gantt_task_line,
 .gantt_task_progress {
     border-radius: 4px;
+}
+
+.gantt_task_line {
+    filter: none !important;
+    opacity: 1 !important;
 }
