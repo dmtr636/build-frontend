@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import styles from "./VisitsPage.module.scss";
-import { IconBadge, IconClose, IconCopy, IconError } from "src/ui/assets/icons";
+import { IconBadge, IconClose, IconCopy, IconError, IconUpdate } from "src/ui/assets/icons";
 import React, { useEffect, useLayoutEffect } from "react";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { Popover } from "src/ui/components/solutions/Popover/Popover.tsx";
@@ -127,7 +127,7 @@ export const VisitsPage = observer(() => {
                                     size={"tiny"}
                                     type={"outlined"}
                                     mode={"neutral"}
-                                    iconBefore={<IconClose />}
+                                    iconBefore={<IconUpdate />}
                                 >
                                     Сбросить
                                 </Button>
