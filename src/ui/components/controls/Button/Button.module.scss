@@ -376,6 +376,7 @@
         --current-padding: #{$lvl-3};
         --current-gap: #{$lvl-2};
         height: 28px;
+        padding: 0 var(--current-padding);
         gap: var(--current-gap);
         border-radius: var(--S, 8px);
 

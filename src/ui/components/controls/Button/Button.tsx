@@ -159,7 +159,7 @@ export const Button = observer((props: ButtonProps) => {
             large: "actionXL",
             medium: "actionL",
             small: "actionM",
-            tiny: "actionM",
+            tiny: "actionS",
         };
         if (disableTooltip) {
             return (

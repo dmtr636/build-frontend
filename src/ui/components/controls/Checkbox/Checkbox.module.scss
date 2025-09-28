@@ -80,6 +80,14 @@
         );
     }
 
+    &.lavender {
+        @include color-mode-vars(
+            $lavender-500,
+            $objects-text-neutral-primary,
+            $objects-text-neutral-secondary
+        );
+    }
+
     &.neutral {
         @include color-mode-vars(
             $objects-graphic-neutral-primary,

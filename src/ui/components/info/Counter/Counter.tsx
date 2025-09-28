@@ -7,7 +7,7 @@ import {
 } from "src/ui/components/info/Counter/Counter.types.ts";
 import { TypoVariant } from "src/ui/components/atoms/Typo/Typo.types.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
-import { ReactNode, RefObject } from "react";
+import { CSSProperties, ReactNode, RefObject } from "react";
 
 interface BaseCounterProps {
     type?: CounterType;
@@ -18,6 +18,7 @@ interface BaseCounterProps {
     maxValue?: number;
     className?: string;
     showPlus?: boolean;
+    style?: CSSProperties;
     _ref?: RefObject<HTMLDivElement>;
 }
 
@@ -41,6 +42,7 @@ export const Counter = ({
     className,
     showPlus,
     _ref,
+    style,
     ...props
 }: CounterProps) => {
     const counterClassName = clsx(
@@ -64,14 +66,14 @@ export const Counter = ({
 
     if ("text" in props) {
         return (
-            <div className={counterClassName} ref={_ref}>
+            <div className={counterClassName} ref={_ref} style={style}>
                 <Typo variant={typoVariants[size]}>{props.text}</Typo>
             </div>
         );
     }
 
     return (
-        <div className={counterClassName} ref={_ref}>
+        <div className={counterClassName} ref={_ref} style={style}>
             {size !== "micro" && (
                 <Typo variant={typoVariants[size]}>
                     {(props.value > maxValue || showPlus) && "+"}

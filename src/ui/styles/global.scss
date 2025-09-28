@@ -162,3 +162,36 @@ html > iframe {
 .leaflet-interactive:focus {
     outline: none !important;
 }
+
+/* Цвет задачи по умолчанию */
+.gantt_task_line {
+    background: #444d5f !important;
+    border-color: #444d5f !important;
+}
+
+/* Цвет выполненной части */
+.gantt_task_progress {
+    background: #2053d5 !important;
+}
+
+/* Для задач progress=100% красим целиком */
+.gantt_task_line.task-done {
+    background: #267d5f !important;
+    border-color: #267d5f !important;
+}
+
+/* и прогресс внутри тоже в тот же цвет (на всякий случай) */
+.gantt_task_line.task-done .gantt_task_progress {
+    background: #267d5f !important;
+}
+
+/* Немного скруглим углы */
+.gantt_task_line,
+.gantt_task_progress {
+    border-radius: 4px;
+}
+
+.gantt_task_line {
+    filter: none !important;
+    opacity: 1 !important;
+}

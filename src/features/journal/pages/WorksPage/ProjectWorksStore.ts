@@ -3,6 +3,7 @@ import { ApiClient } from "src/shared/api/ApiClient.ts";
 import { ProjectWork } from "src/features/journal/types/ProjectWork.ts";
 import { endpoints } from "src/shared/api/endpoints.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
+import { deepEquals } from "src/shared/utils/deepEquals.ts";
 
 interface WorkVersion {
     versionNumber: number;
@@ -59,7 +60,7 @@ export class WorksStore {
         return this.worksForm
             .filter(
                 (work) =>
-                    work.status === "IN_PROGRESS" &&
+                    (work.status === "IN_PROGRESS" || work.status === "READY_TO_CHECK") &&
                     !work.stages.some((stage) => stage.status === "ON_CHECK"),
             )
             .slice()
@@ -75,7 +76,7 @@ export class WorksStore {
 
     get finishedWorksForm() {
         return this.worksForm
-            .filter((work) => work.status === "FINISHED")
+            .filter((work) => work.status === "DONE")
             .slice()
             .sort((a, b) =>
                 a.workVersions[
@@ -128,6 +129,46 @@ export class WorksStore {
             this.loading = false;
             return true;
         }
+        this.loading = false;
+    }
+
+    async updateWork(work: ProjectWork) {
+        this.loading = true;
+        const response = await this.apiClient.put<ProjectWork>(endpoints.projectWorks, work);
+        if (response.status) {
+            await this.fetchWorks(work.projectId);
+            this.loading = false;
+            return true;
+        }
+        this.loading = false;
+    }
+
+    async saveWorksForm() {
+        this.loading = true;
+        this.worksForm.forEach((work) => {
+            if (work.status === "READY_TO_CHECK") {
+                work.status = "ON_CHECK";
+            }
+            work.stages.forEach((stage) => {
+                if (stage.status === "READY_TO_CHECK") {
+                    stage.status = "ON_CHECK";
+
+                    stage.date = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`;
+                }
+            });
+        });
+        for (const work of this.worksForm) {
+            if (
+                deepEquals(
+                    work,
+                    this.works.find((w) => w.id === work.id),
+                )
+            ) {
+                continue;
+            }
+            await this.apiClient.put(endpoints.projectWorks, work);
+        }
+        await this.fetchWorks(this.worksForm[0]?.projectId || this.works[0]?.projectId);
         this.loading = false;
     }
 }

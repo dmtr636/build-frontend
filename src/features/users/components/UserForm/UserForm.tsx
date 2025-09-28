@@ -73,14 +73,14 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
         setRole(undefined);
     };
     useEffect(() => {
+        resetFields();
+        return () => resetFields();
+    }, [open]);
+    useEffect(() => {
         if (initialOrgId) {
             setCompany(initialOrgId);
         }
     }, [initialOrgId]);
-    useEffect(() => {
-        resetFields();
-        return () => resetFields();
-    }, [open]);
     const userForm: Partial<User> = {
         firstName,
         lastName,
