@@ -286,7 +286,7 @@ export const Overlay = observer((props: OverlayProps) => {
                         ...props.styles?.content,
                         paddingRight: `${(smallPadding ? 20 : 32) - (overflowed ? scrollBarWidth : 0)}px`,
                         paddingBottom: overflowed ? "40px" : undefined,
-                        maxHeight: `calc(100vh - 220px - ${extraFooterHeight ?? 0}px)`,
+                        maxHeight: `calc(100vh - 220px - ${extraFooterHeight ?? 0}px - ${smallPadding ? 60 : 0}px)`,
                     }}
                     ref={contentRef}
                     onScroll={() => {
