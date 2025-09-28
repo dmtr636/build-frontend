@@ -5,6 +5,7 @@ import { endpoints } from "src/shared/api/endpoints.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { deepEquals } from "src/shared/utils/deepEquals.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import axios from "axios";
 
 interface WorkVersion {
     versionNumber: number;
@@ -17,6 +18,7 @@ export class WorksStore {
     worksForm: ProjectWork[] = [];
     loading = false;
     currentWorkVersion = 1;
+    allWorks = [];
 
     constructor() {
         makeAutoObservable(this);
@@ -107,6 +109,11 @@ export class WorksStore {
             this.worksForm = deepCopy(response.data);
         }
         this.loading = false;
+    }
+
+    async fetchAllWorks() {
+        const response = await axios.get(endpoints.projectWorks);
+        this.allWorks = response.data;
     }
 
     async createWork(work: Partial<ProjectWork>) {
