@@ -195,3 +195,41 @@ html > iframe {
     filter: none !important;
     opacity: 1 !important;
 }
+
+.gantt_layout_cell.gantt_layout_root {
+    border-bottom: none !important;
+    border-radius: 10px;
+}
+
+.gantt_tooltip {
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: var(--objects-text-neutral-primary);
+}
+
+.gantt_tooltip .tooltip-title {
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.gantt_tooltip .tooltip-dates {
+    margin-bottom: 2px;
+    font-size: 14px;
+    color: var(--objects-text-neutral-secondary);
+}
+
+.gantt_tooltip .tooltip-progress {
+    font-size: 14px;
+}
+
+.gantt_task_line.task-on-check {
+    background-color: #8c3af8 !important;
+    border-color: #8c3af8 !important;
+}
+
+.gantt_task_line.task-on-check .gantt_task_progress {
+    background-color: rgba(140, 58, 248, 0.6) !important;
+}

@@ -4,6 +4,7 @@ import { ProjectWork } from "src/features/journal/types/ProjectWork.ts";
 import { endpoints } from "src/shared/api/endpoints.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { deepEquals } from "src/shared/utils/deepEquals.ts";
+import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 interface WorkVersion {
     versionNumber: number;
@@ -138,6 +139,20 @@ export class WorksStore {
         if (response.status) {
             await this.fetchWorks(work.projectId);
             this.loading = false;
+            return true;
+        }
+        this.loading = false;
+    }
+
+    async changeStatus(work: ProjectWork) {
+        this.loading = true;
+        const response = await this.apiClient.patch<ProjectWork>(
+            endpoints.projectWorks + `/${work.id}/status?status=${work.status}`,
+        );
+        if (response.status) {
+            await this.fetchWorks(work.projectId);
+            this.loading = false;
+            snackbarStore.showNeutralPositiveSnackbar("Изменения сохранены");
             return true;
         }
         this.loading = false;
