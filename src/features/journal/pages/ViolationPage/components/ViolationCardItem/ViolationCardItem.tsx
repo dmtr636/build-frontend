@@ -7,6 +7,7 @@ import {
     IconClose,
     IconEdit,
     IconNext,
+    IconShowPass,
     IconSuccess,
     IconTime,
     IconUser,
@@ -16,11 +17,12 @@ import { observer } from "mobx-react-lite";
 import { fileUrl } from "src/shared/utils/file.ts";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import clsx from "clsx";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
+import { appStore } from "src/app/AppStore.ts";
 
 interface ViolationCardItemProps {
     violation: ProjectViolationDTO;
@@ -66,7 +68,9 @@ function getShortName(fullName: string): string {
 
 const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCardItemProps) => {
     const [open, setOpen] = useState(false);
-
+    const currentUserRole = appStore.accountStore.currentUser?.role;
+    const { id } = useParams();
+    console.log(violation);
     const renderStatusButton = useMemo(() => {
         switch (violation?.status) {
             case "TODO":
@@ -85,8 +89,85 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
 
             case "IN_REVIEW":
                 return (
-                    <Button size={"small"} type={"primary"} mode={"positive"}>
-                        Подтвердить
+                    <div style={{ display: "flex", gap: 8 }}>
+                        <Button
+                            size={"small"}
+                            type={"secondary"}
+                            mode={"lavender"}
+                            onClick={() =>
+                                appStore.violationStore.changeStatus(violation.id, "DONE", id ?? "")
+                            }
+                        >
+                            Принять
+                        </Button>
+                        <Button size={"small"} type={"outlined"} mode={"neutral"}>
+                            Отклонить
+                        </Button>
+                    </div>
+                );
+
+            case "DONE":
+                return (
+                    <Button
+                        size={"small"}
+                        iconBefore={<IconSuccess />}
+                        type={"primary"}
+                        mode={"positive"}
+                    >
+                        Готово
+                    </Button>
+                );
+        }
+    }, []);
+    const renderStatusButtonPodryadchik = useMemo(() => {
+        switch (violation?.status) {
+            case "TODO":
+                return (
+                    <Button
+                        size={"small"}
+                        type={"primary"}
+                        mode={"neutral"}
+                        onClick={() =>
+                            appStore.violationStore.changeStatus(
+                                violation.id,
+                                "IN_PROGRESS",
+                                id ?? "",
+                            )
+                        }
+                    >
+                        Взять в работу
+                    </Button>
+                );
+
+            case "IN_PROGRESS":
+                return (
+                    <Button
+                        size={"small"}
+                        type={"primary"}
+                        mode={"positive"}
+                        iconBefore={<IconShowPass />}
+                        onClick={() =>
+                            appStore.violationStore.changeStatus(
+                                violation.id,
+                                "IN_REVIEW",
+                                id ?? "",
+                            )
+                        }
+                    >
+                        Отправить на проверку
+                    </Button>
+                );
+
+            case "IN_REVIEW":
+                return (
+                    <Button
+                        size={"small"}
+                        iconBefore={<IconTime />}
+                        type={"secondary"}
+                        mode={"lavender"}
+                        hover={false}
+                    >
+                        На проверке
                     </Button>
                 );
 
@@ -220,15 +301,17 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
             </div>
             <div className={styles.text}>{violation.name}</div>
             <div className={styles.buttonBlock}>
-                {renderStatusButton}
-                <Button
-                    onClick={(e) => e.stopPropagation()}
-                    type={"outlined"}
-                    mode={"neutral"}
-                    size={"small"}
-                >
-                    Комментарии
-                </Button>
+                {currentUserRole !== "USER" ? renderStatusButtonPodryadchik : renderStatusButton}
+                {!(currentUserRole === "USER" && violation.status === "IN_REVIEW") && (
+                    <Button
+                        onClick={(e) => e.stopPropagation()}
+                        type={"outlined"}
+                        mode={"neutral"}
+                        size={"small"}
+                    >
+                        Комментарии
+                    </Button>
+                )}
                 <Button
                     onClick={(e) => {
                         e.stopPropagation();

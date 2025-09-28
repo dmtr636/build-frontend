@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import styles from "./ViolationPage.module.scss";
 import { Helmet } from "react-helmet";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
@@ -95,14 +95,39 @@ const ViolationPage = observer(() => {
             return true;
         });
     }, [violations, activeTab, dateFilter, category, view, type, author]);
+    const filteredViolationsWithoutStatus = useMemo(() => {
+        const normalize = (v?: string | null) => (v ?? "").trim().toLowerCase();
+        const sameDay = (a?: string | null, b?: string | null) => {
+            if (!a || !b) return false;
+            const da = new Date(a),
+                db = new Date(b);
+            if (isNaN(+da) || isNaN(+db)) return false;
+            return da.toISOString().slice(0, 10) === db.toISOString().slice(0, 10);
+        };
 
+        const categorySet = new Set(category.map(normalize));
+        const viewSet = new Set(view.map(normalize)); // severityType
+        const typeSet = new Set(type.map(normalize)); // kind
+        const authorSet = new Set(author); // id автора
+
+        return violations.filter((v) => {
+            /* if (statusRequired && v.status !== statusRequired) return false;*/
+            if (dateFilter && !sameDay(v.violationTime, dateFilter)) return false;
+            if (categorySet.size && !categorySet.has(normalize(v.category))) return false;
+            if (viewSet.size && !viewSet.has(normalize(v.severityType))) return false;
+            if (typeSet.size && !typeSet.has(normalize(v.kind))) return false;
+            if (authorSet.size && !authorSet.has(v.author.id)) return false;
+            return true;
+        });
+    }, [violations, activeTab, dateFilter, category, view, type, author]);
     return (
         <div className={styles.container}>
             <Helmet>
                 <title>Объекты – Build</title>
             </Helmet>
             <div className={styles.filterBlock}>
-                {loginUser?.role !== "USER" && (
+                {/*loginUser?.role !== "USER" &&*/}
+                {
                     <div>
                         <Button
                             size={"small"}
@@ -114,7 +139,7 @@ const ViolationPage = observer(() => {
                             Добавить нарушение
                         </Button>
                     </div>
-                )}
+                }
                 {/*<div>
                     <Button
                         fullWidth={true}
@@ -208,7 +233,15 @@ const ViolationPage = observer(() => {
                         Все
                     </Button>
                     <Button
-                        style={{ width: 225 }}
+                        style={{ width: "auto" }}
+                        counterClassname={styles.counter}
+                        counter={
+                            filteredViolationsWithoutStatus.filter((v) => v.status === "TODO")
+                                .length > 0
+                                ? filteredViolationsWithoutStatus.filter((v) => v.status === "TODO")
+                                      .length
+                                : undefined
+                        }
                         size={"small"}
                         type={activeTab === 2 ? "primary" : "outlined"}
                         mode={"neutral"}
@@ -219,8 +252,17 @@ const ViolationPage = observer(() => {
                         Не взято в работу
                     </Button>
                     <Button
-                        style={{ width: 100 }}
+                        counterClassname={styles.counter}
                         size={"small"}
+                        counter={
+                            filteredViolationsWithoutStatus.filter(
+                                (v) => v.status === "IN_PROGRESS",
+                            ).length > 0
+                                ? filteredViolationsWithoutStatus.filter(
+                                      (v) => v.status === "IN_PROGRESS",
+                                  ).length
+                                : undefined
+                        }
                         type={activeTab === 3 ? "primary" : "outlined"}
                         mode={"neutral"}
                         onClick={() => {
@@ -230,8 +272,17 @@ const ViolationPage = observer(() => {
                         В работе
                     </Button>
                     <Button
+                        counterClassname={styles.counter}
                         style={{ width: 137 }}
                         size={"small"}
+                        counter={
+                            filteredViolationsWithoutStatus.filter((v) => v.status === "IN_REVIEW")
+                                .length > 0
+                                ? filteredViolationsWithoutStatus.filter(
+                                      (v) => v.status === "IN_REVIEW",
+                                  ).length
+                                : undefined
+                        }
                         type={activeTab === 4 ? "primary" : "outlined"}
                         mode={"neutral"}
                         onClick={() => {
