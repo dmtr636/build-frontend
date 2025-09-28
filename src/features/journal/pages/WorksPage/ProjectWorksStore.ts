@@ -5,6 +5,7 @@ import { endpoints } from "src/shared/api/endpoints.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { deepEquals } from "src/shared/utils/deepEquals.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import axios from "axios";
 
 interface WorkVersion {
     versionNumber: number;
@@ -18,6 +19,7 @@ export class WorksStore {
     workComments: ProjectWorkComment[] = [];
     loading = false;
     currentWorkVersion = 1;
+    allWorks = [];
 
     constructor() {
         makeAutoObservable(this);
@@ -138,6 +140,11 @@ export class WorksStore {
         this.loading = false;
     }
 
+    async fetchAllWorks() {
+        const response = await axios.get(endpoints.projectWorks);
+        this.allWorks = response.data;
+    }
+
     async createWork(work: Partial<ProjectWork>) {
         this.loading = true;
         const response = await this.apiClient.post<ProjectWork>(endpoints.projectWorks, {
@@ -201,6 +208,44 @@ export class WorksStore {
                 }
             });
         });
+
+        let hasScheduleChanges = false;
+        for (const workForm of this.worksForm) {
+            const work = this.works.find((w) => w.id === workForm.id);
+            if (!work || !workForm) {
+                continue;
+            }
+            const workVersion = work.workVersions[this.currentWorkVersion - 1];
+            const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
+            if (
+                workVersion.startDate !== workFormVersion.startDate ||
+                workVersion.endDate !== workFormVersion.endDate
+            ) {
+                hasScheduleChanges = true;
+            }
+        }
+
+        if (hasScheduleChanges) {
+            for (const workForm of this.worksForm) {
+                const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
+                await this.apiClient.post(endpoints.projectWorkVersions, {
+                    workId: workForm.id,
+                    startDate: workFormVersion.startDate,
+                    endDate: workFormVersion.endDate,
+                    active: false,
+                });
+            }
+            await this.fetchWorks(this.worksForm[0]?.projectId || this.works[0]?.projectId);
+            for (const workForm of this.worksForm) {
+                const work = this.works.find((w) => w.id === workForm.id);
+                if (!work || !workForm) {
+                    continue;
+                }
+                workForm.workVersion = deepCopy(work.workVersion);
+                workForm.workVersions = deepCopy(work.workVersions);
+            }
+        }
+
         for (const work of this.worksForm) {
             if (
                 deepEquals(

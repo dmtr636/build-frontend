@@ -134,13 +134,16 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
             <div className={styles.textBlock}>
                 <div>Нормативные документы</div>
                 <div className={styles.docsArray}>
-                    <Link
-                        to={`/admin/dictionaries/normative-documents}`}
-                        className={styles.docItem}
-                    >
-                        <IconDocument />
-                        <span style={{ marginTop: 1 }}>Благоустройство территорий </span>
-                    </Link>
+                    {violation.normativeDocuments.map((doc) => (
+                        <Link
+                            key={doc.id}
+                            to={`/admin/dictionaries/normative-documents/${doc.id}}`}
+                            className={styles.docItem}
+                        >
+                            <IconDocument />
+                            <span style={{ marginTop: 1 }}>{doc.name} </span>
+                        </Link>
+                    ))}
                 </div>
             </div>
             <div className={styles.PhotoBlock}>

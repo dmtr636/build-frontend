@@ -15,12 +15,18 @@ import { Works } from "src/features/registry/pages/works";
 import { ObjectPage } from "src/features/journal/pages/ObjectPage/ObjectPage.tsx";
 import AboutObjectPage from "src/features/journal/pages/AboutObjectPage/AboutObjectPage.tsx";
 import ObjectUsersPage from "src/features/journal/pages/ObjectUsersPage/ObjectUsersPage.tsx";
-import { LocationPage } from "src/features/journal/pages/LocationPage/LocationPage.tsx";
+import { VisitsPage } from "src/features/journal/pages/VisitsPage/VisitsPage.tsx";
 import DocumentsObjectPage from "src/features/journal/pages/DocumentsObjectPage/DocumentsObjectPage.tsx";
 import ViolationPage from "src/features/journal/pages/ViolationPage/ViolationPage.tsx";
 import { WorksPage } from "src/features/journal/pages/WorksPage/WorksPage.tsx";
+import { QRPage } from "src/features/qr/QRPage.tsx";
 
 export const appRoutes: RouteObject[] = [
+    {
+        path: "/qr/:key",
+        element: <QRPage />,
+        errorElement: <ErrorPage />,
+    },
     {
         path: "/auth/login",
         errorElement: <ErrorPage />,
@@ -52,10 +58,10 @@ export const appRoutes: RouteObject[] = [
                     { path: "about", element: <AboutObjectPage /> },
                     { path: "docs", element: <DocumentsObjectPage /> },
                     { path: "status", element: <WorksPage /> },
-                    { path: "location", element: <LocationPage /> },
+                    { path: "location", element: <VisitsPage /> },
                     { path: "users", element: <ObjectUsersPage /> },
                     { path: "materials", element: <></> },
-                    { path: "visits", element: <></> },
+                    { path: "visits", element: <VisitsPage /> },
                     { path: "violations", element: <ViolationPage></ViolationPage> },
                 ],
             },

@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import styles from "./EventsPage.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { IconClose, IconError } from "src/ui/assets/icons";
+import { IconClose, IconError, IconUpdate } from "src/ui/assets/icons";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import {
@@ -101,7 +101,7 @@ export const EventsPage = observer(() => {
                                 size={"tiny"}
                                 type={"outlined"}
                                 mode={"neutral"}
-                                iconBefore={<IconClose />}
+                                iconBefore={<IconUpdate />}
                             >
                                 Сбросить
                             </Button>

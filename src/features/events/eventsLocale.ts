@@ -52,6 +52,12 @@ export const projectWorkVersionActionLocale: Record<string, string> = {
     delete: "Удаление версии работы",
 };
 
+export const projectWorkCommentActionLocale: Record<string, string> = {
+    create: "Отправка комментария",
+    update: "Редактирование комментария",
+    delete: "Удаление комментария",
+};
+
 export const eventActionLocale = {
     user: eventUserActionLocale,
     organization: eventOrganizationActionLocale,
@@ -64,6 +70,7 @@ export const eventActionLocale = {
     "project-violation": projectViolationActionLocale,
     "project-work": projectWorkActionLocale,
     "project-work-version": projectWorkVersionActionLocale,
+    "project-work-comment": projectWorkCommentActionLocale,
 };
 
 export const autocompleteActionLocaleOptions = Object.entries(eventActionLocale)

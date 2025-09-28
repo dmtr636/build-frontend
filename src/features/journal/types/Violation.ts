@@ -33,4 +33,5 @@ export type ProjectViolationDTO = {
     assignee: User;
     createdAt: string; // date-time
     updatedAt: string; // date-time
+    normativeDocuments: { id: string; regulation?: string; name?: string }[];
 };

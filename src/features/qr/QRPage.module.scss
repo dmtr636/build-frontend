@@ -1,0 +1,24 @@
+.container {
+    height: 100dvh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--background-neutral-secondary, #e8eaed);
+}
+
+.qrContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+}
+
+.qrImageContainer {
+    border-radius: 8px;
+    background: #fff;
+    padding: 24px;
+    width: 320px;
+    height: 320px;
+}
