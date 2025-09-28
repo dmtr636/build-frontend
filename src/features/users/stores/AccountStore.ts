@@ -17,6 +17,31 @@ export class AccountStore {
         makeAutoObservable(this);
     }
 
+    get isAdmin() {
+        return this.currentUser?.role === "ADMIN" || this.currentUser?.role === "ROOT";
+    }
+
+    get isContractor() {
+        return (
+            this.currentUser?.position === "Подрядчик" || this.currentUser?.position === "Прораб"
+        );
+    }
+
+    get isInspector() {
+        return (
+            this.currentUser?.position === "Инспектор контрольного органа" ||
+            this.currentUser?.position === "ИКО"
+        );
+    }
+
+    get isCustomer() {
+        return (
+            this.currentUser?.position === "Заказчик" ||
+            this.currentUser?.position === "Служба строительного контроля" ||
+            this.currentUser?.position === "ССК"
+        );
+    }
+
     async authenticate() {
         try {
             const response = await axios.get(endpoints.account);

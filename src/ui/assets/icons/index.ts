@@ -137,6 +137,7 @@ import IconGroupBuild from "./groupBuild.svg?react";
 import IconDistance from "./distance.svg?react";
 import IconSmartDisplay from "./smart_display.svg?react";
 import IconBarChart from "./bar_chart.svg?react";
+import IconBadge from "./badge.svg?react";
 
 export {
     IconSmartDisplay,
@@ -274,4 +275,5 @@ export {
     IconFlag,
     IconDistance,
     IconBarChart,
+    IconBadge,
 };

@@ -224,7 +224,27 @@ export class WorksStore {
                 hasScheduleChanges = true;
             }
         }
-        console.log(hasScheduleChanges);
+
+        if (hasScheduleChanges) {
+            for (const workForm of this.worksForm) {
+                const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
+                await this.apiClient.post(endpoints.projectWorkVersions, {
+                    workId: workForm.id,
+                    startDate: workFormVersion.startDate,
+                    endDate: workFormVersion.endDate,
+                    active: false,
+                });
+            }
+            await this.fetchWorks(this.worksForm[0]?.projectId || this.works[0]?.projectId);
+            for (const workForm of this.worksForm) {
+                const work = this.works.find((w) => w.id === workForm.id);
+                if (!work || !workForm) {
+                    continue;
+                }
+                workForm.workVersion = deepCopy(work.workVersion);
+                workForm.workVersions = deepCopy(work.workVersions);
+            }
+        }
 
         for (const work of this.worksForm) {
             if (

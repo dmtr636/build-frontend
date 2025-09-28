@@ -215,7 +215,7 @@ export const WorksPage = observer(() => {
                             formName={"Версия графика"}
                             size={"large"}
                             onValueChange={(value) => {
-                                console.log(value);
+                                worksStore.currentWorkVersion = value ?? 1;
                             }}
                             disableClear={true}
                             disabled={!worksStore.worksForm.length}
