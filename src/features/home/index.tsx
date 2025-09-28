@@ -28,7 +28,7 @@ export const HomePage = observer(() => {
     return (
         <div className={styles.container}>
             <Helmet>
-                <title>Задачи – Build</title>
+                <title>Главная – Build</title>
             </Helmet>
 
             <div className={styles.itemForm}>

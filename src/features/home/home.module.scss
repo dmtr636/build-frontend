@@ -64,6 +64,7 @@
 }
 
 .objCard {
+    width: 339px;
     display: flex;
     gap: 12px;
     border-radius: 8px;
@@ -110,6 +111,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: auto;
+    padding-right: 12px;
 
     svg {
         width: 20px;
@@ -179,21 +182,21 @@
     }
 
     /*&:hover {
-    background: darker-hover($objects-background-neutral-tertiary);
-  }*/
+  background: darker-hover($objects-background-neutral-tertiary);
+}*/
 }
 
 .noImg {
     border-radius: var(--s, 8px);
     /*
-  border: 1px solid var(--objects-stroke-neutral-secondary, #D6D9E0);
-  */
+border: 1px solid var(--objects-stroke-neutral-secondary, #D6D9E0);
+*/
     /*
-  background: var(--objects-background-neutral-tertiary, #F9FAFB);
-  */
+background: var(--objects-background-neutral-tertiary, #F9FAFB);
+*/
     /*
-  box-shadow: 0 0 6px 0 rgba(11, 59, 154, 0.12) inset;
-  */
+box-shadow: 0 0 6px 0 rgba(11, 59, 154, 0.12) inset;
+*/
     display: flex;
     justify-content: center;
     align-items: center;
@@ -208,6 +211,6 @@
     }
 
     /*path {
-    fill:
-  }*/
+  fill:
+}*/
 }
