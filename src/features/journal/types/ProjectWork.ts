@@ -1,3 +1,5 @@
+import { FileDto } from "src/features/journal/types/Object.ts";
+
 export interface ProjectWork {
     id: string;
     projectId: string;
@@ -27,4 +29,13 @@ export interface ProjectWorkStage {
     orderNumber: number;
     status: string;
     date: string | null;
+}
+
+export interface ProjectWorkComment {
+    text: string;
+    authorId: string;
+    workId: string;
+    files: FileDto[];
+    createdAt: string;
+    updatedAt: string;
 }

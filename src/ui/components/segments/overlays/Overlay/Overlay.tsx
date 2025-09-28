@@ -34,6 +34,8 @@ interface OverlayProps {
         card?: CSSProperties;
         content?: CSSProperties;
         background?: CSSProperties;
+        actions?: CSSProperties;
+        header?: CSSProperties;
     };
     noTitleClose?: boolean;
     onPaste?: (event: React.ClipboardEvent<HTMLDivElement>) => void;
@@ -42,6 +44,7 @@ interface OverlayProps {
     titleType?: "primary" | "secondary" | "tertiary" | "quaternary";
     draggable?: boolean;
     uploadingOverlay?: boolean;
+    titleNoWrap?: boolean;
 }
 
 export const Overlay = observer((props: OverlayProps) => {
@@ -220,12 +223,17 @@ export const Overlay = observer((props: OverlayProps) => {
                                 dragging.current = true;
                             }
                         }}
+                        style={props.styles?.header}
                     >
                         <Typo
                             variant={titleVariant}
                             type={titleType}
                             mode={titleMode}
                             className={clsx(styles.title, draggable && styles.draggable)}
+                            noWrap={true}
+                            style={{
+                                display: props.titleNoWrap ? "block" : undefined,
+                            }}
                         >
                             {props.titleIcon}
                             {title}
@@ -274,7 +282,10 @@ export const Overlay = observer((props: OverlayProps) => {
                     {children}
                 </div>
                 {!!actions?.length && (
-                    <div className={clsx(styles.actions, overflowed && styles.overflowed)}>
+                    <div
+                        className={clsx(styles.actions, overflowed && styles.overflowed)}
+                        style={props.styles?.actions}
+                    >
                         {actions.map((action, index) => (
                             <div
                                 key={index}

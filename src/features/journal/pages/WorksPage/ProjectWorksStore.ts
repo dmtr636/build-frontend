@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { ApiClient } from "src/shared/api/ApiClient.ts";
-import { ProjectWork } from "src/features/journal/types/ProjectWork.ts";
+import { ProjectWork, ProjectWorkComment } from "src/features/journal/types/ProjectWork.ts";
 import { endpoints } from "src/shared/api/endpoints.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { deepEquals } from "src/shared/utils/deepEquals.ts";
@@ -15,6 +15,7 @@ export class WorksStore {
     private apiClient = new ApiClient();
     works: ProjectWork[] = [];
     worksForm: ProjectWork[] = [];
+    workComments: ProjectWorkComment[] = [];
     loading = false;
     currentWorkVersion = 1;
 
@@ -106,6 +107,24 @@ export class WorksStore {
             this.works = response.data;
             this.worksForm = deepCopy(response.data);
         }
+        this.loading = false;
+    }
+
+    async fetchWorkComments(workId: string) {
+        this.loading = true;
+        const response = await this.apiClient.get<ProjectWorkComment[]>(
+            endpoints.projectWorkComments + `/search?workId=${workId}`,
+        );
+        if (response.status) {
+            this.workComments = response.data;
+        }
+        this.loading = false;
+    }
+
+    async createComment(comment: ProjectWorkComment) {
+        this.loading = true;
+        await this.apiClient.post<ProjectWorkComment>(endpoints.projectWorkComments, comment);
+        await this.fetchWorkComments(comment.workId);
         this.loading = false;
     }
 
