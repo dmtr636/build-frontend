@@ -118,8 +118,7 @@ const AddViolationOverlay = observer(
                 // Координаты — подставьте ваши значения/стор (если есть выбор точки на карте)
                 /* latitude: appStore.mapStore?.selectedPoint?.lat ?? null,
                    longitude: appStore.mapStore?.selectedPoint?.lng ?? null,*/
-
-                files: document.map((id) => ({ id })),
+                normativeDocuments: document.map((id) => ({ id })),
 
                 // Фото — из загруженных imageIds
                 photos: imageIds.map((id) => ({ id })),
@@ -157,6 +156,7 @@ const AddViolationOverlay = observer(
                 const violDays: number | null = getViolationDays();
                 setViolation(currentViolation?.id);
                 setHaveViolations(!!currentViolation?.remediationDueDays);
+                setDocument(editingViolation.normativeDocuments.map((i) => i.id));
                 setViolationDays(violDays ?? (currentViolation?.remediationDueDays as number));
                 setIsNote(editingViolation.isNote);
                 if (editingViolation.photos)
