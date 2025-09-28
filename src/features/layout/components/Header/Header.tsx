@@ -17,6 +17,7 @@ import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { clsx } from "clsx";
 import { getNameInitials } from "src/shared/utils/getFullName.ts";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
+import { Notification } from "src/ui/components/solutions/Notification/Notification.tsx";
 
 const Header = () => {
     const logout = async () => {
@@ -24,7 +25,44 @@ const Header = () => {
         window.location.pathname = "/auth/login";
     };
     const currentUser = appStore.accountStore.currentUser;
-
+    const testNotification: Notification[] = [
+        {
+            id: 123465,
+            date: "2025-09-23T16:01:02Z",
+            text: "test notificationtest notificationtest notificationtest notificationtest notificationtest notificationtest notificationtest notification",
+            img: "162e85ed-eecb-43a4-968e-294da0dc3792",
+            userName: "test user",
+            userImg: "ad8d05c7-4682-4859-9be3-2c57979397f6",
+            body: {
+                text: " ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст",
+                type: "comment",
+            },
+        },
+        {
+            id: 123465,
+            date: "2025-09-23T16:01:02Z",
+            text: "test notification",
+            img: "162e85ed-eecb-43a4-968e-294da0dc3792",
+            userName: "test user",
+            userImg: "ad8d05c7-4682-4859-9be3-2c57979397f6",
+            body: {
+                text: "ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст",
+                type: "text",
+            },
+        },
+        {
+            id: 123465,
+            date: "2025-09-23T16:01:02Z",
+            text: "test notification",
+            img: "162e85ed-eecb-43a4-968e-294da0dc3792",
+            userName: "test user",
+            userImg: "ad8d05c7-4682-4859-9be3-2c57979397f6",
+            body: {
+                text: " ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст",
+                type: "violation",
+            },
+        },
+    ];
     const navigate = useNavigate();
     return (
         <div className={styles.container}>
@@ -107,6 +145,14 @@ const Header = () => {
                         </div>
                     )}
                 </NavLink>
+                <div style={{ marginLeft: "auto" }}>
+                    <Notification
+                        notifications={testNotification}
+                        onNotificationClick={() => {
+                            console.log(123);
+                        }}
+                    />
+                </div>
                 <SingleDropdownList
                     tipPosition={"top-center"}
                     hideTip={true}
@@ -127,7 +173,7 @@ const Header = () => {
                         },
                     ]}
                 >
-                    <div style={{ marginLeft: "auto" }} className={styles.profile}>
+                    <div className={styles.profile}>
                         {getNameInitials(currentUser ?? undefined)}
 
                         <Avatar
