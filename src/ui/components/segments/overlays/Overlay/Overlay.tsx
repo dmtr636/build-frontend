@@ -45,6 +45,9 @@ interface OverlayProps {
     draggable?: boolean;
     uploadingOverlay?: boolean;
     titleNoWrap?: boolean;
+    smallPadding?: boolean;
+    extraFooterHeight?: number;
+    gradientTopPosition?: number;
 }
 
 export const Overlay = observer((props: OverlayProps) => {
@@ -63,6 +66,9 @@ export const Overlay = observer((props: OverlayProps) => {
         noTitleClose,
         draggable = true,
         uploadingOverlay,
+        smallPadding,
+        extraFooterHeight,
+        gradientTopPosition,
     }: OverlayProps = props;
     const dragging = useRef(false);
     const translate = useRef({ x: 0, y: 0 });
@@ -252,7 +258,14 @@ export const Overlay = observer((props: OverlayProps) => {
                                 <IconClose />
                             </ButtonIcon>
                         )}
-                        {overflowed && scrolled && <div className={styles.gradientTop} />}
+                        {overflowed && scrolled && (
+                            <div
+                                className={styles.gradientTop}
+                                style={{
+                                    top: gradientTopPosition,
+                                }}
+                            />
+                        )}
                     </div>
                 )}
                 {onClose && noTitleClose && (
@@ -271,8 +284,9 @@ export const Overlay = observer((props: OverlayProps) => {
                     className={styles.content}
                     style={{
                         ...props.styles?.content,
-                        paddingRight: `${32 - (overflowed ? scrollBarWidth : 0)}px`,
+                        paddingRight: `${(smallPadding ? 20 : 32) - (overflowed ? scrollBarWidth : 0)}px`,
                         paddingBottom: overflowed ? "40px" : undefined,
+                        maxHeight: `calc(100vh - 220px - ${extraFooterHeight ?? 0}px)`,
                     }}
                     ref={contentRef}
                     onScroll={() => {
@@ -296,7 +310,14 @@ export const Overlay = observer((props: OverlayProps) => {
                                 {action}
                             </div>
                         ))}
-                        {overflowed && <div className={styles.gradient} />}
+                        {overflowed && (
+                            <div
+                                className={styles.gradient}
+                                style={{
+                                    bottom: 84 + (extraFooterHeight ?? 0),
+                                }}
+                            />
+                        )}
                     </div>
                 )}
             </div>

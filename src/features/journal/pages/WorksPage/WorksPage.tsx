@@ -32,7 +32,11 @@ import { clsx } from "clsx";
 import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
-import { ProjectWork, ProjectWorkStage } from "src/features/journal/types/ProjectWork.ts";
+import {
+    ProjectWork,
+    ProjectWorkComment,
+    ProjectWorkStage,
+} from "src/features/journal/types/ProjectWork.ts";
 import { Flex } from "src/ui/components/atoms/Flex/Flex";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
@@ -964,6 +968,14 @@ export const WorkCard = observer((props: { work: ProjectWork; vm: VM }) => {
     ).length;
 
     const [showComments, setShowComments] = useState(false);
+    const [commentsCount, setCommentsCount] = useState(0);
+
+    useEffect(() => {
+        if (showComments) {
+            return;
+        }
+        worksStore.fetchWorkCommentsCount(props.work.id).then((count) => setCommentsCount(count));
+    }, [props.work.id, showComments]);
 
     return (
         <div className={styles.workCard}>
@@ -1242,6 +1254,7 @@ export const WorkCard = observer((props: { work: ProjectWork; vm: VM }) => {
                         onClick={() => {
                             setShowComments(true);
                         }}
+                        counter={commentsCount > 0 ? commentsCount : undefined}
                     >
                         Комментарии
                     </Button>

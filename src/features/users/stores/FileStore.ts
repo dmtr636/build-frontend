@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import axios from "axios";
+import { FileDto } from "src/features/journal/types/Object.ts";
 /*
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 */
@@ -23,7 +24,12 @@ export class FileStore {
         makeAutoObservable(this);
     }
 
-    async uploadFile(file: File, type: FileType, userId?: string) {
+    async uploadFile(
+        file: File,
+        type: FileType,
+        userId?: string,
+        onUpload?: (fileDto: FileDto) => void,
+    ) {
         this.uploading = true;
         this.uploadingFileName = file.name;
         this.uploadProgressPercent = 0;
@@ -42,6 +48,7 @@ export class FileStore {
                     signal: this.uploadAbortController.signal,
                 },
             );
+            onUpload?.(response.data);
             return response.data.id;
         } catch (e) {
             if (!axios.isCancel(e)) {

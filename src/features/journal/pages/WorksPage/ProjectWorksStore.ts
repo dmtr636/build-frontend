@@ -121,10 +121,20 @@ export class WorksStore {
         this.loading = false;
     }
 
-    async createComment(comment: ProjectWorkComment) {
+    async fetchWorkCommentsCount(workId: string) {
+        const response = await this.apiClient.get<ProjectWorkComment[]>(
+            endpoints.projectWorkComments + `/search?workId=${workId}`,
+        );
+        if (response.status) {
+            return response.data.length;
+        }
+        return 0;
+    }
+
+    async createComment(comment: Partial<ProjectWorkComment>) {
         this.loading = true;
         await this.apiClient.post<ProjectWorkComment>(endpoints.projectWorkComments, comment);
-        await this.fetchWorkComments(comment.workId);
+        await this.fetchWorkComments(comment?.workId ?? "");
         this.loading = false;
     }
 
