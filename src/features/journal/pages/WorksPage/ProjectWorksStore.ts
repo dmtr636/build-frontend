@@ -201,6 +201,24 @@ export class WorksStore {
                 }
             });
         });
+
+        let hasScheduleChanges = false;
+        for (const workForm of this.worksForm) {
+            const work = this.works.find((w) => w.id === workForm.id);
+            if (!work || !workForm) {
+                continue;
+            }
+            const workVersion = work.workVersions[this.currentWorkVersion - 1];
+            const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
+            if (
+                workVersion.startDate !== workFormVersion.startDate ||
+                workVersion.endDate !== workFormVersion.endDate
+            ) {
+                hasScheduleChanges = true;
+            }
+        }
+        console.log(hasScheduleChanges);
+
         for (const work of this.worksForm) {
             if (
                 deepEquals(
