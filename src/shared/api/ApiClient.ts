@@ -113,6 +113,38 @@ export class ApiClient {
         }
     }
 
+    async patch<T>(
+        endpoint: string,
+        data?: object | object[],
+        params?: {
+            exceptionCodeLocalization?: ExceptionCodeLocalization;
+            disableSnackbar?: boolean;
+            signal?: GenericAbortSignal;
+        },
+    ): Promise<ApiResponse<T>> {
+        try {
+            const response = await axios.patch<T>(endpoint, data, {
+                signal: params?.signal,
+            });
+            return {
+                data: response.data,
+                status: true,
+            };
+        } catch (error) {
+            const errorData = this.handleError(
+                error,
+                params ?? {
+                    exceptionCodeLocalization: this.exceptionCodeLocalization,
+                    disableSnackbar: this.disableSnackbar,
+                },
+            );
+            return {
+                error: errorData?.error,
+                status: false,
+            };
+        }
+    }
+
     async delete(
         endpoint: string,
         id: string | number,

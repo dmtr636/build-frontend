@@ -369,11 +369,12 @@ export const WorksPage = observer(() => {
             <div className={styles.ganttWrapper}>
                 <Typo
                     variant={"h4"}
+                    type={"secondary"}
                     style={{
-                        marginBottom: 8,
+                        marginBottom: 16,
                     }}
                 >
-                    Диаграма Ганта (в процессе)
+                    Диаграмма Ганта
                 </Typo>
                 <GanttWorks
                     currentWorkVersion={worksStore.currentWorkVersion}

@@ -32,6 +32,7 @@ type GanttTask = {
     progress?: number; // 0..1
     parent?: string;
     open?: boolean;
+    status?: string;
 };
 
 /** ==== Преобразование ProjectWork[] -> GanttTask[] ==== */
@@ -55,6 +56,7 @@ function buildGanttTasks(works: ProjectWork[], currentWorkVersion: number): Gant
             start_date: start,
             duration: total,
             progress: Math.max(0, Math.min(1, (work.completionPercent ?? 0) / 100)),
+            status: work.status,
             open: false,
         });
 
@@ -80,6 +82,7 @@ function buildGanttTasks(works: ProjectWork[], currentWorkVersion: number): Gant
                     duration: slot,
                     progress: 0,
                     parent: parentId,
+                    status: stage.status,
                     open: false,
                 });
 
@@ -110,7 +113,6 @@ export default function GanttWorks({
     currentWorkVersion,
     initialScale = "day",
     width = "100%",
-    height = "600px",
 }: Props) {
     const ref = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState<ScaleMode>(initialScale);
@@ -130,11 +132,12 @@ export default function GanttWorks({
 
         // формату дат в данных соответствуем ISO "YYYY-MM-DD"
         gantt.config.date_format = "%Y-%m-%d";
+        gantt.config.autosize = "y"; // или "xy", если хочешь и ширину под шкалу времени подгонять
 
         // Сетка слева
         gantt.config.grid_width = 320;
         gantt.config.columns = [
-            { name: "text", label: "Название", tree: true, width: 200, resize: true },
+            { name: "text", label: "Название", tree: true, width: 184, resize: true },
             {
                 name: "start_date",
                 label: "Начало",
@@ -156,8 +159,14 @@ export default function GanttWorks({
         gantt.templates.task_text = () => "";
 
         // Подсветка завершённых родителей
-        gantt.templates.task_class = (_s, _e, task) => {
-            return task.progress === 1 ? "task-done" : "";
+        gantt.templates.task_class = (_start, _end, task) => {
+            if (task.status === "ON_CHECK") {
+                return "task-on-check";
+            }
+            if (task.progress === 1) {
+                return "task-done";
+            }
+            return "";
         };
 
         // Тултип
@@ -168,11 +177,10 @@ export default function GanttWorks({
                 : null;
             const progress = Math.round((task.progress || 0) * 100);
             return `
-        <b>${task.text}</b><br/>
-        <b>Сроки:</b> ${fmt(start)} — ${fmt(end)}<br/>
-        ${parentText ? `<b>Родитель:</b> ${parentText}<br/>` : ""}
-        <b>Готово:</b> ${progress}%
-      `;
+    <div class="tooltip-title">${task.text}</div>
+    <div class="tooltip-dates"><b>Сроки:</b> ${fmt(start)} — ${fmt(end)}</div>
+    <div class="tooltip-progress"><b>Готово:</b> ${progress}%</div>
+  `;
         };
 
         // Масштаб по умолчанию
@@ -182,7 +190,6 @@ export default function GanttWorks({
 
         return () => {
             gantt.clearAll();
-            if (gantt.destructor) gantt.destructor();
         };
     }, []); // init один раз
 
@@ -214,60 +221,56 @@ export default function GanttWorks({
     // Переключение масштаба по UI
     useEffect(() => {
         applyScale(scale);
+        gantt.setSizes();
     }, [scale]);
 
     // Подлива данных при каждом изменении props
     useEffect(() => {
         gantt.clearAll();
         gantt.parse({ data, links: [] }); // связи не передаём
+        gantt.setSizes();
     }, [data]);
 
     return (
-        <div style={{ width, height, display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <span style={{ fontSize: 14, opacity: 0.75 }}>Масштаб:</span>
-                <button
-                    onClick={() => setScale("day")}
-                    style={{
-                        padding: "6px 10px",
-                        borderRadius: 8,
-                        border: "1px solid #ccc",
-                        background: scale === "day" ? "#eee" : "#fff",
-                    }}
-                >
-                    Дни
-                </button>
-                <button
-                    onClick={() => setScale("week")}
-                    style={{
-                        padding: "6px 10px",
-                        borderRadius: 8,
-                        border: "1px solid #ccc",
-                        background: scale === "week" ? "#eee" : "#fff",
-                    }}
-                >
-                    Недели
-                </button>
-                <button
-                    onClick={() => setScale("month")}
-                    style={{
-                        padding: "6px 10px",
-                        borderRadius: 8,
-                        border: "1px solid #ccc",
-                        background: scale === "month" ? "#eee" : "#fff",
-                    }}
-                >
-                    Месяцы
-                </button>
-            </div>
+        <div style={{ width, display: "flex", flexDirection: "column", gap: 8 }}>
+            {/*<div style={{ display: "flex", gap: 8, alignItems: "center" }}>*/}
+            {/*    <span style={{ fontSize: 14, opacity: 0.75 }}>Масштаб:</span>*/}
+            {/*    <button*/}
+            {/*        onClick={() => setScale("day")}*/}
+            {/*        style={{*/}
+            {/*            padding: "6px 10px",*/}
+            {/*            borderRadius: 8,*/}
+            {/*            border: "1px solid #ccc",*/}
+            {/*            background: scale === "day" ? "#eee" : "#fff",*/}
+            {/*        }}*/}
+            {/*    >*/}
+            {/*        Дни*/}
+            {/*    </button>*/}
+            {/*    <button*/}
+            {/*        onClick={() => setScale("week")}*/}
+            {/*        style={{*/}
+            {/*            padding: "6px 10px",*/}
+            {/*            borderRadius: 8,*/}
+            {/*            border: "1px solid #ccc",*/}
+            {/*            background: scale === "week" ? "#eee" : "#fff",*/}
+            {/*        }}*/}
+            {/*    >*/}
+            {/*        Недели*/}
+            {/*    </button>*/}
+            {/*    <button*/}
+            {/*        onClick={() => setScale("month")}*/}
+            {/*        style={{*/}
+            {/*            padding: "6px 10px",*/}
+            {/*            borderRadius: 8,*/}
+            {/*            border: "1px solid #ccc",*/}
+            {/*            background: scale === "month" ? "#eee" : "#fff",*/}
+            {/*        }}*/}
+            {/*    >*/}
+            {/*        Месяцы*/}
+            {/*    </button>*/}
+            {/*</div>*/}
 
-            <div ref={ref} style={{ flex: 1, minHeight: 300 }} />
-            <style>{`
-        .gantt_task_line.task-done {
-          opacity: 0.85;
-          filter: saturate(0.4);
-        }
-      `}</style>
+            <div ref={ref} style={{ width: "100%" }} />
         </div>
     );
 }
