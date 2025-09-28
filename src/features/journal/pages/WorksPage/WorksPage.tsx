@@ -364,6 +364,7 @@ export const WorksPage = observer(() => {
                     {showGradient && <div className={styles.gradient} />}
                 </div>
             </div>
+            <div className={styles.ganttWrapper}></div>
             {showSaveButton && currentObj && (
                 <div className={styles.footer}>
                     <div style={{ display: "flex", gap: 16 }}>
