@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { appStore, violationStore, worksStore } from "src/app/AppStore.ts";
@@ -11,6 +11,7 @@ import {
     IconImage,
     IconInfo,
     IconNext,
+    IconPin,
     IconPlus,
     IconTime,
     IconUser,
@@ -22,6 +23,8 @@ import { IconHardware } from "src/features/journal/components/JournalItemCard/as
 import { formatObjNumber } from "src/shared/utils/formatObjNumber.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
+import { MapEditor, MapEditorValue } from "src/features/map/MapEditor.tsx";
+import { deepCopy } from "src/shared/utils/deepCopy.ts";
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
@@ -67,6 +70,65 @@ const ReviewPage = observer(() => {
             appStore.worksStore.fetchWorks(id);
         }
     }, [id]);
+    const [mapObj, setMapObj] = useState<MapEditorValue>({
+        name: "",
+        marker: null, // или { lat: ..., lng: ... }
+        polygon: null, // или массив координат
+        color: "#1971c2",
+        address: {
+            city: "",
+            street: "",
+            house: "",
+        },
+    });
+    const setInitial = () => {
+        if (!project) {
+            return;
+        }
+        setMapObj({
+            ...mapObj,
+            name: project.name,
+            number: project.objectNumber,
+            marker: project.centroid
+                ? {
+                      lat: project.centroid.latitude,
+                      lng: project.centroid.longitude,
+                  }
+                : null,
+            polygon: project.polygon?.length
+                ? project.polygon.map((point) => ({
+                      lat: point.latitude,
+                      lng: point.longitude,
+                  }))
+                : null,
+            address: project.address
+                ? deepCopy(project.address)
+                : {
+                      city: "",
+                      street: "",
+                      house: "",
+                  },
+        });
+    };
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        if (!project || ready) {
+            return;
+        }
+        setInitial();
+        setTimeout(() => {
+            mapObj.marker = null;
+            mapObj.polygon = null;
+            setMapObj({
+                ...mapObj,
+            });
+        }, 15);
+        setTimeout(() => {
+            setInitial();
+            setReady(true);
+        }, 30);
+    }, [project]);
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -130,6 +192,29 @@ const ReviewPage = observer(() => {
                         <span
                             style={{ color: "rgba(0, 0, 0, 0.39)" }}
                         >{`№ ${formatObjNumber(project?.objectNumber ?? "")}`}</span>
+                    </div>
+                </div>
+                <div className={styles.map}>
+                    <MapEditor height={"300px"} value={mapObj} onChange={() => {}} />
+                    <div className={styles.mapInfo}>
+                        {(project?.address || project?.centroid) && (
+                            <div className={styles.location}>
+                                <div className={styles.pin}>
+                                    <IconPin />
+                                </div>
+                                <Typo variant="subheadS" mode="accent">
+                                    {[
+                                        project.address?.city,
+                                        project.address?.street,
+                                        project.address?.house,
+                                        project.centroid?.latitude,
+                                        project.centroid?.longitude,
+                                    ]
+                                        .filter(Boolean)
+                                        .join(", ")}
+                                </Typo>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className={styles.userBlockContainer}>
