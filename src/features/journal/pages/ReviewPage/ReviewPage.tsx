@@ -197,7 +197,7 @@ const ReviewPage = observer(() => {
                 </div>
                 <div className={styles.map}>
                     <MapEditor
-                        readyProp={true}
+                        readyProp={false}
                         height={"300px"}
                         value={mapObj}
                         onChange={() => {}}
