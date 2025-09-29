@@ -1318,7 +1318,13 @@ export const WorkCard = observer(
                                     ))
                             }
                             color={
-                                props.work.status === "ON_CHECK"
+                                props.work.status === "ON_CHECK" ||
+                                (!!props.work.stages.length &&
+                                    props.work.stages.every(
+                                        (stage) =>
+                                            stage.status === "DONE" || stage.status === "ON_CHECK",
+                                    ) &&
+                                    props.work.stages.some((stage) => stage.status === "ON_CHECK"))
                                     ? "lavender"
                                     : props.work.status === "DONE"
                                       ? "positive"
