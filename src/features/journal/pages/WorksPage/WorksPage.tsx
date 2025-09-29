@@ -1474,6 +1474,11 @@ export const WorkCard = observer(
                             inputContentStyle={{
                                 padding: "0 12px",
                                 gap: 4,
+                                background:
+                                    props.previewNewVersion &&
+                                    activeVersion?.endDate !== workVersion.endDate
+                                        ? "#fff7ee"
+                                        : undefined,
                             }}
                             inputBorderStyle={{
                                 borderColor:
