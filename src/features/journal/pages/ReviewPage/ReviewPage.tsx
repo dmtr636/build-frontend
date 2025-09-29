@@ -25,6 +25,7 @@ import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
 import { MapEditor, MapEditorValue } from "src/features/map/MapEditor.tsx";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
+import { cls } from "react-image-crop";
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
@@ -195,9 +196,14 @@ const ReviewPage = observer(() => {
                     </div>
                 </div>
                 <div className={styles.map}>
-                    <MapEditor height={"300px"} value={mapObj} onChange={() => {}} />
+                    <MapEditor
+                        readyProp={true}
+                        height={"300px"}
+                        value={mapObj}
+                        onChange={() => {}}
+                    />
                     <div className={styles.mapInfo}>
-                        {(project?.address || project?.centroid) && (
+                        {project?.address || project?.centroid ? (
                             <div className={styles.location}>
                                 <div className={styles.pin}>
                                     <IconPin />
@@ -213,6 +219,22 @@ const ReviewPage = observer(() => {
                                         .filter(Boolean)
                                         .join(", ")}
                                 </Typo>
+                            </div>
+                        ) : (
+                            <div
+                                className={clsx(styles.location, styles.noMap)}
+                                style={{ cursor: "pointer" }}
+                                onClick={() => navigate(`/admin/journal/${project?.id}/location`)}
+                            >
+                                <div className={styles.pin}>
+                                    <IconPin />
+                                </div>
+                                <Typo variant="subheadS" mode="accent">
+                                    Местоположение не указано
+                                </Typo>
+                                <div style={{ marginLeft: "auto" }}>
+                                    <IconNext />
+                                </div>
                             </div>
                         )}
                     </div>
@@ -409,7 +431,7 @@ const ReviewPage = observer(() => {
                     <div className={clsx(styles.itemForm, styles.right)}>
                         {works.length || violations.length ? (
                             <div className={styles.infoBlock}>
-                                {works.length && (
+                                {Boolean(works.length) && (
                                     <div
                                         className={styles.works}
                                         onClick={() =>
@@ -420,7 +442,7 @@ const ReviewPage = observer(() => {
                                         Работы
                                     </div>
                                 )}
-                                {violations.length && (
+                                {Boolean(violations.length) && (
                                     <div
                                         className={styles.works}
                                         style={{ color: "#C02626" }}

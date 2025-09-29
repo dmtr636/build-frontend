@@ -51,9 +51,9 @@
     }
 
     /*.right {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+display: flex;
+flex-direction: column;
+gap: 12px;
 }*/
 }
 
@@ -334,7 +334,7 @@ flex-shrink: 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    width: 350px;
+    min-width: 350px;
 }
 
 .infoBlock {
@@ -443,6 +443,11 @@ flex-shrink: 0;
     font-style: normal;
     font-weight: 500;
     line-height: 140%; /* 18.2px */
+    &.noMap {
+        &:hover {
+            opacity: 0.8;
+        }
+    }
 }
 
 .pin {
