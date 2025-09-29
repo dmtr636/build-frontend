@@ -49,86 +49,89 @@ export const CheckListSection = observer(
                         disabled={true}
                     />
                 </Flex>
-                <div className={styles.workCardStages}>
-                    {props.section.items.map((item, i) => (
-                        <>
-                            <Flex gap={16} key={i} align={"start"}>
-                                <Checkbox
-                                    onChange={(checked) => {
-                                        item.answer = checked ? "YES" : null;
-                                    }}
-                                    onClick={() => {
-                                        if (item.answer) {
-                                            item.answer = null;
+                {!collapsed && (
+                    <div className={styles.workCardStages}>
+                        {props.section.items.map((item, i) => (
+                            <>
+                                <Flex gap={16} key={i} align={"start"}>
+                                    <Checkbox
+                                        onChange={(checked) => {
+                                            item.answer = checked ? "YES" : null;
+                                        }}
+                                        onClick={() => {
+                                            if (item.answer) {
+                                                item.answer = null;
+                                            }
+                                        }}
+                                        size={"medium"}
+                                        checked={!!item.answer}
+                                        intermediate={
+                                            item.answer === "NOT_REQUIRED"
+                                                ? "minus"
+                                                : item.answer === "NO"
+                                                  ? "plus"
+                                                  : undefined
                                         }
-                                    }}
-                                    size={"medium"}
-                                    checked={!!item.answer}
-                                    intermediate={
-                                        item.answer === "NOT_REQUIRED"
-                                            ? "minus"
-                                            : item.answer === "NO"
-                                              ? "plus"
-                                              : undefined
-                                    }
-                                    color={
-                                        item.answer === "YES"
-                                            ? "positive"
-                                            : item.answer === "NO"
-                                              ? "negative"
-                                              : "neutral"
-                                    }
-                                    title={item.text}
-                                    style={{
-                                        flexGrow: 1,
-                                        alignItems: "start",
-                                        gap: 12,
-                                    }}
-                                    plusIconRotated={true}
-                                    disabled={props.finished}
-                                />
-                                <Flex
-                                    gap={8}
-                                    style={{
-                                        opacity:
-                                            item.answer ||
-                                            (!accountStore.isContractor && !accountStore.isAdmin)
-                                                ? 0
-                                                : 1,
-                                    }}
-                                >
-                                    <Button
-                                        size={"tiny"}
-                                        type={"outlined"}
-                                        mode={"neutral"}
-                                        onClick={() => {
-                                            item.answer = "NOT_REQUIRED";
+                                        color={
+                                            item.answer === "YES"
+                                                ? "positive"
+                                                : item.answer === "NO"
+                                                  ? "negative"
+                                                  : "neutral"
+                                        }
+                                        title={item.text}
+                                        style={{
+                                            flexGrow: 1,
+                                            alignItems: "start",
+                                            gap: 12,
+                                        }}
+                                        plusIconRotated={true}
+                                        disabled={props.finished}
+                                    />
+                                    <Flex
+                                        gap={8}
+                                        style={{
+                                            opacity:
+                                                item.answer ||
+                                                (!accountStore.isContractor &&
+                                                    !accountStore.isAdmin)
+                                                    ? 0
+                                                    : 1,
                                         }}
                                     >
-                                        Не требуется
-                                    </Button>
-                                    <Button
-                                        size={"tiny"}
-                                        type={"secondary"}
-                                        mode={"negative"}
-                                        onClick={() => {
-                                            item.answer = "NO";
-                                        }}
-                                    >
-                                        Нет
-                                    </Button>
+                                        <Button
+                                            size={"tiny"}
+                                            type={"outlined"}
+                                            mode={"neutral"}
+                                            onClick={() => {
+                                                item.answer = "NOT_REQUIRED";
+                                            }}
+                                        >
+                                            Не требуется
+                                        </Button>
+                                        <Button
+                                            size={"tiny"}
+                                            type={"secondary"}
+                                            mode={"negative"}
+                                            onClick={() => {
+                                                item.answer = "NO";
+                                            }}
+                                        >
+                                            Нет
+                                        </Button>
+                                    </Flex>
                                 </Flex>
-                            </Flex>
-                            {i !== props.section.items.length - 1 && (
-                                <Divider
-                                    direction={"horizontal"}
-                                    type={"tertiary"}
-                                    noMargin={true}
-                                />
-                            )}
-                        </>
-                    ))}
-                </div>
+                                {i !== props.section.items.length - 1 && (
+                                    <Divider
+                                        direction={"horizontal"}
+                                        type={"tertiary"}
+                                        noMargin={true}
+                                    />
+                                )}
+                            </>
+                        ))}
+                    </div>
+                )}
             </div>
         );
     },
