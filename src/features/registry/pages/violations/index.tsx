@@ -508,6 +508,7 @@ export const Violations = observer(() => {
                         });
                         registryStore.deletingViolation = null;
                         registryStore.editingViolation = null;
+                        registryStore.violationsForm = {};
                     }
                 }}
                 loading={registryStore.loading}
