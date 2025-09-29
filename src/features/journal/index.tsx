@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { Helmet } from "react-helmet";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import styles from "./journal.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { appStore, layoutStore, registryStore } from "src/app/AppStore.ts";
@@ -337,7 +337,10 @@ export const JournalPage = observer(() => {
         setCustomerOrg([]);
         setHaveUser([]);
     };
-
+    useLayoutEffect(() => {
+        layoutStore.setHeaderProps({ title: "Объекты", buttonBack: false });
+    }, []);
+    const isMobile = layoutStore.isMobile;
     return (
         <div className={styles.container}>
             <Helmet>
@@ -491,34 +494,38 @@ export const JournalPage = observer(() => {
                         />
                     </div>
 
-                    <div>
-                        <Tooltip header={"Карта"} delay={500}>
-                            <Button
-                                size={"large"}
-                                iconBefore={<IconPin />}
-                                type={"outlined"}
-                                mode={"neutral"}
-                                onClick={() => setShowMapsOverlay(true)}
-                            />
-                        </Tooltip>
-                    </div>
+                    {!isMobile && (
+                        <div>
+                            <Tooltip header={"Карта"} delay={500}>
+                                <Button
+                                    size={"large"}
+                                    iconBefore={<IconPin />}
+                                    type={"outlined"}
+                                    mode={"neutral"}
+                                    onClick={() => setShowMapsOverlay(true)}
+                                />
+                            </Tooltip>
+                        </div>
+                    )}
 
-                    <div>
-                        <SingleDropdownList
-                            hideTip={true}
-                            setShow={setSortIsOpen}
-                            maxHeight={542}
-                            options={dropDownSortOptions}
-                            tipPosition={"top-right"}
-                        >
-                            <Button
-                                size={"large"}
-                                iconBefore={sortIsOpen ? <IconClose /> : <IconSorting />}
-                                type={sortIsOpen ? "primary" : "outlined"}
-                                mode={"neutral"}
-                            />
-                        </SingleDropdownList>
-                    </div>
+                    {!isMobile && (
+                        <div>
+                            <SingleDropdownList
+                                hideTip={true}
+                                setShow={setSortIsOpen}
+                                maxHeight={542}
+                                options={dropDownSortOptions}
+                                tipPosition={"top-right"}
+                            >
+                                <Button
+                                    size={"large"}
+                                    iconBefore={sortIsOpen ? <IconClose /> : <IconSorting />}
+                                    type={sortIsOpen ? "primary" : "outlined"}
+                                    mode={"neutral"}
+                                />
+                            </SingleDropdownList>
+                        </div>
+                    )}
                 </div>
 
                 <div
@@ -529,7 +536,7 @@ export const JournalPage = observer(() => {
                         [styles.windowScrolled]: layoutStore.scrolled,
                     })}
                 >
-                    {journalList.length > 0 && (
+                    {journalList.length > 0 && !isMobile && (
                         <div className={styles.headFilters}>
                             <div className={styles.count}>
                                 <span style={{ opacity: 0.6 }}>Отображается</span>

@@ -6,7 +6,9 @@ import {
     IconCalendar,
     IconClose,
     IconEdit,
+    IconError,
     IconNext,
+    IconPlay,
     IconShowPass,
     IconSuccess,
     IconTime,
@@ -22,7 +24,8 @@ import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
-import { appStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore } from "src/app/AppStore.ts";
+import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 interface ViolationCardItemProps {
     violation: ProjectViolationDTO;
@@ -71,6 +74,8 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
     const currentUserRole = appStore.accountStore.currentUser?.role;
     const { id } = useParams();
     console.log(violation);
+    const isMobile = layoutStore.isMobile;
+
     const renderStatusButton = useMemo(() => {
         switch (violation?.status) {
             case "TODO":
@@ -91,24 +96,41 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                 return (
                     <div style={{ display: "flex", gap: 8 }}>
                         <Button
+                            fullWidth={isMobile}
                             size={"small"}
                             type={"secondary"}
                             mode={"lavender"}
                             onClick={() =>
-                                appStore.violationStore.changeStatus(violation.id, "DONE", id ?? "")
+                                appStore.violationStore
+                                    .changeStatus(violation.id, "DONE", id ?? "")
+                                    .then(() =>
+                                        snackbarStore.showNeutralPositiveSnackbar("Статус изменен"),
+                                    )
                             }
                         >
                             Принять
                         </Button>
-                        <Button size={"small"} type={"outlined"} mode={"neutral"}>
-                            Отклонить
-                        </Button>
+                        <Button
+                            fullWidth={isMobile}
+                            onClick={() =>
+                                appStore.violationStore
+                                    .changeStatus(violation.id, "TODO", id ?? "")
+                                    .then(() =>
+                                        snackbarStore.showNeutralPositiveSnackbar("Статус изменен"),
+                                    )
+                            }
+                            size={"small"}
+                            type={"secondary"}
+                            mode={"negative"}
+                            iconBefore={<IconClose />}
+                        ></Button>
                     </div>
                 );
 
             case "DONE":
                 return (
                     <Button
+                        fullWidth={isMobile}
                         size={"small"}
                         iconBefore={<IconSuccess />}
                         type={"primary"}
@@ -119,6 +141,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                 );
         }
     }, []);
+
     const renderStatusButtonPodryadchik = useMemo(() => {
         switch (violation?.status) {
             case "TODO":
@@ -127,12 +150,14 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                         size={"small"}
                         type={"primary"}
                         mode={"neutral"}
+                        fullWidth={isMobile}
+                        iconBefore={<IconPlay />}
                         onClick={() =>
-                            appStore.violationStore.changeStatus(
-                                violation.id,
-                                "IN_PROGRESS",
-                                id ?? "",
-                            )
+                            appStore.violationStore
+                                .changeStatus(violation.id, "IN_PROGRESS", id ?? "")
+                                .then(() =>
+                                    snackbarStore.showNeutralPositiveSnackbar("Статус изменен"),
+                                )
                         }
                     >
                         Взять в работу
@@ -142,16 +167,17 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
             case "IN_PROGRESS":
                 return (
                     <Button
+                        fullWidth={isMobile}
                         size={"small"}
                         type={"primary"}
                         mode={"positive"}
                         iconBefore={<IconShowPass />}
                         onClick={() =>
-                            appStore.violationStore.changeStatus(
-                                violation.id,
-                                "IN_REVIEW",
-                                id ?? "",
-                            )
+                            appStore.violationStore
+                                .changeStatus(violation.id, "IN_REVIEW", id ?? "")
+                                .then(() =>
+                                    snackbarStore.showNeutralPositiveSnackbar("Статус изменен"),
+                                )
                         }
                     >
                         Отправить на проверку
@@ -161,6 +187,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
             case "IN_REVIEW":
                 return (
                     <Button
+                        fullWidth={isMobile}
                         size={"small"}
                         iconBefore={<IconTime />}
                         type={"secondary"}
@@ -174,6 +201,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
             case "DONE":
                 return (
                     <Button
+                        fullWidth={isMobile}
                         size={"small"}
                         iconBefore={<IconSuccess />}
                         type={"primary"}
@@ -302,7 +330,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
             <div className={styles.text}>{violation.name}</div>
             <div className={styles.buttonBlock}>
                 {currentUserRole !== "USER" ? renderStatusButtonPodryadchik : renderStatusButton}
-                {!(currentUserRole === "USER" && violation.status === "IN_REVIEW") && (
+                {!(currentUserRole === "USER" && violation.status === "IN_REVIEW") && !isMobile && (
                     <Button
                         onClick={(e) => e.stopPropagation()}
                         type={"outlined"}
@@ -312,28 +340,35 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                         Комментарии
                     </Button>
                 )}
-                <Button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setOpen(true);
-                    }}
-                    type={"outlined"}
-                    mode={"neutral"}
-                    size={"small"}
-                    iconBefore={<IconEdit />}
-                />
-                <div className={styles.info}>
-                    <span style={{ opacity: 0.7 }}>Нужно исправить до</span>
-                    <div className={styles.infoDate}>{formatDueDate(violation.dueDate)}</div>
-                </div>
-                <ButtonIcon
-                    rounding={"peak"}
-                    type={active ? "outlined" : "primary"}
-                    mode={"neutral"}
-                    size={"small"}
-                >
-                    {active ? <IconClose /> : <IconNext />}
-                </ButtonIcon>
+                {(violation.status === "TODO" || violation.status === "IN_PROGRESS") &&
+                    !isMobile && (
+                        <Button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setOpen(true);
+                            }}
+                            type={"outlined"}
+                            mode={"neutral"}
+                            size={"small"}
+                            iconBefore={<IconEdit />}
+                        />
+                    )}
+                {!isMobile && (
+                    <div className={styles.info}>
+                        <span style={{ opacity: 0.7 }}>Нужно исправить до</span>
+                        <div className={styles.infoDate}>{formatDueDate(violation.dueDate)}</div>
+                    </div>
+                )}
+                {!isMobile && (
+                    <ButtonIcon
+                        rounding={"peak"}
+                        type={active ? "outlined" : "primary"}
+                        mode={"neutral"}
+                        size={"small"}
+                    >
+                        {active ? <IconClose /> : <IconNext />}
+                    </ButtonIcon>
+                )}
             </div>
             <AddViolationOverlay
                 open={open}

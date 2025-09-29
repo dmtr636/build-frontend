@@ -25,11 +25,11 @@
     background-color: white;
     z-index: 2;
     /*
-  &.scrolled {
-    padding-bottom: 8px;
-    border-box: none;
-    margin-bottom: 12px;
-  }*/
+&.scrolled {
+  padding-bottom: 8px;
+  border-box: none;
+  margin-bottom: 12px;
+}*/
 
     &.windowScrolled {
         &::after {
@@ -75,6 +75,11 @@
 
     margin-bottom: 40px;
     gap: 16px;
+    @media screen and (max-width: 768px) {
+        margin-top: 0;
+        gap: 8px;
+        margin-bottom: 0;
+    }
 }
 
 .noDocs {
@@ -86,6 +91,10 @@
     padding-bottom: 60px;
     flex-direction: column;
     gap: 20px;
+    @media screen and (max-width: 768px) {
+        height: calc(100vh - 450px);
+        margin-bottom: 100px;
+    }
 }
 
 .textNoDocs {

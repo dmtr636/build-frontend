@@ -1,10 +1,11 @@
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { appStore, violationStore, worksStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, violationStore, worksStore } from "src/app/AppStore.ts";
 import styles from "./ReviewPage.module.scss";
 import {
     IconApps,
+    IconAttention,
     IconCheckmark,
     IconDote,
     IconFlag,
@@ -25,7 +26,9 @@ import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
 import { MapEditor, MapEditorValue } from "src/features/map/MapEditor.tsx";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
-import { cls } from "react-image-crop";
+import { Alert } from "src/ui/components/solutions/Alert/Alert.tsx";
+import { useGeofence } from "src/features/journal/hooks/geofence.ts";
+import { Button } from "src/ui/components/controls/Button/Button.tsx";
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
@@ -129,16 +132,85 @@ const ReviewPage = observer(() => {
             setInitial();
             setReady(true);
         }, 30);
-    }, [project]);
+    }, []);
+    const isMobile = layoutStore.isMobile;
+    /*const { pos, inside, error, lastChangeTs } = useGeofence({
+        polygon: project?.polygon ?? ([] as any),
+        throttleMs: 1000,
+        enableHighAccuracy: true,
+        minAccuracyMeters: 500,
+        onEnter: (p) => console.log("Вход в зону", p),
+        onExit: (p) => console.log("Выход из зоны", p),
+    });*/
+    /*
+        console.log(pos);
+    */
+    /*console.log(inside);*/
+    /*
+        console.log(JSON.parse(JSON.stringify(project?.polygon)));
+    */
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <div className={styles.icon}>
-                    <IconApps />
+            {!isMobile && (
+                <div className={styles.header}>
+                    <div className={styles.icon}>
+                        <IconApps />
+                    </div>
+                    <div>Обзор</div>
                 </div>
-                <div>Обзор</div>
-            </div>
+            )}
             <div className={styles.content}>
+                {isMobile && (
+                    <div className={styles.containerAlert}>
+                        <Alert
+                            icon={<IconAttention />}
+                            title={"Изменение не доступно"}
+                            mode={"warning"}
+                            subtitle={"Посетите объект"}
+                            actions={[
+                                <Button type={"primary"} size={"small"} mode={"neutral"} key={1}>
+                                    Сканировать QR-код
+                                </Button>,
+                            ]}
+                        ></Alert>
+                    </div>
+                )}
+                {isMobile && (
+                    <div className={styles.buttonsCheck}>
+                        <Button
+                            onClick={() => navigate(`/admin/journal/${id}/violations`)}
+                            mode={"positive"}
+                            size={"small"}
+                            counter={works.length}
+                            fullWidth={true}
+                        >
+                            Проверить работу
+                        </Button>
+                        <Button
+                            onClick={() => navigate(`/admin/journal/${id}/create`)}
+                            iconBefore={<IconPlus />}
+                            mode={"negative"}
+                            size={"small"}
+                            fullWidth={true}
+                        >
+                            Добавить нарушение
+                        </Button>
+                        <Button
+                            fullWidth={true}
+                            type={"outlined"}
+                            counter={
+                                violations.filter((i) => i.status === "IN_REVIEW").length
+                                    ? violations.filter((i) => i.status === "IN_REVIEW").length
+                                    : undefined
+                            }
+                            /*   iconBefore={<IconPlus />}*/
+                            mode={"neutral"}
+                            size={"small"}
+                        >
+                            Исправленные нарушения
+                        </Button>
+                    </div>
+                )}
                 <div className={clsx(styles.itemForm, styles.left)}>
                     <div className={styles.objHead}>
                         <div className={styles.img}>
@@ -272,7 +344,12 @@ const ReviewPage = observer(() => {
                                     </div>
                                     {customerOrg ? (
                                         <Link
-                                            onClick={(event) => event.stopPropagation()}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                if (isMobile) {
+                                                    event.preventDefault();
+                                                }
+                                            }}
                                             to={`/admin/organizations/${customerOrg?.id}`}
                                             className={styles.itemName}
                                         >
@@ -280,7 +357,12 @@ const ReviewPage = observer(() => {
                                         </Link>
                                     ) : (
                                         <Link
-                                            onClick={(event) => event.stopPropagation()}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                if (isMobile) {
+                                                    event.preventDefault();
+                                                }
+                                            }}
                                             className={styles.itemName}
                                             to={`/admin/journal/${project?.id}/users`}
                                         >
@@ -316,7 +398,12 @@ const ReviewPage = observer(() => {
                                     </div>
                                     {customerUser ? (
                                         <Link
-                                            onClick={(event) => event.stopPropagation()}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                if (isMobile) {
+                                                    event.preventDefault();
+                                                }
+                                            }}
                                             to={`/admin/users/${customerUser?.id}`}
                                             className={styles.itemName}
                                         >
@@ -324,7 +411,13 @@ const ReviewPage = observer(() => {
                                         </Link>
                                     ) : (
                                         <Link
-                                            onClick={(event) => event.stopPropagation()}
+                                            aria-disabled={true}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                if (isMobile) {
+                                                    event.preventDefault();
+                                                }
+                                            }}
                                             className={styles.itemName}
                                             to={`/admin/journal/${project?.id}/users`}
                                         >
@@ -365,7 +458,12 @@ const ReviewPage = observer(() => {
                                     </div>
                                     {contractorOrg ? (
                                         <Link
-                                            onClick={(event) => event.stopPropagation()}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                if (isMobile) {
+                                                    event.preventDefault();
+                                                }
+                                            }}
                                             to={`/admin/organizations/${contractorOrg?.id}`}
                                             className={styles.itemName}
                                         >
@@ -373,7 +471,12 @@ const ReviewPage = observer(() => {
                                         </Link>
                                     ) : (
                                         <Link
-                                            onClick={(event) => event.stopPropagation()}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                if (isMobile) {
+                                                    event.preventDefault();
+                                                }
+                                            }}
                                             className={styles.itemName}
                                             to={`/admin/journal/${project?.id}/users`}
                                         >
@@ -409,7 +512,12 @@ const ReviewPage = observer(() => {
                                     </div>
                                     {contractUser ? (
                                         <Link
-                                            onClick={(event) => event.stopPropagation()}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                if (isMobile) {
+                                                    event.preventDefault();
+                                                }
+                                            }}
                                             to={`/admin/users/${contractUser?.id}`}
                                             className={styles.itemName}
                                         >
@@ -417,7 +525,12 @@ const ReviewPage = observer(() => {
                                         </Link>
                                     ) : (
                                         <Link
-                                            onClick={(event) => event.stopPropagation()}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                if (isMobile) {
+                                                    event.preventDefault();
+                                                }
+                                            }}
                                             className={styles.itemName}
                                             to={`/admin/journal/${project?.id}/users`}
                                         >
@@ -428,50 +541,55 @@ const ReviewPage = observer(() => {
                             </div>
                         </div>
                     </div>
-                    <div className={clsx(styles.itemForm, styles.right)}>
-                        {works.length || violations.length ? (
-                            <div className={styles.infoBlock}>
-                                {Boolean(works.length) && (
-                                    <div
-                                        className={styles.works}
-                                        onClick={() =>
-                                            navigate(`/admin/journal/${project?.id}/status`)
-                                        }
-                                    >
-                                        <div className={styles.workCount}>{works.length}</div>
-                                        Работы
+                    {!isMobile && (
+                        <div className={clsx(styles.itemForm, styles.right)}>
+                            {works.length || violations.length ? (
+                                <div className={styles.infoBlock}>
+                                    {Boolean(works.length) && (
+                                        <div
+                                            className={styles.works}
+                                            onClick={() =>
+                                                navigate(`/admin/journal/${project?.id}/status`)
+                                            }
+                                        >
+                                            <div className={styles.workCount}>{works.length}</div>
+                                            Работы
+                                        </div>
+                                    )}
+                                    {Boolean(violations.length) && (
+                                        <div
+                                            className={styles.works}
+                                            style={{ color: "#C02626" }}
+                                            onClick={() =>
+                                                navigate(`/admin/journal/${project?.id}/violations`)
+                                            }
+                                        >
+                                            <div className={styles.VCount}>
+                                                {" "}
+                                                {violations.length}
+                                            </div>
+                                            Нарушения
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div
+                                    className={styles.noWork}
+                                    onClick={() => navigate(`/admin/journal/${project?.id}/status`)}
+                                >
+                                    <div className={styles.noImgItem}>
+                                        <div className={styles.plus}>
+                                            <IconPlus />
+                                        </div>
                                     </div>
-                                )}
-                                {Boolean(violations.length) && (
-                                    <div
-                                        className={styles.works}
-                                        style={{ color: "#C02626" }}
-                                        onClick={() =>
-                                            navigate(`/admin/journal/${project?.id}/violations`)
-                                        }
-                                    >
-                                        <div className={styles.VCount}> {violations.length}</div>
-                                        Нарушения
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div
-                                className={styles.noWork}
-                                onClick={() => navigate(`/admin/journal/${project?.id}/status`)}
-                            >
-                                <div className={styles.noImgItem}>
-                                    <div className={styles.plus}>
-                                        <IconPlus />
+                                    <span style={{ opacity: 0.8 }}>Работы</span>
+                                    <div style={{ marginLeft: "auto" }}>
+                                        <IconNext />
                                     </div>
                                 </div>
-                                <span style={{ opacity: 0.8 }}>Работы</span>
-                                <div style={{ marginLeft: "auto" }}>
-                                    <IconNext />
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

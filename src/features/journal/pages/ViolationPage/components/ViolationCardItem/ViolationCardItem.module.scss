@@ -8,12 +8,24 @@
     &.active {
         border: 1px solid var(--objects-stroke-accent-primary, #2053d5);
         padding: 19px;
+        @media screen and (max-width: 768px) {
+            padding: 20px;
+            border: 0;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        width: calc(100vw - 32px);
+        /*padding: 0 16px;*/
     }
 }
 
 .badges {
     display: flex;
     gap: 4px;
+    @media screen and (max-width: 768px) {
+        flex-wrap: wrap;
+    }
 }
 
 .badge {
@@ -41,6 +53,10 @@
         background: var(--objects-background-negative-tertiary, #ffe6e6);
         color: var(--objects-text-negative-primary, #c02626);
     }
+
+    @media screen and (max-width: 768px) {
+        max-width: 100%;
+    }
 }
 
 .badgeText {
@@ -62,6 +78,11 @@
     display: flex;
     gap: 80px;
     margin-top: 16px;
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 12px;
+    }
 }
 
 .userImg {
@@ -126,6 +147,9 @@
     font-weight: 500;
     line-height: 140%; /* 21px */
     min-height: 85px;
+    @media screen and (max-width: 768px) {
+        min-height: 0;
+    }
 }
 
 .buttonBlock {

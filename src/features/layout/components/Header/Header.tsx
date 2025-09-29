@@ -74,9 +74,9 @@ const Header = () => {
                     {() => (
                         <div className={styles.linkItem}>
                             <div className={styles.linkItemIcon}>
-                                <IconSuccess />
+                                <IconHome />
                             </div>
-                            Задачи
+                            Главная
                         </div>
                     )}
                 </NavLink>

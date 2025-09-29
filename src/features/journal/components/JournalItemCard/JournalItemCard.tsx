@@ -14,7 +14,7 @@ import {
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { Link, useNavigate } from "react-router-dom";
-import { appStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore } from "src/app/AppStore.ts";
 import { getFullName } from "src/shared/utils/getFullName.ts";
 import { ObjectDTO } from "src/features/journal/types/Object.ts";
 import { formatDateShort } from "src/shared/utils/date.ts";
@@ -64,7 +64,36 @@ const JournalItemCard = ({ project }: journalItemCardProps) => {
                 return null;
         }
     }, [project.status]);
-
+    const isMobile = layoutStore.isMobile;
+    if (isMobile) {
+        return (
+            <div
+                className={styles.container}
+                onClick={() => navigate(`/admin/journal/${project.id}`)}
+            >
+                <div className={styles.img}>
+                    {project?.imageId ? (
+                        <div className={styles.avatarImg}>
+                            <img src={`${GET_FILES_ENDPOINT}/${project?.imageId}`} />
+                        </div>
+                    ) : (
+                        <div className={styles.noImg}>
+                            <IconImage />
+                        </div>
+                    )}
+                </div>
+                <div className={styles.textBLockMob}>
+                    <div className={styles.textMob}>{project.name}</div>
+                    <Typo
+                        style={{
+                            color: "rgba(0, 0, 0, 0.39)",
+                        }}
+                        variant={"subheadS"}
+                    >{`№ ${formatObjNumber(project.objectNumber)}`}</Typo>
+                </div>
+            </div>
+        );
+    }
     return (
         <div className={styles.container} onClick={() => navigate(`/admin/journal/${project.id}`)}>
             <div className={styles.badgeArray}>

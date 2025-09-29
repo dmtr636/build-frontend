@@ -1,0 +1,121 @@
+@media screen {
+}
+.container {
+    position: fixed;
+    top: 0;
+    border-bottom: 2px solid var(--stroke-neutral-secondary, #d6d9e0);
+    background: var(--background-contrast-primary, #fff);
+    padding: 8px 4px;
+    height: 64px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    z-index: 2;
+    &.noButtonBack {
+        padding-left: 16px;
+    }
+
+    &.noActions {
+        padding-right: 16px;
+    }
+}
+
+.buttonBack {
+    width: 48px;
+    height: 48px;
+    margin-right: 8px;
+}
+
+.title {
+    overflow: hidden;
+    color: var(--text-neutral-tertiary, #444d5f);
+    /*
+  text-align: start;
+  */
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 24px */
+    width: 100%;
+}
+
+.button {
+    height: 48px;
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    &.primary {
+        svg path {
+            fill: #111317;
+        }
+    }
+
+    &.secondary {
+        svg path {
+            fill: #111317;
+        }
+    }
+}
+
+.counter {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+    border-radius: var(--XS, 4px);
+    background: #da2032;
+    min-width: 20px;
+    padding: 0 2px;
+    height: 20px;
+    color: var(--text-contrast-primary, #fff);
+    text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px; /* 133.333% */
+}
+
+.badge {
+    padding: 4px 8px;
+    color: var(--text-contrast-primary, #fff);
+    text-align: center;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; /* 133.333% */
+    letter-spacing: 0.15px;
+    border-radius: var(--4XL, 40px);
+    text-wrap: nowrap;
+
+    &.info {
+        background: var(--lavender-500, #8c3af8);
+    }
+
+    &.warning {
+        background: var(--background-accent-warning-primary, #d5802a);
+    }
+
+    &.negative {
+        background: var(--background-accent-negative-primary, #c02626);
+    }
+
+    &.positive {
+        background: var(--background-accent-positive-tertiary, #e6fff6);
+        color: var(--text-accent-positive-primary, #267d5f);
+    }
+}

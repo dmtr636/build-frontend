@@ -15,75 +15,80 @@ export const ObjectPage = observer(() => {
     const [scrollBarWidth] = useState(getScrollBarWidth());
     const { id } = useParams();
     const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
-
+    const isMobile = layoutStore.isMobile;
+    useLayoutEffect(() => {
+        layoutStore.setHeaderProps({ title: currentObj?.name ?? "Объект", buttonBack: true });
+    }, [currentObj]);
     return (
         <div>
             <Helmet>
                 <title>{currentObj?.name}</title>
             </Helmet>
-            <div
-                className={styles.subheader}
-                style={{
-                    width: `calc(100vw - ${layoutStore.overflowed && !layoutStore.overflowHidden ? scrollBarWidth : 0}px)`,
-                }}
-            >
-                <div className={styles.buttonBack} onClick={() => navigate(`/admin/journal`)}>
-                    <div className={styles.buttonIcon}>
-                        <IconBack />
-                    </div>
-                    Список объектов
-                </div>
-                <Tabs
-                    value={location.pathname.split("/").pop()}
-                    onChange={(value) => {
-                        navigate(`/admin/journal/${id}/${value}`);
-                    }}
-                    mode={"neutral"}
-                    size={"small"}
-                    tabs={[
-                        {
-                            name: "Обзор",
-                            value: "review",
-                        },
-                        {
-                            name: "Об объекте",
-                            value: "about",
-                        },
-                        {
-                            name: "Документы",
-                            value: "docs",
-                        },
-                        {
-                            name: "Состав работ",
-                            value: "status",
-                        },
-                        {
-                            name: "Местоположение",
-                            value: "location",
-                        },
-                        {
-                            name: "Участники",
-                            value: "users",
-                        },
-                        {
-                            name: "Материалы",
-                            value: "materials",
-                        },
-                        {
-                            name: "Визиты",
-                            value: "visits",
-                        },
-                        {
-                            name: "Замечания и нарушения",
-                            value: "violations",
-                        },
-                    ]}
+            {!isMobile && (
+                <div
+                    className={styles.subheader}
                     style={{
-                        marginBottom: -1,
+                        width: `calc(100vw - ${layoutStore.overflowed && !layoutStore.overflowHidden ? scrollBarWidth : 0}px)`,
                     }}
-                    tabPaddingBottom={25}
-                />
-            </div>
+                >
+                    <div className={styles.buttonBack} onClick={() => navigate(`/admin/journal`)}>
+                        <div className={styles.buttonIcon}>
+                            <IconBack />
+                        </div>
+                        Список объектов
+                    </div>
+                    <Tabs
+                        value={location.pathname.split("/").pop()}
+                        onChange={(value) => {
+                            navigate(`/admin/journal/${id}/${value}`);
+                        }}
+                        mode={"neutral"}
+                        size={"small"}
+                        tabs={[
+                            {
+                                name: "Обзор",
+                                value: "review",
+                            },
+                            {
+                                name: "Об объекте",
+                                value: "about",
+                            },
+                            {
+                                name: "Документы",
+                                value: "docs",
+                            },
+                            {
+                                name: "Состав работ",
+                                value: "status",
+                            },
+                            {
+                                name: "Местоположение",
+                                value: "location",
+                            },
+                            {
+                                name: "Участники",
+                                value: "users",
+                            },
+                            {
+                                name: "Материалы",
+                                value: "materials",
+                            },
+                            {
+                                name: "Визиты",
+                                value: "visits",
+                            },
+                            {
+                                name: "Замечания и нарушения",
+                                value: "violations",
+                            },
+                        ]}
+                        style={{
+                            marginBottom: -1,
+                        }}
+                        tabPaddingBottom={25}
+                    />
+                </div>
+            )}
             <div className={styles.container}>
                 <Outlet />
             </div>

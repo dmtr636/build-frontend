@@ -22,6 +22,7 @@ import { WorksPage } from "src/features/journal/pages/WorksPage/WorksPage.tsx";
 import { QRPage } from "src/features/qr/QRPage.tsx";
 import { LocationPage } from "src/features/journal/pages/LocationPage/LocationPage.tsx";
 import ReviewPage from "src/features/journal/pages/ReviewPage/ReviewPage.tsx";
+import CreateViolationPage from "src/features/journal/pages/ViolationPage/components/CreateViolationPage/CreateViolationPage.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -51,6 +52,7 @@ export const appRoutes: RouteObject[] = [
                 path: "/admin/journal",
                 element: <JournalPage />,
             },
+
             {
                 path: "/admin/journal/:id",
                 element: <ObjectPage />,
@@ -65,6 +67,7 @@ export const appRoutes: RouteObject[] = [
                     { path: "materials", element: <></> },
                     { path: "visits", element: <VisitsPage /> },
                     { path: "violations", element: <ViolationPage></ViolationPage> },
+                    { path: "create", element: <CreateViolationPage></CreateViolationPage> },
                 ],
             },
             {

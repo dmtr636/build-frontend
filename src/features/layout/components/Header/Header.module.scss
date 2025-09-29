@@ -1,5 +1,11 @@
 @import "src/ui/styles/functions";
 
+@media screen and (min-width: 768px) {
+    .container {
+        display: none;
+    }
+}
+
 .container {
     background: var(--objects-background-neutral-tertiary, #f9fafb);
     height: 60px;

@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./UserPage.module.scss";
-import { appStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore } from "src/app/AppStore.ts";
 import { Media } from "src/ui/components/solutions/Media/Media.tsx";
 import { fileUrl } from "src/shared/utils/file.ts";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
@@ -18,6 +18,7 @@ import { clsx } from "clsx";
 import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { emailValidate } from "src/shared/utils/emailValidate.ts";
+import { backButton } from "@telegram-apps/sdk";
 
 const normalizePhone = (value?: string | null): string => {
     if (!value || value.trim() === "" || value === "+7") return "";
@@ -132,7 +133,10 @@ const UserPage = observer(() => {
     const usersEmail = users.map((user) => user.email);
     const emailIsInvalid =
         !emailValidate(email) || (usersEmail.includes(email) && email !== currentUser?.email);
-
+    useLayoutEffect(() => {
+        layoutStore.setHeaderProps({ title: "Профиль", buttonBack: false });
+    }, []);
+    const isMobile = layoutStore.isMobile;
     return (
         <div className={styles.body}>
             <div className={styles.headerTop}>
@@ -143,39 +147,45 @@ const UserPage = observer(() => {
             </div>
             <div className={styles.userForm}>
                 <div className={styles.container}>
-                    <div>
-                        <Media
-                            type={"image"}
-                            readonly={canEdit}
-                            style={{ width: 150, height: 170 }}
-                            url={fileUrl(userImg)}
-                            onSelectFile={async (file) => {
-                                const imageId = await appStore.accountStore.uploadMediaFile(
-                                    file,
-                                    "PROFILE_IMAGE",
-                                );
-                                setUserImg(imageId);
-                            }}
-                            onRemoveFile={() => {
-                                setUserImg(null);
-                            }}
-                            resolution={[160, 192]}
-                            maxSizeMB={100}
-                        />
-                    </div>
+                    {isMobile ? (
+                        <img className={styles.mobileImg} src={fileUrl(userImg)} />
+                    ) : (
+                        <div>
+                            <Media
+                                type={"image"}
+                                readonly={canEdit}
+                                style={{ width: 150, height: 170 }}
+                                url={fileUrl(userImg)}
+                                onSelectFile={async (file) => {
+                                    const imageId = await appStore.accountStore.uploadMediaFile(
+                                        file,
+                                        "PROFILE_IMAGE",
+                                    );
+                                    setUserImg(imageId);
+                                }}
+                                onRemoveFile={() => {
+                                    setUserImg(null);
+                                }}
+                                resolution={[160, 192]}
+                                maxSizeMB={100}
+                            />
+                        </div>
+                    )}
                     <div className={styles.formContainer}>
                         <div className={styles.formItem}>
-                            <div
-                                className={styles.header}
-                                style={{ opacity: 0.6, marginBottom: 16 }}
-                            >
-                                Персональная информация
-                            </div>
+                            {!isMobile && (
+                                <div
+                                    className={styles.header}
+                                    style={{ opacity: 0.6, marginBottom: 16 }}
+                                >
+                                    Персональная информация
+                                </div>
+                            )}
                             <div className={styles.contentPersonal}>
                                 <div className={styles.inputPersonal}>
                                     <Input
-                                        readonly={canEdit}
-                                        required={true}
+                                        readonly={canEdit || isMobile}
+                                        required={!isMobile}
                                         formName={"Имя"}
                                         placeholder={"Введите имя"}
                                         onChange={(e) => setFirstName(e.target.value)}
@@ -184,8 +194,8 @@ const UserPage = observer(() => {
                                 </div>
                                 <div className={styles.inputPersonal}>
                                     <Input
-                                        readonly={canEdit}
-                                        required={true}
+                                        readonly={canEdit || isMobile}
+                                        required={!isMobile}
                                         formName={"Фамилия"}
                                         placeholder={"Введите фамилию"}
                                         onChange={(e) => setLastName(e.target.value)}
@@ -194,7 +204,7 @@ const UserPage = observer(() => {
                                 </div>
                                 <div className={styles.inputPersonal}>
                                     <Input
-                                        readonly={canEdit}
+                                        readonly={canEdit || isMobile}
                                         formName={"Отчество"}
                                         placeholder={"Введите отчество"}
                                         onChange={(e) => setPatronym(e.target.value)}
@@ -203,128 +213,135 @@ const UserPage = observer(() => {
                                 </div>
                             </div>
                         </div>
-                        <div className={styles.formItem}>
-                            <div className={styles.header}>
-                                <span style={{ opacity: 0.6 }}>Роль</span>
-                                <div className={styles.divider}></div>
-                            </div>
-                            <div className={styles.contentContact} style={{ marginBottom: 0 }}>
-                                <div className={styles.inputPersonal}>
-                                    <SingleAutocomplete
-                                        disabled={loginUser?.role === "USER" || role !== "USER"}
-                                        zIndex={9999}
-                                        required={role === "USER"}
-                                        value={position}
-                                        onValueChange={(e) => setPositionValue(e)}
-                                        options={usersPositionOptions}
-                                        multiple={false}
-                                        placeholder={
-                                            role === "USER"
-                                                ? "Начните писать или выберите из списка"
-                                                : ""
-                                        }
-                                        formName={"Должность"}
-                                    ></SingleAutocomplete>
+                        {!isMobile && (
+                            <div className={styles.formItem}>
+                                <div className={styles.header}>
+                                    <span style={{ opacity: 0.6 }}>Роль</span>
+                                    <div className={styles.divider}></div>
                                 </div>
-                                <div className={styles.inputPersonal}>
-                                    <Select
-                                        disabled={loginUser?.role === "USER"}
-                                        required={true}
-                                        zIndex={9999}
-                                        key={"12"}
-                                        value={role}
-                                        onValueChange={(v) => {
-                                            setRole(v as "ROOT" | "ADMIN" | "USER");
-                                            if (v !== "USER") setPositionValue(null);
-                                        }}
-                                        options={rolesOptions}
-                                        multiple={false}
-                                        placeholder={"Выберите из списка"}
-                                        formName={"В системе"}
-                                    ></Select>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles.formItem}>
-                            <div className={styles.header}>
-                                <span style={{ opacity: 0.6 }}>Группы</span>
-                                <div className={styles.divider}></div>
-                            </div>
-                            <div className={styles.contentContact} style={{ marginBottom: 0 }}>
-                                <div className={styles.inputPersonal}>
-                                    <SingleAutocomplete
-                                        zIndex={9999}
-                                        disabled={canEdit}
-                                        value={company}
-                                        onValueChange={(e) => setCompany(e as string)}
-                                        options={companyOptions}
-                                        multiple={false}
-                                        placeholder={"Начните писать или выберите из списка"}
-                                        formName={"Организация"}
-                                    ></SingleAutocomplete>
+                                <div className={styles.contentContact} style={{ marginBottom: 0 }}>
+                                    <div className={styles.inputPersonal}>
+                                        <SingleAutocomplete
+                                            disabled={loginUser?.role === "USER" || role !== "USER"}
+                                            zIndex={9999}
+                                            required={role === "USER"}
+                                            value={position}
+                                            onValueChange={(e) => setPositionValue(e)}
+                                            options={usersPositionOptions}
+                                            multiple={false}
+                                            placeholder={
+                                                role === "USER"
+                                                    ? "Начните писать или выберите из списка"
+                                                    : ""
+                                            }
+                                            formName={"Должность"}
+                                        ></SingleAutocomplete>
+                                    </div>
+                                    <div className={styles.inputPersonal}>
+                                        <Select
+                                            disabled={loginUser?.role === "USER"}
+                                            required={true}
+                                            zIndex={9999}
+                                            key={"12"}
+                                            value={role}
+                                            onValueChange={(v) => {
+                                                setRole(v as "ROOT" | "ADMIN" | "USER");
+                                                if (v !== "USER") setPositionValue(null);
+                                            }}
+                                            options={rolesOptions}
+                                            multiple={false}
+                                            placeholder={"Выберите из списка"}
+                                            formName={"В системе"}
+                                        ></Select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className={styles.formItem}>
-                            <div className={styles.header}>
-                                <span style={{ opacity: 0.6 }}>Контакты</span>
-                                <div className={styles.divider}></div>
+                        )}
+                        {!isMobile && (
+                            <div className={styles.formItem}>
+                                <div className={styles.header}>
+                                    <span style={{ opacity: 0.6 }}>Группы</span>
+                                    <div className={styles.divider}></div>
+                                </div>
+                                <div className={styles.contentContact} style={{ marginBottom: 0 }}>
+                                    <div className={styles.inputPersonal}>
+                                        <SingleAutocomplete
+                                            zIndex={9999}
+                                            disabled={canEdit}
+                                            value={company}
+                                            onValueChange={(e) => setCompany(e as string)}
+                                            options={companyOptions}
+                                            multiple={false}
+                                            placeholder={"Начните писать или выберите из списка"}
+                                            formName={"Организация"}
+                                        ></SingleAutocomplete>
+                                    </div>
+                                </div>
                             </div>
-                            <div className={styles.contentContact}>
-                                <div className={styles.inputPersonal}>
-                                    <Input
-                                        readonly={canEdit}
-                                        startIcon={<IconChat />}
-                                        formName={"Мессенджер"}
-                                        placeholder={"https://example.com"}
-                                        onChange={(e) => setMessager(e.target.value)}
-                                        value={messager}
-                                    />
+                        )}
+                        {!isMobile && (
+                            <div className={styles.formItem}>
+                                <div className={styles.header}>
+                                    <span style={{ opacity: 0.6 }}>Контакты</span>
+                                    <div className={styles.divider}></div>
                                 </div>
-                                <div className={styles.inputPersonal}>
-                                    <EmailInput
-                                        readonly={canEdit}
-                                        required={true}
-                                        formName={"Почта"}
-                                        placeholder={"example@mail.com"}
-                                        onChange={setEmail}
-                                        value={email}
-                                        size={"medium"}
-                                        error={
-                                            usersEmail.includes(email) &&
-                                            email !== currentUser?.email
-                                        }
-                                        formText={
-                                            usersEmail.includes(email) &&
-                                            email !== currentUser?.email &&
-                                            "Пользователь с такой почтой уже существует"
-                                        }
-                                    />
-                                </div>
+                                <div className={styles.contentContact}>
+                                    <div className={styles.inputPersonal}>
+                                        <Input
+                                            readonly={canEdit}
+                                            startIcon={<IconChat />}
+                                            formName={"Мессенджер"}
+                                            placeholder={"https://example.com"}
+                                            onChange={(e) => setMessager(e.target.value)}
+                                            value={messager}
+                                        />
+                                    </div>
+                                    <div className={styles.inputPersonal}>
+                                        <EmailInput
+                                            readonly={canEdit}
+                                            required={true}
+                                            formName={"Почта"}
+                                            placeholder={"example@mail.com"}
+                                            onChange={setEmail}
+                                            value={email}
+                                            size={"medium"}
+                                            error={
+                                                usersEmail.includes(email) &&
+                                                email !== currentUser?.email
+                                            }
+                                            formText={
+                                                usersEmail.includes(email) &&
+                                                email !== currentUser?.email &&
+                                                "Пользователь с такой почтой уже существует"
+                                            }
+                                        />
+                                    </div>
 
-                                <div className={styles.inputPersonal}>
-                                    <PhoneInput
-                                        readonly={canEdit}
-                                        formName={"Рабочий телефон"}
-                                        placeholder={"+7"}
-                                        onChange={setWorkphone}
-                                        value={workphone}
-                                        size={"medium"}
-                                    />
-                                </div>
-                                <div className={styles.inputPersonal}>
-                                    <PhoneInput
-                                        readonly={canEdit}
-                                        formName={"Личный телефон"}
-                                        placeholder={"+7"}
-                                        onChange={setPhone}
-                                        value={phone}
-                                        size={"medium"}
-                                    />
+                                    <div className={styles.inputPersonal}>
+                                        <PhoneInput
+                                            readonly={canEdit}
+                                            formName={"Рабочий телефон"}
+                                            placeholder={"+7"}
+                                            onChange={setWorkphone}
+                                            value={workphone}
+                                            size={"medium"}
+                                        />
+                                    </div>
+                                    <div className={styles.inputPersonal}>
+                                        <PhoneInput
+                                            readonly={canEdit}
+                                            formName={"Личный телефон"}
+                                            placeholder={"+7"}
+                                            onChange={setPhone}
+                                            value={phone}
+                                            size={"medium"}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
+
                     {shouldBlockButton() && (
                         <div className={styles.footer}>
                             <div style={{ display: "flex", gap: 16 }}>
@@ -352,6 +369,18 @@ const UserPage = observer(() => {
                                     Сохранить изменения
                                 </Button>
                             </div>
+                        </div>
+                    )}
+                    {isMobile && (
+                        <div style={{ marginTop: "auto", marginBottom: 24 }}>
+                            <Button
+                                mode={"negative"}
+                                type={"secondary"}
+                                fullWidth={true}
+                                onClick={() => appStore.accountStore.logout()}
+                            >
+                                Выйти из аккаунта
+                            </Button>
                         </div>
                     )}
                 </div>

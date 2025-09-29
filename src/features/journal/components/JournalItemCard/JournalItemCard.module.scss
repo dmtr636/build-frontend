@@ -7,6 +7,15 @@
     gap: 20px;
     cursor: pointer;
     position: relative;
+    @media screen and (max-width: 768px) {
+        border-radius: 8px;
+        background: #f0f0f0;
+        padding: 0;
+        padding-right: 12px;
+        overflow: hidden;
+        gap: 12px;
+        border: none;
+    }
 }
 
 .noImg {
@@ -20,6 +29,11 @@
     background: var(--objects-background-neutral-tertiary, #f9fafb);
 
     box-shadow: 0 0 6px 0 rgba(11, 59, 154, 0.12) inset;
+    @media screen and (max-width: 768px) {
+        width: 49px;
+        height: 72px;
+        border: none;
+    }
 
     svg {
         opacity: 0.24;
@@ -27,6 +41,11 @@
         width: var(--icons-height-5xl, 96px);
         height: var(--icons-height-5xl, 96px);
         flex-shrink: 0;
+        @media screen and (max-width: 768px) {
+            width: 49px;
+            height: 72px;
+            border: none;
+        }
 
         path {
             fill: var(--objects-graphic-neutral-tertiary, #f9fafb);
@@ -42,17 +61,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    @media screen and (max-width: 768px) {
+        width: 49px;
+        height: 72px;
+        border: none;
+    }
 }
 
 .avatarImg {
     object-fit: cover;
     width: 200px;
     height: 291px;
+    @media screen and (max-width: 768px) {
+        width: 49px;
+        height: 72px;
+        border: none;
+    }
 
     img {
         width: 200px;
         height: 291px;
         object-fit: cover;
+        @media screen and (max-width: 768px) {
+            width: 49px;
+            height: 72px;
+            border: none;
+        }
     }
 }
 
@@ -279,5 +313,22 @@ flex-shrink: 0;
 .plus {
     svg path {
         fill: var(--objects-graphic-accent-primary);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .textBLockMob {
+        display: flex;
+        justify-content: center;
+
+        flex-direction: column;
+        gap: 6px;
+    }
+    .textMob {
+        color: var(--objects-text-neutral-primary, #111317);
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 130%; /* 18.2px */
     }
 }
