@@ -16,6 +16,7 @@ import { Select } from "src/ui/components/inputs/Select/Select.tsx";
 import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { emailValidate } from "src/shared/utils/emailValidate.ts";
+import { isDevelopment } from "src/shared/config/domain.ts";
 
 interface UserFormProps {
     open: boolean;
@@ -94,7 +95,7 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
         imageId: userImg ?? undefined,
         organizationId: company,
         login: email,
-        password: "kydas-team-password", // TODO: Для тестирования ставим всем юзерам такой пароль, в проде уберём
+        password: isDevelopment ? "kydas-team-password" : undefined,
     };
     const onClick = () => {
         if (userForm)

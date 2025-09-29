@@ -40,3 +40,25 @@ export interface ProjectWorkComment {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface CheckListInstance {
+    id: string;
+    type: "DAILY" | "OPENING";
+    checkDate: string;
+    templateTitle: string;
+    status: "IN_PROGRESS" | "DONE";
+    sections: IChecklistSection[];
+}
+
+export interface IChecklistSection {
+    title: string;
+    orderIndex: number;
+    items: ChecklistItemAnswer[];
+}
+
+export interface ChecklistItemAnswer {
+    templateItemId: string;
+    itemNumber: string;
+    text: string;
+    answer: "YES" | "NO" | "NOT_REQUIRED" | null;
+}

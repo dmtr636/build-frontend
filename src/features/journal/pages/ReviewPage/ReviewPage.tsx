@@ -196,12 +196,23 @@ const ReviewPage = observer(() => {
                     </div>
                 </div>
                 <div className={styles.map}>
-                    <MapEditor
-                        readyProp={false}
-                        height={"300px"}
-                        value={mapObj}
-                        onChange={() => {}}
-                    />
+                    {project && (
+                        <MapEditor
+                            readyProp={false}
+                            height={"300px"}
+                            value={mapObj}
+                            onChange={() => {}}
+                            center={
+                                project?.centroid
+                                    ? {
+                                          lat: project.centroid.latitude,
+                                          lng: project.centroid.longitude,
+                                      }
+                                    : undefined
+                            }
+                            editable={false}
+                        />
+                    )}
                     <div className={styles.mapInfo}>
                         {project?.address || project?.centroid ? (
                             <div className={styles.location}>

@@ -1,19 +1,71 @@
 import { makeAutoObservable } from "mobx";
 import { ApiClient } from "src/shared/api/ApiClient.ts";
-import { ProjectWork, ProjectWorkComment } from "src/features/journal/types/ProjectWork.ts";
+import {
+    CheckListInstance,
+    ProjectWork,
+    ProjectWorkComment,
+} from "src/features/journal/types/ProjectWork.ts";
 import { endpoints } from "src/shared/api/endpoints.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { deepEquals } from "src/shared/utils/deepEquals.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import axios from "axios";
+import dayjs from "dayjs";
 
 interface WorkVersion {
     versionNumber: number;
     createdAt: string;
 }
 
+const CHECKLISTS = {
+    SAFE: "1. Соблюдение требований безлпастности труда. Культура производства",
+    CURB: "2. Производство работ по устройству бордюрных камней",
+    CONCRETE_ROAD: "3. Бетонные работы. Устройство бетонных дорог",
+    ASPHALT: "4. Асфальтобетонные дороги, тротуары из асфальтобетонного покрытия",
+    PAVER: "5. Устройство тротуара из тротуарной плитки",
+} as const;
+
+function getChecklistTitles(works: string[]): string[] {
+    // Нормализуем к массиву названий
+    const names = works.filter(Boolean).map((s) => s.toLowerCase());
+
+    // Флаги по найденным типам работ
+    let hasCurb = false;
+    let hasAsphalt = false;
+    let hasConcreteRoad = false;
+    let hasPaver = false;
+
+    for (const name of names) {
+        const isCurb =
+            /бордюр|бортов(ой|ого|ый|ые|ых)|бортов\w* камн/.test(name) ||
+            /садов(ый|ого)\s+бортов(ой|ого)\s+камн/.test(name);
+        const isAsphalt = /асфальтобетон/.test(name);
+        const isPaver = /тротуарн\w*\s+плитк/.test(name) || /брусчатк/.test(name);
+
+        // бетонная дорога/покрытие, но не асфальтобетон
+        const hasWordConcrete = /бетон/.test(name) && !/асфальто?бетон/.test(name);
+        const mentionsRoadOrCover = /дорог|покрыт/.test(name);
+        const isConcreteRoad = hasWordConcrete && mentionsRoadOrCover;
+
+        hasCurb ||= isCurb;
+        hasAsphalt ||= isAsphalt;
+        hasPaver ||= isPaver;
+        hasConcreteRoad ||= isConcreteRoad;
+    }
+
+    // Собираем список чек-листов в нужном порядке
+    const result: string[] = [CHECKLISTS.SAFE];
+    if (hasCurb) result.push(CHECKLISTS.CURB);
+    if (hasConcreteRoad) result.push(CHECKLISTS.CONCRETE_ROAD);
+    if (hasAsphalt) result.push(CHECKLISTS.ASPHALT);
+    if (hasPaver) result.push(CHECKLISTS.PAVER);
+
+    // Если ничего специфического не найдено — вернётся только безопасность
+    return result;
+}
+
 export class WorksStore {
-    private apiClient = new ApiClient();
+    apiClient = new ApiClient();
     works: ProjectWork[] = [];
     worksForm: ProjectWork[] = [];
     workComments: ProjectWorkComment[] = [];
@@ -21,6 +73,11 @@ export class WorksStore {
     currentWorkVersion = 1;
     allWorks = [];
     changeType = "";
+    dailyChecklists: CheckListInstance[] = [];
+    dailyChecklistsForm: CheckListInstance[] = [];
+    openingChecklists: CheckListInstance[] = [];
+    openingChecklistsForm: CheckListInstance[] = [];
+    checkListsDay = dayjs().startOf("day");
 
     constructor() {
         makeAutoObservable(this);
@@ -93,12 +150,106 @@ export class WorksStore {
             );
     }
 
+    get checkListTitles() {
+        return getChecklistTitles(this.worksForm.map((w) => w.name));
+    }
+
     get worksMap() {
         return new Map(this.works.map((work) => [work.id, work]));
     }
 
     get worksFormMap() {
         return new Map(this.worksForm.map((work) => [work.id, work]));
+    }
+
+    get todayChecklist() {
+        return this.dailyChecklists.find((c) =>
+            dayjs(c.checkDate).isSame(this.checkListsDay, "day"),
+        );
+    }
+
+    get todayChecklistForm() {
+        return this.dailyChecklistsForm.find((c) =>
+            dayjs(c.checkDate).isSame(this.checkListsDay, "day"),
+        );
+    }
+
+    get todayCheckListSectionsInProgress() {
+        return (
+            this.todayChecklist?.sections.filter((section) =>
+                section.items.some((item) => !item.answer),
+            ) ?? []
+        );
+    }
+
+    get todayCheckListSectionsDone() {
+        return (
+            this.todayChecklist?.sections.filter((section) =>
+                section.items.every((item) => !!item.answer),
+            ) ?? []
+        );
+    }
+
+    get todayCheckListSectionsInProgressForm() {
+        return (
+            this.todayChecklistForm?.sections.filter((section) =>
+                section.items.some(
+                    (item) =>
+                        !item.answer ||
+                        this.todayChecklist?.sections
+                            .find((s) => s.title === section.title)
+                            ?.items?.find((i) => i.itemNumber === item.itemNumber && !i.answer),
+                ),
+            ) ?? []
+        );
+    }
+
+    get todayCheckListSectionsDoneForm() {
+        return (
+            this.todayChecklistForm?.sections.filter((section) =>
+                section.items.every((item) => !!item.answer),
+            ) ?? []
+        );
+    }
+
+    async fetchChecklists(projectId: string) {
+        const dailyChecklistsResponse = await this.apiClient.get<CheckListInstance[]>(
+            endpoints.projectChecklists + `/${projectId}?type=DAILY`,
+        );
+        if (dailyChecklistsResponse.status) {
+            this.dailyChecklists = dailyChecklistsResponse.data;
+        }
+        const openingChecklistsResponse = await this.apiClient.get<CheckListInstance[]>(
+            endpoints.projectChecklists + `/${projectId}?type=OPENING`,
+        );
+        if (openingChecklistsResponse.status) {
+            this.openingChecklists = openingChecklistsResponse.data;
+        }
+
+        if (!this.openingChecklists.length) {
+            const newOpeningChecklistsResponse = await this.apiClient.post<CheckListInstance>(
+                endpoints.projectChecklists + `/${projectId}/submit?type=OPENING`,
+                [],
+            );
+            if (newOpeningChecklistsResponse.status) {
+                this.openingChecklists.push(newOpeningChecklistsResponse.data);
+            }
+        } else {
+            if (
+                !this.dailyChecklists.length ||
+                !this.dailyChecklists.some((c) => dayjs(c.checkDate).isSame(dayjs(), "day"))
+            ) {
+                const newDailyChecklistResponse = await this.apiClient.post<CheckListInstance>(
+                    endpoints.projectChecklists + `/${projectId}/submit?type=DAILY`,
+                    [],
+                );
+                if (newDailyChecklistResponse.status) {
+                    this.dailyChecklists.push(newDailyChecklistResponse.data);
+                }
+            }
+        }
+        this.dailyChecklistsForm = deepCopy(this.dailyChecklists);
+        this.openingChecklistsForm = deepCopy(this.openingChecklists);
     }
 
     async fetchWorks(projectId: string, setVersion = false) {

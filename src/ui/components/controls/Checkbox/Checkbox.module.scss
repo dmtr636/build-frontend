@@ -104,6 +104,14 @@
         );
     }
 
+    &.negative {
+        @include color-mode-vars(
+            $objects-graphic-negative-primary,
+            $objects-text-negative-primary,
+            $objects-text-neutral-secondary
+        );
+    }
+
     &.brand {
         @include color-mode-vars(
             $objects-graphic-brand-expfolio-primary,

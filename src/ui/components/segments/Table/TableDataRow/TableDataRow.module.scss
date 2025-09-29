@@ -1,3 +1,5 @@
+@import "src/ui/styles/functions";
+
 .row {
     display: flex;
     min-width: 100%;
@@ -27,5 +29,11 @@
 
     &.clickable {
         cursor: pointer;
+    }
+
+    &:not(.clickable):active {
+        > div {
+            background: darker-hover($objects-background-contrast-primary);
+        }
     }
 }

@@ -5,6 +5,7 @@ import {
     IconCheckboxOff,
     IconCheckboxOn,
     IconCheckboxPlus,
+    IconCheckboxPlusRotated,
 } from "src/ui/assets/icons";
 import { clsx } from "clsx";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
@@ -27,6 +28,7 @@ interface CheckboxProps {
     size?: CheckboxSize;
     hover?: boolean;
     style?: CSSProperties;
+    plusIconRotated?: boolean;
 }
 
 export const Checkbox = (props: CheckboxProps) => {
@@ -41,6 +43,7 @@ export const Checkbox = (props: CheckboxProps) => {
         size = "large",
         hover,
         style,
+        plusIconRotated,
     }: CheckboxProps = props;
 
     const [checked, setChecked] = useState(props.checked ?? false);
@@ -56,6 +59,9 @@ export const Checkbox = (props: CheckboxProps) => {
             return <IconCheckboxMinus className={styles.icon} />;
         }
         if (intermediate === "plus") {
+            if (plusIconRotated) {
+                return <IconCheckboxPlusRotated className={styles.icon} />;
+            }
             return <IconCheckboxPlus className={styles.icon} />;
         }
         if (checked) {

@@ -3,6 +3,7 @@ import styles from "./WorksPage.module.scss";
 import {
     IconArrowUp,
     IconAttention,
+    IconBadgeChecklistsReady,
     IconBarChart,
     IconCheckmark,
     IconClose,
@@ -55,6 +56,8 @@ import GanttWorks from "src/features/gantt/Gantt.tsx";
 import dayjs from "dayjs";
 import { WorkComments } from "src/features/journal/pages/WorksPage/components/WorkComments/WorkComments.tsx";
 import { Helmet } from "react-helmet";
+import { CheckListSection } from "src/features/journal/pages/WorksPage/components/CheckListSection/CheckListSection.tsx";
+import { endpoints } from "src/shared/api/endpoints.ts";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -103,6 +106,7 @@ export const WorksPage = observer(() => {
             vm.form = deepCopy(currentObj);
             worksStore.fetchWorks(currentObj.id, true);
             worksStore.changeType = "";
+            worksStore.fetchChecklists(currentObj.id);
         } else {
             vm.form = null;
         }
@@ -145,7 +149,8 @@ export const WorksPage = observer(() => {
     const showSaveButton =
         !deepEquals(vm.form, currentObj) ||
         !deepEquals(worksStore.worksForm, worksStore.works) ||
-        previewNewVersion;
+        previewNewVersion ||
+        !deepEquals(worksStore.todayChecklist, worksStore.todayChecklistForm);
 
     const tasksAreaContentRef = useRef<HTMLDivElement | null>(null);
     const [showGradient, setShowGradient] = useState(false);
@@ -266,21 +271,38 @@ export const WorksPage = observer(() => {
                         </div>
                     </div>
                     <div className={styles.leftColCard}>
-                        <Select
-                            options={worksStore.workVersions.map((version) => ({
-                                name: formatDate(version.createdAt),
-                                value: version.versionNumber,
-                            }))}
-                            value={worksStore.currentWorkVersion}
-                            formName={"Версия графика"}
-                            size={"large"}
-                            onValueChange={(value) => {
-                                worksStore.currentWorkVersion = value ?? 1;
-                            }}
-                            disableClear={true}
-                            disabled={!worksStore.worksForm.length}
-                            placeholder={"-"}
-                        />
+                        {vm.tab === "works" ? (
+                            <Select
+                                options={worksStore.workVersions.map((version) => ({
+                                    name: formatDate(version.createdAt),
+                                    value: version.versionNumber,
+                                }))}
+                                value={worksStore.currentWorkVersion}
+                                formName={"Версия графика"}
+                                size={"large"}
+                                onValueChange={(value) => {
+                                    worksStore.currentWorkVersion = value ?? 1;
+                                }}
+                                disableClear={true}
+                                disabled={!worksStore.worksForm.length}
+                                placeholder={"-"}
+                            />
+                        ) : (
+                            <Select
+                                options={worksStore.dailyChecklists.map((version) => ({
+                                    name: formatDate(version.checkDate),
+                                    value: dayjs(version.checkDate).toISOString(),
+                                }))}
+                                value={worksStore.checkListsDay.toISOString()}
+                                formName={"День"}
+                                size={"large"}
+                                onValueChange={(value) => {
+                                    worksStore.checkListsDay = dayjs(value);
+                                }}
+                                disableClear={true}
+                                placeholder={"-"}
+                            />
+                        )}
                     </div>
                     {worksStore.worksForm.length > 0 && (
                         <>
@@ -307,7 +329,7 @@ export const WorksPage = observer(() => {
                     )}
                 </div>
                 <FlexColumn gap={20}>
-                    {showAlertNewVersion && !previewNewVersion && (
+                    {showAlertNewVersion && !previewNewVersion && vm.tab === "works" && (
                         <Alert
                             mode={"warning"}
                             title={
@@ -486,7 +508,24 @@ export const WorksPage = observer(() => {
                                     >
                                         Чек-листы
                                     </Typo>
-                                    <Counter value={3} mode={"neutral"} size={"medium"} />
+                                    {!worksStore.todayCheckListSectionsInProgress.filter((item) =>
+                                        worksStore.checkListTitles.includes(item.title),
+                                    ).length ? (
+                                        <IconBadgeChecklistsReady />
+                                    ) : (
+                                        <Counter
+                                            value={
+                                                worksStore.todayCheckListSectionsInProgress.filter(
+                                                    (item) =>
+                                                        worksStore.checkListTitles.includes(
+                                                            item.title,
+                                                        ),
+                                                ).length
+                                            }
+                                            mode={"neutral"}
+                                            size={"medium"}
+                                        />
+                                    )}
                                 </div>
                             </div>
                             <div
@@ -572,7 +611,55 @@ export const WorksPage = observer(() => {
                                         )}
                                     </>
                                 )}
-                                {vm.tab === "checklists" && <div>Тут будут чек-листы</div>}
+                                {vm.tab === "checklists" && (
+                                    <>
+                                        {!!worksStore.todayCheckListSectionsInProgress.length && (
+                                            <Typo
+                                                variant={"subheadM"}
+                                                type={"tertiary"}
+                                                mode={"neutral"}
+                                                style={{ marginBottom: 8, marginTop: 16 }}
+                                            >
+                                                В процессе
+                                            </Typo>
+                                        )}
+                                        {!!worksStore.todayCheckListSectionsInProgress.length && (
+                                            <FlexColumn gap={20}>
+                                                {worksStore.todayCheckListSectionsInProgressForm.map(
+                                                    (item, index) => (
+                                                        <CheckListSection
+                                                            section={item}
+                                                            key={index}
+                                                        />
+                                                    ),
+                                                )}
+                                            </FlexColumn>
+                                        )}
+                                        {!!worksStore.todayCheckListSectionsDone.length && (
+                                            <Typo
+                                                variant={"subheadM"}
+                                                type={"tertiary"}
+                                                mode={"neutral"}
+                                                style={{ marginBottom: 8, marginTop: 16 }}
+                                            >
+                                                Завершённые
+                                            </Typo>
+                                        )}
+                                        {!!worksStore.todayCheckListSectionsDone.length && (
+                                            <FlexColumn gap={20}>
+                                                {worksStore.todayCheckListSectionsDone.map(
+                                                    (item, index) => (
+                                                        <CheckListSection
+                                                            section={item}
+                                                            key={index}
+                                                            finished={true}
+                                                        />
+                                                    ),
+                                                )}
+                                            </FlexColumn>
+                                        )}
+                                    </>
+                                )}
                             </div>
                             {showGradient && <div className={styles.gradient} />}
                         </div>
@@ -652,6 +739,9 @@ export const WorksPage = observer(() => {
                                             vm.form = deepCopy(currentObj);
                                         }
                                         worksStore.worksForm = deepCopy(worksStore.works);
+                                        worksStore.dailyChecklistsForm = deepCopy(
+                                            worksStore.dailyChecklists,
+                                        );
                                     }}
                                 >
                                     Отменить
@@ -660,6 +750,48 @@ export const WorksPage = observer(() => {
                                     mode={"neutral"}
                                     type={"primary"}
                                     onClick={async () => {
+                                        if (vm.tab === "checklists") {
+                                            if (
+                                                !deepEquals(
+                                                    worksStore.todayChecklistForm,
+                                                    worksStore.todayChecklist,
+                                                )
+                                            ) {
+                                                let status = "IN_PROGRESS";
+                                                if (
+                                                    worksStore.todayChecklistForm?.sections
+                                                        .filter((s) =>
+                                                            worksStore.checkListTitles.includes(
+                                                                s.title,
+                                                            ),
+                                                        )
+                                                        .every((s) =>
+                                                            s.items.every((i) => !!i.answer),
+                                                        )
+                                                ) {
+                                                    status = "DONE";
+                                                }
+                                                const answers =
+                                                    worksStore.todayChecklistForm?.sections.flatMap(
+                                                        (s) =>
+                                                            s.items.map((item) => ({
+                                                                templateItemId: item.templateItemId,
+                                                                answer: item.answer,
+                                                            })),
+                                                    );
+                                                await worksStore.apiClient.put(
+                                                    endpoints.projectChecklists + `/${id}`,
+                                                    {
+                                                        checklistInstanceId:
+                                                            worksStore.todayChecklist?.id,
+                                                        status: status,
+                                                        answers: answers,
+                                                    },
+                                                );
+                                                await worksStore.fetchChecklists(id ?? "");
+                                            }
+                                        }
+
                                         if (currentObj && vm.form) {
                                             currentObj.status = vm.form?.status;
                                             if (!deepEquals(currentObj, vm.form)) {

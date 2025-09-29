@@ -21,17 +21,20 @@ function decodeQRUrl(encodedString: string) {
 export const QRPage = observer(() => {
     const { key } = useParams();
     const [parsedKey, setParsedKey] = useState<any>({});
-    const [qrKey, setQrKey] = useState(() => btoa(`${new Date().toISOString()}_${parsedKey.id}`));
+    const [qrKey, setQrKey] = useState(() =>
+        btoa(`${new Date().toISOString()}_${parsedKey.number}`),
+    );
     const [error, setError] = useState(false);
 
     useLayoutEffect(() => {
+        setQrKey(btoa(`${new Date().toISOString()}_${parsedKey.number}`));
         const interval = setInterval(() => {
-            setQrKey(btoa(`${new Date().toISOString()}_${parsedKey.id}`));
+            setQrKey(btoa(`${new Date().toISOString()}_${parsedKey.number}`));
         }, 5000);
         return () => {
             clearInterval(interval);
         };
-    }, [key]);
+    }, [parsedKey]);
 
     useLayoutEffect(() => {
         if (!key) {

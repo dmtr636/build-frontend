@@ -52,6 +52,7 @@ type Props = {
     height?: string | number;
     bounds?: [[number, number], [number, number]];
     readyProp?: boolean;
+    editable?: boolean;
 };
 
 const toCoords = (latLngs: L.LatLng[] | L.LatLng[][]): LatLngLiteral[] => {
@@ -112,6 +113,7 @@ export const MapEditor = observer(
             [56.35, 38.65],
         ],
         readyProp,
+        editable,
     }: Props) => {
         const mapRef = useRef<L.Map>(null);
         const polygonLayerRef = useRef<L.Polygon | null>(null);
@@ -322,7 +324,9 @@ export const MapEditor = observer(
                 const layer = L.polygon(value.polygon!, polyStyle).addTo(map);
                 polygonLayerRef.current = layer as L.Polygon;
 
-                (layer as any).editing?.enable?.();
+                if (editable ?? true) {
+                    (layer as any).editing?.enable?.();
+                }
 
                 layer.on("editstart", () => {
                     isEditingRef.current = true;
@@ -418,7 +422,11 @@ export const MapEditor = observer(
                     </LayersControl>
 
                     {value.marker && (
-                        <Marker position={value.marker} draggable eventHandlers={markerHandlers}>
+                        <Marker
+                            position={value.marker}
+                            draggable={editable ?? true}
+                            eventHandlers={markerHandlers}
+                        >
                             {value.name && (
                                 <Tooltip
                                     direction="top"

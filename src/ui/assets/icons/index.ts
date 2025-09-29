@@ -139,6 +139,8 @@ import IconSmartDisplay from "./smart_display.svg?react";
 import IconBarChart from "./bar_chart.svg?react";
 import IconBadge from "./badge.svg?react";
 import IconApps from "./apps.svg?react";
+import IconCheckboxPlusRotated from "./CheckboxPlusRotated.svg?react";
+import IconBadgeChecklistsReady from "./BadgeChecklistsReady.svg?react";
 
 export {
     IconApps,
@@ -278,4 +280,6 @@ export {
     IconDistance,
     IconBarChart,
     IconBadge,
+    IconCheckboxPlusRotated,
+    IconBadgeChecklistsReady,
 };
