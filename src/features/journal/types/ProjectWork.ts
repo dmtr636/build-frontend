@@ -15,6 +15,7 @@ export interface ProjectWork {
 }
 
 export interface ProjectWorkVersion {
+    id?: string;
     workId: string;
     versionNumber: number;
     startDate: string;
