@@ -34,17 +34,11 @@
 
     &.expanded {
         margin-bottom: 16px;
-        /*color: var(--objects-text-accent-primary, #2053d5);*/
-        //TODO ДОБАВИТЬ
     }
 
     @media (hover: hover) and (pointer: fine) {
         &:hover {
             color: lighter-hover($objects-text-neutral-primary);
-
-            /*&.expanded {
-          color: lighter-hover($objects-text-accent-primary);
-        }*/
         }
     }
 

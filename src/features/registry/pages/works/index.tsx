@@ -439,6 +439,8 @@ export const Works = observer(() => {
                         });
                         registryStore.deletingWork = null;
                         registryStore.editingWork = null;
+                        registryStore.worksForm = {};
+                        registryStore.worksStagesForm = [];
                     }
                 }}
                 loading={registryStore.loading}

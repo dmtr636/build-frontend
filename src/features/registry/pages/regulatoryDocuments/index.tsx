@@ -305,6 +305,7 @@ export const RegulatoryDocuments = observer(() => {
                         });
                         registryStore.deletingDocument = null;
                         registryStore.editingDocument = null;
+                        registryStore.documentsForm = {};
                     }
                 }}
                 loading={registryStore.loading}

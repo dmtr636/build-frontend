@@ -1,14 +1,13 @@
 import { observer } from "mobx-react-lite";
 import styles from "./WorksPage.module.scss";
 import {
-    IconArrowLeft,
     IconArrowUp,
     IconAttention,
+    IconBadgeChecklistsReady,
     IconBarChart,
     IconCheckmark,
     IconClose,
     IconEdit,
-    IconGroup,
     IconPlus,
     IconSuccess,
     IconTime,
@@ -16,7 +15,13 @@ import {
 } from "src/ui/assets/icons";
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { appStore, objectStore, registryStore, worksStore } from "src/app/AppStore.ts";
+import {
+    accountStore,
+    appStore,
+    objectStore,
+    registryStore,
+    worksStore,
+} from "src/app/AppStore.ts";
 import { makeAutoObservable } from "mobx";
 import { ObjectDTO } from "src/features/journal/types/Object.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
@@ -36,11 +41,7 @@ import { clsx } from "clsx";
 import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
-import {
-    ProjectWork,
-    ProjectWorkComment,
-    ProjectWorkStage,
-} from "src/features/journal/types/ProjectWork.ts";
+import { ProjectWork, ProjectWorkStage } from "src/features/journal/types/ProjectWork.ts";
 import { Flex } from "src/ui/components/atoms/Flex/Flex";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
@@ -55,6 +56,8 @@ import GanttWorks from "src/features/gantt/Gantt.tsx";
 import dayjs from "dayjs";
 import { WorkComments } from "src/features/journal/pages/WorksPage/components/WorkComments/WorkComments.tsx";
 import { Helmet } from "react-helmet";
+import { CheckListSection } from "src/features/journal/pages/WorksPage/components/CheckListSection/CheckListSection.tsx";
+import { endpoints } from "src/shared/api/endpoints.ts";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -102,6 +105,8 @@ export const WorksPage = observer(() => {
         if (currentObj) {
             vm.form = deepCopy(currentObj);
             worksStore.fetchWorks(currentObj.id, true);
+            worksStore.changeType = "";
+            worksStore.fetchChecklists(currentObj.id);
         } else {
             vm.form = null;
         }
@@ -142,9 +147,11 @@ export const WorksPage = observer(() => {
     const [previewNewVersion, setPreviewNewVersion] = useState<number | null>(null);
 
     const showSaveButton =
-        !deepEquals(vm.form, currentObj) ||
-        !deepEquals(worksStore.worksForm, worksStore.works) ||
-        previewNewVersion;
+        !worksStore.loadingCheckLists &&
+        (!deepEquals(vm.form, currentObj) ||
+            !deepEquals(worksStore.worksForm, worksStore.works) ||
+            previewNewVersion ||
+            !deepEquals(worksStore.todayChecklist, worksStore.todayChecklistForm));
 
     const tasksAreaContentRef = useRef<HTMLDivElement | null>(null);
     const [showGradient, setShowGradient] = useState(false);
@@ -176,10 +183,21 @@ export const WorksPage = observer(() => {
     });
 
     const showAlertNewVersion =
-        worksStore.worksForm.length &&
+        !!worksStore.worksForm.length &&
         worksStore.worksForm[0] &&
         !worksStore.worksForm[0].workVersions[worksStore.worksForm[0].workVersions.length - 1]
             .active;
+
+    const getSaveButtonLabel = () => {
+        if (accountStore.isContractor) {
+            if (worksStore.changeType === "checkbox") {
+                return "Отправить на проверку";
+            } else {
+                return "Отправить на согласование";
+            }
+        }
+        return "Сохранить изменения";
+    };
 
     return (
         <div className={styles.container}>
@@ -215,18 +233,25 @@ export const WorksPage = observer(() => {
                             Вернуться в текущий график
                         </Button>
                     )}
-                    <div className={styles.leftColCard}>
-                        <Select
-                            options={statusOptions}
-                            value={vm.form?.status}
-                            formName={"Статус"}
-                            onValueChange={(value) => {
-                                if (value && vm.form) {
-                                    vm.form.status = value;
-                                }
-                            }}
-                            disableClear={true}
-                        />
+                    <div
+                        className={styles.leftColCard}
+                        style={{
+                            paddingTop: accountStore.isContractor ? "24px" : undefined,
+                        }}
+                    >
+                        {!accountStore.isContractor && (
+                            <Select
+                                options={statusOptions}
+                                value={vm.form?.status}
+                                formName={"Статус"}
+                                onValueChange={(value) => {
+                                    if (value && vm.form) {
+                                        vm.form.status = value;
+                                    }
+                                }}
+                                disableClear={true}
+                            />
+                        )}
                         <div className={styles.periodsCol}>
                             <div className={styles.periodCard}>
                                 <Typo variant={"subheadM"} type={"quaternary"} mode={"neutral"}>
@@ -247,21 +272,38 @@ export const WorksPage = observer(() => {
                         </div>
                     </div>
                     <div className={styles.leftColCard}>
-                        <Select
-                            options={worksStore.workVersions.map((version) => ({
-                                name: formatDate(version.createdAt),
-                                value: version.versionNumber,
-                            }))}
-                            value={worksStore.currentWorkVersion}
-                            formName={"Версия графика"}
-                            size={"large"}
-                            onValueChange={(value) => {
-                                worksStore.currentWorkVersion = value ?? 1;
-                            }}
-                            disableClear={true}
-                            disabled={!worksStore.worksForm.length}
-                            placeholder={"-"}
-                        />
+                        {vm.tab === "works" ? (
+                            <Select
+                                options={worksStore.workVersions.map((version) => ({
+                                    name: formatDate(version.createdAt),
+                                    value: version.versionNumber,
+                                }))}
+                                value={worksStore.currentWorkVersion}
+                                formName={"Версия графика"}
+                                size={"large"}
+                                onValueChange={(value) => {
+                                    worksStore.currentWorkVersion = value ?? 1;
+                                }}
+                                disableClear={true}
+                                disabled={!worksStore.worksForm.length}
+                                placeholder={"-"}
+                            />
+                        ) : (
+                            <Select
+                                options={worksStore.dailyChecklists.map((version) => ({
+                                    name: formatDate(version.checkDate),
+                                    value: dayjs(version.checkDate).toISOString(),
+                                }))}
+                                value={worksStore.checkListsDay.toISOString()}
+                                formName={"День"}
+                                size={"large"}
+                                onValueChange={(value) => {
+                                    worksStore.checkListsDay = dayjs(value);
+                                }}
+                                disableClear={true}
+                                placeholder={"-"}
+                            />
+                        )}
                     </div>
                     {worksStore.worksForm.length > 0 && (
                         <>
@@ -288,27 +330,41 @@ export const WorksPage = observer(() => {
                     )}
                 </div>
                 <FlexColumn gap={20}>
-                    {showAlertNewVersion && !previewNewVersion && (
+                    {showAlertNewVersion && !previewNewVersion && vm.tab === "works" && (
                         <Alert
                             mode={"warning"}
-                            title={"Подрядчик предложил новый график"}
-                            subtitle={"Изучите его и примете решение"}
-                            actions={[
-                                <Button
-                                    mode={"neutral"}
-                                    size={"small"}
-                                    key={"1"}
-                                    onClick={() => {
-                                        setPreviewNewVersion(
-                                            worksStore.worksForm[0].workVersions.length - 1,
-                                        );
-                                        worksStore.currentWorkVersion =
-                                            worksStore.worksForm[0].workVersions.length;
-                                    }}
-                                >
-                                    Посмотреть
-                                </Button>,
-                            ]}
+                            title={
+                                accountStore.isContractor
+                                    ? "Новая версия графика отправлена вами"
+                                    : "Подрядчик предложил новый график"
+                            }
+                            subtitle={
+                                accountStore.isContractor
+                                    ? "Необходимо дождаться решения заказчика"
+                                    : "Изучите его и примете решение"
+                            }
+                            icon={<IconAttention />}
+                            actions={
+                                accountStore.isContractor
+                                    ? undefined
+                                    : [
+                                          <Button
+                                              mode={"neutral"}
+                                              size={"small"}
+                                              key={"1"}
+                                              onClick={() => {
+                                                  setPreviewNewVersion(
+                                                      worksStore.worksForm[0].workVersions.length -
+                                                          1,
+                                                  );
+                                                  worksStore.currentWorkVersion =
+                                                      worksStore.worksForm[0].workVersions.length;
+                                              }}
+                                          >
+                                              Посмотреть
+                                          </Button>,
+                                      ]
+                            }
                         />
                     )}
                     {previewNewVersion && (
@@ -415,26 +471,28 @@ export const WorksPage = observer(() => {
                                     >
                                         Работы
                                     </Typo>
-                                    <Button
-                                        iconBefore={<IconPlus />}
-                                        size={"small"}
-                                        mode={"neutral"}
-                                        type={"primary"}
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            vm.addForm = {};
-                                            vm.addForm.workVersion = {
-                                                workId: "",
-                                                active: true,
-                                                startDate: "",
-                                                endDate: "",
-                                                versionNumber: 1,
-                                                createdAt: "",
-                                            };
-                                            vm.addForm.projectId = currentObj?.id ?? "";
-                                            vm.showAddOverlay = true;
-                                        }}
-                                    />
+                                    {!accountStore.isContractor && (
+                                        <Button
+                                            iconBefore={<IconPlus />}
+                                            size={"small"}
+                                            mode={"neutral"}
+                                            type={"primary"}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                vm.addForm = {};
+                                                vm.addForm.workVersion = {
+                                                    workId: "",
+                                                    active: true,
+                                                    startDate: "",
+                                                    endDate: "",
+                                                    versionNumber: 1,
+                                                    createdAt: "",
+                                                };
+                                                vm.addForm.projectId = currentObj?.id ?? "";
+                                                vm.showAddOverlay = true;
+                                            }}
+                                        />
+                                    )}
                                 </div>
                                 <div
                                     className={styles.tasksAreaHeaderTab}
@@ -451,7 +509,29 @@ export const WorksPage = observer(() => {
                                     >
                                         Чек-листы
                                     </Typo>
-                                    <Counter value={3} mode={"neutral"} size={"medium"} />
+                                    {!worksStore.loadingCheckLists && !worksStore.loading && (
+                                        <>
+                                            {!worksStore.todayCheckListSectionsInProgress.filter(
+                                                (item) =>
+                                                    worksStore.checkListTitles.includes(item.title),
+                                            ).length ? (
+                                                <IconBadgeChecklistsReady />
+                                            ) : (
+                                                <Counter
+                                                    value={
+                                                        worksStore.todayCheckListSectionsInProgress.filter(
+                                                            (item) =>
+                                                                worksStore.checkListTitles.includes(
+                                                                    item.title,
+                                                                ),
+                                                        ).length
+                                                    }
+                                                    mode={"neutral"}
+                                                    size={"medium"}
+                                                />
+                                            )}
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div
@@ -537,7 +617,55 @@ export const WorksPage = observer(() => {
                                         )}
                                     </>
                                 )}
-                                {vm.tab === "checklists" && <div>Тут будут чек-листы</div>}
+                                {vm.tab === "checklists" && (
+                                    <>
+                                        {!!worksStore.todayCheckListSectionsInProgress.length && (
+                                            <Typo
+                                                variant={"subheadM"}
+                                                type={"tertiary"}
+                                                mode={"neutral"}
+                                                style={{ marginBottom: 8, marginTop: 16 }}
+                                            >
+                                                В процессе
+                                            </Typo>
+                                        )}
+                                        {!!worksStore.todayCheckListSectionsInProgress.length && (
+                                            <FlexColumn gap={20}>
+                                                {worksStore.todayCheckListSectionsInProgressForm.map(
+                                                    (item, index) => (
+                                                        <CheckListSection
+                                                            section={item}
+                                                            key={index}
+                                                        />
+                                                    ),
+                                                )}
+                                            </FlexColumn>
+                                        )}
+                                        {!!worksStore.todayCheckListSectionsDone.length && (
+                                            <Typo
+                                                variant={"subheadM"}
+                                                type={"tertiary"}
+                                                mode={"neutral"}
+                                                style={{ marginBottom: 8, marginTop: 16 }}
+                                            >
+                                                Завершённые
+                                            </Typo>
+                                        )}
+                                        {!!worksStore.todayCheckListSectionsDone.length && (
+                                            <FlexColumn gap={20}>
+                                                {worksStore.todayCheckListSectionsDone.map(
+                                                    (item, index) => (
+                                                        <CheckListSection
+                                                            section={item}
+                                                            key={index}
+                                                            finished={true}
+                                                        />
+                                                    ),
+                                                )}
+                                            </FlexColumn>
+                                        )}
+                                    </>
+                                )}
                             </div>
                             {showGradient && <div className={styles.gradient} />}
                         </div>
@@ -617,6 +745,9 @@ export const WorksPage = observer(() => {
                                             vm.form = deepCopy(currentObj);
                                         }
                                         worksStore.worksForm = deepCopy(worksStore.works);
+                                        worksStore.dailyChecklistsForm = deepCopy(
+                                            worksStore.dailyChecklists,
+                                        );
                                     }}
                                 >
                                     Отменить
@@ -625,6 +756,48 @@ export const WorksPage = observer(() => {
                                     mode={"neutral"}
                                     type={"primary"}
                                     onClick={async () => {
+                                        if (vm.tab === "checklists") {
+                                            if (
+                                                !deepEquals(
+                                                    worksStore.todayChecklistForm,
+                                                    worksStore.todayChecklist,
+                                                )
+                                            ) {
+                                                let status = "IN_PROGRESS";
+                                                if (
+                                                    worksStore.todayChecklistForm?.sections
+                                                        .filter((s) =>
+                                                            worksStore.checkListTitles.includes(
+                                                                s.title,
+                                                            ),
+                                                        )
+                                                        .every((s) =>
+                                                            s.items.every((i) => !!i.answer),
+                                                        )
+                                                ) {
+                                                    status = "DONE";
+                                                }
+                                                const answers =
+                                                    worksStore.todayChecklistForm?.sections.flatMap(
+                                                        (s) =>
+                                                            s.items.map((item) => ({
+                                                                templateItemId: item.templateItemId,
+                                                                answer: item.answer,
+                                                            })),
+                                                    );
+                                                await worksStore.apiClient.put(
+                                                    endpoints.projectChecklists + `/${id}`,
+                                                    {
+                                                        checklistInstanceId:
+                                                            worksStore.todayChecklist?.id,
+                                                        status: status,
+                                                        answers: answers,
+                                                    },
+                                                );
+                                                await worksStore.fetchChecklists(id ?? "");
+                                            }
+                                        }
+
                                         if (currentObj && vm.form) {
                                             currentObj.status = vm.form?.status;
                                             if (!deepEquals(currentObj, vm.form)) {
@@ -641,7 +814,7 @@ export const WorksPage = observer(() => {
                                         }
                                     }}
                                 >
-                                    Сохранить изменения
+                                    {getSaveButtonLabel()}
                                 </Button>
                             </>
                         )}
@@ -676,6 +849,9 @@ export const WorksPage = observer(() => {
                                 mode={"neutral"}
                                 type={"primary"}
                                 onClick={async () => {
+                                    if (vm.addFormUnit) {
+                                        vm.addForm.volumeUnit = vm.addFormUnit;
+                                    }
                                     vm.addForm.stages = vm.addForm.stages?.filter(
                                         (stage) => !!stage.name,
                                     );
@@ -1073,6 +1249,7 @@ export const WorkCard = observer(
                                 } else {
                                     stage.status = "IN_PROGRESS";
                                 }
+                                worksStore.changeType = "checkbox";
                             }}
                             size={"medium"}
                             checked={stage.status !== "IN_PROGRESS"}
@@ -1152,21 +1329,24 @@ export const WorkCard = observer(
                             </Flex>
                         )}
                     </Flex>
-                    {stage.status === "ON_CHECK" && (
-                        <div>
-                            <ApproveButtons
-                                onReject={() => {
-                                    stage.status = "IN_PROGRESS";
-                                }}
-                                onApprove={() => {
-                                    stage.status = "DONE";
-                                    if (stages.every((s) => s.status === "DONE")) {
-                                        props.work.status = "DONE";
-                                    }
-                                }}
-                            />
-                        </div>
-                    )}
+                    {stage.status === "ON_CHECK" &&
+                        (accountStore.isAdmin ||
+                            accountStore.isCustomer ||
+                            accountStore.isInspector) && (
+                            <div>
+                                <ApproveButtons
+                                    onReject={() => {
+                                        stage.status = "IN_PROGRESS";
+                                    }}
+                                    onApprove={() => {
+                                        stage.status = "DONE";
+                                        if (stages.every((s) => s.status === "DONE")) {
+                                            props.work.status = "DONE";
+                                        }
+                                    }}
+                                />
+                            </div>
+                        )}
                     {index !== stages.length - 1 && (
                         <Divider
                             direction={"horizontal"}
@@ -1264,6 +1444,7 @@ export const WorkCard = observer(
                                 } else {
                                     props.work.status = "IN_PROGRESS";
                                 }
+                                worksStore.changeType = "checkbox";
                             }}
                             title={props.work.name}
                             size={"large"}
@@ -1275,7 +1456,13 @@ export const WorkCard = observer(
                                     ))
                             }
                             color={
-                                props.work.status === "ON_CHECK"
+                                props.work.status === "ON_CHECK" ||
+                                (!!props.work.stages.length &&
+                                    props.work.stages.every(
+                                        (stage) =>
+                                            stage.status === "DONE" || stage.status === "ON_CHECK",
+                                    ) &&
+                                    props.work.stages.some((stage) => stage.status === "ON_CHECK"))
                                     ? "lavender"
                                     : props.work.status === "DONE"
                                       ? "positive"
@@ -1308,7 +1495,10 @@ export const WorkCard = observer(
                 {props.work.status === "ON_CHECK" &&
                     !props.previewNewVersion &&
                     !progressStages.length &&
-                    !finishedStages.length && (
+                    !finishedStages.length &&
+                    (accountStore.isAdmin ||
+                        accountStore.isCustomer ||
+                        accountStore.isInspector) && (
                         <div
                             style={{
                                 padding: "0 0 16px 20px",
@@ -1371,6 +1561,7 @@ export const WorkCard = observer(
                             value={workVersion.startDate}
                             onChange={(value) => {
                                 workVersion.endDate = value || workVersion.endDate;
+                                worksStore.changeType = "date";
                             }}
                             disableClear={true}
                             disableTime={true}
@@ -1378,7 +1569,10 @@ export const WorkCard = observer(
                             width={133}
                             style={{
                                 height: 36,
-                                pointerEvents: props.previewNewVersion ? "none" : undefined,
+                                pointerEvents:
+                                    props.previewNewVersion || accountStore.isContractor
+                                        ? "none"
+                                        : undefined,
                             }}
                             inputStyle={{
                                 fontSize: 12,
@@ -1387,13 +1581,19 @@ export const WorkCard = observer(
                                 padding: "0 12px",
                                 gap: 4,
                             }}
+                            inputBorderStyle={{
+                                borderColor: accountStore.isContractor
+                                    ? "var(--objects-stroke-neutral-secondary, #D6D9E0)"
+                                    : undefined,
+                            }}
                             placeholder={"ДД.ММ.ГГГГ"}
                             hideCalendarIcon={props.previewNewVersion}
                             // readonly={props.previewNewVersion}
+                            readonly={accountStore.isContractor}
                         />
                         <div
                             style={{
-                                width: 12,
+                                width: 4,
                                 borderTop: "1px solid var(--objects-stroke-neutral-primary)",
                             }}
                         />
@@ -1401,6 +1601,7 @@ export const WorkCard = observer(
                             value={workVersion.endDate}
                             onChange={(value) => {
                                 workVersion.endDate = value || workVersion.endDate;
+                                worksStore.changeType = "date";
                             }}
                             disableClear={true}
                             disableTime={true}
@@ -1417,6 +1618,11 @@ export const WorkCard = observer(
                             inputContentStyle={{
                                 padding: "0 12px",
                                 gap: 4,
+                                background:
+                                    props.previewNewVersion &&
+                                    activeVersion?.endDate !== workVersion.endDate
+                                        ? "#fff7ee"
+                                        : undefined,
                             }}
                             inputBorderStyle={{
                                 borderColor:
@@ -1463,6 +1669,7 @@ export const WorkCard = observer(
                                     }}
                                     inputStyle={{
                                         textAlign: "center",
+                                        fontSize: 14,
                                     }}
                                 />
                                 <div
@@ -1485,6 +1692,7 @@ export const WorkCard = observer(
                                     value={props.work.actualVolume ?? ""}
                                     number={true}
                                     placeholder={"Факт"}
+                                    disabled={accountStore.isContractor}
                                     style={{
                                         height: 36,
                                         width: 70,
@@ -1495,14 +1703,13 @@ export const WorkCard = observer(
                                     }}
                                     inputStyle={{
                                         textAlign: "center",
+                                        fontSize: 14,
                                     }}
                                 />
                                 <div
                                     style={{
                                         borderRadius: 8,
-                                        background: "#E9E9E9",
                                         height: 36,
-                                        padding: "0 12px",
                                         display: "flex",
                                         justifyContent: "center",
                                         alignItems: "center",
@@ -1528,20 +1735,22 @@ export const WorkCard = observer(
                                 >
                                     Комментарии
                                 </Button>
-                                <Tooltip header={"Редактировать"} delay={500}>
-                                    <Button
-                                        type={"secondary"}
-                                        size={"small"}
-                                        mode={"neutral"}
-                                        iconBefore={<IconEdit />}
-                                        onClick={() => {
-                                            props.vm.showEditOverlay = true;
-                                            props.vm.editingWork = props.work;
-                                            props.vm.editForm = deepCopy(props.work);
-                                            props.vm.editFormUnit = props.work.volumeUnit;
-                                        }}
-                                    />
-                                </Tooltip>
+                                {!accountStore.isContractor && (
+                                    <Tooltip header={"Редактировать"} delay={500}>
+                                        <Button
+                                            type={"secondary"}
+                                            size={"small"}
+                                            mode={"neutral"}
+                                            iconBefore={<IconEdit />}
+                                            onClick={() => {
+                                                props.vm.showEditOverlay = true;
+                                                props.vm.editingWork = props.work;
+                                                props.vm.editForm = deepCopy(props.work);
+                                                props.vm.editFormUnit = props.work.volumeUnit;
+                                            }}
+                                        />
+                                    </Tooltip>
+                                )}
                             </Flex>
                         </>
                     )}

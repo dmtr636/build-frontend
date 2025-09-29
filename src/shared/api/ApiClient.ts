@@ -225,7 +225,6 @@ export class ApiClient {
                     return;
                 }
                 if (!params.disableSnackbar) {
-                    // TODO: disable only api errors
                     snackbarStore.showNegativeSnackbar(errorLocalization.requestFailed);
                 }
             }

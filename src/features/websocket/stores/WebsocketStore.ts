@@ -37,7 +37,9 @@ export class WebsocketStore {
                 const event = JSON.parse(message.body) as IWebsocketEvent;
                 if (event.objectName === "user") {
                     if (event.type === "CREATE") {
-                        userStore.users.push(event.data);
+                        if (!userStore.users.find((u) => u.id === event.data.id)) {
+                            userStore.users.push(event.data);
+                        }
                         const user = event.data as User;
                         if (user.organizationId) {
                             if (
@@ -49,7 +51,9 @@ export class WebsocketStore {
                                     user.organizationId,
                                 );
                                 if (org?.employees) {
-                                    org.employees.push(user);
+                                    if (!org.employees.find((u) => u.id === user.id)) {
+                                        org.employees.push(user);
+                                    }
                                 }
                             }
                         }
@@ -79,7 +83,9 @@ export class WebsocketStore {
                                     user.organizationId,
                                 );
                                 if (org?.employees) {
-                                    org.employees.push(user);
+                                    if (!org.employees.find((u) => u.id === user.id)) {
+                                        org.employees.push(user);
+                                    }
                                 }
                             }
                         }
@@ -128,7 +134,9 @@ export class WebsocketStore {
                     event.objectName === "organization-employees"
                 ) {
                     if (event.type === "CREATE") {
-                        organizationsStore.organizations.push(event.data);
+                        if (!organizationsStore.organizations.find((o) => o.id === event.data.id)) {
+                            organizationsStore.organizations.push(event.data);
+                        }
                     }
                     if (event.type === "UPDATE") {
                         organizationsStore.organizations = organizationsStore.organizations.map(
@@ -153,7 +161,9 @@ export class WebsocketStore {
 
                 if (event.objectName === "normative-document") {
                     if (event.type === "CREATE") {
-                        registryStore.documents.push(event.data);
+                        if (!registryStore.documents.filter((d) => d.id === event.data.id)) {
+                            registryStore.documents.push(event.data);
+                        }
                     }
                     if (event.type === "UPDATE") {
                         registryStore.documents = registryStore.documents.map((o) =>
@@ -169,7 +179,9 @@ export class WebsocketStore {
 
                 if (event.objectName === "construction-violation") {
                     if (event.type === "CREATE") {
-                        registryStore.violations.push(event.data);
+                        if (!registryStore.violations.filter((d) => d.id === event.data.id)) {
+                            registryStore.violations.push(event.data);
+                        }
                     }
                     if (event.type === "UPDATE") {
                         registryStore.violations = registryStore.violations.map((o) =>
@@ -185,7 +197,9 @@ export class WebsocketStore {
 
                 if (event.objectName === "construction-work") {
                     if (event.type === "CREATE") {
-                        registryStore.works.push(event.data);
+                        if (!registryStore.works.filter((d) => d.id === event.data.id)) {
+                            registryStore.works.push(event.data);
+                        }
                     }
                     if (event.type === "UPDATE") {
                         registryStore.works = registryStore.works.map((o) =>
@@ -201,7 +215,9 @@ export class WebsocketStore {
 
                 if (event.objectName === "event") {
                     if (event.type === "CREATE") {
-                        eventsStore.events.push(event.data);
+                        if (!eventsStore.events.filter((d) => d.id === event.data.id)) {
+                            eventsStore.events.push(event.data);
+                        }
                     }
                     if (event.type === "UPDATE") {
                         eventsStore.events = eventsStore.events.map((o) =>
@@ -217,7 +233,9 @@ export class WebsocketStore {
 
                 if (event.objectName === "project") {
                     if (event.type === "CREATE") {
-                        appStore.objectStore.objects.push(event.data);
+                        if (!appStore.objectStore.objects.filter((d) => d.id === event.data.id)) {
+                            appStore.objectStore.objects.push(event.data);
+                        }
                     }
                     if (event.type === "UPDATE") {
                         appStore.objectStore.objects = appStore.objectStore.objects.map((o) =>

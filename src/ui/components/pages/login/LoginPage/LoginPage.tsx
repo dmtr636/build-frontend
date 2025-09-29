@@ -87,8 +87,6 @@ export const LoginPage = (props: LoginPageProps) => {
                 setUser(response.data);
                 setErrorCount(6);
                 setIsLoading(false);
-                // TODO
-                //appStore.accountStore.setUser(response.data);
                 props.onLogin?.();
             })
             .catch((error) => {
