@@ -154,6 +154,7 @@ export const Notification = (props: NotificationProps) => {
 
     return (
         <PopoverBase
+            zIndex={1000}
             hideTip={true}
             mode={"contrast"}
             show={showPopover}
