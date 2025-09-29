@@ -135,7 +135,7 @@ export class EventsStore {
                 const date = formatDateShort(event.createdAt);
                 const time = formatTime(event.createdAt);
                 const localizedAction = event.objectName
-                    ? eventActionLocale[event.objectName][event.action]
+                    ? (eventActionLocale[event.objectName]?.[event.action] ?? "")
                     : "";
                 const searchLowerCase = this.search.toLowerCase();
                 return (

@@ -233,7 +233,7 @@ export const EventsPage = observer(() => {
                                 {
                                     eventActionLocale[
                                         action.split(".")[0] as keyof typeof eventActionLocale
-                                    ][action.split(".").slice(1).join()]
+                                    ]?.[action.split(".").slice(1).join()]
                                 }
                             </Chip>
                         ))}
