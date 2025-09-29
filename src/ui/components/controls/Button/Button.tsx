@@ -202,6 +202,7 @@ export const Button = observer((props: ButtonProps) => {
             contrast: "contrast",
             brand: "brand",
             lavender: "neutral",
+            warning: "neutral",
         };
         return (
             <Counter

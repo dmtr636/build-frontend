@@ -6,7 +6,8 @@ export type ButtonMode =
     | "neutral"
     | "contrast"
     | "brand"
-    | "lavender";
+    | "lavender"
+    | "warning";
 export type ButtonSize = "huge" | "large" | "medium" | "small" | "tiny";
 export type ButtonAlign = "start" | "center";
 export type ButtonEdge = "top" | "right" | "bottom" | "left";
