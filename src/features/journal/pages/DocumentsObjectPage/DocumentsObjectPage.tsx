@@ -332,7 +332,7 @@ const DocumentsObjectPage = observer(() => {
     return (
         <div className={styles.container}>
             <Helmet>
-                <title>Объекты – Build</title>
+                <title>{object?.name}</title>
             </Helmet>
             {shouldBlockButton && (
                 <div className={styles.footer}>

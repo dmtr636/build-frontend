@@ -20,6 +20,7 @@ export class WorksStore {
     loading = false;
     currentWorkVersion = 1;
     allWorks = [];
+    changeType = "";
 
     constructor() {
         makeAutoObservable(this);
@@ -100,12 +101,24 @@ export class WorksStore {
         return new Map(this.worksForm.map((work) => [work.id, work]));
     }
 
-    async fetchWorks(projectId: string) {
+    async fetchWorks(projectId: string, setVersion = false) {
         this.loading = true;
         const response = await this.apiClient.get<ProjectWork[]>(
             endpoints.projectWorks + `/search?projectId=${projectId}`,
         );
+        let activeVersion = 1;
         if (response.status) {
+            response.data.forEach((item) => {
+                item.workVersions.sort((a, b) => a.versionNumber - b.versionNumber);
+                item.workVersions.forEach((workVersion) => {
+                    if (workVersion.active && workVersion.versionNumber >= activeVersion) {
+                        activeVersion = workVersion.versionNumber;
+                    }
+                });
+            });
+            if (setVersion) {
+                this.currentWorkVersion = activeVersion;
+            }
             this.works = response.data;
             this.worksForm = deepCopy(response.data);
         }
@@ -263,5 +276,28 @@ export class WorksStore {
         }
         await this.fetchWorks(this.worksForm[0]?.projectId || this.works[0]?.projectId);
         this.loading = false;
+    }
+
+    async deleteDisabledWorkVersions() {
+        for (const workForm of this.worksForm) {
+            const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
+            if (!workFormVersion.active && workFormVersion.id) {
+                await this.apiClient.delete(endpoints.projectWorkVersions, workFormVersion.id);
+            }
+        }
+        await this.fetchWorks(this.worksForm[0]?.projectId ?? "", true);
+    }
+
+    async acceptNewWorkVersion() {
+        for (const workForm of this.worksForm) {
+            const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
+            if (!workFormVersion.active && workFormVersion.id) {
+                await this.apiClient.put(endpoints.projectWorkVersions, {
+                    ...workFormVersion,
+                    active: true,
+                });
+            }
+        }
+        await this.fetchWorks(this.worksForm[0]?.projectId ?? "", true);
     }
 }

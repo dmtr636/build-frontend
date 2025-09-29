@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { ObjectDTO, ProjectUserDTO, UpdateProjectDTO } from "src/features/journal/types/Object.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { Helmet } from "react-helmet";
 
 const ObjectUsersPage = observer(() => {
     const organisationOptions = appStore.organizationsStore.organizations.map((org) => ({
@@ -181,6 +182,9 @@ const ObjectUsersPage = observer(() => {
 
     return (
         <div className={styles.container}>
+            <Helmet>
+                <title>{currentobj?.name}</title>
+            </Helmet>
             {shouldBlockButton && (
                 <div className={styles.footer}>
                     <div style={{ display: "flex", gap: 16 }}>

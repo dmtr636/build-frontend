@@ -5,7 +5,8 @@
     display: flex;
     gap: 24px;
     position: relative;
-
+    min-height: 80vh;
+    align-self: flex-start;
     @media screen and (min-width: 1500px) {
         width: 1440px;
     }
@@ -85,8 +86,8 @@
     height: 650px;
     flex-direction: column;
     /*
-  justify-content: center;
-  */
+justify-content: center;
+*/
     align-items: center;
     flex-shrink: 0;
     border-radius: 12px;
@@ -163,10 +164,10 @@ margin-left: 8px;
     z-index: 2;
 
     /*&.scrolled {
-        padding-bottom: 8px;
-        border-box: none;
-        margin-bottom: 12px;
-    }*/
+      padding-bottom: 8px;
+      border-box: none;
+      margin-bottom: 12px;
+  }*/
 
     &.windowScrolled {
         &::after {

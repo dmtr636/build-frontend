@@ -1,3 +1,5 @@
+@import "src/ui/styles/functions";
+
 .iconHeader {
     display: flex;
     align-items: center;
@@ -209,4 +211,16 @@
             fill: var(--graphic-neutral-tertiary, #5f6a81);
         }
     }
+}
+
+.previewNewVersionWorkName {
+    color: lighter-pale($objects-text-neutral-primary);
+}
+
+.workCardGroupHeader:has(+ div:empty) {
+    display: none;
+}
+
+.workCardGroupHeader + div:empty {
+    display: none !important;
 }

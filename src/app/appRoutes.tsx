@@ -20,6 +20,8 @@ import DocumentsObjectPage from "src/features/journal/pages/DocumentsObjectPage/
 import ViolationPage from "src/features/journal/pages/ViolationPage/ViolationPage.tsx";
 import { WorksPage } from "src/features/journal/pages/WorksPage/WorksPage.tsx";
 import { QRPage } from "src/features/qr/QRPage.tsx";
+import { LocationPage } from "src/features/journal/pages/LocationPage/LocationPage.tsx";
+import ReviewPage from "src/features/journal/pages/ReviewPage/ReviewPage.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -54,11 +56,11 @@ export const appRoutes: RouteObject[] = [
                 element: <ObjectPage />,
                 children: [
                     { index: true, element: <Navigate to="review" replace /> },
-                    { path: "review", element: <></> },
+                    { path: "review", element: <ReviewPage></ReviewPage> },
                     { path: "about", element: <AboutObjectPage /> },
                     { path: "docs", element: <DocumentsObjectPage /> },
                     { path: "status", element: <WorksPage /> },
-                    { path: "location", element: <VisitsPage /> },
+                    { path: "location", element: <LocationPage /> },
                     { path: "users", element: <ObjectUsersPage /> },
                     { path: "materials", element: <></> },
                     { path: "visits", element: <VisitsPage /> },

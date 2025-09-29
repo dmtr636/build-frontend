@@ -4,15 +4,23 @@ import {
     IconArrowUp,
     IconAttention,
     IconBarChart,
+    IconCheckmark,
     IconClose,
     IconEdit,
-    IconGroup,
     IconPlus,
     IconSuccess,
+    IconTime,
+    IconUp,
 } from "src/ui/assets/icons";
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { appStore, objectStore, registryStore, worksStore } from "src/app/AppStore.ts";
+import {
+    accountStore,
+    appStore,
+    objectStore,
+    registryStore,
+    worksStore,
+} from "src/app/AppStore.ts";
 import { makeAutoObservable } from "mobx";
 import { ObjectDTO } from "src/features/journal/types/Object.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
@@ -32,11 +40,7 @@ import { clsx } from "clsx";
 import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
-import {
-    ProjectWork,
-    ProjectWorkComment,
-    ProjectWorkStage,
-} from "src/features/journal/types/ProjectWork.ts";
+import { ProjectWork, ProjectWorkStage } from "src/features/journal/types/ProjectWork.ts";
 import { Flex } from "src/ui/components/atoms/Flex/Flex";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
@@ -50,6 +54,7 @@ import { Spacing } from "src/ui/components/atoms/Spacing/Spacing.tsx";
 import GanttWorks from "src/features/gantt/Gantt.tsx";
 import dayjs from "dayjs";
 import { WorkComments } from "src/features/journal/pages/WorksPage/components/WorkComments/WorkComments.tsx";
+import { Helmet } from "react-helmet";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -96,7 +101,8 @@ export const WorksPage = observer(() => {
     useLayoutEffect(() => {
         if (currentObj) {
             vm.form = deepCopy(currentObj);
-            worksStore.fetchWorks(currentObj.id);
+            worksStore.fetchWorks(currentObj.id, true);
+            worksStore.changeType = "";
         } else {
             vm.form = null;
         }
@@ -134,8 +140,12 @@ export const WorksPage = observer(() => {
         { name: "Завершён", value: "COMPLETE", listItemIcon: <IconSuccess /> },
     ];
 
+    const [previewNewVersion, setPreviewNewVersion] = useState<number | null>(null);
+
     const showSaveButton =
-        !deepEquals(vm.form, currentObj) || !deepEquals(worksStore.worksForm, worksStore.works);
+        !deepEquals(vm.form, currentObj) ||
+        !deepEquals(worksStore.worksForm, worksStore.works) ||
+        previewNewVersion;
 
     const tasksAreaContentRef = useRef<HTMLDivElement | null>(null);
     const [showGradient, setShowGradient] = useState(false);
@@ -150,10 +160,12 @@ export const WorksPage = observer(() => {
                             tasksAreaContentRef.current.clientHeight,
             );
         }
-    }, [tasksAreaContentRef, vm.tab, worksStore.worksForm.length]);
+    }, [tasksAreaContentRef?.current, vm.tab, worksStore.worksForm.length]);
 
     const hasExpired = worksStore.worksForm.some((work) => {
-        const currVersion = work.workVersions[worksStore.currentWorkVersion - 1];
+        const currVersion =
+            work.workVersions[worksStore.currentWorkVersion - 1] ??
+            work.workVersions[worksStore.currentWorkVersion - 2];
         if (
             currVersion.endDate &&
             currentObj?.plannedPeriod.end &&
@@ -164,8 +176,28 @@ export const WorksPage = observer(() => {
         return false;
     });
 
+    const showAlertNewVersion =
+        !!worksStore.worksForm.length &&
+        worksStore.worksForm[0] &&
+        !worksStore.worksForm[0].workVersions[worksStore.worksForm[0].workVersions.length - 1]
+            .active;
+
+    const getSaveButtonLabel = () => {
+        if (accountStore.isContractor) {
+            if (worksStore.changeType === "checkbox") {
+                return "Отправить на проверку";
+            } else {
+                return "Отправить на согласование";
+            }
+        }
+        return "Сохранить изменения";
+    };
+
     return (
         <div className={styles.container}>
+            <Helmet>
+                <title>{currentObj?.name}</title>
+            </Helmet>
             <div className={styles.header}>
                 <div className={styles.iconHeader}>
                     <IconBarChart />
@@ -174,18 +206,46 @@ export const WorksPage = observer(() => {
             </div>
             <div className={styles.grid}>
                 <div className={styles.leftCol}>
-                    <div className={styles.leftColCard}>
-                        <Select
-                            options={statusOptions}
-                            value={vm.form?.status}
-                            formName={"Статус"}
-                            onValueChange={(value) => {
-                                if (value && vm.form) {
-                                    vm.form.status = value;
-                                }
+                    {previewNewVersion && (
+                        <Button
+                            mode={"neutral"}
+                            iconBefore={
+                                <IconUp
+                                    style={{
+                                        transform: "rotate(-90deg)",
+                                    }}
+                                />
+                            }
+                            onClick={() => {
+                                setPreviewNewVersion(null);
+                                const active = worksStore.worksForm[0].workVersions.find(
+                                    (v) => v.active,
+                                );
+                                worksStore.currentWorkVersion = active?.versionNumber ?? 1;
                             }}
-                            disableClear={true}
-                        />
+                        >
+                            Вернуться в текущий график
+                        </Button>
+                    )}
+                    <div
+                        className={styles.leftColCard}
+                        style={{
+                            paddingTop: accountStore.isContractor ? "24px" : undefined,
+                        }}
+                    >
+                        {!accountStore.isContractor && (
+                            <Select
+                                options={statusOptions}
+                                value={vm.form?.status}
+                                formName={"Статус"}
+                                onValueChange={(value) => {
+                                    if (value && vm.form) {
+                                        vm.form.status = value;
+                                    }
+                                }}
+                                disableClear={true}
+                            />
+                        )}
                         <div className={styles.periodsCol}>
                             <div className={styles.periodCard}>
                                 <Typo variant={"subheadM"} type={"quaternary"} mode={"neutral"}>
@@ -246,146 +306,278 @@ export const WorksPage = observer(() => {
                         </>
                     )}
                 </div>
-                <div className={styles.tasksArea}>
-                    <div className={styles.tasksAreaHeader}>
-                        <div
-                            className={styles.tasksAreaHeaderTab}
-                            onClick={() => {
-                                vm.tab = "works";
-                            }}
-                        >
-                            <Typo
-                                variant={"h5"}
-                                className={clsx(styles.text, vm.tab === "works" && styles.active)}
-                            >
-                                Работы
-                            </Typo>
-                            <Button
-                                iconBefore={<IconPlus />}
-                                size={"small"}
-                                mode={"neutral"}
-                                type={"primary"}
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    vm.addForm = {};
-                                    vm.addForm.workVersion = {
-                                        workId: "",
-                                        active: true,
-                                        startDate: "",
-                                        endDate: "",
-                                        versionNumber: 1,
-                                        createdAt: "",
-                                    };
-                                    vm.addForm.projectId = currentObj?.id ?? "";
-                                    vm.showAddOverlay = true;
-                                }}
-                            />
-                        </div>
-                        <div
-                            className={styles.tasksAreaHeaderTab}
-                            onClick={() => {
-                                vm.tab = "checklists";
-                            }}
-                        >
-                            <Typo
-                                variant={"h5"}
-                                className={clsx(
-                                    styles.text,
-                                    vm.tab === "checklists" && styles.active,
-                                )}
-                            >
-                                Чек-листы
-                            </Typo>
-                            <Counter value={3} mode={"neutral"} size={"medium"} />
-                        </div>
-                    </div>
-                    <div
-                        className={styles.tasksAreaContent}
-                        ref={tasksAreaContentRef}
-                        onScroll={() => {
-                            if (!tasksAreaContentRef.current) {
-                                return;
+                <FlexColumn gap={20}>
+                    {showAlertNewVersion && !previewNewVersion && (
+                        <Alert
+                            mode={"warning"}
+                            title={
+                                accountStore.isContractor
+                                    ? "Новая версия графика отправлена вами"
+                                    : "Подрядчик предложил новый график"
                             }
-                            setShowGradient(
-                                tasksAreaContentRef.current.scrollHeight >
-                                    tasksAreaContentRef.current.clientHeight &&
-                                    tasksAreaContentRef.current.scrollTop <
-                                        tasksAreaContentRef.current.scrollHeight -
-                                            tasksAreaContentRef.current.clientHeight,
-                            );
-                        }}
-                    >
-                        {vm.tab === "works" && (
-                            <>
-                                {!worksStore.works.length && (
-                                    <div className={styles.noUsersInOrg}>
-                                        <IconBarChart className={styles.icon} />
-                                        <Typo
-                                            variant={"actionXL"}
-                                            type={"secondary"}
+                            subtitle={
+                                accountStore.isContractor
+                                    ? "Необходимо дождаться решения заказчика"
+                                    : "Изучите его и примете решение"
+                            }
+                            icon={<IconAttention />}
+                            actions={
+                                accountStore.isContractor
+                                    ? undefined
+                                    : [
+                                          <Button
+                                              mode={"neutral"}
+                                              size={"small"}
+                                              key={"1"}
+                                              onClick={() => {
+                                                  setPreviewNewVersion(
+                                                      worksStore.worksForm[0].workVersions.length -
+                                                          1,
+                                                  );
+                                                  worksStore.currentWorkVersion =
+                                                      worksStore.worksForm[0].workVersions.length;
+                                              }}
+                                          >
+                                              Посмотреть
+                                          </Button>,
+                                      ]
+                            }
+                        />
+                    )}
+                    {previewNewVersion && (
+                        <div className={styles.tasksArea}>
+                            <div
+                                className={styles.tasksAreaContent}
+                                ref={tasksAreaContentRef}
+                                style={{
+                                    paddingBottom: 20,
+                                }}
+                                onScroll={() => {
+                                    if (!tasksAreaContentRef.current) {
+                                        return;
+                                    }
+                                    setShowGradient(
+                                        tasksAreaContentRef.current.scrollHeight >
+                                            tasksAreaContentRef.current.clientHeight &&
+                                            tasksAreaContentRef.current.scrollTop <
+                                                tasksAreaContentRef.current.scrollHeight -
+                                                    tasksAreaContentRef.current.clientHeight,
+                                    );
+                                }}
+                            >
+                                <Typo
+                                    variant={"h5"}
+                                    mode={"neutral"}
+                                    type={"quaternary"}
+                                    style={{
+                                        marginTop: 20,
+                                        marginBottom: 26,
+                                    }}
+                                >
+                                    Новые даты завершения работ от подрядчика
+                                </Typo>
+                                {vm.tab === "works" && (
+                                    <>
+                                        {!!worksStore.worksFormOnCheck.length && (
+                                            <Typo
+                                                variant={"subheadM"}
+                                                type={"tertiary"}
+                                                mode={"neutral"}
+                                                style={{ marginBottom: 8, marginTop: 16 }}
+                                                className={styles.workCardGroupHeader}
+                                            >
+                                                На проверке у службы строительного контроля
+                                            </Typo>
+                                        )}
+                                        {!!worksStore.worksFormOnCheck.length && (
+                                            <FlexColumn gap={12}>
+                                                {worksStore.worksFormOnCheck.map((item) => (
+                                                    <WorkCard
+                                                        work={item}
+                                                        key={item.id}
+                                                        vm={vm}
+                                                        previewNewVersion={true}
+                                                    />
+                                                ))}
+                                            </FlexColumn>
+                                        )}
+                                        {!!worksStore.worksFormInProgress.length && (
+                                            <Typo
+                                                variant={"subheadM"}
+                                                type={"tertiary"}
+                                                mode={"neutral"}
+                                                style={{ marginBottom: 8, marginTop: 16 }}
+                                                className={styles.workCardGroupHeader}
+                                            >
+                                                В процессе
+                                            </Typo>
+                                        )}
+                                        {!!worksStore.worksFormInProgress.length && (
+                                            <FlexColumn gap={12}>
+                                                {worksStore.worksFormInProgress.map((item) => (
+                                                    <WorkCard
+                                                        work={item}
+                                                        key={item.id}
+                                                        vm={vm}
+                                                        previewNewVersion={true}
+                                                    />
+                                                ))}
+                                            </FlexColumn>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                            {showGradient && <div className={styles.gradient} />}
+                        </div>
+                    )}
+                    {!previewNewVersion && (
+                        <div className={styles.tasksArea}>
+                            <div className={styles.tasksAreaHeader}>
+                                <div
+                                    className={styles.tasksAreaHeaderTab}
+                                    onClick={() => {
+                                        vm.tab = "works";
+                                    }}
+                                >
+                                    <Typo
+                                        variant={"h5"}
+                                        className={clsx(
+                                            styles.text,
+                                            vm.tab === "works" && styles.active,
+                                        )}
+                                    >
+                                        Работы
+                                    </Typo>
+                                    {!accountStore.isContractor && (
+                                        <Button
+                                            iconBefore={<IconPlus />}
+                                            size={"small"}
                                             mode={"neutral"}
-                                        >
-                                            Пока нет работ <br />в объекте
-                                        </Typo>
-                                    </div>
-                                )}
-                                {!!worksStore.worksFormOnCheck.length && (
+                                            type={"primary"}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                vm.addForm = {};
+                                                vm.addForm.workVersion = {
+                                                    workId: "",
+                                                    active: true,
+                                                    startDate: "",
+                                                    endDate: "",
+                                                    versionNumber: 1,
+                                                    createdAt: "",
+                                                };
+                                                vm.addForm.projectId = currentObj?.id ?? "";
+                                                vm.showAddOverlay = true;
+                                            }}
+                                        />
+                                    )}
+                                </div>
+                                <div
+                                    className={styles.tasksAreaHeaderTab}
+                                    onClick={() => {
+                                        vm.tab = "checklists";
+                                    }}
+                                >
                                     <Typo
-                                        variant={"subheadM"}
-                                        type={"tertiary"}
-                                        mode={"neutral"}
-                                        style={{ marginBottom: 8, marginTop: 16 }}
+                                        variant={"h5"}
+                                        className={clsx(
+                                            styles.text,
+                                            vm.tab === "checklists" && styles.active,
+                                        )}
                                     >
-                                        На проверке у службы строительного контроля
+                                        Чек-листы
                                     </Typo>
+                                    <Counter value={3} mode={"neutral"} size={"medium"} />
+                                </div>
+                            </div>
+                            <div
+                                className={styles.tasksAreaContent}
+                                ref={tasksAreaContentRef}
+                                onScroll={() => {
+                                    if (!tasksAreaContentRef.current) {
+                                        return;
+                                    }
+                                    setShowGradient(
+                                        tasksAreaContentRef.current.scrollHeight >
+                                            tasksAreaContentRef.current.clientHeight &&
+                                            tasksAreaContentRef.current.scrollTop <
+                                                tasksAreaContentRef.current.scrollHeight -
+                                                    tasksAreaContentRef.current.clientHeight,
+                                    );
+                                }}
+                            >
+                                {vm.tab === "works" && (
+                                    <>
+                                        {!worksStore.works.length && (
+                                            <div className={styles.noUsersInOrg}>
+                                                <IconBarChart className={styles.icon} />
+                                                <Typo
+                                                    variant={"actionXL"}
+                                                    type={"secondary"}
+                                                    mode={"neutral"}
+                                                >
+                                                    Пока нет работ <br />в объекте
+                                                </Typo>
+                                            </div>
+                                        )}
+                                        {!!worksStore.worksFormOnCheck.length && (
+                                            <Typo
+                                                variant={"subheadM"}
+                                                type={"tertiary"}
+                                                mode={"neutral"}
+                                                style={{ marginBottom: 8, marginTop: 16 }}
+                                            >
+                                                На проверке у службы строительного контроля
+                                            </Typo>
+                                        )}
+                                        {!!worksStore.worksFormOnCheck.length && (
+                                            <FlexColumn gap={20}>
+                                                {worksStore.worksFormOnCheck.map((item) => (
+                                                    <WorkCard work={item} key={item.id} vm={vm} />
+                                                ))}
+                                            </FlexColumn>
+                                        )}
+                                        {!!worksStore.worksFormInProgress.length && (
+                                            <Typo
+                                                variant={"subheadM"}
+                                                type={"tertiary"}
+                                                mode={"neutral"}
+                                                style={{ marginBottom: 8, marginTop: 16 }}
+                                            >
+                                                В процессе
+                                            </Typo>
+                                        )}
+                                        {!!worksStore.worksFormInProgress.length && (
+                                            <FlexColumn gap={20}>
+                                                {worksStore.worksFormInProgress.map((item) => (
+                                                    <WorkCard work={item} key={item.id} vm={vm} />
+                                                ))}
+                                            </FlexColumn>
+                                        )}
+                                        {!!worksStore.finishedWorksForm.length && (
+                                            <Typo
+                                                variant={"subheadM"}
+                                                type={"tertiary"}
+                                                mode={"neutral"}
+                                                style={{ marginBottom: 8, marginTop: 16 }}
+                                            >
+                                                Завершённые
+                                            </Typo>
+                                        )}
+                                        {!!worksStore.finishedWorksForm.length && (
+                                            <FlexColumn gap={20}>
+                                                {worksStore.finishedWorksForm.map((item) => (
+                                                    <WorkCard work={item} key={item.id} vm={vm} />
+                                                ))}
+                                            </FlexColumn>
+                                        )}
+                                    </>
                                 )}
-                                {!!worksStore.worksFormOnCheck.length && (
-                                    <FlexColumn gap={20}>
-                                        {worksStore.worksFormOnCheck.map((item) => (
-                                            <WorkCard work={item} key={item.id} vm={vm} />
-                                        ))}
-                                    </FlexColumn>
-                                )}
-                                {!!worksStore.worksFormInProgress.length && (
-                                    <Typo
-                                        variant={"subheadM"}
-                                        type={"tertiary"}
-                                        mode={"neutral"}
-                                        style={{ marginBottom: 8, marginTop: 16 }}
-                                    >
-                                        В процессе
-                                    </Typo>
-                                )}
-                                {!!worksStore.worksFormInProgress.length && (
-                                    <FlexColumn gap={20}>
-                                        {worksStore.worksFormInProgress.map((item) => (
-                                            <WorkCard work={item} key={item.id} vm={vm} />
-                                        ))}
-                                    </FlexColumn>
-                                )}
-                                {!!worksStore.finishedWorksForm.length && (
-                                    <Typo
-                                        variant={"subheadM"}
-                                        type={"tertiary"}
-                                        mode={"neutral"}
-                                        style={{ marginBottom: 8, marginTop: 16 }}
-                                    >
-                                        Завершённые
-                                    </Typo>
-                                )}
-                                {!!worksStore.finishedWorksForm.length && (
-                                    <FlexColumn gap={20}>
-                                        {worksStore.finishedWorksForm.map((item) => (
-                                            <WorkCard work={item} key={item.id} vm={vm} />
-                                        ))}
-                                    </FlexColumn>
-                                )}
-                            </>
-                        )}
-                        {vm.tab === "checklists" && <div>Тут будут чек-листы</div>}
-                    </div>
-                    {showGradient && <div className={styles.gradient} />}
-                </div>
+                                {vm.tab === "checklists" && <div>Тут будут чек-листы</div>}
+                            </div>
+                            {showGradient && <div className={styles.gradient} />}
+                        </div>
+                    )}
+                </FlexColumn>
             </div>
             {!!worksStore.worksForm.length && (
                 <div className={styles.ganttWrapper}>
@@ -397,40 +589,97 @@ export const WorksPage = observer(() => {
                 </div>
             )}
             {showSaveButton && currentObj && (
-                <div className={styles.footer}>
-                    <div style={{ display: "flex", gap: 16 }}>
-                        <Button
-                            mode={"neutral"}
-                            type={"outlined"}
-                            onClick={() => {
-                                if (currentObj) {
-                                    vm.form = deepCopy(currentObj);
-                                }
-                                worksStore.worksForm = deepCopy(worksStore.works);
-                            }}
-                        >
-                            Отменить
-                        </Button>
-                        <Button
-                            mode={"neutral"}
-                            type={"primary"}
-                            onClick={async () => {
-                                if (currentObj && vm.form) {
-                                    currentObj.status = vm.form?.status;
-                                    if (!deepEquals(currentObj, vm.form)) {
-                                        await objectStore.updateObject(currentObj);
-                                    }
-                                    if (!deepEquals(worksStore.works, worksStore.worksForm)) {
-                                        await worksStore.saveWorksForm();
-                                    }
-                                    snackbarStore.showNeutralPositiveSnackbar(
-                                        "Изменения сохранены",
-                                    );
-                                }
-                            }}
-                        >
-                            Сохранить изменения
-                        </Button>
+                <div
+                    className={styles.footer}
+                    style={{
+                        left: previewNewVersion
+                            ? "calc((100vw - 1240px) / 2 + 140px + 143px)"
+                            : undefined,
+                    }}
+                >
+                    <div style={{ display: "flex", gap: previewNewVersion ? 12 : 16 }}>
+                        {previewNewVersion ? (
+                            <>
+                                <Button
+                                    mode={"negative"}
+                                    iconBefore={<IconClose />}
+                                    onClick={async () => {
+                                        await worksStore.deleteDisabledWorkVersions();
+                                        setPreviewNewVersion(null);
+                                        const active = worksStore.worksForm[0].workVersions.find(
+                                            (v) => v.active,
+                                        );
+                                        worksStore.currentWorkVersion = active?.versionNumber ?? 1;
+                                        snackbarStore.showNeutralPositiveSnackbar(
+                                            "График отклонён",
+                                        );
+                                    }}
+                                >
+                                    Отклонить
+                                </Button>
+                                <Button
+                                    mode={"neutral"}
+                                    iconBefore={<IconTime />}
+                                    onClick={() => {
+                                        setPreviewNewVersion(null);
+                                        const active = worksStore.worksForm[0].workVersions.find(
+                                            (v) => v.active,
+                                        );
+                                        worksStore.currentWorkVersion = active?.versionNumber ?? 1;
+                                    }}
+                                >
+                                    Ответить позже
+                                </Button>
+                                <Button
+                                    mode={"positive"}
+                                    iconBefore={<IconCheckmark />}
+                                    onClick={async () => {
+                                        await worksStore.acceptNewWorkVersion();
+                                        setPreviewNewVersion(null);
+                                        snackbarStore.showNeutralPositiveSnackbar("График принят");
+                                    }}
+                                >
+                                    Принять график подрядчика
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button
+                                    mode={"neutral"}
+                                    type={"outlined"}
+                                    onClick={() => {
+                                        if (currentObj) {
+                                            vm.form = deepCopy(currentObj);
+                                        }
+                                        worksStore.worksForm = deepCopy(worksStore.works);
+                                    }}
+                                >
+                                    Отменить
+                                </Button>
+                                <Button
+                                    mode={"neutral"}
+                                    type={"primary"}
+                                    onClick={async () => {
+                                        if (currentObj && vm.form) {
+                                            currentObj.status = vm.form?.status;
+                                            if (!deepEquals(currentObj, vm.form)) {
+                                                await objectStore.updateObject(currentObj);
+                                            }
+                                            if (
+                                                !deepEquals(worksStore.works, worksStore.worksForm)
+                                            ) {
+                                                await worksStore.saveWorksForm();
+                                            }
+                                            snackbarStore.showNeutralPositiveSnackbar(
+                                                "Изменения сохранены",
+                                            );
+                                        }
+                                    }}
+                                >
+                                    {getSaveButtonLabel()}
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </div>
             )}
@@ -462,6 +711,9 @@ export const WorksPage = observer(() => {
                                 mode={"neutral"}
                                 type={"primary"}
                                 onClick={async () => {
+                                    if (vm.addFormUnit) {
+                                        vm.addForm.volumeUnit = vm.addFormUnit;
+                                    }
                                     vm.addForm.stages = vm.addForm.stages?.filter(
                                         (stage) => !!stage.name,
                                     );
@@ -837,449 +1089,530 @@ export const WorkStageRow = observer(
     },
 );
 
-export const WorkCard = observer((props: { work: ProjectWork; vm: VM }) => {
-    const [collapsed, setCollapsed] = useState(false);
+export const WorkCard = observer(
+    (props: { work: ProjectWork; vm: VM; previewNewVersion?: boolean }) => {
+        const [collapsed, setCollapsed] = useState(false);
 
-    const progressStages = props.work.stages.filter((stage) => stage.status !== "DONE");
-    const finishedStages = props.work.stages.filter((stage) => stage.status === "DONE");
+        const progressStages = props.work.stages.filter((stage) => stage.status !== "DONE");
+        const finishedStages = props.work.stages.filter((stage) => stage.status === "DONE");
 
-    const renderStage = (stage: ProjectWorkStage, index: number, stages: ProjectWorkStage[]) => {
-        return (
-            <FlexColumn gap={16}>
-                <Flex gap={16}>
-                    <Checkbox
-                        onChange={(checked) => {
-                            if (checked) {
-                                stage.status = "READY_TO_CHECK";
-                            } else {
-                                stage.status = "IN_PROGRESS";
-                            }
-                        }}
-                        size={"medium"}
-                        checked={stage.status !== "IN_PROGRESS"}
-                        color={
-                            stage.status === "ON_CHECK"
-                                ? "lavender"
-                                : stage.status === "DONE"
-                                  ? "positive"
-                                  : "neutral"
-                        }
-                        title={stage.name}
-                        disabled={
-                            stage.status === "ON_CHECK" ||
-                            stage.status === "DONE" ||
-                            props.work.status === "ON_CHECK" ||
-                            props.work.stages.some((stage) => stage.status === "ON_CHECK")
-                        }
-                        style={{
-                            flexGrow: 1,
-                        }}
-                    />
-                    {(stage.status === "ON_CHECK" || stage.date) && (
-                        <Flex gap={8} style={{ flexShrink: 0 }}>
-                            {stage.status === "ON_CHECK" && stage.date && (
-                                <div>
-                                    <Typo
-                                        variant={"actionM"}
-                                        style={{
-                                            height: "20px",
-                                            padding: "0 8px 1px 8px",
-                                            borderRadius: "12px",
-                                            background:
-                                                "var(--objects-background-neutral-secondary)",
-                                        }}
-                                    >
-                                        {new Date(stage.date || "2025-09-28").toLocaleDateString()}
-                                    </Typo>
-                                </div>
-                            )}
-                            {stage.status === "DONE" && stage.date && (
-                                <div>
-                                    <Typo
-                                        variant={"actionM"}
-                                        style={{
-                                            height: "20px",
-                                            padding: "0 8px 1px 8px",
-                                            borderRadius: "12px",
-                                            background:
-                                                "var(--objects-background-positive-secondary, #D4F7EB)",
-                                            color: "var(--objects-text-positive-primary, #267D5F)",
-                                        }}
-                                    >
-                                        {new Date(stage.date || "2025-09-28").toLocaleDateString()}
-                                    </Typo>
-                                </div>
-                            )}
-                            {stage.status === "ON_CHECK" && (
-                                <div>
-                                    <Typo
-                                        variant={"actionM"}
-                                        style={{
-                                            height: "20px",
-                                            padding: "0 8px 1px 8px",
-                                            borderRadius: "12px",
-                                            background: "#EEE1FE",
-                                            color: "var(--lavender-500, #8C3AF8)",
-                                        }}
-                                    >
-                                        На проверке
-                                    </Typo>
-                                </div>
-                            )}
-                        </Flex>
-                    )}
-                </Flex>
-                {stage.status === "ON_CHECK" && (
-                    <div>
-                        <ApproveButtons
-                            onReject={() => {
-                                stage.status = "IN_PROGRESS";
-                            }}
-                            onApprove={() => {
-                                stage.status = "DONE";
-                                if (stages.every((s) => s.status === "DONE")) {
-                                    props.work.status = "DONE";
+        const renderStage = (
+            stage: ProjectWorkStage,
+            index: number,
+            stages: ProjectWorkStage[],
+        ) => {
+            return (
+                <FlexColumn gap={16}>
+                    <Flex gap={16}>
+                        <Checkbox
+                            onChange={(checked) => {
+                                if (checked) {
+                                    stage.status = "READY_TO_CHECK";
+                                } else {
+                                    stage.status = "IN_PROGRESS";
                                 }
+                                worksStore.changeType = "checkbox";
+                            }}
+                            size={"medium"}
+                            checked={stage.status !== "IN_PROGRESS"}
+                            color={
+                                stage.status === "ON_CHECK"
+                                    ? "lavender"
+                                    : stage.status === "DONE"
+                                      ? "positive"
+                                      : "neutral"
+                            }
+                            title={stage.name}
+                            disabled={
+                                stage.status === "ON_CHECK" ||
+                                stage.status === "DONE" ||
+                                props.work.status === "ON_CHECK" ||
+                                props.work.stages.some((stage) => stage.status === "ON_CHECK")
+                            }
+                            style={{
+                                flexGrow: 1,
                             }}
                         />
-                    </div>
-                )}
-                {index !== stages.length - 1 && (
-                    <Divider
-                        direction={"horizontal"}
-                        type={"tertiary"}
-                        noMargin={true}
-                        style={{
-                            marginBottom: 16,
-                        }}
-                    />
-                )}
-            </FlexColumn>
-        );
-    };
-
-    const workVersion =
-        props.work.workVersions[
-            Math.min(worksStore.currentWorkVersion, props.work.workVersions.length) - 1
-        ];
-
-    const onCheckCountStages = props.work.stages.filter(
-        (stage) => stage.status === "ON_CHECK",
-    ).length;
-
-    const [showComments, setShowComments] = useState(false);
-    const [commentsCount, setCommentsCount] = useState(0);
-
-    useEffect(() => {
-        if (showComments) {
-            return;
-        }
-        worksStore.fetchWorkCommentsCount(props.work.id).then((count) => setCommentsCount(count));
-    }, [props.work.id, showComments]);
-
-    return (
-        <div className={styles.workCard}>
-            <div
-                className={styles.workCardHeader}
-                style={{
-                    gridTemplateColumns:
-                        !!progressStages.length || !!finishedStages.length
-                            ? "auto 1fr auto"
-                            : "1fr auto",
-                }}
-            >
-                {(!!progressStages.length || !!finishedStages.length) && (
-                    <Flex gap={12} align={"center"}>
-                        <Button
-                            mode={"neutral"}
-                            type={"outlined"}
-                            size={"small"}
-                            onClick={() => {
-                                setCollapsed(!collapsed);
-                            }}
-                        >
-                            <IconArrowUp
-                                style={{
-                                    transition: "transform 0.1s",
-                                    transform: collapsed ? "rotate(180deg)" : "rotate(0deg)",
-                                }}
-                            />
-                        </Button>
-                        {collapsed && !!onCheckCountStages && (
-                            <Counter
-                                size={"small"}
-                                value={onCheckCountStages}
-                                style={{
-                                    backgroundColor: "#8C3AF8",
-                                }}
-                            />
+                        {(stage.status === "ON_CHECK" || stage.date) && (
+                            <Flex gap={8} style={{ flexShrink: 0 }}>
+                                {stage.status === "ON_CHECK" && stage.date && (
+                                    <div>
+                                        <Typo
+                                            variant={"actionM"}
+                                            style={{
+                                                height: "20px",
+                                                padding: "0 8px 1px 8px",
+                                                borderRadius: "12px",
+                                                background:
+                                                    "var(--objects-background-neutral-secondary)",
+                                            }}
+                                        >
+                                            {new Date(
+                                                stage.date || "2025-09-28",
+                                            ).toLocaleDateString()}
+                                        </Typo>
+                                    </div>
+                                )}
+                                {stage.status === "DONE" && stage.date && (
+                                    <div>
+                                        <Typo
+                                            variant={"actionM"}
+                                            style={{
+                                                height: "20px",
+                                                padding: "0 8px 1px 8px",
+                                                borderRadius: "12px",
+                                                background:
+                                                    "var(--objects-background-positive-secondary, #D4F7EB)",
+                                                color: "var(--objects-text-positive-primary, #267D5F)",
+                                            }}
+                                        >
+                                            {new Date(
+                                                stage.date || "2025-09-28",
+                                            ).toLocaleDateString()}
+                                        </Typo>
+                                    </div>
+                                )}
+                                {stage.status === "ON_CHECK" && (
+                                    <div>
+                                        <Typo
+                                            variant={"actionM"}
+                                            style={{
+                                                height: "20px",
+                                                padding: "0 8px 1px 8px",
+                                                borderRadius: "12px",
+                                                background: "#EEE1FE",
+                                                color: "var(--lavender-500, #8C3AF8)",
+                                            }}
+                                        >
+                                            На проверке
+                                        </Typo>
+                                    </div>
+                                )}
+                            </Flex>
                         )}
                     </Flex>
-                )}
-                <Checkbox
-                    onChange={(checked) => {
-                        if (checked) {
-                            props.work.status = "READY_TO_CHECK";
-                        } else {
-                            props.work.status = "IN_PROGRESS";
-                        }
-                    }}
-                    title={props.work.name}
-                    size={"large"}
-                    checked={
-                        props.work.status !== "IN_PROGRESS" ||
-                        (!!props.work.stages.length &&
-                            props.work.stages.every((stage) => stage.status !== "IN_PROGRESS"))
-                    }
-                    color={
-                        props.work.status === "ON_CHECK"
-                            ? "lavender"
-                            : props.work.status === "DONE"
-                              ? "positive"
-                              : "neutral"
-                    }
-                    disabled={
-                        props.work.stages.some(
-                            (stage) =>
-                                stage.status === "IN_PROGRESS" || stage.status === "ON_CHECK",
-                        ) ||
-                        props.work.status === "ON_CHECK" ||
-                        props.work.status === "DONE" ||
-                        !!props.work.stages.length
-                    }
-                    style={
-                        {
-                            // pointerEvents: props.work.status === "IN_PROGRESS" ? undefined : "none",
-                        }
-                    }
-                />
-                <Flex gap={8} align={"center"}>
-                    <CircularProgress value={props.work.completionPercent} />
-                    <Typo variant={"subheadM"}>{props.work.completionPercent}%</Typo>
-                </Flex>
-            </div>
-            {props.work.status === "ON_CHECK" &&
-                !progressStages.length &&
-                !finishedStages.length && (
-                    <div
-                        style={{
-                            padding: "0 0 16px 20px",
-                        }}
-                    >
-                        <ApproveButtons
-                            onReject={() => {
-                                props.work.status = "IN_PROGRESS";
-                                props.work.stages.forEach((stage) => {
-                                    if (stage.status === "ON_CHECK") {
+                    {stage.status === "ON_CHECK" &&
+                        (accountStore.isAdmin ||
+                            accountStore.isCustomer ||
+                            accountStore.isInspector) && (
+                            <div>
+                                <ApproveButtons
+                                    onReject={() => {
                                         stage.status = "IN_PROGRESS";
-                                    }
-                                });
-                            }}
-                            onApprove={() => {
-                                props.work.status = "DONE";
-                                props.work.stages.forEach((stage) => {
-                                    if (stage.status === "ON_CHECK") {
+                                    }}
+                                    onApprove={() => {
                                         stage.status = "DONE";
-                                    }
-                                });
+                                        if (stages.every((s) => s.status === "DONE")) {
+                                            props.work.status = "DONE";
+                                        }
+                                    }}
+                                />
+                            </div>
+                        )}
+                    {index !== stages.length - 1 && (
+                        <Divider
+                            direction={"horizontal"}
+                            type={"tertiary"}
+                            noMargin={true}
+                            style={{
+                                marginBottom: 16,
                             }}
                         />
-                    </div>
-                )}
-            {(!!progressStages.length || !!finishedStages.length) && !collapsed && (
-                <div className={styles.workCardStages}>
-                    {!!progressStages.length && (
-                        <Typo
-                            variant={"subheadL"}
-                            type={"quaternary"}
-                            mode={"neutral"}
-                            style={{ opacity: 0.8, marginBottom: 16 }}
-                        >
-                            Этапы
-                        </Typo>
                     )}
-                    {progressStages.map(renderStage)}
-                    {!!progressStages.length && !!finishedStages.length && <Spacing height={22} />}
-                    {!!finishedStages.length && (
-                        <Typo
-                            variant={"subheadL"}
-                            type={"quaternary"}
-                            mode={"neutral"}
-                            style={{ opacity: 0.8, marginBottom: 16 }}
-                        >
-                            Завершено
+                </FlexColumn>
+            );
+        };
+
+        const workVersion =
+            props.work.workVersions[
+                Math.min(worksStore.currentWorkVersion, props.work.workVersions.length) - 1
+            ];
+
+        const activeVersion = props.work.workVersions.find((v) => v.active);
+
+        const onCheckCountStages = props.work.stages.filter(
+            (stage) => stage.status === "ON_CHECK",
+        ).length;
+
+        const [showComments, setShowComments] = useState(false);
+        const [commentsCount, setCommentsCount] = useState(0);
+
+        useEffect(() => {
+            if (showComments) {
+                return;
+            }
+            worksStore
+                .fetchWorkCommentsCount(props.work.id)
+                .then((count) => setCommentsCount(count));
+        }, [props.work.id, showComments]);
+
+        if (activeVersion?.endDate === workVersion.endDate && props.previewNewVersion) {
+            return null;
+        }
+
+        return (
+            <div className={styles.workCard}>
+                <div
+                    className={styles.workCardHeader}
+                    style={{
+                        gridTemplateColumns:
+                            !!progressStages.length || !!finishedStages.length
+                                ? "auto 1fr auto"
+                                : "1fr auto",
+                        paddingTop: props.previewNewVersion ? "24px" : undefined,
+                        paddingBottom: props.previewNewVersion ? "24px" : undefined,
+                    }}
+                >
+                    {(!!progressStages.length || !!finishedStages.length) &&
+                        !props.previewNewVersion && (
+                            <Flex gap={12} align={"center"}>
+                                <Button
+                                    mode={"neutral"}
+                                    type={"outlined"}
+                                    size={"small"}
+                                    onClick={() => {
+                                        setCollapsed(!collapsed);
+                                    }}
+                                >
+                                    <IconArrowUp
+                                        style={{
+                                            transition: "transform 0.1s",
+                                            transform: collapsed
+                                                ? "rotate(180deg)"
+                                                : "rotate(0deg)",
+                                        }}
+                                    />
+                                </Button>
+                                {collapsed && !!onCheckCountStages && (
+                                    <Counter
+                                        size={"small"}
+                                        value={onCheckCountStages}
+                                        style={{
+                                            backgroundColor: "#8C3AF8",
+                                        }}
+                                    />
+                                )}
+                            </Flex>
+                        )}
+                    {props.previewNewVersion ? (
+                        <Typo variant={"actionXL"} className={styles.previewNewVersionWorkName}>
+                            {props.work.name}
                         </Typo>
+                    ) : (
+                        <Checkbox
+                            onChange={(checked) => {
+                                if (checked) {
+                                    props.work.status = "READY_TO_CHECK";
+                                } else {
+                                    props.work.status = "IN_PROGRESS";
+                                }
+                                worksStore.changeType = "checkbox";
+                            }}
+                            title={props.work.name}
+                            size={"large"}
+                            checked={
+                                props.work.status !== "IN_PROGRESS" ||
+                                (!!props.work.stages.length &&
+                                    props.work.stages.every(
+                                        (stage) => stage.status !== "IN_PROGRESS",
+                                    ))
+                            }
+                            color={
+                                props.work.status === "ON_CHECK"
+                                    ? "lavender"
+                                    : props.work.status === "DONE"
+                                      ? "positive"
+                                      : "neutral"
+                            }
+                            disabled={
+                                props.work.stages.some(
+                                    (stage) =>
+                                        stage.status === "IN_PROGRESS" ||
+                                        stage.status === "ON_CHECK",
+                                ) ||
+                                props.work.status === "ON_CHECK" ||
+                                props.work.status === "DONE" ||
+                                !!props.work.stages.length
+                            }
+                            style={
+                                {
+                                    // pointerEvents: props.work.status === "IN_PROGRESS" ? undefined : "none",
+                                }
+                            }
+                        />
                     )}
-                    {finishedStages.map(renderStage)}
+                    {!props.previewNewVersion && (
+                        <Flex gap={8} align={"center"}>
+                            <CircularProgress value={props.work.completionPercent} />
+                            <Typo variant={"subheadM"}>{props.work.completionPercent}%</Typo>
+                        </Flex>
+                    )}
                 </div>
-            )}
-            <div className={styles.workCardBottomPanel}>
-                <Flex gap={8} align={"center"}>
-                    <DatePicker
-                        value={workVersion.startDate}
-                        onChange={(value) => {
-                            workVersion.endDate = value || workVersion.endDate;
-                        }}
-                        disableClear={true}
-                        disableTime={true}
-                        size={"medium"}
-                        width={133}
-                        style={{
-                            height: 36,
-                        }}
-                        inputStyle={{
-                            fontSize: 12,
-                        }}
-                        inputContentStyle={{
-                            padding: "0 12px",
-                            gap: 4,
-                        }}
-                        placeholder={"ДД.ММ.ГГГГ"}
-                    />
-                    <div
-                        style={{
-                            width: 12,
-                            borderTop: "1px solid var(--objects-stroke-neutral-primary)",
-                        }}
-                    />
-                    <DatePicker
-                        value={workVersion.endDate}
-                        onChange={(value) => {
-                            workVersion.endDate = value || workVersion.endDate;
-                        }}
-                        disableClear={true}
-                        disableTime={true}
-                        size={"medium"}
-                        width={133}
-                        style={{
-                            height: 36,
-                        }}
-                        inputStyle={{
-                            fontSize: 12,
-                        }}
-                        inputContentStyle={{
-                            padding: "0 12px",
-                            gap: 4,
-                        }}
-                        placeholder={"ДД.ММ.ГГГГ"}
-                    />
-                </Flex>
-                <Flex gap={6} align={"center"}>
-                    <div
-                        style={{
-                            fontSize: "12px",
-                            fontWeight: "500",
-                            lineHeight: "normal",
-                            color: "var(--objects-text-neutral-tertiary)",
-                        }}
-                    >
-                        План
-                    </div>
-                    <Input
-                        onChange={(event) => {
-                            props.work.plannedVolume = event.target.value
-                                ? Number(event.target.value)
-                                : null;
-                        }}
-                        size={"medium"}
-                        value={props.work.plannedVolume ?? ""}
-                        number={true}
-                        placeholder={"План"}
-                        style={{
-                            height: 36,
-                            width: 70,
-                        }}
-                        inputContentStyle={{
-                            padding: "0 12px",
-                            gap: 4,
-                        }}
-                        inputStyle={{
-                            textAlign: "center",
-                        }}
-                    />
-                    <div
-                        style={{
-                            fontSize: "12px",
-                            fontWeight: "500",
-                            lineHeight: "normal",
-                            color: "var(--objects-text-neutral-tertiary)",
-                        }}
-                    >
-                        Факт
-                    </div>
-                    <Input
-                        onChange={(event) => {
-                            props.work.actualVolume = event.target.value
-                                ? Number(event.target.value)
-                                : null;
-                        }}
-                        size={"medium"}
-                        value={props.work.actualVolume ?? ""}
-                        number={true}
-                        placeholder={"Факт"}
-                        style={{
-                            height: 36,
-                            width: 70,
-                        }}
-                        inputContentStyle={{
-                            padding: "0 12px",
-                            gap: 4,
-                        }}
-                        inputStyle={{
-                            textAlign: "center",
-                        }}
-                    />
-                    <div
-                        style={{
-                            borderRadius: 8,
-                            background: "#E9E9E9",
-                            height: 36,
-                            padding: "0 12px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            pointerEvents: "none",
-                        }}
-                    >
-                        <Typo variant={"actionM"}>
-                            {unitMap[props.work.volumeUnit] || props.work.volumeUnit || "кв.м"}
-                        </Typo>
-                    </div>
-                </Flex>
-                <Flex gap={12} align={"center"}>
-                    <Button
-                        type={"outlined"}
-                        size={"small"}
-                        mode={"neutral"}
-                        onClick={() => {
-                            setShowComments(true);
-                        }}
-                        counter={commentsCount > 0 ? commentsCount : undefined}
-                    >
-                        Комментарии
-                    </Button>
-                    <Tooltip header={"Редактировать"} delay={500}>
-                        <Button
-                            type={"secondary"}
-                            size={"small"}
-                            mode={"neutral"}
-                            iconBefore={<IconEdit />}
-                            onClick={() => {
-                                props.vm.showEditOverlay = true;
-                                props.vm.editingWork = props.work;
-                                props.vm.editForm = deepCopy(props.work);
-                                props.vm.editFormUnit = props.work.volumeUnit;
+                {props.work.status === "ON_CHECK" &&
+                    !props.previewNewVersion &&
+                    !progressStages.length &&
+                    !finishedStages.length &&
+                    (accountStore.isAdmin ||
+                        accountStore.isCustomer ||
+                        accountStore.isInspector) && (
+                        <div
+                            style={{
+                                padding: "0 0 16px 20px",
+                            }}
+                        >
+                            <ApproveButtons
+                                onReject={() => {
+                                    props.work.status = "IN_PROGRESS";
+                                    props.work.stages.forEach((stage) => {
+                                        if (stage.status === "ON_CHECK") {
+                                            stage.status = "IN_PROGRESS";
+                                        }
+                                    });
+                                }}
+                                onApprove={() => {
+                                    props.work.status = "DONE";
+                                    props.work.stages.forEach((stage) => {
+                                        if (stage.status === "ON_CHECK") {
+                                            stage.status = "DONE";
+                                        }
+                                    });
+                                }}
+                            />
+                        </div>
+                    )}
+                {(!!progressStages.length || !!finishedStages.length) &&
+                    !collapsed &&
+                    !props.previewNewVersion && (
+                        <div className={styles.workCardStages}>
+                            {!!progressStages.length && (
+                                <Typo
+                                    variant={"subheadL"}
+                                    type={"quaternary"}
+                                    mode={"neutral"}
+                                    style={{ opacity: 0.8, marginBottom: 16 }}
+                                >
+                                    Этапы
+                                </Typo>
+                            )}
+                            {progressStages.map(renderStage)}
+                            {!!progressStages.length && !!finishedStages.length && (
+                                <Spacing height={22} />
+                            )}
+                            {!!finishedStages.length && (
+                                <Typo
+                                    variant={"subheadL"}
+                                    type={"quaternary"}
+                                    mode={"neutral"}
+                                    style={{ opacity: 0.8, marginBottom: 16 }}
+                                >
+                                    Завершено
+                                </Typo>
+                            )}
+                            {finishedStages.map(renderStage)}
+                        </div>
+                    )}
+                <div className={styles.workCardBottomPanel} style={{}}>
+                    <Flex gap={8} align={"center"}>
+                        <DatePicker
+                            value={workVersion.startDate}
+                            onChange={(value) => {
+                                workVersion.endDate = value || workVersion.endDate;
+                                worksStore.changeType = "date";
+                            }}
+                            disableClear={true}
+                            disableTime={true}
+                            size={"medium"}
+                            width={133}
+                            style={{
+                                height: 36,
+                                pointerEvents:
+                                    props.previewNewVersion || accountStore.isContractor
+                                        ? "none"
+                                        : undefined,
+                            }}
+                            inputStyle={{
+                                fontSize: 12,
+                            }}
+                            inputContentStyle={{
+                                padding: "0 12px",
+                                gap: 4,
+                            }}
+                            inputBorderStyle={{
+                                borderColor: accountStore.isContractor
+                                    ? "var(--objects-stroke-neutral-secondary, #D6D9E0)"
+                                    : undefined,
+                            }}
+                            placeholder={"ДД.ММ.ГГГГ"}
+                            hideCalendarIcon={props.previewNewVersion}
+                            // readonly={props.previewNewVersion}
+                            readonly={accountStore.isContractor}
+                        />
+                        <div
+                            style={{
+                                width: 4,
+                                borderTop: "1px solid var(--objects-stroke-neutral-primary)",
                             }}
                         />
-                    </Tooltip>
-                </Flex>
+                        <DatePicker
+                            value={workVersion.endDate}
+                            onChange={(value) => {
+                                workVersion.endDate = value || workVersion.endDate;
+                                worksStore.changeType = "date";
+                            }}
+                            disableClear={true}
+                            disableTime={true}
+                            size={"medium"}
+                            width={133}
+                            style={{
+                                height: 36,
+                                pointerEvents: props.previewNewVersion ? "none" : undefined,
+                                borderColor: "red",
+                            }}
+                            inputStyle={{
+                                fontSize: 12,
+                            }}
+                            inputContentStyle={{
+                                padding: "0 12px",
+                                gap: 4,
+                            }}
+                            inputBorderStyle={{
+                                borderColor:
+                                    props.previewNewVersion &&
+                                    activeVersion?.endDate !== workVersion.endDate
+                                        ? "#946429"
+                                        : undefined,
+                            }}
+                            placeholder={"ДД.ММ.ГГГГ"}
+                            hideCalendarIcon={props.previewNewVersion}
+                            // readonly={props.previewNewVersion}
+                        />
+                    </Flex>
+                    {!props.previewNewVersion && (
+                        <>
+                            <Flex gap={6} align={"center"}>
+                                <div
+                                    style={{
+                                        fontSize: "12px",
+                                        fontWeight: "500",
+                                        lineHeight: "normal",
+                                        color: "var(--objects-text-neutral-tertiary)",
+                                    }}
+                                >
+                                    План
+                                </div>
+                                <Input
+                                    onChange={(event) => {
+                                        props.work.plannedVolume = event.target.value
+                                            ? Number(event.target.value)
+                                            : null;
+                                    }}
+                                    size={"medium"}
+                                    value={props.work.plannedVolume ?? ""}
+                                    number={true}
+                                    placeholder={"План"}
+                                    style={{
+                                        height: 36,
+                                        width: 70,
+                                    }}
+                                    inputContentStyle={{
+                                        padding: "0 12px",
+                                        gap: 4,
+                                    }}
+                                    inputStyle={{
+                                        textAlign: "center",
+                                        fontSize: 14,
+                                    }}
+                                />
+                                <div
+                                    style={{
+                                        fontSize: "12px",
+                                        fontWeight: "500",
+                                        lineHeight: "normal",
+                                        color: "var(--objects-text-neutral-tertiary)",
+                                    }}
+                                >
+                                    Факт
+                                </div>
+                                <Input
+                                    onChange={(event) => {
+                                        props.work.actualVolume = event.target.value
+                                            ? Number(event.target.value)
+                                            : null;
+                                    }}
+                                    size={"medium"}
+                                    value={props.work.actualVolume ?? ""}
+                                    number={true}
+                                    placeholder={"Факт"}
+                                    disabled={accountStore.isContractor}
+                                    style={{
+                                        height: 36,
+                                        width: 70,
+                                    }}
+                                    inputContentStyle={{
+                                        padding: "0 12px",
+                                        gap: 4,
+                                    }}
+                                    inputStyle={{
+                                        textAlign: "center",
+                                        fontSize: 14,
+                                    }}
+                                />
+                                <div
+                                    style={{
+                                        borderRadius: 8,
+                                        height: 36,
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        pointerEvents: "none",
+                                    }}
+                                >
+                                    <Typo variant={"actionM"}>
+                                        {unitMap[props.work.volumeUnit] ||
+                                            props.work.volumeUnit ||
+                                            "кв.м"}
+                                    </Typo>
+                                </div>
+                            </Flex>
+                            <Flex gap={12} align={"center"}>
+                                <Button
+                                    type={"outlined"}
+                                    size={"small"}
+                                    mode={"neutral"}
+                                    onClick={() => {
+                                        setShowComments(true);
+                                    }}
+                                    counter={commentsCount > 0 ? commentsCount : undefined}
+                                >
+                                    Комментарии
+                                </Button>
+                                {!accountStore.isContractor && (
+                                    <Tooltip header={"Редактировать"} delay={500}>
+                                        <Button
+                                            type={"secondary"}
+                                            size={"small"}
+                                            mode={"neutral"}
+                                            iconBefore={<IconEdit />}
+                                            onClick={() => {
+                                                props.vm.showEditOverlay = true;
+                                                props.vm.editingWork = props.work;
+                                                props.vm.editForm = deepCopy(props.work);
+                                                props.vm.editFormUnit = props.work.volumeUnit;
+                                            }}
+                                        />
+                                    </Tooltip>
+                                )}
+                            </Flex>
+                        </>
+                    )}
+                </div>
+                {showComments && (
+                    <WorkComments show={showComments} setShow={setShowComments} work={props.work} />
+                )}
             </div>
-            {showComments && (
-                <WorkComments show={showComments} setShow={setShowComments} work={props.work} />
-            )}
-        </div>
-    );
-});
+        );
+    },
+);
 
 export const ApproveButtons = observer((props: { onReject: () => void; onApprove: () => void }) => {
     return (

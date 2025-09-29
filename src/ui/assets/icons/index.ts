@@ -138,8 +138,10 @@ import IconDistance from "./distance.svg?react";
 import IconSmartDisplay from "./smart_display.svg?react";
 import IconBarChart from "./bar_chart.svg?react";
 import IconBadge from "./badge.svg?react";
+import IconApps from "./apps.svg?react";
 
 export {
+    IconApps,
     IconSmartDisplay,
     IconGroupBuild,
     IconApartment,

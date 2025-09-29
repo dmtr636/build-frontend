@@ -36,6 +36,8 @@ export interface DatePickerProps
     style?: CSSProperties | undefined;
     inputStyle?: CSSProperties | undefined;
     inputContentStyle?: CSSProperties | undefined;
+    inputBorderStyle?: CSSProperties | undefined;
+    hideCalendarIcon?: boolean;
 }
 
 export const DatePicker = (props: DatePickerProps) => {
@@ -55,6 +57,7 @@ export const DatePicker = (props: DatePickerProps) => {
         readonly,
         zIndex,
         disabled,
+        hideCalendarIcon,
     }: DatePickerProps = props;
     const [showCalendar, setShowCalendar] = useState(false);
     const [hover, setHover] = useState(false);
@@ -158,7 +161,8 @@ export const DatePicker = (props: DatePickerProps) => {
                 disabled={disabled}
                 startIcon={startIcon}
                 endActions={
-                    !readonly && (
+                    !readonly &&
+                    !hideCalendarIcon && (
                         <div className={styles.inputEndActions}>
                             {value && hover && !disableClear && (
                                 <Tooltip header={"Очистить"} delay={500}>
@@ -225,6 +229,7 @@ export const DatePicker = (props: DatePickerProps) => {
                 showBacklight={props.showBacklight}
                 inputStyle={props.inputStyle}
                 inputContentStyle={props.inputContentStyle}
+                inputBorderStyle={props.inputBorderStyle}
             />
         </PopoverBase>
     );

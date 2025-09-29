@@ -19,6 +19,7 @@ import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
 import { formatObjNumber } from "src/shared/utils/formatObjNumber.ts";
+import { Helmet } from "react-helmet";
 
 function getDaysBetween(startDate: string, endDate: string): string {
     const start = new Date(startDate);
@@ -107,6 +108,9 @@ const AboutObjectPage = observer(() => {
 
     return (
         <div className={styles.container}>
+            <Helmet>
+                <title>{currentOrg?.name}</title>
+            </Helmet>
             {shouldBlockButton && (
                 <div className={styles.footer}>
                     <div style={{ display: "flex", gap: 16 }}>
