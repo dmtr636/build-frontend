@@ -14,6 +14,7 @@ import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { Flex } from "src/ui/components/atoms/Flex/Flex.tsx";
 import { CoordinateDTO } from "src/features/journal/types/Object.ts";
+import { Helmet } from "react-helmet";
 
 export const LocationPage = observer(() => {
     const [mapObj, setMapObj] = useState<MapEditorValue>({
@@ -152,6 +153,9 @@ export const LocationPage = observer(() => {
 
     return (
         <div className={styles.container}>
+            <Helmet>
+                <title>{currentObj?.name}</title>
+            </Helmet>
             <div className={styles.header}>
                 <div className={styles.iconHeader}>
                     <IconDistance />

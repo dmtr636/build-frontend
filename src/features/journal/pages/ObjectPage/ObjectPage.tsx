@@ -14,11 +14,12 @@ export const ObjectPage = observer(() => {
     const navigate = useNavigate();
     const [scrollBarWidth] = useState(getScrollBarWidth());
     const { id } = useParams();
+    const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
 
     return (
         <div>
             <Helmet>
-                <title>Объект – Build</title>
+                <title>{currentObj?.name}</title>
             </Helmet>
             <div
                 className={styles.subheader}

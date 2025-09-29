@@ -123,7 +123,7 @@ const ViolationPage = observer(() => {
     return (
         <div className={styles.container}>
             <Helmet>
-                <title>Объекты – Build</title>
+                <title>{object?.name}</title>
             </Helmet>
             <div className={styles.filterBlock}>
                 {/*loginUser?.role !== "USER" &&*/}

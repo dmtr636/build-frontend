@@ -291,6 +291,19 @@ export const OrganizationsPage = observer(() => {
                         </Button>
                     </div>
                 )}
+                {!organizationsStore.organizations.length && !organizationsStore.loading && (
+                    <div className={styles.containerError}>
+                        <IconError className={styles.iconError} />
+                        <Typo
+                            variant={"actionXL"}
+                            mode={"neutral"}
+                            type={"secondary"}
+                            className={styles.errorText}
+                        >
+                            Пока нет организаций
+                        </Typo>
+                    </div>
+                )}
                 <div className={styles.orgList}>
                     {organizationsStore.filteredOrganizations.map((org) => (
                         <OrganizationListCard
