@@ -147,10 +147,11 @@ export const WorksPage = observer(() => {
     const [previewNewVersion, setPreviewNewVersion] = useState<number | null>(null);
 
     const showSaveButton =
-        !deepEquals(vm.form, currentObj) ||
-        !deepEquals(worksStore.worksForm, worksStore.works) ||
-        previewNewVersion ||
-        !deepEquals(worksStore.todayChecklist, worksStore.todayChecklistForm);
+        !worksStore.loadingCheckLists &&
+        (!deepEquals(vm.form, currentObj) ||
+            !deepEquals(worksStore.worksForm, worksStore.works) ||
+            previewNewVersion ||
+            !deepEquals(worksStore.todayChecklist, worksStore.todayChecklistForm));
 
     const tasksAreaContentRef = useRef<HTMLDivElement | null>(null);
     const [showGradient, setShowGradient] = useState(false);
@@ -508,23 +509,28 @@ export const WorksPage = observer(() => {
                                     >
                                         Чек-листы
                                     </Typo>
-                                    {!worksStore.todayCheckListSectionsInProgress.filter((item) =>
-                                        worksStore.checkListTitles.includes(item.title),
-                                    ).length ? (
-                                        <IconBadgeChecklistsReady />
-                                    ) : (
-                                        <Counter
-                                            value={
-                                                worksStore.todayCheckListSectionsInProgress.filter(
-                                                    (item) =>
-                                                        worksStore.checkListTitles.includes(
-                                                            item.title,
-                                                        ),
-                                                ).length
-                                            }
-                                            mode={"neutral"}
-                                            size={"medium"}
-                                        />
+                                    {!worksStore.loadingCheckLists && !worksStore.loading && (
+                                        <>
+                                            {!worksStore.todayCheckListSectionsInProgress.filter(
+                                                (item) =>
+                                                    worksStore.checkListTitles.includes(item.title),
+                                            ).length ? (
+                                                <IconBadgeChecklistsReady />
+                                            ) : (
+                                                <Counter
+                                                    value={
+                                                        worksStore.todayCheckListSectionsInProgress.filter(
+                                                            (item) =>
+                                                                worksStore.checkListTitles.includes(
+                                                                    item.title,
+                                                                ),
+                                                        ).length
+                                                    }
+                                                    mode={"neutral"}
+                                                    size={"medium"}
+                                                />
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </div>

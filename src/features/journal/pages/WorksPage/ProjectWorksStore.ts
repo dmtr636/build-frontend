@@ -78,6 +78,7 @@ export class WorksStore {
     openingChecklists: CheckListInstance[] = [];
     openingChecklistsForm: CheckListInstance[] = [];
     checkListsDay = dayjs().startOf("day");
+    loadingCheckLists = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -213,6 +214,7 @@ export class WorksStore {
     }
 
     async fetchChecklists(projectId: string) {
+        this.loadingCheckLists = true;
         const dailyChecklistsResponse = await this.apiClient.get<CheckListInstance[]>(
             endpoints.projectChecklists + `/${projectId}?type=DAILY`,
         );
@@ -225,7 +227,6 @@ export class WorksStore {
         if (openingChecklistsResponse.status) {
             this.openingChecklists = openingChecklistsResponse.data;
         }
-
         if (!this.openingChecklists.length) {
             const newOpeningChecklistsResponse = await this.apiClient.post<CheckListInstance>(
                 endpoints.projectChecklists + `/${projectId}/submit?type=OPENING`,
@@ -234,22 +235,22 @@ export class WorksStore {
             if (newOpeningChecklistsResponse.status) {
                 this.openingChecklists.push(newOpeningChecklistsResponse.data);
             }
-        } else {
-            if (
-                !this.dailyChecklists.length ||
-                !this.dailyChecklists.some((c) => dayjs(c.checkDate).isSame(dayjs(), "day"))
-            ) {
-                const newDailyChecklistResponse = await this.apiClient.post<CheckListInstance>(
-                    endpoints.projectChecklists + `/${projectId}/submit?type=DAILY`,
-                    [],
-                );
-                if (newDailyChecklistResponse.status) {
-                    this.dailyChecklists.push(newDailyChecklistResponse.data);
-                }
+        }
+        if (
+            !this.dailyChecklists.length ||
+            !this.dailyChecklists.some((c) => dayjs(c.checkDate).isSame(dayjs(), "day"))
+        ) {
+            const newDailyChecklistResponse = await this.apiClient.post<CheckListInstance>(
+                endpoints.projectChecklists + `/${projectId}/submit?type=DAILY`,
+                [],
+            );
+            if (newDailyChecklistResponse.status) {
+                this.dailyChecklists.push(newDailyChecklistResponse.data);
             }
         }
         this.dailyChecklistsForm = deepCopy(this.dailyChecklists);
         this.openingChecklistsForm = deepCopy(this.openingChecklists);
+        this.loadingCheckLists = false;
     }
 
     async fetchWorks(projectId: string, setVersion = false) {
