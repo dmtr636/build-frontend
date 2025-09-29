@@ -20,6 +20,7 @@ export class WorksStore {
     loading = false;
     currentWorkVersion = 1;
     allWorks = [];
+    changeType = "";
 
     constructor() {
         makeAutoObservable(this);
