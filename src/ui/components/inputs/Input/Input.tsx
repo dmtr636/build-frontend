@@ -35,6 +35,7 @@ export interface InputProps {
     style?: CSSProperties | undefined;
     inputStyle?: CSSProperties | undefined;
     inputContentStyle?: CSSProperties | undefined;
+    inputBorderStyle?: CSSProperties | undefined;
     value: any;
     error?: boolean;
     formName?: string | ReactNode;
@@ -286,6 +287,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
                         [styles.readonly]: readonly,
                         [styles.inputAfterFocus]: value?.length > 0,
                     })}
+                    style={props.inputBorderStyle}
                 />
                 <div
                     className={clsx(styles.inputContent, styles[size], {
