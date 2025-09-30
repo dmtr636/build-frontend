@@ -1,5 +1,6 @@
 @media screen {
 }
+
 .container {
     position: fixed;
     top: 0;
@@ -7,12 +8,13 @@
     background: var(--background-contrast-primary, #fff);
     padding: 8px 4px;
     height: 64px;
-    width: 100%;
+    width: 100vw;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    z-index: 2;
+    z-index: 1001;
+
     &.noButtonBack {
         padding-left: 16px;
     }
@@ -32,8 +34,8 @@
     overflow: hidden;
     color: var(--text-neutral-tertiary, #444d5f);
     /*
-  text-align: start;
-  */
+text-align: start;
+*/
     text-wrap: nowrap;
     text-overflow: ellipsis;
     font-size: 20px;

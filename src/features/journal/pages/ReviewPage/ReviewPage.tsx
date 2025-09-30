@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { appStore, layoutStore, violationStore, worksStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, userStore, violationStore, worksStore } from "src/app/AppStore.ts";
 import styles from "./ReviewPage.module.scss";
 import {
     IconApps,
@@ -39,6 +39,7 @@ function formatDate(dateStr: string): string {
 
 const ReviewPage = observer(() => {
     const { id } = useParams();
+    const currenUser = appStore.accountStore.currentUser;
     const project = appStore.objectStore.ObjectMap.get(id ?? "");
     const customerOrg = appStore.organizationsStore.organizationById(project?.customerOrganization);
     const contractorOrg = appStore.organizationsStore.organizationById(
@@ -133,6 +134,9 @@ const ReviewPage = observer(() => {
             setReady(true);
         }, 30);
     }, []);
+    useLayoutEffect(() => {
+        if (project) layoutStore.setHeaderProps({ title: project?.name });
+    }, [project]);
     const isMobile = layoutStore.isMobile;
     /*const { pos, inside, error, lastChangeTs } = useGeofence({
         polygon: project?.polygon ?? ([] as any),
@@ -178,7 +182,7 @@ const ReviewPage = observer(() => {
                 {isMobile && (
                     <div className={styles.buttonsCheck}>
                         <Button
-                            onClick={() => navigate(`/admin/journal/${id}/violations`)}
+                            onClick={() => navigate(`/admin/journal/${id}/status`)}
                             mode={"positive"}
                             size={"small"}
                             counter={works.length}
@@ -196,6 +200,7 @@ const ReviewPage = observer(() => {
                             Добавить нарушение
                         </Button>
                         <Button
+                            onClick={() => navigate(`/admin/journal/${id}/violations?status=4`)}
                             fullWidth={true}
                             type={"outlined"}
                             counter={
@@ -261,7 +266,8 @@ const ReviewPage = observer(() => {
                     </div>
                     <div className={styles.objStatus}>{statusBadge}</div>
                     <div className={styles.objInfo}>
-                        {project?.name} <IconDote />{" "}
+                        {project?.name}
+                        {!isMobile && <IconDote />}{" "}
                         <span
                             style={{ color: "rgba(0, 0, 0, 0.39)" }}
                         >{`№ ${formatObjNumber(project?.objectNumber ?? "")}`}</span>

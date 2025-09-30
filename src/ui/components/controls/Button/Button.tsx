@@ -201,7 +201,7 @@ export const Button = observer((props: ButtonProps) => {
             neutral: "neutral",
             contrast: "contrast",
             brand: "brand",
-            lavender: "neutral",
+            lavender: "lavender",
             warning: "neutral",
         };
         return (

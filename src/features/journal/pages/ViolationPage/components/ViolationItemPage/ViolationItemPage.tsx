@@ -1,18 +1,15 @@
-import React, { useState } from "react";
-import styles from "./violationCard.module.scss";
-import { ProjectViolationDTO } from "src/features/journal/types/Violation.ts";
+import React, { useLayoutEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { appStore, violationStore } from "src/app/AppStore.ts";
+import { observer } from "mobx-react-lite";
+import styles from "./ViolationItemPage.module.scss";
 import { clsx } from "clsx";
 import { IconCalendar, IconDocument, IconPin, IconTime, IconUser } from "src/ui/assets/icons";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
-import { Link } from "react-router-dom";
 import { splitFullName } from "src/shared/utils/splitFullName.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { Media } from "src/ui/components/solutions/Media/Media.tsx";
 import { fileUrl } from "src/shared/utils/file.ts";
-
-interface ViolationCardProps {
-    violation: ProjectViolationDTO;
-}
+import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 function formatDateTime(dateString: string): { date: string; time: string } {
     const date = new Date(dateString);
@@ -47,24 +44,17 @@ function formatDate(dateStr: string): string {
     return `${month}.${year}`;
 }
 
-const ViolationCard = ({ violation }: ViolationCardProps) => {
-    const [activeTab, setActiveTab] = useState(1);
+const ViolationItemPage = observer(() => {
+    const { id, violId } = useParams();
+    const violation = violationStore.violations.find((violation) => violation.id === violId);
+    const navigate = useNavigate();
+    useLayoutEffect(() => {
+        if (id) violationStore.fetchViolationByObj(id);
+    }, [id]);
+    if (!violation) return null;
+
     return (
         <div className={styles.card}>
-            <div className={styles.tabs}>
-                <div
-                    onClick={() => setActiveTab(1)}
-                    className={clsx(styles.tabItem, { [styles.active]: activeTab === 1 })}
-                >
-                    О нарушении
-                </div>
-                <div
-                    onClick={() => setActiveTab(2)}
-                    className={clsx(styles.tabItem, { [styles.active]: activeTab === 2 })}
-                >
-                    Комментарии
-                </div>
-            </div>
             <div className={styles.badges}>
                 <div className={clsx(styles.badge)}>
                     <IconCalendar />
@@ -117,15 +107,15 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
                 </div>
                 <div className={styles.userTexts}>
                     <div className={styles.role}>Автор</div>
-                    <Link to={`/admin/users/${violation?.author.id}`} className={styles.userName}>
+                    <div className={styles.userName}>
                         {getShortName(splitFullName(violation?.author ?? ""))}
-                    </Link>
+                    </div>
                 </div>
             </div>
             <div className={styles.textForm}>{violation.name}</div>
-            <Button iconBefore={<IconPin />} size={"medium"} fullWidth={true} mode={"neutral"}>
+            {/*<Button iconBefore={<IconPin />} size={"medium"} fullWidth={true} mode={"neutral"}>
                 Посмотреть место нарушения
-            </Button>
+            </Button>*/}
             <div className={styles.textBlock}>
                 <div>Нужно исправить до</div>
                 <div className={styles.textBlockSubtext}>{formatDate(violation.dueDate)}</div>
@@ -134,14 +124,18 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
                 <div>Нормативные документы</div>
                 <div className={styles.docsArray}>
                     {violation.normativeDocuments.map((doc) => (
-                        <Link
+                        <div
                             key={doc.id}
-                            to={`/admin/dictionaries/normative-documents/${doc.id}}`}
+                            /*
+                                                        to={`/admin/dictionaries/normative-documents/${doc.id}}`}
+                            */
                             className={styles.docItem}
                         >
                             <IconDocument />
-                            <span style={{ marginTop: 1 }}>{doc.name} </span>
-                        </Link>
+                            <span style={{ marginTop: 1 }}>
+                                {`${doc.name} (${doc.regulation})`}{" "}
+                            </span>
+                        </div>
                     ))}
                 </div>
             </div>
@@ -151,8 +145,47 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
                     <img className={styles.imgItem} key={index} src={fileUrl(photo.id)} />
                 ))}
             </div>
+            <div className={styles.buttonBlock}>
+                <div className={styles.buttonItem}>
+                    <Button
+                        onClick={() =>
+                            appStore.violationStore
+                                .changeStatus(violation.id, "TODO", violation.id)
+                                .then(() => {
+                                    snackbarStore.showNeutralPositiveSnackbar("Статус изменен");
+                                    navigate(-1);
+                                })
+                        }
+                        type={"secondary"}
+                        fullWidth={true}
+                        mode={"negative"}
+                        size={"small"}
+                    >
+                        Отклонить
+                    </Button>
+                </div>
+                <div className={styles.buttonItem}>
+                    <Button
+                        onClick={() => {
+                            appStore.violationStore
+                                .changeStatus(violation?.id, "DONE", violation?.projectId)
+                                .then(() => {
+                                    {
+                                        snackbarStore.showNeutralPositiveSnackbar("Статус изменен");
+                                        navigate(-1);
+                                    }
+                                });
+                        }}
+                        fullWidth={true}
+                        mode={"positive"}
+                        size={"small"}
+                    >
+                        Принять
+                    </Button>
+                </div>
+            </div>
         </div>
     );
-};
+});
 
-export default ViolationCard;
+export default ViolationItemPage;

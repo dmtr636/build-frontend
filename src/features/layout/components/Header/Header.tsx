@@ -90,13 +90,10 @@ const Header = observer(() => {
         const { type } = body;
         notificationStore.notificationIsRead(notification.id);
         if (type === "violation" || type === "VIOLATION_STATUS_UPDATE" || type === "comment") {
-            // Нарушения
             navigate(`/admin/journal/${projId}/violations`);
         } else if (type === "WORK_COMMENT" || type === "text") {
-            // Работы (status)
             navigate(`/admin/journal/${projId}/status`);
         } else {
-            // Остальные (например, ADMONITION)
             navigate(`/admin/journal/${projId}`);
         }
     };

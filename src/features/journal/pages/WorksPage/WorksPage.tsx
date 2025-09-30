@@ -18,6 +18,7 @@ import { useParams } from "react-router-dom";
 import {
     accountStore,
     appStore,
+    layoutStore,
     objectStore,
     registryStore,
     worksStore,
@@ -198,137 +199,141 @@ export const WorksPage = observer(() => {
         }
         return "Сохранить изменения";
     };
-
+    const isMobile = layoutStore.isMobile;
     return (
         <div className={styles.container}>
             <Helmet>
                 <title>{currentObj?.name}</title>
             </Helmet>
-            <div className={styles.header}>
-                <div className={styles.iconHeader}>
-                    <IconBarChart />
+            {!isMobile && (
+                <div className={styles.header}>
+                    <div className={styles.iconHeader}>
+                        <IconBarChart />
+                    </div>
+                    Состав работ
                 </div>
-                Состав работ
-            </div>
+            )}
             <div className={styles.grid}>
-                <div className={styles.leftCol}>
-                    {previewNewVersion && (
-                        <Button
-                            mode={"neutral"}
-                            iconBefore={
-                                <IconUp
-                                    style={{
-                                        transform: "rotate(-90deg)",
-                                    }}
-                                />
-                            }
-                            onClick={() => {
-                                setPreviewNewVersion(null);
-                                const active = worksStore.worksForm[0].workVersions.find(
-                                    (v) => v.active,
-                                );
-                                worksStore.currentWorkVersion = active?.versionNumber ?? 1;
+                {!isMobile && (
+                    <div className={styles.leftCol}>
+                        {previewNewVersion && (
+                            <Button
+                                mode={"neutral"}
+                                iconBefore={
+                                    <IconUp
+                                        style={{
+                                            transform: "rotate(-90deg)",
+                                        }}
+                                    />
+                                }
+                                onClick={() => {
+                                    setPreviewNewVersion(null);
+                                    const active = worksStore.worksForm[0].workVersions.find(
+                                        (v) => v.active,
+                                    );
+                                    worksStore.currentWorkVersion = active?.versionNumber ?? 1;
+                                }}
+                            >
+                                Вернуться в текущий график
+                            </Button>
+                        )}
+                        <div
+                            className={styles.leftColCard}
+                            style={{
+                                paddingTop: accountStore.isContractor ? "24px" : undefined,
                             }}
                         >
-                            Вернуться в текущий график
-                        </Button>
-                    )}
-                    <div
-                        className={styles.leftColCard}
-                        style={{
-                            paddingTop: accountStore.isContractor ? "24px" : undefined,
-                        }}
-                    >
-                        {!accountStore.isContractor && (
-                            <Select
-                                options={statusOptions}
-                                value={vm.form?.status}
-                                formName={"Статус"}
-                                onValueChange={(value) => {
-                                    if (value && vm.form) {
-                                        vm.form.status = value;
-                                    }
-                                }}
-                                disableClear={true}
-                            />
-                        )}
-                        <div className={styles.periodsCol}>
+                            {!accountStore.isContractor && (
+                                <Select
+                                    options={statusOptions}
+                                    value={vm.form?.status}
+                                    formName={"Статус"}
+                                    onValueChange={(value) => {
+                                        if (value && vm.form) {
+                                            vm.form.status = value;
+                                        }
+                                    }}
+                                    disableClear={true}
+                                />
+                            )}
+                            <div className={styles.periodsCol}>
+                                <div className={styles.periodCard}>
+                                    <Typo variant={"subheadM"} type={"quaternary"} mode={"neutral"}>
+                                        Плановое начало работ
+                                    </Typo>
+                                    <Typo variant={"bodyM"}>
+                                        {formatDate(vm.form?.plannedPeriod?.start ?? "") || "-"}
+                                    </Typo>
+                                </div>
+                            </div>
                             <div className={styles.periodCard}>
                                 <Typo variant={"subheadM"} type={"quaternary"} mode={"neutral"}>
-                                    Плановое начало работ
+                                    Плановое завершение
                                 </Typo>
                                 <Typo variant={"bodyM"}>
-                                    {formatDate(vm.form?.plannedPeriod?.start ?? "") || "-"}
+                                    {formatDate(vm.form?.plannedPeriod?.end ?? "") || "-"}
                                 </Typo>
                             </div>
                         </div>
-                        <div className={styles.periodCard}>
-                            <Typo variant={"subheadM"} type={"quaternary"} mode={"neutral"}>
-                                Плановое завершение
-                            </Typo>
-                            <Typo variant={"bodyM"}>
-                                {formatDate(vm.form?.plannedPeriod?.end ?? "") || "-"}
-                            </Typo>
-                        </div>
-                    </div>
-                    <div className={styles.leftColCard}>
-                        {vm.tab === "works" ? (
-                            <Select
-                                options={worksStore.workVersions.map((version) => ({
-                                    name: formatDate(version.createdAt),
-                                    value: version.versionNumber,
-                                }))}
-                                value={worksStore.currentWorkVersion}
-                                formName={"Версия графика"}
-                                size={"large"}
-                                onValueChange={(value) => {
-                                    worksStore.currentWorkVersion = value ?? 1;
-                                }}
-                                disableClear={true}
-                                disabled={!worksStore.worksForm.length}
-                                placeholder={"-"}
-                            />
-                        ) : (
-                            <Select
-                                options={worksStore.dailyChecklists.map((version) => ({
-                                    name: formatDate(version.checkDate),
-                                    value: dayjs(version.checkDate).toISOString(),
-                                }))}
-                                value={worksStore.checkListsDay.toISOString()}
-                                formName={"День"}
-                                size={"large"}
-                                onValueChange={(value) => {
-                                    worksStore.checkListsDay = dayjs(value);
-                                }}
-                                disableClear={true}
-                                placeholder={"-"}
-                            />
-                        )}
-                    </div>
-                    {worksStore.worksForm.length > 0 && (
-                        <>
-                            {hasExpired ? (
-                                <Alert
-                                    mode={"negative"}
-                                    icon={<IconAttention />}
-                                    title={"Срок в задачах не\xa0соответствует планам"}
-                                    subtitle={
-                                        "Есть риск, что объект не будет завершён к запланированному сроку"
-                                    }
+                        <div className={styles.leftColCard}>
+                            {vm.tab === "works" ? (
+                                <Select
+                                    options={worksStore.workVersions.map((version) => ({
+                                        name: formatDate(version.createdAt),
+                                        value: version.versionNumber,
+                                    }))}
+                                    value={worksStore.currentWorkVersion}
+                                    formName={"Версия графика"}
+                                    size={"large"}
+                                    onValueChange={(value) => {
+                                        worksStore.currentWorkVersion = value ?? 1;
+                                    }}
+                                    disableClear={true}
+                                    disabled={!worksStore.worksForm.length}
+                                    placeholder={"-"}
                                 />
                             ) : (
-                                <Alert
-                                    mode={"positive"}
-                                    icon={<IconSuccess />}
-                                    title={"Срок в работах соответствует планам"}
-                                    subtitle={
-                                        "Планируется, что объект будет готов к сроку планового завершения"
-                                    }
+                                <Select
+                                    options={worksStore.dailyChecklists.map((version) => ({
+                                        name: formatDate(version.checkDate),
+                                        value: dayjs(version.checkDate).toISOString(),
+                                    }))}
+                                    value={worksStore.checkListsDay.toISOString()}
+                                    formName={"День"}
+                                    size={"large"}
+                                    onValueChange={(value) => {
+                                        worksStore.checkListsDay = dayjs(value);
+                                    }}
+                                    disableClear={true}
+                                    placeholder={"-"}
                                 />
                             )}
-                        </>
-                    )}
-                </div>
+                        </div>
+                        {worksStore.worksForm.length > 0 && (
+                            <>
+                                {hasExpired ? (
+                                    <Alert
+                                        mode={"negative"}
+                                        icon={<IconAttention />}
+                                        title={"Срок в задачах не\xa0соответствует планам"}
+                                        subtitle={
+                                            "Есть риск, что объект не будет завершён к запланированному сроку"
+                                        }
+                                    />
+                                ) : (
+                                    <Alert
+                                        mode={"positive"}
+                                        icon={<IconSuccess />}
+                                        title={"Срок в работах соответствует планам"}
+                                        subtitle={
+                                            "Планируется, что объект будет готов к сроку планового завершения"
+                                        }
+                                    />
+                                )}
+                            </>
+                        )}
+                    </div>
+                )}
                 <FlexColumn gap={20}>
                     {showAlertNewVersion && !previewNewVersion && vm.tab === "works" && (
                         <Alert
@@ -471,7 +476,7 @@ export const WorksPage = observer(() => {
                                     >
                                         Работы
                                     </Typo>
-                                    {!accountStore.isContractor && (
+                                    {!accountStore.isContractor && !isMobile && (
                                         <Button
                                             iconBefore={<IconPlus />}
                                             size={"small"}
@@ -491,6 +496,15 @@ export const WorksPage = observer(() => {
                                                 vm.addForm.projectId = currentObj?.id ?? "";
                                                 vm.showAddOverlay = true;
                                             }}
+                                        />
+                                    )}
+                                    {isMobile && (
+                                        <Counter
+                                            value={
+                                                worksStore.todayCheckListSectionsInProgress.length
+                                            }
+                                            mode={"lavender"}
+                                            size={"medium"}
                                         />
                                     )}
                                 </div>
@@ -672,7 +686,7 @@ export const WorksPage = observer(() => {
                     )}
                 </FlexColumn>
             </div>
-            {!!worksStore.worksForm.length && (
+            {!!worksStore.worksForm.length && !isMobile && (
                 <div className={styles.ganttWrapper}>
                     <GanttWorks
                         currentWorkVersion={worksStore.currentWorkVersion}
@@ -681,7 +695,7 @@ export const WorksPage = observer(() => {
                     />
                 </div>
             )}
-            {showSaveButton && currentObj && (
+            {showSaveButton && currentObj && !isMobile && (
                 <div
                     className={styles.footer}
                     style={{
@@ -902,19 +916,21 @@ export const WorksPage = observer(() => {
                             formName={"Наименование работы"}
                             required={true}
                         />
-                        <Input
-                            onChange={(event) => {
-                                vm.addForm.plannedVolume = event.target.value
-                                    ? Number(event.target.value)
-                                    : undefined;
-                            }}
-                            value={vm.addForm.plannedVolume ?? ""}
-                            size={"large"}
-                            placeholder={"Введите число"}
-                            formName={`План${vm.addFormUnit ? ` (${unitMap[vm.addFormUnit] || vm.addFormUnit.toLowerCase()})` : ""}`}
-                            number={true}
-                            required={true}
-                        />
+                        {!isMobile && (
+                            <Input
+                                onChange={(event) => {
+                                    vm.addForm.plannedVolume = event.target.value
+                                        ? Number(event.target.value)
+                                        : undefined;
+                                }}
+                                value={vm.addForm.plannedVolume ?? ""}
+                                size={"large"}
+                                placeholder={"Введите число"}
+                                formName={`План${vm.addFormUnit ? ` (${unitMap[vm.addFormUnit] || vm.addFormUnit.toLowerCase()})` : ""}`}
+                                number={true}
+                                required={true}
+                            />
+                        )}
                         {!!registryStore.workStages?.length &&
                             registryStore.worksNameMap.has(vm.addForm.name ?? "") && (
                                 <div className={styles.stages}>
@@ -1233,7 +1249,7 @@ export const WorkCard = observer(
 
         const progressStages = props.work.stages.filter((stage) => stage.status !== "DONE");
         const finishedStages = props.work.stages.filter((stage) => stage.status === "DONE");
-
+        const isMobile = layoutStore.isMobile;
         const renderStage = (
             stage: ProjectWorkStage,
             index: number,
@@ -1241,7 +1257,7 @@ export const WorkCard = observer(
         ) => {
             return (
                 <FlexColumn gap={16}>
-                    <Flex gap={16}>
+                    <Flex gap={16} direction={isMobile ? "column" : "row"}>
                         <Checkbox
                             onChange={(checked) => {
                                 if (checked) {
@@ -1566,7 +1582,7 @@ export const WorkCard = observer(
                             disableClear={true}
                             disableTime={true}
                             size={"medium"}
-                            width={133}
+                            width={isMobile ? "calc(50vw - 50px)" : 133}
                             style={{
                                 height: 36,
                                 pointerEvents:
@@ -1606,7 +1622,7 @@ export const WorkCard = observer(
                             disableClear={true}
                             disableTime={true}
                             size={"medium"}
-                            width={133}
+                            width={isMobile ? "calc(50vw - 50px)" : 133}
                             style={{
                                 height: 36,
                                 pointerEvents: props.previewNewVersion ? "none" : undefined,
@@ -1638,120 +1654,126 @@ export const WorkCard = observer(
                     </Flex>
                     {!props.previewNewVersion && (
                         <>
-                            <Flex gap={6} align={"center"}>
-                                <div
-                                    style={{
-                                        fontSize: "12px",
-                                        fontWeight: "500",
-                                        lineHeight: "normal",
-                                        color: "var(--objects-text-neutral-tertiary)",
-                                    }}
-                                >
-                                    План
-                                </div>
-                                <Input
-                                    onChange={(event) => {
-                                        props.work.plannedVolume = event.target.value
-                                            ? Number(event.target.value)
-                                            : null;
-                                    }}
-                                    size={"medium"}
-                                    value={props.work.plannedVolume ?? ""}
-                                    number={true}
-                                    placeholder={"План"}
-                                    style={{
-                                        height: 36,
-                                        width: 70,
-                                    }}
-                                    inputContentStyle={{
-                                        padding: "0 12px",
-                                        gap: 4,
-                                    }}
-                                    inputStyle={{
-                                        textAlign: "center",
-                                        fontSize: 14,
-                                    }}
-                                />
-                                <div
-                                    style={{
-                                        fontSize: "12px",
-                                        fontWeight: "500",
-                                        lineHeight: "normal",
-                                        color: "var(--objects-text-neutral-tertiary)",
-                                    }}
-                                >
-                                    Факт
-                                </div>
-                                <Input
-                                    onChange={(event) => {
-                                        props.work.actualVolume = event.target.value
-                                            ? Number(event.target.value)
-                                            : null;
-                                    }}
-                                    size={"medium"}
-                                    value={props.work.actualVolume ?? ""}
-                                    number={true}
-                                    placeholder={"Факт"}
-                                    disabled={accountStore.isContractor}
-                                    style={{
-                                        height: 36,
-                                        width: 70,
-                                    }}
-                                    inputContentStyle={{
-                                        padding: "0 12px",
-                                        gap: 4,
-                                    }}
-                                    inputStyle={{
-                                        textAlign: "center",
-                                        fontSize: 14,
-                                    }}
-                                />
-                                <div
-                                    style={{
-                                        borderRadius: 8,
-                                        height: 36,
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        pointerEvents: "none",
-                                    }}
-                                >
-                                    <Typo variant={"actionM"}>
-                                        {unitMap[props.work.volumeUnit] ||
-                                            props.work.volumeUnit ||
-                                            "кв.м"}
-                                    </Typo>
-                                </div>
-                            </Flex>
-                            <Flex gap={12} align={"center"}>
-                                <Button
-                                    type={"outlined"}
-                                    size={"small"}
-                                    mode={"neutral"}
-                                    onClick={() => {
-                                        setShowComments(true);
-                                    }}
-                                    counter={commentsCount > 0 ? commentsCount : undefined}
-                                >
-                                    Комментарии
-                                </Button>
-                                {!accountStore.isContractor && (
-                                    <Tooltip header={"Редактировать"} delay={500}>
-                                        <Button
-                                            type={"secondary"}
-                                            size={"small"}
-                                            mode={"neutral"}
-                                            iconBefore={<IconEdit />}
-                                            onClick={() => {
-                                                props.vm.showEditOverlay = true;
-                                                props.vm.editingWork = props.work;
-                                                props.vm.editForm = deepCopy(props.work);
-                                                props.vm.editFormUnit = props.work.volumeUnit;
+                            {!isMobile && (
+                                <Flex gap={6} align={"center"}>
+                                    <div
+                                        style={{
+                                            fontSize: "12px",
+                                            fontWeight: "500",
+                                            lineHeight: "normal",
+                                            color: "var(--objects-text-neutral-tertiary)",
+                                        }}
+                                    >
+                                        План
+                                    </div>
+                                    {
+                                        <Input
+                                            onChange={(event) => {
+                                                props.work.plannedVolume = event.target.value
+                                                    ? Number(event.target.value)
+                                                    : null;
+                                            }}
+                                            size={"medium"}
+                                            value={props.work.plannedVolume ?? ""}
+                                            number={true}
+                                            placeholder={"План"}
+                                            style={{
+                                                height: 36,
+                                                width: 70,
+                                            }}
+                                            inputContentStyle={{
+                                                padding: "0 12px",
+                                                gap: 4,
+                                            }}
+                                            inputStyle={{
+                                                textAlign: "center",
+                                                fontSize: 14,
                                             }}
                                         />
-                                    </Tooltip>
-                                )}
-                            </Flex>
+                                    }
+                                    <div
+                                        style={{
+                                            fontSize: "12px",
+                                            fontWeight: "500",
+                                            lineHeight: "normal",
+                                            color: "var(--objects-text-neutral-tertiary)",
+                                        }}
+                                    >
+                                        Факт
+                                    </div>
+                                    <Input
+                                        onChange={(event) => {
+                                            props.work.actualVolume = event.target.value
+                                                ? Number(event.target.value)
+                                                : null;
+                                        }}
+                                        size={"medium"}
+                                        value={props.work.actualVolume ?? ""}
+                                        number={true}
+                                        placeholder={"Факт"}
+                                        disabled={accountStore.isContractor}
+                                        style={{
+                                            height: 36,
+                                            width: 70,
+                                        }}
+                                        inputContentStyle={{
+                                            padding: "0 12px",
+                                            gap: 4,
+                                        }}
+                                        inputStyle={{
+                                            textAlign: "center",
+                                            fontSize: 14,
+                                        }}
+                                    />
+                                    <div
+                                        style={{
+                                            borderRadius: 8,
+                                            height: 36,
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            pointerEvents: "none",
+                                        }}
+                                    >
+                                        <Typo variant={"actionM"}>
+                                            {unitMap[props.work.volumeUnit] ||
+                                                props.work.volumeUnit ||
+                                                "кв.м"}
+                                        </Typo>
+                                    </div>
+                                </Flex>
+                            )}
+                            {!isMobile && (
+                                <Flex gap={12} align={"center"}>
+                                    <Button
+                                        type={"outlined"}
+                                        size={"small"}
+                                        mode={"neutral"}
+                                        onClick={() => {
+                                            setShowComments(true);
+                                        }}
+                                        counter={commentsCount > 0 ? commentsCount : undefined}
+                                    >
+                                        Комментарии
+                                    </Button>
+                                    {!accountStore.isContractor && (
+                                        <Tooltip header={"Редактировать"} delay={500}>
+                                            <Button
+                                                type={"secondary"}
+                                                size={"small"}
+                                                mode={"neutral"}
+                                                iconBefore={<IconEdit />}
+                                                onClick={() => {
+                                                    props.vm.showEditOverlay = true;
+                                                    props.vm.editingWork = props.work;
+                                                    props.vm.editForm = deepCopy(props.work);
+                                                    props.vm.editFormUnit = props.work.volumeUnit;
+                                                }}
+                                            />
+                                        </Tooltip>
+                                    )}
+                                </Flex>
+                            )}
                         </>
                     )}
                 </div>
@@ -1764,14 +1786,31 @@ export const WorkCard = observer(
 );
 
 export const ApproveButtons = observer((props: { onReject: () => void; onApprove: () => void }) => {
+    const isMobile = layoutStore.isMobile;
     return (
         <Flex gap={8}>
-            <Button type={"secondary"} mode={"negative"} size={"tiny"} onClick={props.onReject}>
-                Отклонить
-            </Button>
-            <Button type={"primary"} mode={"positive"} size={"tiny"} onClick={props.onApprove}>
-                Принять
-            </Button>
+            <div className={styles.buttonItem}>
+                <Button
+                    fullWidth={isMobile}
+                    type={"secondary"}
+                    mode={"negative"}
+                    size={"tiny"}
+                    onClick={props.onReject}
+                >
+                    Отклонить
+                </Button>
+            </div>
+            <div className={styles.buttonItem}>
+                <Button
+                    fullWidth={isMobile}
+                    type={"primary"}
+                    mode={"positive"}
+                    size={"tiny"}
+                    onClick={props.onApprove}
+                >
+                    Принять
+                </Button>
+            </div>
         </Flex>
     );
 });

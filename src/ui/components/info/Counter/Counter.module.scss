@@ -24,6 +24,16 @@
         );
     }
 
+    &.lavender {
+        @include color-types-mixin(
+            white,
+            $lavender-500,
+            $lavender-500,
+            #f6f0fe,
+            $objects-stroke-neutral-secondary
+        );
+    }
+
     &.positive {
         @include color-types-mixin(
             $objects-text-contrast-primary,

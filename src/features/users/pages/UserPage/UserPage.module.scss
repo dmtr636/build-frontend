@@ -9,7 +9,8 @@
         background-color: white;
         margin-top: 0;
         padding: 16px 16px 0;
-        height: calc(100vh - 144px);
+        padding-bottom: 86px;
+        min-height: calc(100dvh - 64px);
     }
 }
 
