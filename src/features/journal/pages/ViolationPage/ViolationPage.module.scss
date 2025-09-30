@@ -9,6 +9,11 @@
     @media screen and (min-width: 1500px) {
         width: 1440px;
     }
+    @media screen and (max-width: 768px) {
+        width: 100vw;
+        margin-top: 0;
+        padding: 0 16px;
+    }
 }
 
 .filterBlock {
@@ -29,6 +34,9 @@ width: 506px;
     width: 818px;
     @media screen and (min-width: 1500px) {
         width: 994px;
+    }
+    @media screen and (max-width: 768px) {
+        width: 100%;
     }
 }
 
@@ -125,6 +133,10 @@ justify-content: center;
 
 .violationContainer {
     min-width: 590px;
+    @media screen and (max-width: 768px) {
+        width: calc(100vw - 32px);
+        min-width: 100vw;
+    }
 }
 
 .violationCard {

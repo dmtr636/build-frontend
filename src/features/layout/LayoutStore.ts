@@ -7,8 +7,33 @@ export class LayoutStore {
     overflowed = false;
     scrollTop = 0;
     overflowHidden = false;
+    headerProps: {
+        title: string;
+        actions?: {
+            icon: React.ReactNode;
+            onClick?: () => void;
+            /* type?: "primary" | "secondary";*/
+            counter?: number;
+        }[];
+        buttonBack?: boolean;
+        /* badge?: { text: string; type?: "warning" | "negative" | "positive" | "info" };*/
+    } = { title: "Объекты" };
 
     constructor() {
         makeAutoObservable(this);
+    }
+
+    setHeaderProps(headerProps: {
+        title: string;
+        actions?: {
+            icon: React.ReactNode;
+            onClick?: () => void;
+            /* type?: "primary" | "secondary";*/
+            counter?: number;
+        }[];
+        buttonBack?: boolean;
+        /* badge?: { text: string; type?: "warning" | "negative" | "positive" | "info" };*/
+    }) {
+        this.headerProps = headerProps;
     }
 }

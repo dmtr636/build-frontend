@@ -6,16 +6,27 @@ import styles from "./Notification.module.scss";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { TooltipTypo } from "src/ui/components/info/TooltipTypo/TooltipTypo.tsx";
 import { fileUrl } from "src/shared/utils/file.ts";
+import { observer } from "mobx-react-lite";
 
 export interface Notification {
-    id: number;
+    id: string;
     date: string;
     text: string;
     img?: string;
     userName?: string;
     userImg?: string;
     objectImg?: string;
-    body?: { type: "violation" | "comment" | "text"; text?: string };
+    projId: string;
+    body?: {
+        type:
+            | "violation"
+            | "comment"
+            | "text"
+            | "ADMONITION"
+            | "VIOLATION_STATUS_UPDATE"
+            | "WORK_COMMENT";
+        text?: string;
+    };
 }
 
 interface NotificationProps {
@@ -24,21 +35,35 @@ interface NotificationProps {
     onAllNotificationsClick?: () => void;
 }
 
-export const Notification = (props: NotificationProps) => {
+export const Notification = observer((props: NotificationProps) => {
     const [showPopover, setShowPopover] = useState(false);
-    const renderBody = (body?: { type: "violation" | "comment" | "text"; text?: string }) => {
+    const renderBody = (body?: {
+        type:
+            | "violation"
+            | "comment"
+            | "text"
+            | "ADMONITION"
+            | "VIOLATION_STATUS_UPDATE"
+            | "WORK_COMMENT";
+        text?: string;
+    }) => {
         if (!body) return null;
 
         switch (body.type) {
             case "violation":
+                return <div className={styles.alert}> {"Добавлено нарушение!"}</div>;
+            case "ADMONITION":
+                return <div className={styles.alert}> {"Добавлено замечание!"}</div>;
+            case "VIOLATION_STATUS_UPDATE":
+                return <div className={styles.alert}> {"Статус нарушения обновлен!"}</div>;
+            case "comment":
                 return (
-                    <div className={styles.alert}>
+                    <div className={styles.comment}>
                         {" "}
-                        {body.text ? body.text : "Добавлено нарушение!"}
+                        <span style={{ color: "#5F6A81" }}>Комментарий:</span> {body.text}
                     </div>
                 );
-
-            case "comment":
+            case "WORK_COMMENT":
                 return (
                     <div className={styles.comment}>
                         {" "}
@@ -91,7 +116,7 @@ export const Notification = (props: NotificationProps) => {
                                             </div>
                                         </div>
                                         <div className={styles.notificationDate}>
-                                            <Typo variant={"bodyL"}>
+                                            <Typo variant={"bodyS"}>
                                                 {new Date(notification.date).toLocaleDateString(
                                                     [],
                                                     {
@@ -100,8 +125,8 @@ export const Notification = (props: NotificationProps) => {
                                                     },
                                                 )}
                                             </Typo>
-                                            <Typo variant={"bodyL"}>&nbsp;в&nbsp;</Typo>
-                                            <Typo variant={"bodyL"}>
+                                            <Typo variant={"bodyS"}>&nbsp;в&nbsp;</Typo>
+                                            <Typo variant={"bodyS"}>
                                                 {new Date(notification.date).toLocaleTimeString(
                                                     [],
                                                     {
@@ -173,4 +198,4 @@ export const Notification = (props: NotificationProps) => {
             />
         </PopoverBase>
     );
-};
+});

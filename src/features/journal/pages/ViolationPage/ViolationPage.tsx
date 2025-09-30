@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useLayoutEffect, useMemo } from "react";
 import styles from "./ViolationPage.module.scss";
 import { Helmet } from "react-helmet";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
@@ -7,7 +7,7 @@ import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
-import { appStore, registryStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, registryStore } from "src/app/AppStore.ts";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 import { useParams } from "react-router-dom";
@@ -120,27 +120,32 @@ const ViolationPage = observer(() => {
             return true;
         });
     }, [violations, activeTab, dateFilter, category, view, type, author]);
+    const isMobile = layoutStore.isMobile;
+    useLayoutEffect(() => {
+        layoutStore.setHeaderProps({ title: "Нарушения" });
+    }, []);
     return (
         <div className={styles.container}>
             <Helmet>
                 <title>{object?.name}</title>
             </Helmet>
-            <div className={styles.filterBlock}>
-                {/*loginUser?.role !== "USER" &&*/}
-                {
-                    <div>
-                        <Button
-                            size={"small"}
-                            mode={"negative"}
-                            fullWidth={true}
-                            iconBefore={<IconPlus />}
-                            onClick={() => setOpenCreate(true)}
-                        >
-                            Добавить нарушение
-                        </Button>
-                    </div>
-                }
-                {/*<div>
+            {!isMobile && (
+                <div className={styles.filterBlock}>
+                    {/*loginUser?.role !== "USER" &&*/}
+                    {
+                        <div>
+                            <Button
+                                size={"small"}
+                                mode={"negative"}
+                                fullWidth={true}
+                                iconBefore={<IconPlus />}
+                                onClick={() => setOpenCreate(true)}
+                            >
+                                Добавить нарушение
+                            </Button>
+                        </div>
+                    }
+                    {/*<div>
                     <Button
                         fullWidth={true}
                         size={"small"}
@@ -152,155 +157,160 @@ const ViolationPage = observer(() => {
                         Экспорт в XLSX
                     </Button>
                 </div>*/}
-                <div className={styles.filterContainer}>
-                    <div className={styles.filterHead}>
-                        <span style={{ opacity: 0.6 }}>Фильтры</span>
-                        {(dateFilter ||
-                            category.length > 0 ||
-                            view.length > 0 ||
-                            type.length > 0 ||
-                            author.length > 0) && (
-                            <Button
-                                onClick={resetFilters}
-                                size={"tiny"}
-                                type={"outlined"}
-                                mode={"neutral"}
-                                iconBefore={<IconUpdate />}
-                            >
-                                Сбросить
-                            </Button>
-                        )}
+                    <div className={styles.filterContainer}>
+                        <div className={styles.filterHead}>
+                            <span style={{ opacity: 0.6 }}>Фильтры</span>
+                            {(dateFilter ||
+                                category.length > 0 ||
+                                view.length > 0 ||
+                                type.length > 0 ||
+                                author.length > 0) && (
+                                <Button
+                                    onClick={resetFilters}
+                                    size={"tiny"}
+                                    type={"outlined"}
+                                    mode={"neutral"}
+                                    iconBefore={<IconUpdate />}
+                                >
+                                    Сбросить
+                                </Button>
+                            )}
+                        </div>
+                        <FlexColumn gap={16} style={{ marginTop: 20 }}>
+                            <DatePicker
+                                placeholder={"За всё время"}
+                                value={dateFilter}
+                                onChange={setDateFilter}
+                                width={202}
+                                formName={"Дата"}
+                            />
+                            <MultipleSelect
+                                values={category}
+                                onValuesChange={setCategory}
+                                placeholder={"Все"}
+                                options={categoryOptions}
+                                multiple={true}
+                                formName={"Категория"}
+                            ></MultipleSelect>
+                            <MultipleSelect
+                                values={view}
+                                onValuesChange={setView}
+                                placeholder={"Все"}
+                                options={[
+                                    { name: "Простое", value: "Простое" },
+                                    { name: "Грубое", value: "Грубое" },
+                                ]}
+                                multiple={true}
+                                formName={"Вид"}
+                            ></MultipleSelect>
+                            <MultipleAutocomplete
+                                formName={"Тип"}
+                                options={[
+                                    { name: "Простое", value: "Простое" },
+                                    { name: "Грубое", value: "Грубое" },
+                                ]}
+                                placeholder={"Все"}
+                                values={type}
+                                onValuesChange={setType}
+                                multiple={true}
+                            />
+                            <MultipleAutocomplete
+                                formName={"Автор"}
+                                options={authorOptions}
+                                placeholder={"Все"}
+                                values={author}
+                                onValuesChange={setAuthor}
+                                multiple={true}
+                            />
+                        </FlexColumn>
                     </div>
-                    <FlexColumn gap={16} style={{ marginTop: 20 }}>
-                        <DatePicker
-                            placeholder={"За всё время"}
-                            value={dateFilter}
-                            onChange={setDateFilter}
-                            width={202}
-                            formName={"Дата"}
-                        />
-                        <MultipleSelect
-                            values={category}
-                            onValuesChange={setCategory}
-                            placeholder={"Все"}
-                            options={categoryOptions}
-                            multiple={true}
-                            formName={"Категория"}
-                        ></MultipleSelect>
-                        <MultipleSelect
-                            values={view}
-                            onValuesChange={setView}
-                            placeholder={"Все"}
-                            options={[
-                                { name: "Простое", value: "Простое" },
-                                { name: "Грубое", value: "Грубое" },
-                            ]}
-                            multiple={true}
-                            formName={"Вид"}
-                        ></MultipleSelect>
-                        <MultipleAutocomplete
-                            formName={"Тип"}
-                            options={[
-                                { name: "Простое", value: "Простое" },
-                                { name: "Грубое", value: "Грубое" },
-                            ]}
-                            placeholder={"Все"}
-                            values={type}
-                            onValuesChange={setType}
-                            multiple={true}
-                        />
-                        <MultipleAutocomplete
-                            formName={"Автор"}
-                            options={authorOptions}
-                            placeholder={"Все"}
-                            values={author}
-                            onValuesChange={setAuthor}
-                            multiple={true}
-                        />
-                    </FlexColumn>
                 </div>
-            </div>
+            )}
             <div className={styles.violationContainer}>
-                <div className={styles.tabs}>
-                    <Button
-                        size={"small"}
-                        type={activeTab === 1 ? "primary" : "outlined"}
-                        mode={"neutral"}
-                        onClick={() => {
-                            setActiveTab(1);
-                        }}
-                    >
-                        Все
-                    </Button>
-                    <Button
-                        style={{ width: "auto" }}
-                        counterClassname={styles.counter}
-                        counter={
-                            filteredViolationsWithoutStatus.filter((v) => v.status === "TODO")
-                                .length > 0
-                                ? filteredViolationsWithoutStatus.filter((v) => v.status === "TODO")
-                                      .length
-                                : undefined
-                        }
-                        size={"small"}
-                        type={activeTab === 2 ? "primary" : "outlined"}
-                        mode={"neutral"}
-                        onClick={() => {
-                            setActiveTab(2);
-                        }}
-                    >
-                        Не взято в работу
-                    </Button>
-                    <Button
-                        counterClassname={styles.counter}
-                        size={"small"}
-                        counter={
-                            filteredViolationsWithoutStatus.filter(
-                                (v) => v.status === "IN_PROGRESS",
-                            ).length > 0
-                                ? filteredViolationsWithoutStatus.filter(
-                                      (v) => v.status === "IN_PROGRESS",
-                                  ).length
-                                : undefined
-                        }
-                        type={activeTab === 3 ? "primary" : "outlined"}
-                        mode={"neutral"}
-                        onClick={() => {
-                            setActiveTab(3);
-                        }}
-                    >
-                        В работе
-                    </Button>
-                    <Button
-                        counterClassname={styles.counter}
-                        style={{ width: 137 }}
-                        size={"small"}
-                        counter={
-                            filteredViolationsWithoutStatus.filter((v) => v.status === "IN_REVIEW")
-                                .length > 0
-                                ? filteredViolationsWithoutStatus.filter(
-                                      (v) => v.status === "IN_REVIEW",
-                                  ).length
-                                : undefined
-                        }
-                        type={activeTab === 4 ? "primary" : "outlined"}
-                        mode={"neutral"}
-                        onClick={() => {
-                            setActiveTab(4);
-                        }}
-                    >
-                        На проверке
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            setActiveTab(5);
-                        }}
-                        iconBefore={<IconSuccess />}
-                        size={"small"}
-                        type={activeTab === 5 ? "primary" : "outlined"}
-                        mode={"positive"}
-                    ></Button>
-                </div>
+                {!isMobile && (
+                    <div className={styles.tabs}>
+                        <Button
+                            size={"small"}
+                            type={activeTab === 1 ? "primary" : "outlined"}
+                            mode={"neutral"}
+                            onClick={() => {
+                                setActiveTab(1);
+                            }}
+                        >
+                            Все
+                        </Button>
+                        <Button
+                            style={{ width: "auto" }}
+                            counterClassname={styles.counter}
+                            counter={
+                                filteredViolationsWithoutStatus.filter((v) => v.status === "TODO")
+                                    .length > 0
+                                    ? filteredViolationsWithoutStatus.filter(
+                                          (v) => v.status === "TODO",
+                                      ).length
+                                    : undefined
+                            }
+                            size={"small"}
+                            type={activeTab === 2 ? "primary" : "outlined"}
+                            mode={"neutral"}
+                            onClick={() => {
+                                setActiveTab(2);
+                            }}
+                        >
+                            Не взято в работу
+                        </Button>
+                        <Button
+                            counterClassname={styles.counter}
+                            size={"small"}
+                            counter={
+                                filteredViolationsWithoutStatus.filter(
+                                    (v) => v.status === "IN_PROGRESS",
+                                ).length > 0
+                                    ? filteredViolationsWithoutStatus.filter(
+                                          (v) => v.status === "IN_PROGRESS",
+                                      ).length
+                                    : undefined
+                            }
+                            type={activeTab === 3 ? "primary" : "outlined"}
+                            mode={"neutral"}
+                            onClick={() => {
+                                setActiveTab(3);
+                            }}
+                        >
+                            В работе
+                        </Button>
+                        <Button
+                            counterClassname={styles.counter}
+                            style={{ width: 137 }}
+                            size={"small"}
+                            counter={
+                                filteredViolationsWithoutStatus.filter(
+                                    (v) => v.status === "IN_REVIEW",
+                                ).length > 0
+                                    ? filteredViolationsWithoutStatus.filter(
+                                          (v) => v.status === "IN_REVIEW",
+                                      ).length
+                                    : undefined
+                            }
+                            type={activeTab === 4 ? "primary" : "outlined"}
+                            mode={"neutral"}
+                            onClick={() => {
+                                setActiveTab(4);
+                            }}
+                        >
+                            На проверке
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setActiveTab(5);
+                            }}
+                            iconBefore={<IconSuccess />}
+                            size={"small"}
+                            type={activeTab === 5 ? "primary" : "outlined"}
+                            mode={"positive"}
+                        ></Button>
+                    </div>
+                )}
                 {violations.length > 0 ? (
                     <ViolationList
                         currentViolation={currentViolent}
@@ -318,39 +328,41 @@ const ViolationPage = observer(() => {
                     </div>
                 )}
             </div>
-            <div className={styles.violationCard}>
-                <div className={styles.userCard}>
-                    {currentViolent ? (
-                        <ViolationCard violation={currentViolent} />
-                    ) : (
-                        <div className={styles.emptyForm}>
-                            <FlexColumn
-                                gap={6}
-                                align={"center"}
-                                style={{ position: "absolute", top: 293 }}
-                            >
-                                <IconBuildArrow
-                                    style={{
-                                        position: "absolute",
-                                        top: -65,
-                                        transform: "translate(-10px, 0)",
-                                    }}
-                                />
-                                <IconReport />
-
-                                <Typo
-                                    variant={"subheadXL"}
-                                    type={"tertiary"}
-                                    mode={"neutral"}
-                                    style={{ textAlign: "center" }}
+            {!isMobile && (
+                <div className={styles.violationCard}>
+                    <div className={styles.userCard}>
+                        {currentViolent ? (
+                            <ViolationCard violation={currentViolent} />
+                        ) : (
+                            <div className={styles.emptyForm}>
+                                <FlexColumn
+                                    gap={6}
+                                    align={"center"}
+                                    style={{ position: "absolute", top: 293 }}
                                 >
-                                    {"Выберите нарушение\nиз списка"}
-                                </Typo>
-                            </FlexColumn>
-                        </div>
-                    )}
+                                    <IconBuildArrow
+                                        style={{
+                                            position: "absolute",
+                                            top: -65,
+                                            transform: "translate(-10px, 0)",
+                                        }}
+                                    />
+                                    <IconReport />
+
+                                    <Typo
+                                        variant={"subheadXL"}
+                                        type={"tertiary"}
+                                        mode={"neutral"}
+                                        style={{ textAlign: "center" }}
+                                    >
+                                        {"Выберите нарушение\nиз списка"}
+                                    </Typo>
+                                </FlexColumn>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
             <AddViolationOverlay
                 object={object}
                 open={openCreate}

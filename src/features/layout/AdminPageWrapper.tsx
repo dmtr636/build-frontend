@@ -2,17 +2,22 @@ import React, { useEffect, useRef, useState } from "react";
 import Header from "src/features/layout/components/Header/Header.tsx";
 import { Outlet } from "react-router-dom";
 import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvider.tsx";
-import { appStore, layoutStore, objectStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, notificationStore, objectStore } from "src/app/AppStore.ts";
 import styles from "./styles.module.scss";
 import { observer } from "mobx-react-lite";
 import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
 import { ProgressBar } from "src/ui/components/solutions/ProgressBar/ProgressBar.tsx";
 import { throttle } from "src/shared/utils/throttle.ts";
 import { fileStore } from "src/features/users/stores/FileStore.ts";
+import HeaderMobile from "src/features/layout/components/HeaderMobile/HeaderMobile.tsx";
+import Footer from "src/features/layout/components/Footer/Footer.tsx";
+import { IconApartment, IconUser } from "src/ui/assets/icons";
 
 const AdminPageWrapper = observer(() => {
     const containerRef = useRef<HTMLDivElement>(null);
-
+    const currentUser = appStore.accountStore.currentUser;
+    const isMobile = layoutStore.isMobile;
+    const mobileData = layoutStore.headerProps;
     useEffect(() => {
         appStore.userStore.fetchUsers();
         appStore.organizationsStore.fetchOrganizations();
@@ -21,6 +26,7 @@ const AdminPageWrapper = observer(() => {
         appStore.registryStore.fetchAllWorks();
         appStore.websocketStore.connectToSocket();
         appStore.objectStore.fetchObjects();
+        appStore.notificationStore.fetchUnreadNotifications();
 
         const handleBeforeUnload = () => {
             appStore.accountStore.fetchUserIsOffline(true);
@@ -54,13 +60,20 @@ const AdminPageWrapper = observer(() => {
             appStore.websocketStore.closeSocket();
         };
     }, []);
-
+    console.log(isMobile);
     return (
         <div ref={containerRef}>
-            <Header />
+            {!isMobile && <Header />}
+            {isMobile && <HeaderMobile {...mobileData} />}
             <div className={styles.container}>
                 <Outlet />
             </div>
+            <Footer
+                actions={[
+                    { name: "Организация", icon: <IconApartment />, to: "/admin/journal/" },
+                    { name: "Профиль", icon: <IconUser />, to: `/admin/users/${currentUser?.id}` },
+                ]}
+            />
             <SnackbarProvider centered={true} />
             <ProgressBar
                 show={fileStore.uploading}

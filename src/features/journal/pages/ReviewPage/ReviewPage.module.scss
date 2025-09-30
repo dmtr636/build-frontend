@@ -28,6 +28,15 @@
 
 .container {
     margin-top: 40px;
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        width: 100%;
+        /*
+    padding: 0 16px;
+    */
+        margin-top: 16px;
+        margin-bottom: 100px;
+    }
 }
 
 .content {
@@ -48,6 +57,10 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        @media screen and (max-width: 768px) {
+            min-width: calc(100vw - 32px);
+            width: calc(100vw - 32px);
+        }
     }
 
     /*.right {
@@ -55,6 +68,13 @@ display: flex;
 flex-direction: column;
 gap: 12px;
 }*/
+}
+
+.buttonsCheck {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .noImg {
@@ -109,6 +129,12 @@ gap: 12px;
     display: flex;
     gap: 16px;
     align-items: flex-start;
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        width: 100%;
+        padding: 0 16px;
+        margin-top: 0;
+    }
 }
 
 .objHead {
@@ -224,10 +250,17 @@ gap: 12px;
             fill: red;
         }
     }
+
+    @media screen and (max-width: 768px) {
+        margin-top: 0;
+    }
 }
 
 .objStatus {
     margin-top: 12px;
+    @media screen and (max-width: 768px) {
+        margin-top: 0;
+    }
 }
 
 .userBlock {
@@ -316,6 +349,10 @@ flex-shrink: 0;
     &:hover {
         opacity: 0.8;
     }
+
+    @media screen and (max-width: 768px) {
+        color: var(--text-neutral-primary, #111317);
+    }
 }
 
 .text {
@@ -327,6 +364,9 @@ flex-shrink: 0;
 .plus {
     svg path {
         fill: var(--objects-graphic-accent-primary);
+        @media screen and (max-width: 768px) {
+            fill: var(--text-neutral-primary, #111317);
+        }
     }
 }
 
@@ -335,6 +375,9 @@ flex-shrink: 0;
     flex-direction: column;
     gap: 12px;
     min-width: 350px;
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
 }
 
 .infoBlock {
@@ -478,4 +521,8 @@ flex-shrink: 0;
 }
 
 .tasksAreaContent {
+}
+
+.containerAlert {
+    width: calc(100vw - 32px);
 }

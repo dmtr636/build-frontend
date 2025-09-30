@@ -323,7 +323,6 @@ export const VisitsPage = observer(() => {
                                                     }
                                                     const initials = data.user?.position
                                                         ?.split(" ")
-                                                        .slice(0, 2)
                                                         .map((n) => n[0]?.toUpperCase())
                                                         .join("");
                                                     return (

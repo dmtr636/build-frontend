@@ -121,7 +121,7 @@ const DocumentCard = ({ documentItem, object }: DocumentCardProps) => {
         <div className={clsx(styles.container)}>
             <div className={styles.imgBlock}>
                 <div className={styles.noUser}>
-                    {docFormat?.toLowerCase() === "pdf" ? <IconDocument /> : <IconSmartDisplay />}
+                    {docFormat?.toLowerCase() !== "ppdx" ? <IconDocument /> : <IconSmartDisplay />}
                     {docFormat}
                 </div>
             </div>

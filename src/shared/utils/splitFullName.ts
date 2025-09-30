@@ -3,7 +3,7 @@ export function splitFullName(user: {
     firstName?: string | null;
     patronymic?: string | null;
 }): string {
-    return [user.lastName, user.firstName, user.patronymic]
+    return [user?.lastName, user?.firstName, user?.patronymic]
         .filter(Boolean) // убираем null/undefined
         .map((s) => s!.trim()) // обрезаем пробелы у каждой части
         .filter((s) => s.length > 0) // убираем пустые строки

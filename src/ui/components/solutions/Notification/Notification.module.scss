@@ -13,7 +13,7 @@
 }
 
 .list {
-    max-height: 300px;
+    max-height: 500px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -22,13 +22,13 @@
 }
 
 .notification {
-    width: 100%;
-    width: var(--event-width-large, 440px);
+    /*width: 100%;*/
+    width: 600px;
 
     display: flex;
     /*
-  flex-direction: column;
-  */
+flex-direction: column;
+*/
     gap: 12px;
     border-radius: var(--s, 8px);
     border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
@@ -59,6 +59,8 @@ color: lighter-pale($color-components-text-neutral);
     display: flex;
     /*height: 28px;*/
     color: var(--objects-text-neutral-quaternary, #5f6a81);
+    margin-top: 1px;
+    align-items: center;
 
     /*padding: 0 var(--padding-s);
 align-items: center;
@@ -172,30 +174,26 @@ color: var(--color-components-text-accent);*/
 .comment {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* не переносим заголовок */
+    white-space: nowrap;
 }
 
 .textBodyRender {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* не переносим заголовок */
+    white-space: nowrap;
 }
 
 .notification {
-    width: 100%;
-    /* width: var(--event-width-large, 440px); */
-    /* если нужно фикс — оставьте, но не обязателен */
+    width: 400px;
 
     display: flex;
     gap: 12px;
-    align-items: flex-start; /* не тянем контент по высоте */
+    align-items: flex-start;
     border-radius: var(--s, 8px);
     border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
     background: var(--objects-background-contrast-primary, #fff);
     padding: 8px 12px 8px 8px;
 
-    /* НЕ навешиваем white-space здесь — это ломает внутреннюю колонку */
-    /* white-space: nowrap; */
     overflow: hidden;
 
     @media (hover: hover) and (pointer: fine) {
@@ -207,7 +205,7 @@ color: var(--color-components-text-accent);*/
 }
 
 .objImg {
-    flex: 0 0 50px; /* фиксируем ширину, запрещаем сжатие */
+    flex: 0 0 50px;
     width: 50px;
     height: 72px;
     overflow: hidden;
@@ -221,8 +219,8 @@ color: var(--color-components-text-accent);*/
 }
 
 .body {
-    flex: 1 1 auto; /* правая колонка занимает оставшееся */
-    min-width: 0; /* критично для ellipsis внутри flex */
+    flex: 1 1 auto;
+    min-width: 0;
     display: flex;
     flex-direction: column;
 }
@@ -230,7 +228,7 @@ color: var(--color-components-text-accent);*/
 .header {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* не переносим заголовок */
+    white-space: nowrap;
     color: var(--objects-text-accent-primary, #2053d5);
     margin-top: 4px;
     font-size: 13px;
@@ -243,7 +241,7 @@ color: var(--color-components-text-accent);*/
     margin-top: 2px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* не переносим тело */
+    white-space: nowrap;
     color: var(--objects-text-neutral-primary, #111317);
     font-size: 12px;
     font-weight: 500;
@@ -252,12 +250,27 @@ color: var(--color-components-text-accent);*/
 }
 
 .footerBody {
-    /* width: 358px; */
-    /* убираем фикс, чтобы не ломал ellipsis */
     width: auto;
-    min-width: 0; /* важно для обрезки, если внутри ещё текст */
+    min-width: 0;
     margin-top: 8px;
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 8px;
+}
+
+.noImg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--s, 8px);
+    border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
+
+    box-shadow: 0 0 6px 0 rgba(11, 59, 154, 0.12) inset;
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
 }

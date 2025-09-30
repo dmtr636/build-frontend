@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
 import {
@@ -12,58 +12,98 @@ import {
     IconTime,
 } from "src/ui/assets/icons";
 import { Avatar } from "src/ui/components/solutions/Avatar/Avatar.tsx";
-import { appStore } from "src/app/AppStore.ts";
+import { appStore, notificationStore, objectStore, userStore } from "src/app/AppStore.ts";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { clsx } from "clsx";
 import { getNameInitials } from "src/shared/utils/getFullName.ts";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
 import { Notification } from "src/ui/components/solutions/Notification/Notification.tsx";
+import { splitFullName } from "src/shared/utils/splitFullName.ts";
+import { NotificationDTO } from "src/features/notification/types/notification.ts";
+import { observer } from "mobx-react-lite";
 
-const Header = () => {
+function getShortName(fullName: string): string {
+    const parts = fullName.trim().split(/\s+/); // разделяем по пробелам
+    const [lastName = "", firstName = "", patronymic = ""] = parts;
+
+    const firstInitial = firstName ? `${firstName[0].toUpperCase()}.` : "";
+    const patronymicInitial = patronymic ? `${patronymic[0].toUpperCase()}.` : "";
+
+    return [lastName, firstInitial, patronymicInitial].filter(Boolean).join(" ");
+}
+
+function parseNotificationType(
+    type:
+        | "ADMONITION"
+        | "VIOLATION"
+        | "VIOLATION_COMMENT"
+        | "WORK_COMMENT"
+        | "WORK_STATUS_UPDATE"
+        | "VIOLATION_STATUS_UPDATE",
+): "violation" | "comment" | "text" | "ADMONITION" | "VIOLATION_STATUS_UPDATE" | "WORK_COMMENT" {
+    switch (type) {
+        case "ADMONITION":
+            return "ADMONITION";
+        case "VIOLATION":
+            return "violation";
+        case "VIOLATION_COMMENT":
+            return "comment";
+        case "WORK_COMMENT":
+            return "WORK_COMMENT";
+        case "WORK_STATUS_UPDATE":
+            return "text";
+        case "VIOLATION_STATUS_UPDATE":
+            return "VIOLATION_STATUS_UPDATE";
+        default:
+            return "text";
+    }
+}
+
+const Header = observer(() => {
     const logout = async () => {
         await appStore.accountStore.logout();
         window.location.pathname = "/auth/login";
     };
     const currentUser = appStore.accountStore.currentUser;
-    const testNotification: Notification[] = [
-        {
-            id: 123465,
-            date: "2025-09-23T16:01:02Z",
-            text: "test notificationtest notificationtest notificationtest notificationtest notificationtest notificationtest notificationtest notification",
-            img: "162e85ed-eecb-43a4-968e-294da0dc3792",
-            userName: "test user",
-            userImg: "ad8d05c7-4682-4859-9be3-2c57979397f6",
-            body: {
-                text: " ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст",
-                type: "comment",
-            },
+    const notification = notificationStore.notifications;
+
+    console.log(notification.length);
+    const notificationsArray: any = notification.map((n) => ({
+        id: n.id,
+        date: n.createdAt,
+        text: n.projectName,
+        userName: getShortName(splitFullName(userStore.userById(n.authorId) as any)),
+        userImg: userStore.userById(n.authorId)?.imageId,
+        projId: n.projectId,
+        img: objectStore.ObjectMap.get(n.projectId)?.imageId,
+        body: {
+            text: n.content,
+            type: parseNotificationType(n.type),
         },
-        {
-            id: 123465,
-            date: "2025-09-23T16:01:02Z",
-            text: "test notification",
-            img: "162e85ed-eecb-43a4-968e-294da0dc3792",
-            userName: "test user",
-            userImg: "ad8d05c7-4682-4859-9be3-2c57979397f6",
-            body: {
-                text: "ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст",
-                type: "text",
-            },
-        },
-        {
-            id: 123465,
-            date: "2025-09-23T16:01:02Z",
-            text: "test notification",
-            img: "162e85ed-eecb-43a4-968e-294da0dc3792",
-            userName: "test user",
-            userImg: "ad8d05c7-4682-4859-9be3-2c57979397f6",
-            body: {
-                text: " ооооооооооооооооооочень длинный текст ооооооооооооооооооочень длинный текст",
-                type: "violation",
-            },
-        },
-    ];
+    }));
     const navigate = useNavigate();
+
+    const onClickNotification = (notification: Notification) => {
+        const { projId, body } = notification;
+        if (!body) return;
+
+        const { type } = body;
+        notificationStore.notificationIsRead(notification.id);
+        if (type === "violation" || type === "VIOLATION_STATUS_UPDATE" || type === "comment") {
+            // Нарушения
+            navigate(`/admin/journal/${projId}/violations`);
+        } else if (type === "WORK_COMMENT" || type === "text") {
+            // Работы (status)
+            navigate(`/admin/journal/${projId}/status`);
+        } else {
+            // Остальные (например, ADMONITION)
+            navigate(`/admin/journal/${projId}`);
+        }
+    };
+
+    useLayoutEffect(() => {
+        notificationStore.fetchUnreadNotifications();
+    }, []);
     return (
         <div className={styles.container}>
             <div className={styles.content}>
@@ -74,9 +114,9 @@ const Header = () => {
                     {() => (
                         <div className={styles.linkItem}>
                             <div className={styles.linkItemIcon}>
-                                <IconSuccess />
+                                <IconHome />
                             </div>
-                            Задачи
+                            Главная
                         </div>
                     )}
                 </NavLink>
@@ -147,10 +187,8 @@ const Header = () => {
                 </NavLink>
                 <div style={{ marginLeft: "auto" }}>
                     <Notification
-                        notifications={testNotification}
-                        onNotificationClick={() => {
-                            console.log(123);
-                        }}
+                        notifications={notificationsArray}
+                        onNotificationClick={onClickNotification}
                     />
                 </div>
                 <SingleDropdownList
@@ -189,6 +227,6 @@ const Header = () => {
             </div>
         </div>
     );
-};
+});
 
 export default Header;

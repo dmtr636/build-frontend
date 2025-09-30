@@ -58,7 +58,6 @@ const UserItemCard = observer(
             (sortOption?.field === "role" && sortOption.order === "desc");
         const initials = position
             ?.split(" ")
-            .slice(0, 2)
             .map((n) => n[0]?.toUpperCase())
             .join("");
         const [chats, setChats] = useState(false);
