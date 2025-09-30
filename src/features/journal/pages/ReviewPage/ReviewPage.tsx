@@ -46,6 +46,7 @@ function formatDate(dateStr: string): string {
 
 const ReviewPage = observer(() => {
     const { id } = useParams();
+    const currenUser = appStore.accountStore.currentUser;
     const project = appStore.objectStore.ObjectMap.get(id ?? "");
     const customerOrg = appStore.organizationsStore.organizationById(project?.customerOrganization);
     const contractorOrg = appStore.organizationsStore.organizationById(
@@ -153,28 +154,30 @@ const ReviewPage = observer(() => {
 
     const showChecklist = worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS";
 
+    useLayoutEffect(() => {
+        if (project) layoutStore.setHeaderProps({ title: project?.name });
+    }, [project]);
     const isMobile = layoutStore.isMobile;
     /*const { pos, inside, error, lastChangeTs } = useGeofence({
-        polygon: project?.polygon ?? ([] as any),
-        throttleMs: 1000,
-        enableHighAccuracy: true,
-        minAccuracyMeters: 500,
-        onEnter: (p) => console.log("Вход в зону", p),
-        onExit: (p) => console.log("Выход из зоны", p),
-    });*/
+            polygon: project?.polygon ?? ([] as any),
+            throttleMs: 1000,
+            enableHighAccuracy: true,
+            minAccuracyMeters: 500,
+            onEnter: (p) => console.log("Вход в зону", p),
+            onExit: (p) => console.log("Выход из зоны", p),
+        });*/
     /*
-        console.log(pos);
-    */
+            console.log(pos);
+        */
     /*console.log(inside);*/
     /*
-        console.log(JSON.parse(JSON.stringify(project?.polygon)));
-    */
+            console.log(JSON.parse(JSON.stringify(project?.polygon)));
+        */
 
     const loading =
         !project ||
         !worksStore.openingChecklistsForm?.[0]?.sections?.length ||
         !worksStore.todayChecklistForm?.sections?.length;
-
     return (
         <div className={styles.container}>
             {!isMobile && (
@@ -309,7 +312,7 @@ const ReviewPage = observer(() => {
                 {isMobile && (
                     <div className={styles.buttonsCheck}>
                         <Button
-                            onClick={() => navigate(`/admin/journal/${id}/violations`)}
+                            onClick={() => navigate(`/admin/journal/${id}/status`)}
                             mode={"positive"}
                             size={"small"}
                             counter={works.length}
@@ -327,6 +330,7 @@ const ReviewPage = observer(() => {
                             Добавить нарушение
                         </Button>
                         <Button
+                            onClick={() => navigate(`/admin/journal/${id}/violations?status=4`)}
                             fullWidth={true}
                             type={"outlined"}
                             counter={
@@ -392,7 +396,8 @@ const ReviewPage = observer(() => {
                     </div>
                     <div className={styles.objStatus}>{statusBadge}</div>
                     <div className={styles.objInfo}>
-                        {project?.name} <IconDote />{" "}
+                        {project?.name}
+                        {!isMobile && <IconDote />}{" "}
                         <span
                             style={{ color: "rgba(0, 0, 0, 0.39)" }}
                         >{`№ ${formatObjNumber(project?.objectNumber ?? "")}`}</span>
@@ -737,5 +742,4 @@ const ReviewPage = observer(() => {
         </div>
     );
 });
-
 export default ReviewPage;

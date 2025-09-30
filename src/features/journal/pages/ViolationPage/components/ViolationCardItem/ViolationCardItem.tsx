@@ -19,7 +19,7 @@ import { observer } from "mobx-react-lite";
 import { fileUrl } from "src/shared/utils/file.ts";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import clsx from "clsx";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
@@ -73,7 +73,6 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
     const [open, setOpen] = useState(false);
     const currentUserRole = appStore.accountStore.currentUser?.role;
     const { id } = useParams();
-    console.log(violation);
     const isMobile = layoutStore.isMobile;
 
     const renderStatusButton = useMemo(() => {
@@ -141,7 +140,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                 );
         }
     }, []);
-
+    const navigate = useNavigate();
     const renderStatusButtonPodryadchik = useMemo(() => {
         switch (violation?.status) {
             case "TODO":
@@ -213,8 +212,17 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
         }
     }, []);
     if (!violation) return null;
+
     return (
-        <div className={clsx(styles.container, { [styles.active]: active })} onClick={onClick}>
+        <div
+            className={clsx(styles.container, { [styles.active]: active })}
+            onClick={() => {
+                onClick();
+                if (isMobile) {
+                    navigate(`${violation.id}`);
+                }
+            }}
+        >
             <div className={styles.badges}>
                 <Tooltip
                     text={formatDateTime(violation?.violationTime).date}
@@ -228,7 +236,6 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                         </span>
                     </div>
                 </Tooltip>
-
                 <Tooltip
                     text={formatDateTime(violation?.violationTime).time}
                     requireOverflow
@@ -241,7 +248,6 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                         </span>
                     </div>
                 </Tooltip>
-
                 <Tooltip
                     text={violation?.isNote ? "Замечание" : "Нарушение"}
                     requireOverflow
@@ -276,7 +282,6 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                     </div>
                 </Tooltip>
             </div>
-
             <div className={styles.users}>
                 <div className={styles.user}>
                     <div className={styles.imgBlock}>

@@ -133,7 +133,6 @@ const AddViolationOverlay = observer(
             imageIds,
         ]);
 
-        console.log(violationForm);
         useEffect(() => {
             if (violation === null) {
                 setHaveViolations(false);

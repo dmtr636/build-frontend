@@ -10,7 +10,7 @@ import { getFullName } from "src/shared/utils/getFullName.ts";
 import { appStore, layoutStore, registryStore } from "src/app/AppStore.ts";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import ViolationCardItem from "src/features/journal/pages/ViolationPage/components/ViolationCardItem/ViolationCardItem.tsx";
 import { observer } from "mobx-react-lite";
 import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
@@ -41,6 +41,21 @@ const ViolationPage = observer(() => {
     const [view, setView] = React.useState<string[]>([]);
     const [author, setAuthor] = React.useState<string[]>([]);
     const object = appStore.objectStore.ObjectMap.get(id ?? "");
+
+    const location = useLocation();
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const status = params.get("status");
+        if (status) {
+            setActiveTab(status as any);
+            if (status === "4") {
+                layoutStore.setHeaderProps({ title: "Исправленные нарушения" });
+            }
+        }
+        /* return () => {
+            layoutStore.setHeaderProps({ title: "Нарушения" });
+        };*/
+    }, [location.search]);
     useEffect(() => {
         if (id) {
             appStore.violationStore.fetchViolationByObj(id);

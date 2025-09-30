@@ -3,10 +3,11 @@
     bottom: 0;
     padding: 0 4px;
     display: flex;
-    width: 100%;
+    width: 100vw;
     border-top: 2px solid var(--stroke-neutral-secondary, #d6d9e0);
     background: var(--background-contrast-primary, #fff);
     height: 80px;
+    z-index: 1001;
 }
 
 @media screen and (min-width: 768px) {

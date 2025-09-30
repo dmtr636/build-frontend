@@ -10,8 +10,10 @@
         width: 1440px;
     }
     @media screen and (max-width: 768px) {
-        width: 100vw;
+        width: calc(100vw - 32px);
         margin-top: 0;
+        margin-bottom: 100px;
+        min-height: 100dvh;
         padding: 0 16px;
     }
 }
@@ -135,7 +137,7 @@ justify-content: center;
     min-width: 590px;
     @media screen and (max-width: 768px) {
         width: calc(100vw - 32px);
-        min-width: 100vw;
+        min-width: calc(100vw - 32px);
     }
 }
 
