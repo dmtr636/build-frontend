@@ -142,6 +142,15 @@ const ReviewPage = observer(() => {
         }, 30);
     }, [project]);
 
+    useEffect(() => {
+        return () => {
+            worksStore.openingChecklists = [];
+            worksStore.openingChecklistsForm = [];
+            worksStore.dailyChecklists = [];
+            worksStore.dailyChecklistsForm = [];
+        };
+    }, []);
+
     const showChecklist = worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS";
 
     const isMobile = layoutStore.isMobile;
@@ -160,6 +169,12 @@ const ReviewPage = observer(() => {
     /*
         console.log(JSON.parse(JSON.stringify(project?.polygon)));
     */
+
+    const loading =
+        !project ||
+        !worksStore.openingChecklistsForm?.[0]?.sections?.length ||
+        !worksStore.todayChecklistForm?.sections?.length;
+
     return (
         <div className={styles.container}>
             {!isMobile && (
@@ -272,6 +287,8 @@ const ReviewPage = observer(() => {
                 className={styles.content}
                 style={{
                     display: showChecklist ? "none" : undefined,
+                    opacity: loading ? 0 : 1,
+                    transition: "opacity 100ms",
                 }}
             >
                 {isMobile && (
