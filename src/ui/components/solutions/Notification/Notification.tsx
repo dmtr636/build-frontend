@@ -116,7 +116,7 @@ export const Notification = observer((props: NotificationProps) => {
                                             </div>
                                         </div>
                                         <div className={styles.notificationDate}>
-                                            <Typo variant={"bodyL"}>
+                                            <Typo variant={"bodyS"}>
                                                 {new Date(notification.date).toLocaleDateString(
                                                     [],
                                                     {
@@ -125,8 +125,8 @@ export const Notification = observer((props: NotificationProps) => {
                                                     },
                                                 )}
                                             </Typo>
-                                            <Typo variant={"bodyL"}>&nbsp;в&nbsp;</Typo>
-                                            <Typo variant={"bodyL"}>
+                                            <Typo variant={"bodyS"}>&nbsp;в&nbsp;</Typo>
+                                            <Typo variant={"bodyS"}>
                                                 {new Date(notification.date).toLocaleTimeString(
                                                     [],
                                                     {
