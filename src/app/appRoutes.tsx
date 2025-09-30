@@ -24,6 +24,7 @@ import { LocationPage } from "src/features/journal/pages/LocationPage/LocationPa
 import ReviewPage from "src/features/journal/pages/ReviewPage/ReviewPage.tsx";
 import CreateViolationPage from "src/features/journal/pages/ViolationPage/components/CreateViolationPage/CreateViolationPage.tsx";
 import ViolationItemPage from "src/features/journal/pages/ViolationPage/components/ViolationItemPage/ViolationItemPage.tsx";
+import { MaterialsPage } from "src/features/journal/pages/MaterialsPage/MaterialsPage.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -65,7 +66,8 @@ export const appRoutes: RouteObject[] = [
                     { path: "status", element: <WorksPage /> },
                     { path: "location", element: <LocationPage /> },
                     { path: "users", element: <ObjectUsersPage /> },
-                    { path: "materials", element: <></> },
+                    { path: "materials", element: <MaterialsPage /> },
+                    { path: "materials/:materialId", element: <MaterialsPage /> },
                     { path: "visits", element: <VisitsPage /> },
 
                     // список нарушений

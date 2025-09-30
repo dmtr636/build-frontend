@@ -248,6 +248,12 @@ export class WebsocketStore {
                         );
                     }
                 }
+
+                if (event.objectName === "notification") {
+                    if (event.type === "CREATE") {
+                        appStore.notificationStore.fetchUnreadNotifications();
+                    }
+                }
             });
         };
 

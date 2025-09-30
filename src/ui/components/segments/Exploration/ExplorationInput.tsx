@@ -11,6 +11,7 @@ export const ExplorationInput = (props: {
     inputValue: string;
     size?: InputSize;
     style?: CSSProperties;
+    disabled?: boolean;
 }) => {
     const size = props.size ?? "large";
     return (
@@ -21,6 +22,7 @@ export const ExplorationInput = (props: {
             value={props.inputValue}
             startIcon={<IconSearch />}
             size={size}
+            disabled={props.disabled}
             endIcon={
                 props.inputValue && (
                     <Tooltip header={"Очистить"} delay={500}>

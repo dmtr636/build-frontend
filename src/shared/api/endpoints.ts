@@ -21,6 +21,7 @@ export const endpoints = {
     projectWorkVersions: transformUrl("/api/projects/works/versions"),
     projectVisits: transformUrl("/api/projects/visits"),
     projectChecklists: transformUrl("/api/projects/checklists"),
+    projectMaterials: transformUrl("/api/projects/materials"),
     violations: transformUrl("/api/projects/violations"),
     notifications: transformUrl("/api/notifications"),
     dictionaries: {
