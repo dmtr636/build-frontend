@@ -50,7 +50,6 @@ const userCardItem = observer(
         const navigate = useNavigate();
         const initials = user?.position
             ?.split(" ")
-            .slice(0, 2)
             .map((n) => n[0]?.toUpperCase())
             .join("");
         const [chats, setChats] = useState(false);
