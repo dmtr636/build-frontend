@@ -53,7 +53,7 @@ export const OpeningCheckListSections = observer(
                                     mode={"neutral"}
                                     style={{ opacity: 0.6 }}
                                 >
-                                    {section.title}
+                                    {section.orderIndex}. {section.title}
                                 </Typo>
                                 {section.items.map((item, i) => (
                                     <>
@@ -83,7 +83,7 @@ export const OpeningCheckListSections = observer(
                                                           ? "negative"
                                                           : "neutral"
                                                 }
-                                                title={item.text}
+                                                title={`${item.itemNumber}. ${item.text}`}
                                                 style={{
                                                     flexGrow: 1,
                                                     alignItems: "start",

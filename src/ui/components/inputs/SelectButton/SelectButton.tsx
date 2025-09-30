@@ -25,6 +25,7 @@ interface SelectButtonProps<T> extends Pick<PopoverBaseProps, "tipPosition"> {
     onRender?: (setShowDropdown: (value: boolean) => void) => void;
     fullWidth?: boolean;
     hideButtonText?: boolean;
+    zIndex?: number;
 }
 
 export const SelectButton = <T,>(props: SelectButtonProps<T>) => {
@@ -42,6 +43,7 @@ export const SelectButton = <T,>(props: SelectButtonProps<T>) => {
         fullWidth = true,
         hideButtonText,
         tipPosition,
+        zIndex,
     }: SelectButtonProps<T> = props;
     const [showDropdown, setShowDropdown] = useState(false);
     const selectedOption = options.find((option) => option.value === value);
@@ -61,6 +63,7 @@ export const SelectButton = <T,>(props: SelectButtonProps<T>) => {
             setShow={setShowDropdown}
             fullWidth={fullWidth && !hideButtonText}
             tipPosition={tipPosition}
+            zIndex={zIndex}
         >
             <Button
                 type={buttonType}
