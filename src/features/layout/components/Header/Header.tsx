@@ -67,7 +67,6 @@ const Header = observer(() => {
     const currentUser = appStore.accountStore.currentUser;
     const notification = notificationStore.notifications;
 
-    console.log(notification.length);
     const notificationsArray: any = notification.map((n) => ({
         id: n.id,
         date: n.createdAt,
