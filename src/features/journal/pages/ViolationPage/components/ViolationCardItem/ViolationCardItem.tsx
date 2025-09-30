@@ -92,13 +92,13 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                 );
 
             case "IN_REVIEW":
-                return (
+                return !isMobile ? (
                     <div style={{ display: "flex", gap: 8 }}>
                         <Button
                             fullWidth={isMobile}
-                            size={"small"}
-                            type={"secondary"}
-                            mode={"lavender"}
+                            size="small"
+                            type="secondary"
+                            mode="lavender"
                             onClick={() =>
                                 appStore.violationStore
                                     .changeStatus(violation.id, "DONE", id ?? "")
@@ -109,6 +109,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                         >
                             Принять
                         </Button>
+
                         <Button
                             fullWidth={isMobile}
                             onClick={() =>
@@ -118,13 +119,13 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                                         snackbarStore.showNeutralPositiveSnackbar("Статус изменен"),
                                     )
                             }
-                            size={"small"}
-                            type={"secondary"}
-                            mode={"negative"}
+                            size="small"
+                            type="secondary"
+                            mode="negative"
                             iconBefore={<IconClose />}
-                        ></Button>
+                        />
                     </div>
-                );
+                ) : null;
 
             case "DONE":
                 return (
@@ -151,13 +152,14 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                         mode={"neutral"}
                         fullWidth={isMobile}
                         iconBefore={<IconPlay />}
-                        onClick={() =>
+                        onClick={(event) => {
+                            event.stopPropagation();
                             appStore.violationStore
                                 .changeStatus(violation.id, "IN_PROGRESS", id ?? "")
                                 .then(() =>
                                     snackbarStore.showNeutralPositiveSnackbar("Статус изменен"),
-                                )
-                        }
+                                );
+                        }}
                     >
                         Взять в работу
                     </Button>
@@ -218,7 +220,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
             className={clsx(styles.container, { [styles.active]: active })}
             onClick={() => {
                 onClick();
-                if (isMobile) {
+                if (isMobile && violation.status === "IN_REVIEW") {
                     navigate(`${violation.id}`);
                 }
             }}

@@ -24,6 +24,7 @@ import { LocationPage } from "src/features/journal/pages/LocationPage/LocationPa
 import ReviewPage from "src/features/journal/pages/ReviewPage/ReviewPage.tsx";
 import CreateViolationPage from "src/features/journal/pages/ViolationPage/components/CreateViolationPage/CreateViolationPage.tsx";
 import ViolationItemPage from "src/features/journal/pages/ViolationPage/components/ViolationItemPage/ViolationItemPage.tsx";
+import NotificationMobile from "src/features/notification/NotificationMobile.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -48,6 +49,10 @@ export const appRoutes: RouteObject[] = [
             {
                 path: "/admin/home",
                 element: <HomePage />,
+            },
+            {
+                path: "/admin/notifications",
+                element: <NotificationMobile />,
             },
             {
                 path: "/admin/journal",

@@ -9,14 +9,14 @@
         border: 1px solid var(--objects-stroke-accent-primary, #2053d5);
         padding: 19px;
         @media screen and (max-width: 768px) {
-            padding: 20px;
+            padding: 16px;
             border: 0;
         }
     }
 
     @media screen and (max-width: 768px) {
         width: calc(100vw - 32px);
-        /*padding: 0 16px;*/
+        padding: 16px;
     }
 }
 

@@ -10,7 +10,7 @@ import { getFullName } from "src/shared/utils/getFullName.ts";
 import { appStore, layoutStore, registryStore } from "src/app/AppStore.ts";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ViolationCardItem from "src/features/journal/pages/ViolationPage/components/ViolationCardItem/ViolationCardItem.tsx";
 import { observer } from "mobx-react-lite";
 import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
@@ -22,6 +22,7 @@ import UserCard from "src/features/users/components/UserCard/UserCard.tsx";
 import { IconBuildArrow, IconBuildPhoto } from "src/features/users/components/UserCard/assets";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { User } from "src/features/users/types/User.ts";
+import { clsx } from "clsx";
 
 const ViolationPage = observer(() => {
     const loginUser = appStore.accountStore.currentUser;
@@ -50,6 +51,9 @@ const ViolationPage = observer(() => {
             setActiveTab(status as any);
             if (status === "4") {
                 layoutStore.setHeaderProps({ title: "Исправленные нарушения" });
+                return;
+            } else {
+                layoutStore.setHeaderProps({ title: "Нарушения" });
             }
         }
         /* return () => {
@@ -139,6 +143,7 @@ const ViolationPage = observer(() => {
     useLayoutEffect(() => {
         layoutStore.setHeaderProps({ title: "Нарушения" });
     }, []);
+    const navigate = useNavigate();
     return (
         <div className={styles.container}>
             <Helmet>
@@ -324,6 +329,30 @@ const ViolationPage = observer(() => {
                             type={activeTab === 5 ? "primary" : "outlined"}
                             mode={"positive"}
                         ></Button>
+                    </div>
+                )}
+                {isMobile && (activeTab == 2 || activeTab == 3) && (
+                    <div className={styles.mobileTabs}>
+                        {violations.filter((i) => i.status === "TODO").length > 0 && (
+                            <div
+                                onClick={() => navigate(`/admin/journal/${id}/violations?status=2`)}
+                                className={clsx(styles.mobTabItem, {
+                                    [styles.active]: activeTab == 2,
+                                })}
+                            >
+                                Взять в работу
+                            </div>
+                        )}
+                        {violations.filter((i) => i.status === "IN_PROGRESS").length > 0 && (
+                            <div
+                                onClick={() => navigate(`/admin/journal/${id}/violations?status=3`)}
+                                className={clsx(styles.mobTabItem, {
+                                    [styles.active]: activeTab == 3,
+                                })}
+                            >
+                                В работе
+                            </div>
+                        )}
                     </div>
                 )}
                 {violations.length > 0 ? (

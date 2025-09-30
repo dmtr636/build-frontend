@@ -10,7 +10,7 @@
         width: 1440px;
     }
     @media screen and (max-width: 768px) {
-        width: calc(100vw - 32px);
+        width: calc(100vw);
         margin-top: 0;
         margin-bottom: 100px;
         min-height: 100dvh;
@@ -151,4 +151,25 @@ justify-content: center;
 .counter {
     border-radius: var(--XS, 4px);
     padding: 2px 4px;
+}
+
+.mobileTabs {
+    /*margin-top: 64px;*/
+    margin-top: 16px;
+    display: flex;
+    gap: 16px;
+}
+
+.mobTabItem {
+    color: var(--text-neutral-primary, #111317);
+
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 24px */
+    opacity: 0.6;
+
+    &.active {
+        opacity: 1;
+    }
 }
