@@ -128,13 +128,13 @@ const CreateViolationPage = observer(() => {
         });
     };
     const resetViolationForm = () => {
-        setDocument([]); // документы
-        setViolation(null); // выбранное нарушение
-        setViolationTime(null); // дата/время обнаружения
-        setViolationDays(null); // срок устранения (дни)
-        setHaveViolations(false); // флаг автозаполнения срока
-        setIsNote(false); // чекбокс "замечание"
-        setSlots([createEmptySlot()]); // медиа-слоты: один пустой
+        setDocument([]);
+        setViolation(null);
+        setViolationTime(null);
+        setViolationDays(null);
+        setHaveViolations(false);
+        setIsNote(false);
+        setSlots([createEmptySlot()]);
     };
 
     const handleRemoveFile = (slotIndex: number) => () => {

@@ -9,6 +9,7 @@ import { ObjectStore } from "src/features/journal/stores/objectStore.ts";
 import { ViolationStore } from "src/features/journal/stores/violationStore.ts";
 import { WorksStore } from "src/features/journal/pages/WorksPage/ProjectWorksStore.ts";
 import { VisitsStore } from "src/features/journal/pages/VisitsPage/VisitsStore.ts";
+import { NotificationStore } from "src/features/notification/store/notificationStore.ts";
 
 export const layoutStore = new LayoutStore();
 export const accountStore = new AccountStore();
@@ -21,6 +22,7 @@ export const objectStore = new ObjectStore();
 export const violationStore = new ViolationStore();
 export const worksStore = new WorksStore();
 export const visitsStore = new VisitsStore();
+export const notificationStore = new NotificationStore();
 export const appStore = {
     layoutStore,
     violationStore,
@@ -32,5 +34,6 @@ export const appStore = {
     registryStore,
     objectStore,
     worksStore,
+    notificationStore,
     visitsStore,
 };

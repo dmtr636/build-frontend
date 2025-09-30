@@ -22,6 +22,7 @@ export const endpoints = {
     projectVisits: transformUrl("/api/projects/visits"),
     projectChecklists: transformUrl("/api/projects/checklists"),
     violations: transformUrl("/api/projects/violations"),
+    notifications: transformUrl("/api/notifications"),
     dictionaries: {
         constructionViolations: transformUrl("/api/dictionaries/construction-violations"),
         constructionWorks: transformUrl("/api/dictionaries/construction-works"),
