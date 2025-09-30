@@ -335,7 +335,11 @@ const ViolationPage = observer(() => {
                     <div className={styles.mobileTabs}>
                         {violations.filter((i) => i.status === "TODO").length > 0 && (
                             <div
-                                onClick={() => navigate(`/admin/journal/${id}/violations?status=2`)}
+                                onClick={() =>
+                                    navigate(`/admin/journal/${id}/violations?status=2`, {
+                                        replace: true,
+                                    })
+                                }
                                 className={clsx(styles.mobTabItem, {
                                     [styles.active]: activeTab == 2,
                                 })}
@@ -345,7 +349,11 @@ const ViolationPage = observer(() => {
                         )}
                         {violations.filter((i) => i.status === "IN_PROGRESS").length > 0 && (
                             <div
-                                onClick={() => navigate(`/admin/journal/${id}/violations?status=3`)}
+                                onClick={() =>
+                                    navigate(`/admin/journal/${id}/violations?status=3`, {
+                                        replace: true,
+                                    })
+                                }
                                 className={clsx(styles.mobTabItem, {
                                     [styles.active]: activeTab == 3,
                                 })}
