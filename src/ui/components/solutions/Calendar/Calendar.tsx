@@ -23,6 +23,7 @@ export interface CalendarProps {
     disableFuture?: boolean;
     disablePast?: boolean;
     mode?: "accent" | "brand";
+    zIndex?: number;
 }
 
 export const Calendar = memo((props: CalendarProps) => {
@@ -129,6 +130,7 @@ export const Calendar = memo((props: CalendarProps) => {
                     fullWidth={false}
                     tipPosition={"top-left"}
                     onRender={(func) => (setShowMonthDropdownRef.current = func)}
+                    zIndex={props.zIndex}
                 />
 
                 {!disableYear && (
@@ -146,6 +148,7 @@ export const Calendar = memo((props: CalendarProps) => {
                         fullWidth={false}
                         tipPosition={"top-left"}
                         onRender={(func) => (setShowYearDropdownRef.current = func)}
+                        zIndex={props.zIndex}
                     />
                 )}
 

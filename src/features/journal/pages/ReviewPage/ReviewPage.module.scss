@@ -518,6 +518,14 @@ flex-shrink: 0;
     }
 }
 
+.tasksArea {
+    border-radius: 12px;
+    position: relative;
+}
+
+.tasksAreaContent {
+}
+
 .containerAlert {
     width: calc(100vw - 32px);
 }

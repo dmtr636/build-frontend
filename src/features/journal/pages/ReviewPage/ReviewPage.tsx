@@ -1,7 +1,13 @@
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { appStore, layoutStore, userStore, violationStore, worksStore } from "src/app/AppStore.ts";
+import {
+    accountStore,
+    appStore,
+    layoutStore,
+    violationStore,
+    worksStore,
+} from "src/app/AppStore.ts";
 import styles from "./ReviewPage.module.scss";
 import {
     IconApps,
@@ -18,7 +24,7 @@ import {
     IconUser,
 } from "src/ui/assets/icons";
 import clsx from "clsx";
-import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
+import { endpoints, GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { formatDateShort } from "src/shared/utils/date.ts";
 import { IconHardware } from "src/features/journal/components/JournalItemCard/assets";
 import { formatObjNumber } from "src/shared/utils/formatObjNumber.ts";
@@ -26,9 +32,10 @@ import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
 import { MapEditor, MapEditorValue } from "src/features/map/MapEditor.tsx";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
+import { OpeningCheckListSections } from "src/features/journal/pages/WorksPage/components/CheckListSection/OpeningCheckListSections.tsx";
 import { Alert } from "src/ui/components/solutions/Alert/Alert.tsx";
-import { useGeofence } from "src/features/journal/hooks/geofence.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
+import { navigate } from "@storybook/addon-links";
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
@@ -73,6 +80,7 @@ const ReviewPage = observer(() => {
         if (id) {
             appStore.violationStore.fetchViolationByObj(id);
             appStore.worksStore.fetchWorks(id);
+            appStore.worksStore.fetchChecklists(id);
         }
     }, [id]);
     const [mapObj, setMapObj] = useState<MapEditorValue>({
@@ -133,26 +141,29 @@ const ReviewPage = observer(() => {
             setInitial();
             setReady(true);
         }, 30);
-    }, []);
+    }, [project]);
+
+    const showChecklist = worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS";
+
     useLayoutEffect(() => {
         if (project) layoutStore.setHeaderProps({ title: project?.name });
     }, [project]);
     const isMobile = layoutStore.isMobile;
     /*const { pos, inside, error, lastChangeTs } = useGeofence({
-        polygon: project?.polygon ?? ([] as any),
-        throttleMs: 1000,
-        enableHighAccuracy: true,
-        minAccuracyMeters: 500,
-        onEnter: (p) => console.log("Вход в зону", p),
-        onExit: (p) => console.log("Выход из зоны", p),
-    });*/
+            polygon: project?.polygon ?? ([] as any),
+            throttleMs: 1000,
+            enableHighAccuracy: true,
+            minAccuracyMeters: 500,
+            onEnter: (p) => console.log("Вход в зону", p),
+            onExit: (p) => console.log("Выход из зоны", p),
+        });*/
     /*
-        console.log(pos);
-    */
+            console.log(pos);
+        */
     /*console.log(inside);*/
     /*
-        console.log(JSON.parse(JSON.stringify(project?.polygon)));
-    */
+            console.log(JSON.parse(JSON.stringify(project?.polygon)));
+        */
     return (
         <div className={styles.container}>
             {!isMobile && (
@@ -163,7 +174,110 @@ const ReviewPage = observer(() => {
                     <div>Обзор</div>
                 </div>
             )}
-            <div className={styles.content}>
+            {showChecklist && (
+                <div
+                    style={{
+                        marginTop: 24,
+                        maxWidth: 829,
+                    }}
+                >
+                    <OpeningCheckListSections
+                        sections={worksStore.openingChecklistsForm?.[0].sections ?? []}
+                    />
+                    <div
+                        style={{
+                            marginTop: 20,
+                            marginBottom: 124,
+                        }}
+                    >
+                        {accountStore.isContractor && (
+                            <>
+                                {worksStore.openingChecklists?.[0].sections?.some((s) =>
+                                    s.items.some((i) => !i.answer),
+                                ) && (
+                                    <Button
+                                        mode={"neutral"}
+                                        size={"large"}
+                                        disabled={worksStore.openingChecklistsForm?.[0].sections?.some(
+                                            (s) => s.items.some((i) => !i.answer),
+                                        )}
+                                        onClick={async () => {
+                                            const checkList = worksStore.openingChecklistsForm[0];
+                                            const answers = checkList.sections.flatMap((s) =>
+                                                s.items.map((item) => ({
+                                                    templateItemId: item.templateItemId,
+                                                    answer: item.answer,
+                                                })),
+                                            );
+                                            await worksStore.apiClient.put(
+                                                endpoints.projectChecklists + `/${id}`,
+                                                {
+                                                    checklistInstanceId: checkList?.id,
+                                                    status: "IN_PROGRESS",
+                                                    answers: answers,
+                                                },
+                                            );
+                                            await worksStore.fetchChecklists(id ?? "");
+                                        }}
+                                    >
+                                        Отправить на согласование
+                                    </Button>
+                                )}
+                                {worksStore.openingChecklists?.[0].sections?.every((s) =>
+                                    s.items.some((i) => !!i.answer),
+                                ) && (
+                                    <Button
+                                        mode={"neutral"}
+                                        type={"secondary"}
+                                        size={"large"}
+                                        disabled={true}
+                                        iconBefore={<IconTime />}
+                                    >
+                                        Находится на согласовании
+                                    </Button>
+                                )}
+                            </>
+                        )}
+                        {accountStore.isInspector && (
+                            <>
+                                <Button
+                                    mode={"neutral"}
+                                    size={"large"}
+                                    disabled={worksStore.openingChecklistsForm?.[0].sections?.some(
+                                        (s) => s.items.some((i) => !i.answer),
+                                    )}
+                                    onClick={async () => {
+                                        const checkList = worksStore.openingChecklistsForm[0];
+                                        const answers = checkList.sections.flatMap((s) =>
+                                            s.items.map((item) => ({
+                                                templateItemId: item.templateItemId,
+                                                answer: item.answer,
+                                            })),
+                                        );
+                                        await worksStore.apiClient.put(
+                                            endpoints.projectChecklists + `/${id}`,
+                                            {
+                                                checklistInstanceId: checkList?.id,
+                                                status: "DONE",
+                                                answers: answers,
+                                            },
+                                        );
+                                        await worksStore.fetchChecklists(id ?? "");
+                                    }}
+                                >
+                                    Согласовать открытие
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
+            <div
+                className={styles.content}
+                style={{
+                    display: showChecklist ? "none" : undefined,
+                }}
+            >
                 {isMobile && (
                     <div className={styles.containerAlert}>
                         <Alert
@@ -612,5 +726,4 @@ const ReviewPage = observer(() => {
         </div>
     );
 });
-
 export default ReviewPage;

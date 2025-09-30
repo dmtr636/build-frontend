@@ -603,7 +603,7 @@ export const JournalPage = observer(() => {
                                 onClick={async () => {
                                     const response = await appStore.objectStore.createObject({
                                         name: newObjName,
-                                        status: "Await",
+                                        status: "AWAIT",
                                     });
                                     if (response) {
                                         navigate(`/admin/journal/${response.data.id}`);
