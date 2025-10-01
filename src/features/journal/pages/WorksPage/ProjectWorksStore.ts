@@ -112,9 +112,9 @@ export class WorksStore {
             .sort((a, b) =>
                 a.workVersions[
                     Math.min(a.workVersions.length, this.currentWorkVersion) - 1
-                ].startDate.localeCompare(
+                ]?.startDate.localeCompare(
                     b.workVersions[Math.min(b.workVersions.length, this.currentWorkVersion) - 1]
-                        .startDate,
+                        ?.startDate,
                 ),
             );
     }
@@ -130,9 +130,9 @@ export class WorksStore {
             .sort((a, b) =>
                 a.workVersions[
                     Math.min(a.workVersions.length, this.currentWorkVersion) - 1
-                ].startDate.localeCompare(
+                ]?.startDate.localeCompare(
                     b.workVersions[Math.min(b.workVersions.length, this.currentWorkVersion) - 1]
-                        .startDate,
+                        ?.startDate,
                 ),
             );
     }
@@ -144,9 +144,9 @@ export class WorksStore {
             .sort((a, b) =>
                 a.workVersions[
                     Math.min(a.workVersions.length, this.currentWorkVersion) - 1
-                ].startDate.localeCompare(
+                ]?.startDate.localeCompare(
                     b.workVersions[Math.min(b.workVersions.length, this.currentWorkVersion) - 1]
-                        .startDate,
+                        ?.startDate,
                 ),
             );
     }

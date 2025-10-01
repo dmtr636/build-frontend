@@ -24,6 +24,12 @@
     font-style: normal;
     font-weight: 700;
     line-height: 120%; /* 28.8px */
+    position: sticky;
+    top: 118px;
+    background-color: white;
+    z-index: 1;
+    padding: 42px 0;
+    margin: -42px 0;
 }
 
 .mainContainer {
@@ -40,6 +46,16 @@
 
     @media screen and (min-width: 1500px) {
         width: 1440px;
+    }
+
+    > div:first-child {
+        position: sticky;
+        top: 230px;
+    }
+
+    > div:last-child {
+        position: sticky;
+        top: 230px;
     }
 }
 
@@ -60,7 +76,7 @@
 
 .searchRowWrapper {
     position: sticky;
-    top: 60px;
+    top: 230px;
     background-color: white;
     z-index: 1;
     padding-bottom: 10px;
@@ -137,14 +153,18 @@
     width: auto;
     flex-grow: 1;
     position: sticky;
-    top: 100px;
     flex-shrink: 0;
+    overscroll-behavior: contain;
 
     &.placeholder {
         height: calc(min(100vh - 120px, 650px));
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    &.noFooter {
+        max-height: calc(100vh - 262px);
     }
 }
 
@@ -156,8 +176,9 @@
 
 .deleteButton {
     position: absolute;
-    top: 20px;
+    top: 14px;
     right: 20px;
+    z-index: 1;
 }
 
 .orgCardHeader {

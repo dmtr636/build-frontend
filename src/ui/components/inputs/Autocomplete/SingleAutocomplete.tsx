@@ -66,7 +66,7 @@ export const SingleAutocomplete = observer(<T = string,>(props: SingleAutocomple
 
     useLayoutEffect(() => {
         setInputValue(selectedOption?.name ?? "");
-    }, [value]);
+    }, [value, selectedOption?.name]);
 
     const filteredOptions = useMemo(() => {
         if (!dirty) {

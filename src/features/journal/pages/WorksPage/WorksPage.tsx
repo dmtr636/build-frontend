@@ -186,7 +186,7 @@ export const WorksPage = observer(() => {
     const showAlertNewVersion =
         !!worksStore.worksForm.length &&
         worksStore.worksForm[0] &&
-        !worksStore.worksForm[0].workVersions[worksStore.worksForm[0].workVersions.length - 1]
+        !worksStore.worksForm[0]?.workVersions[worksStore.worksForm[0]?.workVersions.length - 1]
             .active;
 
     const getSaveButtonLabel = () => {

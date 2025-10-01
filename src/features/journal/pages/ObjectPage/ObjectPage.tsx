@@ -44,7 +44,10 @@ export const ObjectPage = observer(() => {
                         Список объектов
                     </div>
                     <Tabs
-                        value={location.pathname.split("/").pop()}
+                        value={location.pathname
+                            .replace(/materials\/[a-f0-9-]+/, "materials")
+                            .split("/")
+                            .pop()}
                         onChange={(value) => {
                             navigate(`/admin/journal/${id}/${value}`);
                         }}

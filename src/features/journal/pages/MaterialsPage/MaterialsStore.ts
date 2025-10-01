@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { ApiClient } from "src/shared/api/ApiClient.ts";
 import { endpoints } from "src/shared/api/endpoints.ts";
 import { Material } from "src/features/journal/pages/MaterialsPage/Material.ts";
+import { formatDate } from "src/shared/utils/date.ts";
 
 interface Filter {
     date: string | null;
@@ -18,12 +19,12 @@ const initialFilter: Filter = {
 export class MaterialsStore {
     materials: Material[] = [];
     addForm: Partial<Material> = {};
-    editForm: Material | null = null;
+    editForm: Partial<Material> = {};
     loading = false;
     apiClient = new ApiClient();
     sort = {
-        field: "name",
-        direction: "asc",
+        field: "createdAt",
+        direction: "desc",
     };
     filters = initialFilter;
     search = "";
@@ -79,6 +80,26 @@ export class MaterialsStore {
                 );
             });
         }
+        if (this.filters.date) {
+            const dateLocaleString = formatDate(this.filters.date);
+            materials = materials.filter(
+                (visit) => formatDate(visit.waybill.deliveryDateTime ?? "") === dateLocaleString,
+            );
+        }
+        if (this.filters.userIds?.length) {
+            materials = materials.filter(
+                (visit) =>
+                    visit.waybill.receiver &&
+                    this.filters.userIds.includes(visit.waybill.receiver ?? ""),
+            );
+        }
+        if (this.filters.names?.length) {
+            materials = materials.filter(
+                (visit) =>
+                    visit.waybill.materialName &&
+                    this.filters.names.includes(visit.waybill.materialName),
+            );
+        }
         return materials;
     }
 
@@ -102,6 +123,7 @@ export class MaterialsStore {
         this.loading = false;
         if (response.status) {
             this.materials.push(response.data);
+            this.addForm = {};
             return true;
         } else {
             this.loading = false;
@@ -118,11 +140,27 @@ export class MaterialsStore {
         this.loading = false;
     };
 
-    updateMaterial = async (material: Material): Promise<void> => {
+    updateMaterial = async (material: Partial<Material>, oldMaterial: Material): Promise<void> => {
         this.loading = true;
-        await this.apiClient.put(endpoints.projectMaterials, material);
-        this.materials = this.materials.map((o) => (o.id === material.id ? material : o));
+        if (oldMaterial.waybill && material.waybill) {
+            await this.apiClient.put(endpoints.projectMaterials + `/waybills`, material.waybill);
+        }
+        if (oldMaterial.passportQuality && material.passportQuality) {
+            await this.apiClient.put(endpoints.projectMaterials + `/passport-qualities`, {
+                ...material.passportQuality,
+                manufacturer: material.passportQuality.manufacturer || "",
+                consumerNameAndAddress: material.passportQuality.consumerNameAndAddress || "",
+                productNameAndGrade: material.passportQuality.productNameAndGrade || "",
+            });
+        }
+        if (!oldMaterial.passportQuality && material.passportQuality) {
+            await this.apiClient.post(endpoints.projectMaterials + `/passport-qualities`, {
+                ...material.passportQuality,
+                materialId: material.id,
+            });
+        }
         this.loading = false;
+        await this.fetchMaterials(material.projectId ?? "");
     };
 
     resetFilters = () => {

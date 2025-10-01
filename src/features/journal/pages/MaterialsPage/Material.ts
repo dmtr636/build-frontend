@@ -23,6 +23,7 @@ export interface Waybill {
     grossWeight: number | null;
     packageCount: number | null;
     files: FileDto[];
+    laboratoryAnalysisRequired?: boolean | null;
 }
 
 export interface PassportQuality {

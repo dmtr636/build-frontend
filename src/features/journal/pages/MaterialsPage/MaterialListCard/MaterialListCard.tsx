@@ -9,7 +9,7 @@ import { numDecl } from "src/shared/utils/numDecl.ts";
 import { Material } from "src/features/journal/pages/MaterialsPage/Material.ts";
 import { IconBrickPerspective } from "src/features/journal/pages/MaterialsPage/assets";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
-import { formatDate } from "src/shared/utils/date.ts";
+import { formatDate, formatTime } from "src/shared/utils/date.ts";
 
 interface UserItemCardProps {
     onClick?: () => void;
@@ -35,6 +35,15 @@ const MaterialListCard = observer(({ onClick, isOpen, material }: UserItemCardPr
                 <IconBrickPerspective />
             </div>
             <div className={clsx(styles.infoBlock)}>
+                <div
+                    style={{
+                        display: "flex",
+                    }}
+                >
+                    {material.waybill.laboratoryAnalysisRequired && (
+                        <div className={styles.laboratoryBadge}>Нужен лабораторный анализ</div>
+                    )}
+                </div>
                 <Tooltip text={material?.waybill.materialName} requireOverflow={true}>
                     <div className={styles.name}>
                         {material?.waybill.materialName}
@@ -45,7 +54,16 @@ const MaterialListCard = observer(({ onClick, isOpen, material }: UserItemCardPr
                                     color: "var(--objects-text-neutral-quaternary, #5F6A81)",
                                 }}
                             >
-                                {material.waybill.volume}
+                                {material.waybill.volume} м
+                                <sup
+                                    style={{
+                                        marginTop: -10,
+                                        display: "inline-block",
+                                        translate: "0 3px",
+                                    }}
+                                >
+                                    3
+                                </sup>
                             </span>
                         )}
                     </div>
@@ -54,7 +72,8 @@ const MaterialListCard = observer(({ onClick, isOpen, material }: UserItemCardPr
                     <div className={styles.otherInfo}>
                         {material.waybill.deliveryDateTime && (
                             <Typo variant={"bodyL"} type={"tertiary"} mode={"neutral"}>
-                                {formatDate(material.waybill.deliveryDateTime)}
+                                {formatDate(material.waybill.deliveryDateTime)} /{" "}
+                                {formatTime(material.waybill.deliveryDateTime)}
                             </Typo>
                         )}
                         {material.waybill.deliveryDateTime && material.waybill.invoiceNumber && (
