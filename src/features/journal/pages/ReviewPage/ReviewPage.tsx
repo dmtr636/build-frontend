@@ -54,7 +54,7 @@ function formatDate(dateStr: string): string {
 const ReviewPage = observer(() => {
     const { id } = useParams();
     const [isOpen, setIsOpen] = useState(false);
-    const [result, setResult] = useState<any>();
+    const [result, setResult] = useState<any>([]);
     const currenUser = appStore.accountStore.currentUser;
     const project = appStore.objectStore.ObjectMap.get(id ?? "");
     const customerOrg = appStore.organizationsStore.organizationById(project?.customerOrganization);
@@ -337,7 +337,7 @@ const ReviewPage = observer(() => {
                             ></Alert>
                         </div>
                     )}
-                    {JSON.stringify(result[0].rawValue)}
+                    {JSON.stringify(result[0]?.rawValue)}
                     {isMobile &&
                         (!accountStore.isContractor ? (
                             <div className={styles.buttonsCheck}>
