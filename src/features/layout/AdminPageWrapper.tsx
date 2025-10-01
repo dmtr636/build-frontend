@@ -21,6 +21,7 @@ const AdminPageWrapper = observer(() => {
     useEffect(() => {
         appStore.userStore.fetchUsers();
         appStore.organizationsStore.fetchOrganizations();
+        appStore.violationStore.fetchAllViolations();
         appStore.registryStore.fetchAllDocuments();
         appStore.registryStore.fetchAllViolations();
         appStore.registryStore.fetchAllWorks();
