@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./violationCard.module.scss";
 import { ProjectViolationDTO } from "src/features/journal/types/Violation.ts";
 import { clsx } from "clsx";
 import { IconCalendar, IconDocument, IconPin, IconTime, IconUser } from "src/ui/assets/icons";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { splitFullName } from "src/shared/utils/splitFullName.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { Media } from "src/ui/components/solutions/Media/Media.tsx";
 import { fileUrl } from "src/shared/utils/file.ts";
+import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
+import { MapEditor } from "src/features/map/MapEditor.tsx";
+import { appStore } from "src/app/AppStore.ts";
 
 interface ViolationCardProps {
     violation: ProjectViolationDTO;
@@ -49,6 +52,10 @@ function formatDate(dateStr: string): string {
 
 const ViolationCard = ({ violation }: ViolationCardProps) => {
     const [activeTab, setActiveTab] = useState(1);
+    const [showMapOverlay, setShowMapOverlay] = useState(false);
+    const { id } = useParams();
+    const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
+
     return (
         <div className={styles.card}>
             <div className={styles.tabs}>
@@ -123,9 +130,19 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
                 </div>
             </div>
             <div className={styles.textForm}>{violation.name}</div>
-            <Button iconBefore={<IconPin />} size={"medium"} fullWidth={true} mode={"neutral"}>
-                Посмотреть место нарушения
-            </Button>
+            {violation.latitude && violation.longitude && (
+                <Button
+                    iconBefore={<IconPin />}
+                    size={"medium"}
+                    fullWidth={true}
+                    mode={"neutral"}
+                    onClick={() => {
+                        setShowMapOverlay(true);
+                    }}
+                >
+                    Посмотреть место нарушения
+                </Button>
+            )}
             <div className={styles.textBlock}>
                 <div>Нужно исправить до</div>
                 <div className={styles.textBlockSubtext}>{formatDate(violation.dueDate)}</div>
@@ -151,6 +168,43 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
                     <img className={styles.imgItem} key={index} src={fileUrl(photo.id)} />
                 ))}
             </div>
+            {showMapOverlay && (
+                <Overlay
+                    open={showMapOverlay}
+                    onClose={() => setShowMapOverlay(false)}
+                    title={"Место нарушения"}
+                >
+                    <div
+                        style={{
+                            width: 777,
+                        }}
+                    >
+                        <MapEditor
+                            readyProp={false}
+                            height={"459px"}
+                            value={{
+                                name: violation.name,
+                                marker: {
+                                    lat: violation.latitude,
+                                    lng: violation.longitude,
+                                },
+                                polygon: currentObj?.polygon
+                                    ? currentObj.polygon.map((item) => ({
+                                          lat: item.latitude,
+                                          lng: item.longitude,
+                                      }))
+                                    : null,
+                            }}
+                            onChange={() => {}}
+                            center={{
+                                lat: violation.latitude,
+                                lng: violation.longitude,
+                            }}
+                            editable={false}
+                        />
+                    </div>
+                </Overlay>
+            )}
         </div>
     );
 };

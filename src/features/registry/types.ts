@@ -11,6 +11,8 @@ export interface ConstructionViolation {
     severityType: string;
     name: string;
     remediationDueDays: number | null;
+    latitude: number | null;
+    longitude: number | null;
 }
 
 export interface ConstructionWork {
