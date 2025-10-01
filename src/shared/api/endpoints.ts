@@ -18,6 +18,7 @@ export const endpoints = {
     projects: transformUrl("/api/projects"),
     projectWorks: transformUrl("/api/projects/works"),
     projectWorkComments: transformUrl("/api/projects/works/comments"),
+    projectViolationsComments: transformUrl("/api/projects/violations/comments"),
     projectWorkVersions: transformUrl("/api/projects/works/versions"),
     projectVisits: transformUrl("/api/projects/visits"),
     projectChecklists: transformUrl("/api/projects/checklists"),

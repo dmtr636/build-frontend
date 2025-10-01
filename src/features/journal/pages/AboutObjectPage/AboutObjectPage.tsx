@@ -146,7 +146,7 @@ const AboutObjectPage = observer(() => {
                     onSelectFile={async (file) => {
                         const imageId = await appStore.accountStore.uploadMediaFile(
                             file,
-                            "PROFILE_IMAGE",
+                            "PROJECT_COVER_IMAGE",
                         );
                         setObjPreview(imageId);
                     }}

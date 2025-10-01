@@ -11,7 +11,7 @@ import { Media } from "src/ui/components/solutions/Media/Media.tsx";
 import { fileUrl } from "src/shared/utils/file.ts";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { MapEditor } from "src/features/map/MapEditor.tsx";
-import { appStore } from "src/app/AppStore.ts";
+import { appStore, worksStore } from "src/app/AppStore.ts";
 
 interface ViolationCardProps {
     violation: ProjectViolationDTO;
@@ -66,7 +66,10 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
                     О нарушении
                 </div>
                 <div
-                    onClick={() => setActiveTab(2)}
+                    onClick={() => {
+                        worksStore.showViolationComments = true;
+                        worksStore.currentViolation = violation;
+                    }}
                     className={clsx(styles.tabItem, { [styles.active]: activeTab === 2 })}
                 >
                     Комментарии

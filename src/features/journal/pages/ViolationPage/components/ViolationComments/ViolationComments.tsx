@@ -1,9 +1,8 @@
 import { observer } from "mobx-react-lite";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
-import { ProjectWork } from "src/features/journal/types/ProjectWork.ts";
 import React, { useLayoutEffect, useMemo, useRef } from "react";
 import { accountStore, appStore, userStore, worksStore } from "src/app/AppStore.ts";
-import styles from "./WorkComments.module.scss";
+import styles from "./ViolationComments.module.scss";
 import {
     IconAttach,
     IconClose,
@@ -32,6 +31,7 @@ import clsx from "clsx";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { getFullName, getNameInitials } from "src/shared/utils/getFullName.ts";
+import { ProjectViolationDTO } from "src/features/journal/types/Violation.ts";
 
 class VM {
     text = "";
@@ -42,18 +42,22 @@ class VM {
     }
 }
 
-export const WorkComments = observer(
-    (props: { work: ProjectWork; show: boolean; setShow: (show: boolean) => void }) => {
-        const vm = useMemo(() => new VM(), [props.work.id]);
+export const ViolationComments = observer(
+    (props: {
+        violation: ProjectViolationDTO;
+        show: boolean;
+        setShow: (show: boolean) => void;
+    }) => {
+        const vm = useMemo(() => new VM(), [props.violation.id]);
         const fileInputRef = useRef<HTMLInputElement>(null);
 
         useLayoutEffect(() => {
-            if (props.work.id) {
-                worksStore.fetchWorkComments(props.work.id);
+            if (props.violation.id) {
+                worksStore.fetchViolationsComments(props.violation.id);
             }
-        }, [props.work.id]);
+        }, [props.violation.id]);
 
-        const comments = worksStore.workComments;
+        const comments = worksStore.violationComments;
 
         const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
             const files = event.target.files;
@@ -80,7 +84,7 @@ export const WorkComments = observer(
             <Overlay
                 open={props.show}
                 onClose={() => props.setShow(false)}
-                title={props.work.name}
+                title={props.violation.name}
                 titleNoWrap={true}
                 smallPadding={true}
                 styles={{
@@ -171,8 +175,8 @@ export const WorkComments = observer(
                                 disabled={!vm.text && !vm.fileDTOs.length}
                                 loading={worksStore.loading}
                                 onClick={async () => {
-                                    await worksStore.createComment({
-                                        workId: props.work.id,
+                                    await worksStore.createViolationComment({
+                                        violationId: props.violation.id,
                                         files: vm.fileDTOs,
                                         text: vm.text ?? "",
                                         authorId: accountStore.currentUser?.id ?? "",

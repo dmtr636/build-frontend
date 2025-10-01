@@ -18,9 +18,9 @@ export interface Waybill {
     projectWorkId: string | null;
     projectWorkName: string | null;
     invoiceNumber: string | null;
-    volume: number | null;
-    netWeight: number | null;
-    grossWeight: number | null;
+    volume: string | null;
+    netWeight: string | null;
+    grossWeight: string | null;
     packageCount: number | null;
     files: FileDto[];
     laboratoryAnalysisRequired?: boolean | null;

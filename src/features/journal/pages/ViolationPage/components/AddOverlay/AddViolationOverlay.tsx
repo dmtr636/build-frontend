@@ -193,7 +193,10 @@ const AddViolationOverlay = observer(
             }
         }, [editingViolation, isEditing, violations, documents, open]);
         const handleSelectFile = (slotIndex: number) => async (file: File) => {
-            const imageId = await appStore.accountStore.uploadMediaFile(file, "PROFILE_IMAGE");
+            const imageId = await appStore.accountStore.uploadMediaFile(
+                file,
+                "PROJECT_CONTENT_IMAGE",
+            );
 
             setSlots((prev) => {
                 const next = [...prev];

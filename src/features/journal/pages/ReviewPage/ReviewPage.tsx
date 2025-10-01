@@ -296,7 +296,8 @@ const ReviewPage = observer(() => {
         };
     }, []);
 
-    const showChecklist = worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS";
+    const showChecklist =
+        !accountStore.isAdmin && worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS";
 
     useLayoutEffect(() => {
         if (project) layoutStore.setHeaderProps({ title: project?.name });

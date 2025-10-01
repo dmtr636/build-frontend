@@ -1097,15 +1097,12 @@ export const MaterialsPage = observer(() => {
                                                     }
                                                     if (materialsStore.addForm.waybill) {
                                                         materialsStore.addForm.waybill.volume =
-                                                            event.target.value
-                                                                ? Number(event.target.value)
-                                                                : null;
+                                                            event.target.value;
                                                     }
                                                 }}
                                                 value={materialsStore.addForm.waybill?.volume ?? ""}
                                                 formName={"Объём"}
                                                 placeholder={"Введите значение"}
-                                                number={true}
                                                 onClear={() => {
                                                     if (materialsStore.addForm.waybill) {
                                                         materialsStore.addForm.waybill.volume =
@@ -1120,17 +1117,14 @@ export const MaterialsPage = observer(() => {
                                                     }
                                                     if (materialsStore.addForm.waybill) {
                                                         materialsStore.addForm.waybill.netWeight =
-                                                            event.target.value
-                                                                ? Number(event.target.value)
-                                                                : null;
+                                                            event.target.value;
                                                     }
                                                 }}
                                                 value={
                                                     materialsStore.addForm.waybill?.netWeight ?? ""
                                                 }
                                                 formName={"Нетто"}
-                                                placeholder={"Введите число"}
-                                                number={true}
+                                                placeholder={"Введите значение"}
                                                 onClear={() => {
                                                     if (materialsStore.addForm.waybill) {
                                                         materialsStore.addForm.waybill.netWeight =
@@ -1145,9 +1139,7 @@ export const MaterialsPage = observer(() => {
                                                     }
                                                     if (materialsStore.addForm.waybill) {
                                                         materialsStore.addForm.waybill.grossWeight =
-                                                            event.target.value
-                                                                ? Number(event.target.value)
-                                                                : null;
+                                                            event.target.value;
                                                     }
                                                 }}
                                                 value={
@@ -1155,8 +1147,7 @@ export const MaterialsPage = observer(() => {
                                                     ""
                                                 }
                                                 formName={"Брутто"}
-                                                placeholder={"Введите число"}
-                                                number={true}
+                                                placeholder={"Введите значение"}
                                                 onClear={() => {
                                                     if (materialsStore.addForm.waybill) {
                                                         materialsStore.addForm.waybill.grossWeight =
@@ -1846,9 +1837,7 @@ export const MaterialsPage = observer(() => {
                                                     }
                                                     if (materialsStore.editForm.waybill) {
                                                         materialsStore.editForm.waybill.volume =
-                                                            event.target.value
-                                                                ? Number(event.target.value)
-                                                                : null;
+                                                            event.target.value;
                                                     }
                                                 }}
                                                 value={
@@ -1856,7 +1845,6 @@ export const MaterialsPage = observer(() => {
                                                 }
                                                 formName={"Объём"}
                                                 placeholder={"Введите значение"}
-                                                number={true}
                                                 onClear={() => {
                                                     if (materialsStore.editForm.waybill) {
                                                         materialsStore.editForm.waybill.volume =
@@ -1871,17 +1859,14 @@ export const MaterialsPage = observer(() => {
                                                     }
                                                     if (materialsStore.editForm.waybill) {
                                                         materialsStore.editForm.waybill.netWeight =
-                                                            event.target.value
-                                                                ? Number(event.target.value)
-                                                                : null;
+                                                            event.target.value;
                                                     }
                                                 }}
                                                 value={
                                                     materialsStore.editForm.waybill?.netWeight ?? ""
                                                 }
                                                 formName={"Нетто"}
-                                                placeholder={"Введите число"}
-                                                number={true}
+                                                placeholder={"Введите значение"}
                                                 onClear={() => {
                                                     if (materialsStore.editForm.waybill) {
                                                         materialsStore.editForm.waybill.netWeight =
@@ -1896,9 +1881,7 @@ export const MaterialsPage = observer(() => {
                                                     }
                                                     if (materialsStore.editForm.waybill) {
                                                         materialsStore.editForm.waybill.grossWeight =
-                                                            event.target.value
-                                                                ? Number(event.target.value)
-                                                                : null;
+                                                            event.target.value;
                                                     }
                                                 }}
                                                 value={
@@ -1906,8 +1889,7 @@ export const MaterialsPage = observer(() => {
                                                     ""
                                                 }
                                                 formName={"Брутто"}
-                                                placeholder={"Введите число"}
-                                                number={true}
+                                                placeholder={"Введите значение"}
                                                 onClear={() => {
                                                     if (materialsStore.editForm.waybill) {
                                                         materialsStore.editForm.waybill.grossWeight =

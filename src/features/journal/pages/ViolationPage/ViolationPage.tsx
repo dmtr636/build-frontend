@@ -7,7 +7,7 @@ import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
-import { appStore, layoutStore, registryStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, registryStore, worksStore } from "src/app/AppStore.ts";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -23,6 +23,7 @@ import { IconBuildArrow, IconBuildPhoto } from "src/features/users/components/Us
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { User } from "src/features/users/types/User.ts";
 import { clsx } from "clsx";
+import { ViolationComments } from "src/features/journal/pages/ViolationPage/components/ViolationComments/ViolationComments.tsx";
 
 const ViolationPage = observer(() => {
     const loginUser = appStore.accountStore.currentUser;
@@ -424,6 +425,14 @@ const ViolationPage = observer(() => {
                 open={openCreate}
                 setOpen={() => setOpenCreate(false)}
             />
+
+            {worksStore.currentViolation && worksStore.showViolationComments && (
+                <ViolationComments
+                    violation={worksStore.currentViolation}
+                    show={worksStore.showViolationComments}
+                    setShow={(show) => (worksStore.showViolationComments = show)}
+                />
+            )}
         </>
     );
 });
