@@ -176,9 +176,25 @@ const DocumentCard = ({ documentItem, object }: DocumentCardProps) => {
                                 const blob = await response.blob();
                                 const blobUrl = window.URL.createObjectURL(blob);
 
+                                // Функция для получения расширения файла
+                                const getFileExtension = (filename: string) => {
+                                    const match = filename.match(/\.([0-9a-z]+)$/i);
+                                    return match ? match[0] : "";
+                                };
+
+                                const originalExtension = getFileExtension(
+                                    documentItem.file.originalFileName ?? "",
+                                );
+                                let downloadName = documentItem.name || "file";
+
+                                // Добавляем расширение только если его нет и есть оригинальное расширение
+                                if (!getFileExtension(downloadName) && originalExtension) {
+                                    downloadName += originalExtension;
+                                }
+
                                 const link = document.createElement("a");
                                 link.href = blobUrl;
-                                link.download = documentItem.name || "file";
+                                link.download = downloadName;
                                 document.body.appendChild(link);
                                 link.click();
                                 link.remove();
