@@ -1,6 +1,6 @@
-import React, { useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { appStore, violationStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, violationStore } from "src/app/AppStore.ts";
 import { observer } from "mobx-react-lite";
 import styles from "./ViolationItemPage.module.scss";
 import { clsx } from "clsx";
@@ -10,6 +10,10 @@ import { splitFullName } from "src/shared/utils/splitFullName.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { fileUrl } from "src/shared/utils/file.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
+import { MapEditor } from "src/features/map/MapEditor.tsx";
+import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
+import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 
 function formatDateTime(dateString: string): { date: string; time: string } {
     const date = new Date(dateString);
@@ -48,6 +52,23 @@ const ViolationItemPage = observer(() => {
     const { id, violId } = useParams();
     const violation = violationStore.violations.find((violation) => violation.id === violId);
     const navigate = useNavigate();
+    const [showMapOverlay, setShowMapOverlay] = useState(false);
+    const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
+
+    useEffect(() => {
+        if (showMapOverlay) {
+            layoutStore.setHeaderProps({
+                ...layoutStore.headerProps,
+                hide: true,
+            });
+        } else {
+            layoutStore.setHeaderProps({
+                ...layoutStore.headerProps,
+                hide: false,
+            });
+        }
+    }, [showMapOverlay]);
+
     useLayoutEffect(() => {
         if (id) violationStore.fetchViolationByObj(id);
     }, [id]);
@@ -113,9 +134,19 @@ const ViolationItemPage = observer(() => {
                 </div>
             </div>
             <div className={styles.textForm}>{violation.name}</div>
-            {/*<Button iconBefore={<IconPin />} size={"medium"} fullWidth={true} mode={"neutral"}>
-                Посмотреть место нарушения
-            </Button>*/}
+            {violation.latitude && violation.longitude && (
+                <Button
+                    iconBefore={<IconPin />}
+                    size={"medium"}
+                    fullWidth={true}
+                    mode={"neutral"}
+                    onClick={() => {
+                        setShowMapOverlay(true);
+                    }}
+                >
+                    Посмотреть место нарушения
+                </Button>
+            )}
             <div className={styles.textBlock}>
                 <div>Нужно исправить до</div>
                 <div className={styles.textBlockSubtext}>{formatDate(violation.dueDate)}</div>
@@ -184,6 +215,64 @@ const ViolationItemPage = observer(() => {
                     </Button>
                 </div>
             </div>
+            {showMapOverlay && (
+                <Overlay
+                    open={showMapOverlay}
+                    onClose={() => setShowMapOverlay(false)}
+                    title={"Место нарушения"}
+                    smallPadding={true}
+                    styles={{
+                        background: {
+                            zIndex: 10000,
+                        },
+                    }}
+                    mobileMapOverlay={true}
+                >
+                    <div
+                        style={{
+                            width: "100%",
+                        }}
+                    >
+                        <MapEditor
+                            readyProp={false}
+                            height={"400px"}
+                            value={{
+                                name: violation.name,
+                                marker: {
+                                    lat: violation.latitude,
+                                    lng: violation.longitude,
+                                },
+                                polygon: currentObj?.polygon
+                                    ? currentObj.polygon.map((item) => ({
+                                          lat: item.latitude,
+                                          lng: item.longitude,
+                                      }))
+                                    : null,
+                            }}
+                            onChange={() => {}}
+                            center={{
+                                lat: violation.latitude,
+                                lng: violation.longitude,
+                            }}
+                            editable={false}
+                        />
+                        <Grid gap={12} style={{ marginTop: 20 }} columns={"1fr"}>
+                            <Input
+                                onChange={() => {}}
+                                value={violation?.latitude ?? "-"}
+                                formName={"Широта"}
+                                readonly={true}
+                            />
+                            <Input
+                                onChange={() => {}}
+                                value={violation?.longitude ?? "-"}
+                                formName={"Долгота"}
+                                readonly={true}
+                            />
+                        </Grid>
+                    </div>
+                </Overlay>
+            )}
         </div>
     );
 });

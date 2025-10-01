@@ -17,7 +17,7 @@ import "leaflet-draw/dist/leaflet.draw.css";
 
 import styles from "./Map.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { IconClose, IconMinus, IconPin, IconPlus } from "src/ui/assets/icons";
+import { IconBasket, IconClose, IconMinus, IconPin, IconPlus } from "src/ui/assets/icons";
 import { Switch } from "src/ui/components/controls/Switch/Switch.tsx";
 import { IconMapPin } from "src/features/map/assets";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
@@ -53,6 +53,8 @@ type Props = {
     bounds?: [[number, number], [number, number]];
     readyProp?: boolean;
     editable?: boolean;
+    selectingPoint?: boolean;
+    disableSatellite?: boolean;
 };
 
 const toCoords = (latLngs: L.LatLng[] | L.LatLng[][]): LatLngLiteral[] => {
@@ -114,16 +116,14 @@ export const MapEditor = observer(
         ],
         readyProp,
         editable,
+        selectingPoint,
+        disableSatellite,
     }: Props) => {
         const mapRef = useRef<L.Map>(null);
         const polygonLayerRef = useRef<L.Polygon | null>(null);
         const isEditingRef = useRef(false);
         const valueRef = useRef(value);
         const [ready, setReady] = useState(false);
-
-        useEffect(() => {
-            // setReady(true);
-        }, []);
 
         useEffect(() => {
             valueRef.current = value;
@@ -325,7 +325,9 @@ export const MapEditor = observer(
                 polygonLayerRef.current = layer as L.Polygon;
 
                 if (editable ?? true) {
-                    (layer as any).editing?.enable?.();
+                    if (!selectingPoint) {
+                        (layer as any).editing?.enable?.();
+                    }
                 }
 
                 layer.on("editstart", () => {
@@ -496,14 +498,16 @@ export const MapEditor = observer(
                     }}
                 />
 
-                <div className={styles.switchWrapper}>
-                    <Switch
-                        mode={"primary"}
-                        title={"Спутник"}
-                        checked={showSatellite}
-                        onChange={setShowSatellite}
-                    />
-                </div>
+                {!disableSatellite && (
+                    <div className={styles.switchWrapper}>
+                        <Switch
+                            mode={"primary"}
+                            title={"Спутник"}
+                            checked={showSatellite}
+                            onChange={setShowSatellite}
+                        />
+                    </div>
+                )}
 
                 {!value.marker && !placing && readyProp && (
                     <Button
@@ -514,13 +518,14 @@ export const MapEditor = observer(
                         iconBefore={<IconPin />}
                         style={{
                             position: "absolute",
+                            left: disableSatellite ? 12 : undefined,
                             right: 12,
                             bottom: 12,
                             zIndex: 600,
                             boxShadow: "0 8px 20px 1px rgba(17, 19, 23, 0.12)",
                         }}
                     >
-                        Разместить объект на карте
+                        {selectingPoint ? "Отметить место" : "Разместить объект на карте"}
                     </Button>
                 )}
                 {placing && (
@@ -542,6 +547,30 @@ export const MapEditor = observer(
                         }}
                     >
                         Отменить
+                    </Button>
+                )}
+                {selectingPoint && value.marker?.lat && (
+                    <Button
+                        type={"primary"}
+                        mode={"neutral"}
+                        size={"large"}
+                        onClick={() => {
+                            onChange({
+                                ...value,
+                                marker: null,
+                            });
+                        }}
+                        iconBefore={<IconBasket />}
+                        className={styles.cancelButton}
+                        style={{
+                            position: "absolute",
+                            right: 12,
+                            bottom: 12,
+                            zIndex: 600,
+                            boxShadow: "0 8px 20px 1px rgba(17, 19, 23, 0.12)",
+                        }}
+                    >
+                        Очистить точку
                     </Button>
                 )}
                 {placing && (

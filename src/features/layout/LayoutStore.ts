@@ -33,6 +33,7 @@ export class LayoutStore {
             counter?: number;
         }[];
         buttonBack?: boolean;
+        hide?: boolean;
         /* badge?: { text: string; type?: "warning" | "negative" | "positive" | "info" };*/
     }) {
         this.headerProps = headerProps;

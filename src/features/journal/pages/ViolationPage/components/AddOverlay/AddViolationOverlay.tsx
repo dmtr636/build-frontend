@@ -16,6 +16,10 @@ import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { ProjectViolationDTO } from "src/features/journal/types/Violation.ts";
+import { MapEditor } from "src/features/map/MapEditor.tsx";
+import { useParams } from "react-router-dom";
+import { LatLng, LatLngLiteral } from "leaflet";
+import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
 
 interface AddViolationOverlayProps {
     open: boolean;
@@ -60,6 +64,10 @@ const AddViolationOverlay = observer(
         const [violationTime, setViolationTime] = React.useState<string | null>(null);
         const [violationDays, setViolationDays] = React.useState<number | string | null>(null);
         const [haveViolations, setHaveViolations] = React.useState<boolean>(false);
+        const [showMapOverlay, setShowMapOverlay] = useState(false);
+        const [coords, setCoords] = useState<LatLngLiteral | null>(null);
+        const { id } = useParams();
+        const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
 
         const idSeq = useRef(0);
         const newId = () => {
@@ -122,6 +130,8 @@ const AddViolationOverlay = observer(
 
                 // Фото — из загруженных imageIds
                 photos: imageIds.map((id) => ({ id })),
+                latitude: coords?.lat || null,
+                longitude: coords?.lng || null,
             };
         }, [
             object?.id,
@@ -131,6 +141,8 @@ const AddViolationOverlay = observer(
             isNote,
             document,
             imageIds,
+            coords?.lat,
+            coords?.lng,
         ]);
 
         useEffect(() => {
@@ -165,6 +177,14 @@ const AddViolationOverlay = observer(
                         ),
                     );
                 setViolationTime(editingViolation.violationTime);
+                setCoords(
+                    editingViolation.latitude
+                        ? {
+                              lat: editingViolation.latitude,
+                              lng: editingViolation.longitude,
+                          }
+                        : null,
+                );
             }
         }, []);
         useEffect(() => {
@@ -194,6 +214,7 @@ const AddViolationOverlay = observer(
             setHaveViolations(false); // флаг автозаполнения срока
             setIsNote(false); // чекбокс "замечание"
             setSlots([createEmptySlot()]); // медиа-слоты: один пустой
+            setCoords(null);
             setOpen(false);
         };
 
@@ -251,11 +272,12 @@ const AddViolationOverlay = observer(
                         key={2}
                         mode={"neutral"}
                         disabled={
-                            !violationDays ||
-                            !violation ||
-                            imageIds.length === 0 ||
-                            !document ||
-                            !violationTime
+                            (!violationDays ||
+                                !violation ||
+                                imageIds.length === 0 ||
+                                !document ||
+                                !violationTime) &&
+                            !isEditing
                         }
                         onClick={() => {
                             if (isEditing) {
@@ -330,8 +352,12 @@ const AddViolationOverlay = observer(
                         size={"large"}
                         fullWidth={true}
                         mode={"neutral"}
+                        type={coords?.lat ? "secondary" : "primary"}
+                        onClick={() => {
+                            setShowMapOverlay(true);
+                        }}
                     >
-                        Указать место нарушения
+                        {coords?.lat ? "Посмотреть отмеченное место" : "Указать место нарушения"}
                     </Button>
                     <div>
                         <MultipleAutocomplete
@@ -370,6 +396,68 @@ const AddViolationOverlay = observer(
                         title={"Отметить как замечание"}
                     />
                 </FlexColumn>
+                {showMapOverlay && (
+                    <Overlay
+                        open={showMapOverlay}
+                        onClose={() => setShowMapOverlay(false)}
+                        title={"Укажите место нарушения"}
+                    >
+                        <div
+                            style={{
+                                width: 777,
+                            }}
+                        >
+                            <MapEditor
+                                readyProp={true}
+                                height={"459px"}
+                                value={{
+                                    polygon: currentObj?.polygon
+                                        ? currentObj.polygon.map((item) => ({
+                                              lat: item.latitude,
+                                              lng: item.longitude,
+                                          }))
+                                        : null,
+                                    marker: coords
+                                        ? {
+                                              lat: coords.lat,
+                                              lng: coords.lng,
+                                          }
+                                        : null,
+                                }}
+                                onChange={(data) => {
+                                    const newCoors = data.marker
+                                        ? { lat: data.marker.lat, lng: data.marker.lng }
+                                        : null;
+                                    setCoords(newCoors);
+                                }}
+                                center={
+                                    currentObj?.centroid
+                                        ? {
+                                              lat: currentObj?.centroid?.latitude,
+                                              lng: currentObj?.centroid?.longitude,
+                                          }
+                                        : undefined
+                                }
+                                editable={true}
+                                selectingPoint={true}
+                            />
+                            <Grid gap={12} style={{ marginTop: 20 }} columns={"1fr 1fr"}>
+                                <Input
+                                    onChange={() => {}}
+                                    value={coords?.lat ?? "-"}
+                                    formName={"Широта"}
+                                    readonly={true}
+                                />
+                                <Input
+                                    onChange={() => {}}
+                                    value={coords?.lng ?? "-"}
+                                    formName={"Долгота"}
+                                    readonly={true}
+                                />
+                            </Grid>
+                        </div>
+                    </Overlay>
+                )}
             </Overlay>
         );
     },

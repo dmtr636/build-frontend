@@ -48,6 +48,7 @@ interface OverlayProps {
     smallPadding?: boolean;
     extraFooterHeight?: number;
     gradientTopPosition?: number;
+    mobileMapOverlay?: boolean;
 }
 
 export const Overlay = observer((props: OverlayProps) => {
@@ -69,6 +70,7 @@ export const Overlay = observer((props: OverlayProps) => {
         smallPadding,
         extraFooterHeight,
         gradientTopPosition,
+        mobileMapOverlay,
     }: OverlayProps = props;
     const dragging = useRef(false);
     const translate = useRef({ x: 0, y: 0 });
@@ -285,7 +287,10 @@ export const Overlay = observer((props: OverlayProps) => {
                         ...props.styles?.content,
                         paddingRight: `${(smallPadding ? 20 : 32) - (overflowed ? scrollBarWidth : 0)}px`,
                         paddingBottom: overflowed ? "40px" : undefined,
-                        maxHeight: `calc(100vh - 220px - ${extraFooterHeight ?? 0}px - ${smallPadding ? 60 : 0}px)`,
+                        maxHeight:
+                            isMobile && mobileMapOverlay
+                                ? "calc(100dvh - 54px)"
+                                : `calc(100vh - 220px - ${extraFooterHeight ?? 0}px - ${smallPadding ? 60 : 0}px)`,
                     }}
                     ref={contentRef}
                     onScroll={() => {

@@ -14,6 +14,10 @@ import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { useNavigate, useParams } from "react-router-dom";
+import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
+import { MapEditor } from "src/features/map/MapEditor.tsx";
+import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
+import { LatLngLiteral } from "leaflet";
 
 type MediaSlot = { id: string; imageId: string | null };
 
@@ -63,6 +67,23 @@ const CreateViolationPage = observer(() => {
         [slots],
     );
     const [isNote, setIsNote] = React.useState(false);
+    const [coords, setCoords] = useState<LatLngLiteral | null>(null);
+    const [showMapOverlay, setShowMapOverlay] = useState(false);
+
+    useEffect(() => {
+        if (showMapOverlay) {
+            layoutStore.setHeaderProps({
+                ...layoutStore.headerProps,
+                hide: true,
+            });
+        } else {
+            layoutStore.setHeaderProps({
+                ...layoutStore.headerProps,
+                hide: false,
+            });
+        }
+    }, [showMapOverlay]);
+
     const onChangeViolation = (value: string | null) => {
         setViolation(value);
         setViolationDays(null);
@@ -103,8 +124,20 @@ const CreateViolationPage = observer(() => {
             normativeDocuments: document.map((id) => ({ id })),
 
             photos: imageIds.map((id) => ({ id })),
+            latitude: coords?.lat || null,
+            longitude: coords?.lng || null,
         };
-    }, [object?.id, currentViolation, violationTime, violationDays, isNote, document, imageIds]);
+    }, [
+        object?.id,
+        currentViolation,
+        violationTime,
+        violationDays,
+        isNote,
+        document,
+        imageIds,
+        coords?.lat,
+        coords?.lng,
+    ]);
 
     useEffect(() => {
         if (violation === null) {
@@ -135,6 +168,7 @@ const CreateViolationPage = observer(() => {
         setHaveViolations(false);
         setIsNote(false);
         setSlots([createEmptySlot()]);
+        setCoords(null);
     };
 
     const handleRemoveFile = (slotIndex: number) => () => {
@@ -189,8 +223,17 @@ const CreateViolationPage = observer(() => {
                         placeholder={"ДД.ММ.ГГГГ / ЧЧ:ММ"}
                     />
                 </div>
-                <Button iconBefore={<IconPin />} size={"large"} fullWidth={true} mode={"neutral"}>
-                    Указать место нарушения
+                <Button
+                    iconBefore={<IconPin />}
+                    size={"large"}
+                    fullWidth={true}
+                    mode={"neutral"}
+                    type={coords?.lat ? "outlined" : "primary"}
+                    onClick={() => {
+                        setShowMapOverlay(true);
+                    }}
+                >
+                    {coords?.lat ? "Посмотреть отмеченное место" : "Указать место нарушения"}
                 </Button>
                 <div>
                     <MultipleAutocomplete
@@ -268,6 +311,76 @@ const CreateViolationPage = observer(() => {
                     </Button>
                 </div>
             </div>
+            {showMapOverlay && (
+                <Overlay
+                    open={showMapOverlay}
+                    onClose={() => setShowMapOverlay(false)}
+                    title={"Укажите место нарушения"}
+                    smallPadding={true}
+                    styles={{
+                        background: {
+                            zIndex: 10000,
+                        },
+                    }}
+                    mobileMapOverlay={true}
+                >
+                    <div
+                        style={{
+                            width: "100%",
+                        }}
+                    >
+                        <MapEditor
+                            readyProp={true}
+                            disableSatellite={true}
+                            height={"400px"}
+                            value={{
+                                polygon: object?.polygon
+                                    ? object.polygon.map((item) => ({
+                                          lat: item.latitude,
+                                          lng: item.longitude,
+                                      }))
+                                    : null,
+                                marker: coords
+                                    ? {
+                                          lat: coords.lat,
+                                          lng: coords.lng,
+                                      }
+                                    : null,
+                            }}
+                            onChange={(data) => {
+                                const newCoors = data.marker
+                                    ? { lat: data.marker.lat, lng: data.marker.lng }
+                                    : null;
+                                setCoords(newCoors);
+                            }}
+                            center={
+                                object?.centroid
+                                    ? {
+                                          lat: object?.centroid?.latitude,
+                                          lng: object?.centroid?.longitude,
+                                      }
+                                    : undefined
+                            }
+                            editable={true}
+                            selectingPoint={true}
+                        />
+                        <Grid gap={12} style={{ marginTop: 20 }} columns={"1fr"}>
+                            <Input
+                                onChange={() => {}}
+                                value={coords?.lat ?? "-"}
+                                formName={"Широта"}
+                                readonly={true}
+                            />
+                            <Input
+                                onChange={() => {}}
+                                value={coords?.lng ?? "-"}
+                                formName={"Долгота"}
+                                readonly={true}
+                            />
+                        </Grid>
+                    </div>
+                </Overlay>
+            )}
         </div>
     );
 });

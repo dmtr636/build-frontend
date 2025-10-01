@@ -61,7 +61,9 @@ export class EventsStore {
 
         events = events.filter((event) => event.objectName !== "construction-work-stage");
 
-        events.filter((event) => !!event.createdAt);
+        events = events.filter((event) => !!event.createdAt);
+        events = events.filter((event) => !!event.objectId);
+        events = events.filter((event) => !!event.objectName);
 
         if (this.sort.field === "userId") {
             events.sort((a, b) => {
@@ -96,6 +98,10 @@ export class EventsStore {
             });
         }
         events = events.filter((event) => event.objectName !== "construction-work-stage");
+
+        events = events.filter((event) => !!event.createdAt);
+        events = events.filter((event) => !!event.objectId);
+        events = events.filter((event) => !!event.objectName);
 
         if (this.sort.field === "userId") {
             events.sort((a, b) => {
