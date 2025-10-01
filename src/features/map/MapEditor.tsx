@@ -578,8 +578,8 @@ export const MapEditor = observer(
                         style={{
                             position: "absolute",
                             top: 10,
-                            left: 0,
-                            right: 0,
+                            left: disableSatellite ? undefined : 0,
+                            right: disableSatellite ? 12 : 0,
                             zIndex: 600,
                             display: "flex",
                             justifyContent: "center",
