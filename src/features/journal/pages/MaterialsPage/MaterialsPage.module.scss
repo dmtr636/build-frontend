@@ -85,7 +85,7 @@
     padding-bottom: 80px;
     @media screen and (max-width: 767px) {
         padding: 0 16px;
-        padding-bottom: 160px;
+        padding-bottom: 100px;
         min-height: 100dvh;
     }
 }
@@ -403,4 +403,21 @@ margin-left: 8px;
     padding: 0 16px;
     align-items: center;
     background: #fff;
+}
+
+.newMaterial {
+    display: flex;
+    height: 80px;
+    padding: var(--lvl-5, 16px) 16px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--m, 12px);
+    border: 1px solid var(--objects-stroke-accent-primary, #2053d5);
+    background: var(--objects-background-accent-tertiary, #e5ecff);
+    color: var(--objects-text-accent-primary, #2053d5);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%; /* 20.8px */
 }

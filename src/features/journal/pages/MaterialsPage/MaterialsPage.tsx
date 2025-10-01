@@ -466,6 +466,13 @@ export const MaterialsPage = observer(() => {
                         </div>
                     )}
                     <div className={styles.orgList}>
+                        {materialsStore.showAddOverlay &&
+                            !currentMaterial &&
+                            materialsStore.sort.direction === "desc" && (
+                                <div className={styles.newMaterial}>
+                                    Тут появится новый материал
+                                </div>
+                            )}
                         {materialsStore.filteredMaterials.map((org) => (
                             <MaterialListCard
                                 key={org.id}
@@ -486,6 +493,13 @@ export const MaterialsPage = observer(() => {
                                 }}
                             />
                         ))}
+                        {materialsStore.showAddOverlay &&
+                            !currentMaterial &&
+                            materialsStore.sort.direction === "asc" && (
+                                <div className={styles.newMaterial}>
+                                    Тут появится новый материал
+                                </div>
+                            )}
                     </div>
                 </div>
                 {!currentMaterial && !materialsStore.showAddOverlay && !isMobile && (
