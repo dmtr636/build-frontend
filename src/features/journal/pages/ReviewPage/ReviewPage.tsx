@@ -43,6 +43,7 @@ import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { navigate } from "@storybook/addon-links";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { Scanner } from "@yudiel/react-qr-scanner";
+import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
@@ -93,6 +94,7 @@ const ReviewPage = observer(() => {
         }
 
         setUnlock(true);
+        snackbarStore.showNeutralPositiveSnackbar("QR-код успешно отсканирован");
         setUnlockReason(null); // очищаем, если всё ок
     }
 
