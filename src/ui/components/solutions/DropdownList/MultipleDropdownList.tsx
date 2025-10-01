@@ -163,6 +163,7 @@ export const MultipleDropdownList = <T,>(props: MultipleDropdownListProps<T>) =>
             show={show}
             setShow={setShow}
             maxHeight={size === "large" ? 360 : 320}
+            maxWidth={!fullWidth ? 360 : undefined}
             fullWidth={fullWidth}
         >
             {children}

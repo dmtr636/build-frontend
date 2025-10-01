@@ -1,0 +1,349 @@
+@import "src/ui/styles/functions";
+
+.iconHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    background: var(--graphic-neutral-primary, #111317);
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--text-neutral-tertiary, #444d5f);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 28.8px */
+    position: sticky;
+    top: 118px;
+    background-color: white;
+    z-index: 1;
+    padding: 42px 0;
+    margin: -42px 0;
+}
+
+.mainContainer {
+    margin-top: 40px;
+}
+
+.container {
+    width: 1240px;
+    display: flex;
+    gap: 24px;
+    position: relative;
+    align-items: start;
+    padding: 40px 0 20px 0;
+
+    @media screen and (min-width: 1500px) {
+        width: 1440px;
+    }
+
+    > div:first-child {
+        position: sticky;
+        top: 230px;
+    }
+
+    > div:last-child {
+        position: sticky;
+        top: 230px;
+    }
+}
+
+.leftCol {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.orgList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 80px;
+}
+
+.searchRowWrapper {
+    position: sticky;
+    top: 230px;
+    background-color: white;
+    z-index: 1;
+    padding-bottom: 10px;
+
+    &.windowScrolled {
+        &::after {
+            position: absolute;
+            content: "";
+            left: 0;
+            right: 0;
+            bottom: -20px;
+            height: 20px;
+            background: linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(95, 95, 95, 0.1) 100%
+            );
+        }
+    }
+}
+
+.searchRow {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+}
+
+.renderHeader {
+    color: var(--text-neutral-primary, #111317);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%; /* 19.2px */
+    /*
+  margin-left: 8px;
+  */
+    padding: 12.5px 16px;
+}
+
+.containerError {
+    margin-top: 80px;
+    width: 278px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    align-self: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.iconError {
+    width: 48px;
+    height: 48px;
+    opacity: 0.4;
+
+    path {
+        fill: $objects-graphic-neutral-tertiary;
+    }
+}
+
+.errorText {
+    width: 248px;
+    text-align: center;
+    margin-top: 8px;
+}
+
+.orgCard {
+    border-radius: 12px;
+    background: #f9fafb;
+    padding: 20px;
+    max-height: calc(100vh - 330px);
+    overflow: auto;
+    width: auto;
+    flex-grow: 1;
+    position: sticky;
+    flex-shrink: 0;
+    overscroll-behavior: contain;
+
+    &.placeholder {
+        height: calc(min(100vh - 120px, 650px));
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &.noFooter {
+        max-height: calc(100vh - 262px);
+    }
+}
+
+.editButton {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.deleteButton {
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    z-index: 1;
+}
+
+.orgCardHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.logoArea {
+    width: 76px;
+    height: 76px;
+    border-radius: 8px;
+    background: var(--objects-background-neutral-secondary, #e8eaed);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    height: 37px;
+    width: 44px;
+    object-fit: cover;
+
+    path {
+        fill: lighter-pale($objects-graphic-neutral-primary);
+    }
+}
+
+.name {
+    margin-bottom: 8px;
+}
+
+.badge {
+    display: flex;
+    height: var(--badge-height-tiny, 16px);
+    padding: var(--lvl-3, 8px) var(--lvl-3, 8px) 10px var(--lvl-3, 8px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--m, 12px);
+    background: var(--objects-background-neutral-secondary, #e8eaed);
+    color: var(--objects-text-neutral-primary, #111317);
+    text-align: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.noUsersInOrg {
+    margin-top: 110px;
+    margin-bottom: 110px;
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    .icon {
+        width: 48px;
+        height: 48px;
+        opacity: 0.4;
+        path {
+            fill: var(--graphic-neutral-tertiary, #5f6a81);
+        }
+    }
+}
+
+.orgCardGradient {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 463px;
+    height: 20px;
+    flex-shrink: 0;
+    background: linear-gradient(0deg, rgba(95, 95, 95, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 0 0 12px 12px;
+    pointer-events: none;
+}
+
+.count {
+    display: flex;
+    gap: 4px;
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; /* 142.857% */
+}
+
+.countItem {
+    color: var(--objects-text-neutral-quaternary, #5f6a81);
+}
+
+.headFilters {
+    display: flex;
+}
+
+.filterContainer {
+    position: sticky;
+    top: 100px;
+    padding: 20px 24px 28px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 12px;
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
+}
+
+.filterHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--objects-text-neutral-tertiary, #444d5f);
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+    height: 28px;
+}
+
+.tabHeaderButton {
+    &:hover {
+        opacity: 0.7 !important;
+    }
+}
+
+.deleteFileIcon {
+    width: 16px;
+    height: 16px;
+    user-select: none;
+    cursor: pointer;
+
+    opacity: 0.6;
+
+    path {
+        fill: var(--objects-graphic-negative-primary);
+    }
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.footer {
+    height: 68px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 12px 20px;
+    border-radius: 0 0 10px 10px;
+    background: var(--objects-background-neutral-tertiary, #f9fafb);
+    position: relative;
+
+    &::after {
+        position: absolute;
+        content: "";
+        left: 0;
+        right: 0;
+        top: -20px;
+        height: 20px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(95, 95, 95, 0.1) 100%);
+    }
+}

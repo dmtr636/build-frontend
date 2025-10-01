@@ -1,0 +1,169 @@
+import { makeAutoObservable } from "mobx";
+import { ApiClient } from "src/shared/api/ApiClient.ts";
+import { endpoints } from "src/shared/api/endpoints.ts";
+import { Material } from "src/features/journal/pages/MaterialsPage/Material.ts";
+import { formatDate } from "src/shared/utils/date.ts";
+
+interface Filter {
+    date: string | null;
+    names: string[];
+    userIds: string[];
+}
+
+const initialFilter: Filter = {
+    date: null,
+    names: [],
+    userIds: [],
+};
+
+export class MaterialsStore {
+    materials: Material[] = [];
+    addForm: Partial<Material> = {};
+    editForm: Partial<Material> = {};
+    loading = false;
+    apiClient = new ApiClient();
+    sort = {
+        field: "createdAt",
+        direction: "desc",
+    };
+    filters = initialFilter;
+    search = "";
+    cardSearch = "";
+    overlaySearch = "";
+    currentMaterialId: string | null = null;
+    editingMaterial: Material | null = null;
+    showAddOverlay = false;
+    showDeleteOverlay = false;
+    deletingMaterial: Material | null = null;
+    tab: "waybill" | "quality" = "waybill";
+
+    constructor() {
+        makeAutoObservable(this);
+    }
+
+    get materialsMap() {
+        return new Map<string, Material>(this.materials.map((material) => [material.id, material]));
+    }
+
+    materialById(id?: string | null) {
+        return this.materials.find((material) => material.id === id);
+    }
+
+    get hasActiveFilters() {
+        return !!this.filters.date || !!this.filters.names.length;
+    }
+
+    get filteredMaterials() {
+        let materials = this.materials.slice();
+        materials = this.filterMaterials(materials);
+        if (this.sort.field === "createdAt") {
+            materials.sort((a, b) => {
+                return this.sort.direction === "desc"
+                    ? b.createdAt.localeCompare(a.createdAt)
+                    : a.createdAt.localeCompare(b.createdAt);
+            });
+        }
+        return materials;
+    }
+
+    get currentMaterial() {
+        return this.materialsMap.get(this.currentMaterialId ?? "");
+    }
+
+    filterMaterials(materials: Material[]) {
+        if (this.search) {
+            materials = materials.filter((material) => {
+                const searchLowerCase = this.search.toLowerCase().trim();
+                return (
+                    material.waybill?.materialName?.toLowerCase().includes(searchLowerCase) ||
+                    material.waybill.invoiceNumber?.toLowerCase().includes(searchLowerCase)
+                );
+            });
+        }
+        if (this.filters.date) {
+            const dateLocaleString = formatDate(this.filters.date);
+            materials = materials.filter(
+                (visit) => formatDate(visit.waybill.deliveryDateTime ?? "") === dateLocaleString,
+            );
+        }
+        if (this.filters.userIds?.length) {
+            materials = materials.filter(
+                (visit) =>
+                    visit.waybill.receiver &&
+                    this.filters.userIds.includes(visit.waybill.receiver ?? ""),
+            );
+        }
+        if (this.filters.names?.length) {
+            materials = materials.filter(
+                (visit) =>
+                    visit.waybill.materialName &&
+                    this.filters.names.includes(visit.waybill.materialName),
+            );
+        }
+        return materials;
+    }
+
+    fetchMaterials = async (projectId: string) => {
+        if (this.loading) {
+            return;
+        }
+        this.loading = true;
+        const response = await this.apiClient.get<Material[]>(
+            endpoints.projectMaterials + `/search?projectId=${projectId}`,
+        );
+        if (response.status) {
+            this.materials = response.data;
+        }
+        this.loading = false;
+    };
+
+    createMaterial = async (material: Partial<Material>): Promise<boolean> => {
+        this.loading = true;
+        const response = await this.apiClient.post<Material>(endpoints.projectMaterials, material);
+        this.loading = false;
+        if (response.status) {
+            this.materials.push(response.data);
+            this.addForm = {};
+            return true;
+        } else {
+            this.loading = false;
+            return false;
+        }
+    };
+
+    deleteMaterial = async (material: Material): Promise<void> => {
+        this.loading = true;
+        const response = await this.apiClient.delete(endpoints.projectMaterials, material.id);
+        if (response.status) {
+            this.materials = this.materials.filter((o) => o.id !== material.id);
+        }
+        this.loading = false;
+    };
+
+    updateMaterial = async (material: Partial<Material>, oldMaterial: Material): Promise<void> => {
+        this.loading = true;
+        if (oldMaterial.waybill && material.waybill) {
+            await this.apiClient.put(endpoints.projectMaterials + `/waybills`, material.waybill);
+        }
+        if (oldMaterial.passportQuality && material.passportQuality) {
+            await this.apiClient.put(endpoints.projectMaterials + `/passport-qualities`, {
+                ...material.passportQuality,
+                manufacturer: material.passportQuality.manufacturer || "",
+                consumerNameAndAddress: material.passportQuality.consumerNameAndAddress || "",
+                productNameAndGrade: material.passportQuality.productNameAndGrade || "",
+            });
+        }
+        if (!oldMaterial.passportQuality && material.passportQuality) {
+            await this.apiClient.post(endpoints.projectMaterials + `/passport-qualities`, {
+                ...material.passportQuality,
+                materialId: material.id,
+            });
+        }
+        this.loading = false;
+        await this.fetchMaterials(material.projectId ?? "");
+    };
+
+    resetFilters = () => {
+        this.filters = initialFilter;
+    };
+}

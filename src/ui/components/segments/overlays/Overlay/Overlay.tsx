@@ -125,7 +125,7 @@ export const Overlay = observer((props: OverlayProps) => {
                 }
                 document.documentElement.style.overflow = "initial";
                 layoutStore.overflowHidden = false;
-            });
+            }, 5);
         };
     }, [open]);
 

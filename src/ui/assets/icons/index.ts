@@ -141,6 +141,8 @@ import IconBadge from "./badge.svg?react";
 import IconApps from "./apps.svg?react";
 import IconCheckboxPlusRotated from "./CheckboxPlusRotated.svg?react";
 import IconBadgeChecklistsReady from "./BadgeChecklistsReady.svg?react";
+import IconBuildCircle from "./build_circle.svg?react";
+import IconPlaceholderBuild from "./IconPlaceholderBuild.svg?react";
 
 export {
     IconApps,
@@ -282,4 +284,6 @@ export {
     IconBadge,
     IconCheckboxPlusRotated,
     IconBadgeChecklistsReady,
+    IconBuildCircle,
+    IconPlaceholderBuild,
 };

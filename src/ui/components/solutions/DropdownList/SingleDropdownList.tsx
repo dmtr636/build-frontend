@@ -233,6 +233,7 @@ export const SingleDropdownList = observer(<T,>(props: SingleDropdownListProps<T
             setShow={setShow}
             maxHeight={props.maxHeight ? props.maxHeight : size === "large" ? 360 : 320}
             fullWidth={fullWidth}
+            maxWidth={!fullWidth ? 360 : undefined}
             popoverChildren={
                 !!subMenu?.children?.length && (
                     <div
