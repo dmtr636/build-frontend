@@ -1,13 +1,13 @@
 import { observer } from "mobx-react-lite";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { Helmet } from "react-helmet";
-import { appStore, worksStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, worksStore } from "src/app/AppStore.ts";
 import styles from "./home.module.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { fileUrl } from "src/shared/utils/file.ts";
 import { formatObjNumber } from "src/shared/utils/formatObjNumber.ts";
 import { IconError, IconImage, IconNewInset } from "src/ui/assets/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { ProjectWork } from "src/features/journal/types/ProjectWork.ts";
 
 export const HomePage = observer(() => {
@@ -22,9 +22,13 @@ export const HomePage = observer(() => {
     const userworks = allWorkList
         .filter((item) => objectsIdList.includes(item.projectId))
         .filter((i) => i.status !== "DONE");
-    console.log(userworks[0]);
     if (!objects) return null;
-
+    const isMobile = layoutStore.isMobile;
+    useLayoutEffect(() => {
+        if (isMobile) {
+            navigate("/admin/journal");
+        }
+    }, [isMobile]);
     return (
         <div className={styles.container}>
             <Helmet>
