@@ -338,7 +338,7 @@ export const JournalPage = observer(() => {
         setHaveUser([]);
     };
     useLayoutEffect(() => {
-        layoutStore.setHeaderProps({ title: "Объекты", buttonBack: false });
+        layoutStore.setHeaderProps({ title: "Объекты", buttonBack: false, showNotification: true });
     }, []);
     const isMobile = layoutStore.isMobile;
     return (

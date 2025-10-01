@@ -90,8 +90,7 @@ const UserPage = observer(() => {
         if (currentUser?.position) setPositionValue(currentUser.position);
         if (currentUser?.organizationId) setCompany(currentUser.organizationId);
     }, [currentUser]);
-    console.log(workphone);
-    console.log(phone);
+
     const shouldBlockButton = (): boolean => {
         return (
             userImg !== (currentUser?.imageId ?? null) ||
@@ -134,7 +133,7 @@ const UserPage = observer(() => {
     const emailIsInvalid =
         !emailValidate(email) || (usersEmail.includes(email) && email !== currentUser?.email);
     useLayoutEffect(() => {
-        layoutStore.setHeaderProps({ title: "Профиль", buttonBack: false });
+        layoutStore.setHeaderProps({ title: "Профиль", buttonBack: false, showNotification: true });
     }, []);
     const isMobile = layoutStore.isMobile;
     return (
