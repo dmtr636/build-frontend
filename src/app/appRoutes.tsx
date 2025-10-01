@@ -28,6 +28,7 @@ import { MaterialsPage } from "src/features/journal/pages/MaterialsPage/Material
 import NotificationMobile from "src/features/notification/NotificationMobile.tsx";
 import { layoutStore } from "src/app/AppStore.ts";
 import MaterialItemPage from "src/features/journal/pages/MaterialsPage/MaterialItemPage/MaterialItemPage.tsx";
+import MaterialCreate from "src/features/journal/pages/MaterialsPage/MaterialCreate/MaterialCreate.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -75,8 +76,8 @@ export const appRoutes: RouteObject[] = [
                     { path: "users", element: <ObjectUsersPage /> },
                     { path: "materials", element: <MaterialsPage /> },
                     {
-                        path: "materials/:materialId",
-                        element: layoutStore.isMobile ? <MaterialItemPage /> : <MaterialsPage />,
+                        path: "materials/create",
+                        element: layoutStore.isMobile ? <MaterialCreate /> : <MaterialsPage />,
                     },
                     {
                         path: "materials/:materialId",

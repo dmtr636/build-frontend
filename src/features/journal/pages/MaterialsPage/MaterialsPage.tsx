@@ -2001,17 +2001,22 @@ export const MaterialsPage = observer(() => {
                     onCancel={() => (materialsStore.showDeleteOverlay = false)}
                 />
             </div>
-            <div className={styles.footerMobile}>
-                <Button
-                    type={"primary"}
-                    mode={"neutral"}
-                    size={"small"}
-                    iconBefore={<IconPlus />}
-                    onClick={() => navigate("/admin/journal/materials/create")}
-                >
-                    Новый материал
-                </Button>
-            </div>
+            {isMobile && (
+                <div className={styles.footerMobile}>
+                    <Button
+                        fullWidth={true}
+                        type={"primary"}
+                        mode={"neutral"}
+                        size={"small"}
+                        iconBefore={<IconPlus />}
+                        onClick={() =>
+                            navigate(`/admin/journal/${currentObj?.id}/materials/create`)
+                        }
+                    >
+                        Новый материал
+                    </Button>
+                </div>
+            )}
         </div>
     );
 });
