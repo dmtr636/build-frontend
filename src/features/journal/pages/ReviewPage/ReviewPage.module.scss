@@ -536,5 +536,8 @@ flex-shrink: 0;
 }
 
 .containerAlert {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     width: calc(100vw - 32px);
 }

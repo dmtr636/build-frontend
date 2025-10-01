@@ -52,6 +52,50 @@ function formatDate(dateStr: string): string {
 }
 
 const ReviewPage = observer(() => {
+    const [unlock, setUnlock] = useState(false);
+    const [unlockReason, setUnlockReason] = useState<string | null>(null);
+
+    function validateQrCode(qrData: string, currentObjectId: string) {
+        if (!qrData || !qrData.includes("_")) {
+            setUnlock(false);
+            setUnlockReason("Неверный формат QR-кода");
+            return;
+        }
+
+        const [timestampStr, objectId] = qrData.split("_");
+        if (!timestampStr || !objectId) {
+            setUnlock(false);
+            setUnlockReason("Некорректная структура данных");
+            return;
+        }
+
+        const qrTime = new Date(timestampStr).getTime();
+        const now = Date.now();
+
+        if (isNaN(qrTime)) {
+            setUnlock(false);
+            setUnlockReason("Некорректная дата в QR-коде");
+            return;
+        }
+
+        const diffSeconds = (now - qrTime) / 1000;
+
+        if (diffSeconds > 10) {
+            setUnlock(false);
+            setUnlockReason("QR-код устарел");
+            return;
+        }
+
+        if (objectId !== currentObjectId) {
+            setUnlock(false);
+            setUnlockReason("Неверный объект");
+            return;
+        }
+
+        setUnlock(true);
+        setUnlockReason(null); // очищаем, если всё ок
+    }
+
     const { id } = useParams();
     const [isOpen, setIsOpen] = useState(false);
     const [result, setResult] = useState<any>([]);
@@ -198,6 +242,7 @@ const ReviewPage = observer(() => {
         !project ||
         !worksStore.openingChecklistsForm?.[0]?.sections?.length ||
         !worksStore.todayChecklistForm?.sections?.length;
+    console.log(atob("MjAyNS0xMC0wMVQxMjoyODoxMC4xMzhaXzI2MjA0OQ=="));
     return (
         <>
             <div className={styles.container}>
@@ -316,7 +361,7 @@ const ReviewPage = observer(() => {
                         transition: "opacity 100ms",
                     }}
                 >
-                    {isMobile && !accountStore.isContractor && (
+                    {isMobile && !accountStore.isContractor && !unlock && (
                         <div className={styles.containerAlert}>
                             <Alert
                                 icon={<IconAttention />}
@@ -335,13 +380,16 @@ const ReviewPage = observer(() => {
                                     </Button>,
                                 ]}
                             ></Alert>
+                            <Typo variant={"bodyM"} mode={"negative"}>
+                                {unlockReason}
+                            </Typo>
                         </div>
                     )}
-                    {JSON.stringify(result[0]?.rawValue)}
                     {isMobile &&
                         (!accountStore.isContractor ? (
                             <div className={styles.buttonsCheck}>
                                 <Button
+                                    disabled={!unlock}
                                     onClick={() => navigate(`/admin/journal/${id}/status`)}
                                     mode={"positive"}
                                     size={"small"}
@@ -353,6 +401,7 @@ const ReviewPage = observer(() => {
                                 <Button
                                     onClick={() => navigate(`/admin/journal/${id}/create`)}
                                     iconBefore={<IconPlus />}
+                                    disabled={!unlock}
                                     mode={"negative"}
                                     size={"small"}
                                     fullWidth={true}
@@ -364,6 +413,7 @@ const ReviewPage = observer(() => {
                                         navigate(`/admin/journal/${id}/violations?status=4`)
                                     }
                                     fullWidth={true}
+                                    disabled={!unlock}
                                     type={"outlined"}
                                     counter={
                                         violations.filter((i) => i.status === "IN_REVIEW").length
@@ -823,8 +873,10 @@ const ReviewPage = observer(() => {
             >
                 <Scanner
                     onScan={(result) => {
-                        setResult(result);
-                        setIsOpen(false);
+                        if (result) {
+                            validateQrCode(atob(result[0]?.rawValue), project?.id as string);
+                            setIsOpen(false);
+                        }
                     }}
                 />
             </Overlay>
