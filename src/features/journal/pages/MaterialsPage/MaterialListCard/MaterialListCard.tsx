@@ -10,6 +10,7 @@ import { Material } from "src/features/journal/pages/MaterialsPage/Material.ts";
 import { IconBrickPerspective } from "src/features/journal/pages/MaterialsPage/assets";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { formatDate, formatTime } from "src/shared/utils/date.ts";
+import { layoutStore } from "src/app/AppStore.ts";
 
 interface UserItemCardProps {
     onClick?: () => void;
@@ -29,8 +30,12 @@ const MaterialListCard = observer(({ onClick, isOpen, material }: UserItemCardPr
         }
     }
 
+    const isMobile = layoutStore.isMobile;
     return (
-        <div className={clsx(styles.container, { [styles.isOpen]: isOpen })} onClick={handleCard}>
+        <div
+            className={clsx(styles.container, { [styles.isOpen]: isOpen && !isMobile })}
+            onClick={handleCard}
+        >
             <div className={styles.imgBlock}>
                 <IconBrickPerspective />
             </div>
@@ -94,11 +99,13 @@ const MaterialListCard = observer(({ onClick, isOpen, material }: UserItemCardPr
                     </div>
                 )}
             </div>
-            <div className={styles.buttonsBlock}>
-                <Tooltip text={isOpen ? "Закрыть" : "Открыть"}>
-                    <div className={styles.icon}>{isOpen ? <IconClose /> : <IconNext />}</div>
-                </Tooltip>
-            </div>
+            {!isMobile && (
+                <div className={styles.buttonsBlock}>
+                    <Tooltip text={isOpen ? "Закрыть" : "Открыть"}>
+                        <div className={styles.icon}>{isOpen ? <IconClose /> : <IconNext />}</div>
+                    </Tooltip>
+                </div>
+            )}
         </div>
     );
 });
