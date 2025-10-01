@@ -59,14 +59,14 @@ const ReviewPage = observer(() => {
     function validateQrCode(qrData: string, currentObjectId: string) {
         if (!qrData || !qrData.includes("_")) {
             setUnlock(false);
-            setUnlockReason("Неверный формат QR-кода");
+            setUnlockReason("Попробуйте еще раз");
             return;
         }
 
         const [timestampStr, objectId] = qrData.split("_");
         if (!timestampStr || !objectId) {
             setUnlock(false);
-            setUnlockReason("Некорректная структура данных");
+            setUnlockReason("Попробуйте еще раз");
             return;
         }
 
