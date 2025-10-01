@@ -196,7 +196,7 @@ const ReviewPage = observer(() => {
                     }}
                 >
                     <OpeningCheckListSections
-                        sections={worksStore.openingChecklistsForm?.[0].sections ?? []}
+                        sections={worksStore.openingChecklistsForm?.[0]?.sections ?? []}
                     />
                     <div
                         style={{
@@ -206,13 +206,13 @@ const ReviewPage = observer(() => {
                     >
                         {accountStore.isContractor && (
                             <>
-                                {worksStore.openingChecklists?.[0].sections?.some((s) =>
+                                {worksStore.openingChecklists?.[0]?.sections?.some((s) =>
                                     s.items.some((i) => !i.answer),
                                 ) && (
                                     <Button
                                         mode={"neutral"}
                                         size={"large"}
-                                        disabled={worksStore.openingChecklistsForm?.[0].sections?.some(
+                                        disabled={worksStore.openingChecklistsForm?.[0]?.sections?.some(
                                             (s) => s.items.some((i) => !i.answer),
                                         )}
                                         onClick={async () => {
@@ -237,7 +237,7 @@ const ReviewPage = observer(() => {
                                         Отправить на согласование
                                     </Button>
                                 )}
-                                {worksStore.openingChecklists?.[0].sections?.every((s) =>
+                                {worksStore.openingChecklists?.[0]?.sections?.every((s) =>
                                     s.items.some((i) => !!i.answer),
                                 ) && (
                                     <Button
@@ -257,7 +257,7 @@ const ReviewPage = observer(() => {
                                 <Button
                                     mode={"neutral"}
                                     size={"large"}
-                                    disabled={worksStore.openingChecklistsForm?.[0].sections?.some(
+                                    disabled={worksStore.openingChecklistsForm?.[0]?.sections?.some(
                                         (s) => s.items.some((i) => !i.answer),
                                     )}
                                     onClick={async () => {
