@@ -54,6 +54,7 @@ type Props = {
     readyProp?: boolean;
     editable?: boolean;
     selectingPoint?: boolean;
+    disableSatellite?: boolean;
 };
 
 const toCoords = (latLngs: L.LatLng[] | L.LatLng[][]): LatLngLiteral[] => {
@@ -116,6 +117,7 @@ export const MapEditor = observer(
         readyProp,
         editable,
         selectingPoint,
+        disableSatellite,
     }: Props) => {
         const mapRef = useRef<L.Map>(null);
         const polygonLayerRef = useRef<L.Polygon | null>(null);
@@ -496,14 +498,16 @@ export const MapEditor = observer(
                     }}
                 />
 
-                <div className={styles.switchWrapper}>
-                    <Switch
-                        mode={"primary"}
-                        title={"Спутник"}
-                        checked={showSatellite}
-                        onChange={setShowSatellite}
-                    />
-                </div>
+                {!disableSatellite && (
+                    <div className={styles.switchWrapper}>
+                        <Switch
+                            mode={"primary"}
+                            title={"Спутник"}
+                            checked={showSatellite}
+                            onChange={setShowSatellite}
+                        />
+                    </div>
+                )}
 
                 {!value.marker && !placing && readyProp && (
                     <Button
@@ -514,6 +518,7 @@ export const MapEditor = observer(
                         iconBefore={<IconPin />}
                         style={{
                             position: "absolute",
+                            left: disableSatellite ? 12 : undefined,
                             right: 12,
                             bottom: 12,
                             zIndex: 600,
