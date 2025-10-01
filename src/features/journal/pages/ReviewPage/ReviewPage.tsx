@@ -816,7 +816,8 @@ const ReviewPage = observer(() => {
                 </div>
             </div>
             <Overlay
-                styles={{ card: { height: "100vh", zIndex: 9999, width: "100vw" } }}
+                title={"Отсканируйте QR-код на объекте"}
+                styles={{ card: { height: "100vh", zIndex: 9999, width: "100vw", marginTop: 124 } }}
                 open={isOpen}
                 onClose={() => setIsOpen(false)}
             >
