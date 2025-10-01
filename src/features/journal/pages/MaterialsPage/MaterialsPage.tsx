@@ -437,34 +437,37 @@ export const MaterialsPage = observer(() => {
                                 </Button>
                             </div>
                         )}
-                    {!materialsStore.materials.length && !materialsStore.loading && !isMobile && (
-                        <div className={styles.containerError}>
-                            <IconError className={styles.iconError} />
-                            <Typo
-                                variant={"actionXL"}
-                                mode={"neutral"}
-                                type={"secondary"}
-                                className={styles.errorText}
-                            >
-                                Материалы пока
-                                <br />
-                                не добавлены
-                            </Typo>
-                            <Button
-                                mode={"neutral"}
-                                style={{
-                                    marginTop: 32,
-                                }}
-                                size={"small"}
-                                onClick={() => {
-                                    materialsStore.showAddOverlay = true;
-                                    materialsStore.addForm = {};
-                                }}
-                            >
-                                Добавить
-                            </Button>
-                        </div>
-                    )}
+                    {!materialsStore.materials.length &&
+                        !materialsStore.loading &&
+                        !isMobile &&
+                        !materialsStore.showAddOverlay && (
+                            <div className={styles.containerError}>
+                                <IconError className={styles.iconError} />
+                                <Typo
+                                    variant={"actionXL"}
+                                    mode={"neutral"}
+                                    type={"secondary"}
+                                    className={styles.errorText}
+                                >
+                                    Материалы пока
+                                    <br />
+                                    не добавлены
+                                </Typo>
+                                <Button
+                                    mode={"neutral"}
+                                    style={{
+                                        marginTop: 32,
+                                    }}
+                                    size={"small"}
+                                    onClick={() => {
+                                        materialsStore.showAddOverlay = true;
+                                        materialsStore.addForm = {};
+                                    }}
+                                >
+                                    Добавить
+                                </Button>
+                            </div>
+                        )}
                     <div className={styles.orgList}>
                         {materialsStore.showAddOverlay &&
                             !currentMaterial &&
