@@ -337,7 +337,7 @@ const ReviewPage = observer(() => {
                             ></Alert>
                         </div>
                     )}
-                    {JSON.stringify(result)}
+                    {JSON.stringify(result[0].rawValue)}
                     {isMobile &&
                         (!accountStore.isContractor ? (
                             <div className={styles.buttonsCheck}>
@@ -820,7 +820,12 @@ const ReviewPage = observer(() => {
                 open={isOpen}
                 onClose={() => setIsOpen(false)}
             >
-                <Scanner onScan={(result) => setResult(result)} />
+                <Scanner
+                    onScan={(result) => {
+                        setResult(result);
+                        setIsOpen(false);
+                    }}
+                />
             </Overlay>
         </>
     );
