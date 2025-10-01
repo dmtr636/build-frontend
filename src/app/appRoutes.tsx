@@ -74,13 +74,8 @@ export const appRoutes: RouteObject[] = [
                     { path: "materials", element: <MaterialsPage /> },
                     { path: "materials/:materialId", element: <MaterialsPage /> },
                     { path: "visits", element: <VisitsPage /> },
-
-                    // список нарушений
                     { path: "violations", element: <ViolationPage /> },
-
-                    // конкретное нарушение
                     { path: "violations/:violId", element: <ViolationItemPage /> },
-
                     { path: "create", element: <CreateViolationPage /> },
                 ],
             },
