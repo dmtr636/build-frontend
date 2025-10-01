@@ -3,7 +3,13 @@ import { Helmet } from "react-helmet";
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import styles from "./journal.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { appStore, layoutStore, registryStore, violationStore } from "src/app/AppStore.ts";
+import {
+    appStore,
+    layoutStore,
+    organizationsStore,
+    registryStore,
+    violationStore,
+} from "src/app/AppStore.ts";
 import {
     IconCheckmark,
     IconClose,
@@ -31,6 +37,9 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import MapObjectsEditor, { MapObject } from "src/features/map/Map.tsx";
+import { formatPhone } from "src/shared/utils/formatPhone.ts";
+import { formatDateShort } from "src/shared/utils/date.ts";
+import useExcelExporter from "src/features/users/hooks/useExcelExporter.ts";
 
 function pluralizeObjects(count: number): string {
     const absCount = Math.abs(count) % 100;
@@ -155,7 +164,7 @@ export const JournalPage = observer(() => {
             },
         },
     ];
-
+    const violatinons = violationStore.allViolations;
     const [openCreate, setOpenCreate] = useState(false);
     const [sortIsOpen, setSortIsOpen] = useState<boolean>(false);
     const [value, setValue] = useState("");
@@ -344,6 +353,66 @@ export const JournalPage = observer(() => {
         layoutStore.setHeaderProps({ title: "Объекты", buttonBack: false, showNotification: true });
         violationStore.fetchAllViolations();
     }, []);
+    const usersForCsv = filteredJournalList.map((item) => ({
+        name: item.name,
+        type: item.type,
+        address: [item.address?.city, item.address?.street, item.address?.house]
+            .filter(Boolean)
+            .join(", "),
+        hasViolations:
+            violatinons.filter((i) => i.projectId === item.id && i.status !== "DONE")?.length > 0,
+        lastInspection: formatDateShort(item.lastInspection),
+        planned: `${formatDateShort(item.plannedPeriod?.start)} - ${formatDateShort(item.plannedPeriod?.end)}`,
+        customerOrg: organizationsStore.organizationById(item.customerOrganization)?.name,
+        consumerOrg: organizationsStore.organizationById(item.contractorOrganization)?.name,
+    }));
+    const columnHeaders = [
+        {
+            key: "name",
+            displayLabel: "Название",
+        },
+        {
+            key: "type",
+            displayLabel: "Тип",
+        },
+        {
+            key: "address",
+            displayLabel: "Адрес",
+        },
+        {
+            key: "hasViolations",
+            displayLabel: "Есть нарушения",
+        },
+        {
+            key: "lastInspection",
+            displayLabel: "Последняя инспекция",
+        },
+        {
+            key: "planned",
+            displayLabel: "Планируемое время",
+        },
+        {
+            key: "consumerOrg",
+            displayLabel: "Подрядчик",
+        },
+        {
+            key: "customerOrg",
+
+            displayLabel: "Заказчик",
+        },
+        /* {
+             key: "createdAt",
+             displayLabel: "Регистрация в системе",
+             width: 25,
+         },*/
+    ];
+    const date = new Date();
+    const formattedDate = formatDateShort(date.toString()).slice(0, 5);
+    const { downloadExcel } = useExcelExporter({
+        data: usersForCsv as any,
+        columnHeaders: columnHeaders,
+        filename: `Объекты_${formattedDate}`,
+    });
     const isMobile = layoutStore.isMobile;
     return (
         <div className={styles.container}>
@@ -371,9 +440,7 @@ export const JournalPage = observer(() => {
                         type={"outlined"}
                         customIconBefore={<IconXlsx />}
                         mode={"neutral"}
-                        /*
-                                                onClick={downloadExcel}
-                        */
+                        onClick={downloadExcel}
                     >
                         Экспорт в XLSX
                     </Button>
