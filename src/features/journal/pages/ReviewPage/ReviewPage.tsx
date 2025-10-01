@@ -54,7 +54,6 @@ function formatDate(dateStr: string): string {
 
 const UNLOCK_STORAGE_KEY = "qr_unlock";
 const UNLOCK_LIFETIME_MS = 60 * 60 * 1000; // 1 час
-const QR_MAX_AGE_SECONDS = 10; // допустимое "свежесть" qr в секундах
 type StoredUnlock = {
     objectId: string;
     timestamp: string; // ISO
