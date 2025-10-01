@@ -26,6 +26,8 @@ import CreateViolationPage from "src/features/journal/pages/ViolationPage/compon
 import ViolationItemPage from "src/features/journal/pages/ViolationPage/components/ViolationItemPage/ViolationItemPage.tsx";
 import { MaterialsPage } from "src/features/journal/pages/MaterialsPage/MaterialsPage.tsx";
 import NotificationMobile from "src/features/notification/NotificationMobile.tsx";
+import { layoutStore } from "src/app/AppStore.ts";
+import MaterialItemPage from "src/features/journal/pages/MaterialsPage/MaterialItemPage/MaterialItemPage.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
@@ -72,10 +74,20 @@ export const appRoutes: RouteObject[] = [
                     { path: "location", element: <LocationPage /> },
                     { path: "users", element: <ObjectUsersPage /> },
                     { path: "materials", element: <MaterialsPage /> },
-                    { path: "materials/:materialId", element: <MaterialsPage /> },
+                    {
+                        path: "materials/:materialId",
+                        element: layoutStore.isMobile ? <MaterialItemPage /> : <MaterialsPage />,
+                    },
+                    {
+                        path: "materials/:materialId",
+                        element: layoutStore.isMobile ? <MaterialItemPage /> : <MaterialsPage />,
+                    },
                     { path: "visits", element: <VisitsPage /> },
                     { path: "violations", element: <ViolationPage /> },
-                    { path: "violations/:violId", element: <ViolationItemPage /> },
+                    {
+                        path: "violations/:violId",
+                        element: layoutStore.isMobile ? <ViolationItemPage /> : <ViolationPage />,
+                    },
                     { path: "create", element: <CreateViolationPage /> },
                 ],
             },

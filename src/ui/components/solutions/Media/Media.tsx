@@ -31,7 +31,7 @@ import { ButtonSize } from "src/ui/components/controls/Button/Button.types.ts";
 
 const defaultImageFormats = ["png", "jpg", "jpeg", "webp", "gif"];
 const defaultVideoFormats = ["mp4", "webm", "ogg"];
-const defaultDocFormats = ["pdf", "pptx", "doc", "docx"];
+const defaultDocFormats = ["pdf", "pptx", "doc", "docx", "xlsx"];
 
 export const Media = observer(
     (props: {
@@ -266,7 +266,7 @@ export const Media = observer(
                                 }
                             }}
                         >
-                            {props.docChange ? "Заменить файл" : "Загрузить файл (PDF, PPTX, DOCX)"}
+                            {props.docChange ? "Заменить файл" : "Загрузить файл"}
                         </Button>
                     </div>
                 );

@@ -221,109 +221,116 @@ export const MaterialsPage = observer(() => {
             });
         }
     };
-
+    const isMobile = layoutStore.isMobile;
+    useLayoutEffect(() => {
+        layoutStore.setHeaderProps({ title: "Материалы" });
+    }, []);
     return (
         <div className={styles.mainContainer}>
             <Helmet>
                 <title>{currentObj?.name}</title>
             </Helmet>
-            <div className={styles.header}>
-                <div className={styles.iconHeader}>
-                    <IconBuildCircle />
+            {!isMobile && (
+                <div className={styles.header}>
+                    <div className={styles.iconHeader}>
+                        <IconBuildCircle />
+                    </div>
+                    Материалы
                 </div>
-                Материалы
-            </div>
+            )}
             <div className={styles.container}>
                 <Helmet>
                     <title>Материалы – Build</title>
                 </Helmet>
-                <FlexColumn
-                    gap={24}
-                    style={{
-                        width: 250,
-                        flexShrink: 0,
-                    }}
-                >
-                    <Button
-                        fullWidth={true}
-                        size={"small"}
-                        mode={"neutral"}
-                        iconBefore={<IconPlus />}
-                        onClick={() => {
-                            materialsStore.showAddOverlay = true;
-                            materialsStore.addForm = {};
-                            navigate(`/admin/journal/${id}/materials`, {
-                                replace: true,
-                            });
+                {!isMobile && (
+                    <FlexColumn
+                        gap={24}
+                        style={{
+                            width: 250,
+                            flexShrink: 0,
                         }}
                     >
-                        Добавить материал
-                    </Button>
-                    <div className={styles.filterContainer}>
-                        <div className={styles.filterHead}>
-                            <span style={{ opacity: 0.6 }}>Фильтры</span>
-                            {hasActiveFilters && (
-                                <Button
-                                    onClick={materialsStore.resetFilters}
-                                    size={"tiny"}
-                                    type={"outlined"}
-                                    mode={"neutral"}
-                                    iconBefore={<IconUpdate />}
-                                >
-                                    Сбросить
-                                </Button>
-                            )}
+                        <Button
+                            fullWidth={true}
+                            size={"small"}
+                            mode={"neutral"}
+                            iconBefore={<IconPlus />}
+                            onClick={() => {
+                                materialsStore.showAddOverlay = true;
+                                materialsStore.addForm = {};
+                                navigate(`/admin/journal/${id}/materials`, {
+                                    replace: !isMobile,
+                                });
+                            }}
+                        >
+                            Добавить материал
+                        </Button>
+                        <div className={styles.filterContainer}>
+                            <div className={styles.filterHead}>
+                                <span style={{ opacity: 0.6 }}>Фильтры</span>
+                                {hasActiveFilters && (
+                                    <Button
+                                        onClick={materialsStore.resetFilters}
+                                        size={"tiny"}
+                                        type={"outlined"}
+                                        mode={"neutral"}
+                                        iconBefore={<IconUpdate />}
+                                    >
+                                        Сбросить
+                                    </Button>
+                                )}
+                            </div>
+                            <FlexColumn gap={16} style={{ marginTop: 20 }}>
+                                <DatePicker
+                                    value={materialsStore.filters.date}
+                                    onChange={(value) => (materialsStore.filters.date = value)}
+                                    width={"100%"}
+                                    placeholder={"За всё время"}
+                                    size={"medium"}
+                                    disableTime={true}
+                                    formName={"Дата"}
+                                ></DatePicker>
+                                <MultipleAutocomplete
+                                    values={materialsStore.filters.names}
+                                    multiple={true}
+                                    formName={"Наименование"}
+                                    size={"medium"}
+                                    options={materialsStore.materials
+                                        .filter((material) => !!material.waybill.materialName)
+                                        .map((material) => ({
+                                            name: material.waybill.materialName ?? "",
+                                            value: material.waybill.materialName ?? "",
+                                        }))}
+                                    placeholder={"Все"}
+                                    onValuesChange={(values) => {
+                                        materialsStore.filters.names = values;
+                                    }}
+                                    fullWidth={false}
+                                    tipPosition={"top-left"}
+                                />
+                                <MultipleAutocomplete
+                                    values={materialsStore.filters.userIds}
+                                    multiple={true}
+                                    formName={"Принимающее лицо"}
+                                    size={"medium"}
+                                    options={
+                                        currentObj?.projectUsers
+                                            .map((user) => ({
+                                                name: getNameInitials(user),
+                                                value: user.id,
+                                            }))
+                                            .filter((user) => user.name) ?? []
+                                    }
+                                    placeholder={"Все"}
+                                    onValuesChange={(values) => {
+                                        materialsStore.filters.userIds = values;
+                                    }}
+                                    fullWidth={false}
+                                />
+                            </FlexColumn>
                         </div>
-                        <FlexColumn gap={16} style={{ marginTop: 20 }}>
-                            <DatePicker
-                                value={materialsStore.filters.date}
-                                onChange={(value) => (materialsStore.filters.date = value)}
-                                width={"100%"}
-                                placeholder={"За всё время"}
-                                size={"medium"}
-                                disableTime={true}
-                                formName={"Дата"}
-                            ></DatePicker>
-                            <MultipleAutocomplete
-                                values={materialsStore.filters.names}
-                                multiple={true}
-                                formName={"Наименование"}
-                                size={"medium"}
-                                options={materialsStore.materials
-                                    .filter((material) => !!material.waybill.materialName)
-                                    .map((material) => ({
-                                        name: material.waybill.materialName ?? "",
-                                        value: material.waybill.materialName ?? "",
-                                    }))}
-                                placeholder={"Все"}
-                                onValuesChange={(values) => {
-                                    materialsStore.filters.names = values;
-                                }}
-                                fullWidth={false}
-                                tipPosition={"top-left"}
-                            />
-                            <MultipleAutocomplete
-                                values={materialsStore.filters.userIds}
-                                multiple={true}
-                                formName={"Принимающее лицо"}
-                                size={"medium"}
-                                options={
-                                    currentObj?.projectUsers
-                                        .map((user) => ({
-                                            name: getNameInitials(user),
-                                            value: user.id,
-                                        }))
-                                        .filter((user) => user.name) ?? []
-                                }
-                                placeholder={"Все"}
-                                onValuesChange={(values) => {
-                                    materialsStore.filters.userIds = values;
-                                }}
-                                fullWidth={false}
-                            />
-                        </FlexColumn>
-                    </div>
-                </FlexColumn>
+                    </FlexColumn>
+                )}
 
                 <div className={styles.leftCol}>
                     <FlexColumn
@@ -343,32 +350,38 @@ export const MaterialsPage = observer(() => {
                                     !materialsStore.materials.length && !materialsStore.loading
                                 }
                             />
-                            <SingleDropdownList
-                                show={showSortDropdown}
-                                setShow={setShowSortDropdown}
-                                options={dropDownSortOptions}
-                                maxHeight={500}
-                                hideTip={true}
-                                tipPosition={"top-right"}
-                            >
-                                <span>
-                                    <Tooltip
-                                        header={showSortDropdown ? "" : "Сортировка"}
-                                        delay={500}
-                                    >
-                                        <Button
-                                            size={"large"}
-                                            iconBefore={
-                                                showSortDropdown ? <IconClose /> : <IconSorting />
-                                            }
-                                            type={showSortDropdown ? "primary" : "outlined"}
-                                            mode={"neutral"}
-                                        ></Button>
-                                    </Tooltip>
-                                </span>
-                            </SingleDropdownList>
+                            {!isMobile && (
+                                <SingleDropdownList
+                                    show={showSortDropdown}
+                                    setShow={setShowSortDropdown}
+                                    options={dropDownSortOptions}
+                                    maxHeight={500}
+                                    hideTip={true}
+                                    tipPosition={"top-right"}
+                                >
+                                    <span>
+                                        <Tooltip
+                                            header={showSortDropdown ? "" : "Сортировка"}
+                                            delay={500}
+                                        >
+                                            <Button
+                                                size={"large"}
+                                                iconBefore={
+                                                    showSortDropdown ? (
+                                                        <IconClose />
+                                                    ) : (
+                                                        <IconSorting />
+                                                    )
+                                                }
+                                                type={showSortDropdown ? "primary" : "outlined"}
+                                                mode={"neutral"}
+                                            ></Button>
+                                        </Tooltip>
+                                    </span>
+                                </SingleDropdownList>
+                            )}
                         </div>
-                        {materialsStore.filteredMaterials.length > 0 && (
+                        {materialsStore.filteredMaterials.length > 0 && !isMobile && (
                             <div className={styles.headFilters}>
                                 <div className={styles.count}>
                                     <span style={{ opacity: 0.6 }}>Отображается</span>
@@ -398,7 +411,8 @@ export const MaterialsPage = observer(() => {
                     </FlexColumn>
 
                     {(materialsStore.search || hasActiveFilters) &&
-                        !materialsStore.filteredMaterials.length && (
+                        !materialsStore.filteredMaterials.length &&
+                        !isMobile && (
                             <div className={styles.containerError}>
                                 <IconError className={styles.iconError} />
                                 <Typo
@@ -423,7 +437,7 @@ export const MaterialsPage = observer(() => {
                                 </Button>
                             </div>
                         )}
-                    {!materialsStore.materials.length && !materialsStore.loading && (
+                    {!materialsStore.materials.length && !materialsStore.loading && !isMobile && (
                         <div className={styles.containerError}>
                             <IconError className={styles.iconError} />
                             <Typo
@@ -466,7 +480,7 @@ export const MaterialsPage = observer(() => {
                                     } else {
                                         materialsStore.currentMaterialId = org.id;
                                         navigate(`/admin/journal/${id}/materials/${org.id}`, {
-                                            replace: true,
+                                            replace: !isMobile,
                                         });
                                     }
                                 }}
@@ -474,7 +488,7 @@ export const MaterialsPage = observer(() => {
                         ))}
                     </div>
                 </div>
-                {!currentMaterial && !materialsStore.showAddOverlay && (
+                {!currentMaterial && !materialsStore.showAddOverlay && !isMobile && (
                     <div ref={orgCardRef} className={clsx(styles.orgCard, styles.placeholder)}>
                         <FlexColumn gap={6} align={"center"} style={{ position: "absolute" }}>
                             <IconPlaceholderArrow
@@ -497,7 +511,7 @@ export const MaterialsPage = observer(() => {
                         </FlexColumn>
                     </div>
                 )}
-                {!currentMaterial && materialsStore.showAddOverlay && (
+                {!currentMaterial && materialsStore.showAddOverlay && !isMobile && (
                     <div
                         style={{
                             width: "100%",
@@ -1224,7 +1238,7 @@ export const MaterialsPage = observer(() => {
                         </div>
                     </div>
                 )}
-                {materialsStore.currentMaterialId && currentMaterial && (
+                {materialsStore.currentMaterialId && currentMaterial && !isMobile && (
                     <div
                         style={{
                             width: "100%",
@@ -1987,6 +2001,17 @@ export const MaterialsPage = observer(() => {
                     loading={materialsStore.loading}
                     onCancel={() => (materialsStore.showDeleteOverlay = false)}
                 />
+            </div>
+            <div className={styles.footerMobile}>
+                <Button
+                    type={"primary"}
+                    mode={"neutral"}
+                    size={"small"}
+                    iconBefore={<IconPlus />}
+                    onClick={() => navigate("/admin/journal/materials/create")}
+                >
+                    Новый материал
+                </Button>
             </div>
         </div>
     );
