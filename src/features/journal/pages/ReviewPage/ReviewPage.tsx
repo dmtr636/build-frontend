@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
+
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
     accountStore,
@@ -20,13 +21,17 @@ import {
     IconNext,
     IconPin,
     IconPlus,
+    IconSuccess,
     IconTime,
     IconUser,
 } from "src/ui/assets/icons";
 import clsx from "clsx";
 import { endpoints, GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { formatDateShort } from "src/shared/utils/date.ts";
-import { IconHardware } from "src/features/journal/components/JournalItemCard/assets";
+import {
+    IconBuildClock,
+    IconHardware,
+} from "src/features/journal/components/JournalItemCard/assets";
 import { formatObjNumber } from "src/shared/utils/formatObjNumber.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
@@ -36,6 +41,8 @@ import { OpeningCheckListSections } from "src/features/journal/pages/WorksPage/c
 import { Alert } from "src/ui/components/solutions/Alert/Alert.tsx";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { navigate } from "@storybook/addon-links";
+import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
+import { Scanner } from "@yudiel/react-qr-scanner";
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
@@ -46,6 +53,8 @@ function formatDate(dateStr: string): string {
 
 const ReviewPage = observer(() => {
     const { id } = useParams();
+    const [isOpen, setIsOpen] = useState(false);
+    const [result, setResult] = useState<any>();
     const currenUser = appStore.accountStore.currentUser;
     const project = appStore.objectStore.ObjectMap.get(id ?? "");
     const customerOrg = appStore.organizationsStore.organizationById(project?.customerOrganization);
@@ -69,7 +78,18 @@ const ReviewPage = observer(() => {
                         <IconHardware /> Стройка
                     </div>
                 );
-
+            case "AWAIT":
+                return (
+                    <div className={clsx(styles.badge, styles.await)}>
+                        <IconBuildClock /> Ожидание
+                    </div>
+                );
+            case "COMPLETE":
+                return (
+                    <div className={clsx(styles.badge, styles.complete)}>
+                        <IconSuccess /> Завершён
+                    </div>
+                );
             default:
                 return null;
         }
@@ -294,7 +314,7 @@ const ReviewPage = observer(() => {
                     transition: "opacity 100ms",
                 }}
             >
-                {isMobile && (
+                {isMobile && !accountStore.isContractor && (
                     <div className={styles.containerAlert}>
                         <Alert
                             icon={<IconAttention />}
@@ -309,43 +329,75 @@ const ReviewPage = observer(() => {
                         ></Alert>
                     </div>
                 )}
-                {isMobile && (
-                    <div className={styles.buttonsCheck}>
-                        <Button
-                            onClick={() => navigate(`/admin/journal/${id}/status`)}
-                            mode={"positive"}
-                            size={"small"}
-                            counter={works.length}
-                            fullWidth={true}
-                        >
-                            Проверить работу
-                        </Button>
-                        <Button
-                            onClick={() => navigate(`/admin/journal/${id}/create`)}
-                            iconBefore={<IconPlus />}
-                            mode={"negative"}
-                            size={"small"}
-                            fullWidth={true}
-                        >
-                            Добавить нарушение
-                        </Button>
-                        <Button
-                            onClick={() => navigate(`/admin/journal/${id}/violations?status=4`)}
-                            fullWidth={true}
-                            type={"outlined"}
-                            counter={
-                                violations.filter((i) => i.status === "IN_REVIEW").length
-                                    ? violations.filter((i) => i.status === "IN_REVIEW").length
-                                    : undefined
-                            }
-                            /*   iconBefore={<IconPlus />}*/
-                            mode={"neutral"}
-                            size={"small"}
-                        >
-                            Исправленные нарушения
-                        </Button>
-                    </div>
-                )}
+                {JSON.stringify(result)}
+                {isMobile &&
+                    (!accountStore.isContractor ? (
+                        <div className={styles.buttonsCheck}>
+                            <Button
+                                onClick={() => navigate(`/admin/journal/${id}/status`)}
+                                mode={"positive"}
+                                size={"small"}
+                                counter={works.length}
+                                fullWidth={true}
+                            >
+                                Проверить работу
+                            </Button>
+                            <Button
+                                onClick={() => navigate(`/admin/journal/${id}/create`)}
+                                iconBefore={<IconPlus />}
+                                mode={"negative"}
+                                size={"small"}
+                                fullWidth={true}
+                            >
+                                Добавить нарушение
+                            </Button>
+                            <Button
+                                onClick={() => navigate(`/admin/journal/${id}/violations?status=4`)}
+                                fullWidth={true}
+                                type={"outlined"}
+                                counter={
+                                    violations.filter((i) => i.status === "IN_REVIEW").length
+                                        ? violations.filter((i) => i.status === "IN_REVIEW").length
+                                        : undefined
+                                }
+                                /*   iconBefore={<IconPlus />}*/
+                                mode={"neutral"}
+                                size={"small"}
+                            >
+                                Исправленные нарушения
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className={styles.buttonsCheck}>
+                            <Button
+                                onClick={() => navigate(`/admin/journal/${id}/status`)}
+                                mode={"neutral"}
+                                size={"small"}
+                                counter={works.length}
+                                fullWidth={true}
+                            >
+                                Состав работ и чек-листы
+                            </Button>
+                            <Button
+                                onClick={() => navigate(`/admin/journal/${id}/violations?status=2`)}
+                                counter={violations.length}
+                                mode={"negative"}
+                                size={"small"}
+                                fullWidth={true}
+                            >
+                                Исправить нарушения
+                            </Button>
+                            <Button
+                                onClick={() => navigate(`/admin/journal/${id}/materials`)}
+                                fullWidth={true}
+                                type={"outlined"}
+                                mode={"neutral"}
+                                size={"small"}
+                            >
+                                Материалы
+                            </Button>
+                        </div>
+                    ))}
                 <div className={clsx(styles.itemForm, styles.left)}>
                     <div className={styles.objHead}>
                         <div className={styles.img}>
@@ -739,6 +791,9 @@ const ReviewPage = observer(() => {
                     )}
                 </div>
             </div>
+            <Overlay open={isOpen} onClose={() => setIsOpen(false)}>
+                <Scanner onScan={(result) => setResult(result)} />
+            </Overlay>
         </div>
     );
 });

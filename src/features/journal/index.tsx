@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet";
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import styles from "./journal.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { appStore, layoutStore, registryStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, registryStore, violationStore } from "src/app/AppStore.ts";
 import {
     IconCheckmark,
     IconClose,
@@ -323,10 +323,12 @@ export const JournalPage = observer(() => {
     useEffect(() => {
         if (userId) setHaveUser((prevState) => [...prevState, userId]);
     }, [userId]);
+
     const onChangeSort = (sort: SortOption) => {
         setSortOption(sort);
         appStore.objectStore.setSortOption(sort);
     };
+
     const resetFilters = () => {
         setTypes([]);
         setObjectStatus([]);
@@ -337,8 +339,10 @@ export const JournalPage = observer(() => {
         setCustomerOrg([]);
         setHaveUser([]);
     };
+
     useLayoutEffect(() => {
         layoutStore.setHeaderProps({ title: "Объекты", buttonBack: false, showNotification: true });
+        violationStore.fetchAllViolations();
     }, []);
     const isMobile = layoutStore.isMobile;
     return (

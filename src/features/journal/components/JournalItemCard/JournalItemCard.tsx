@@ -8,18 +8,20 @@ import {
     IconInfo,
     IconPin,
     IconPlus,
+    IconSuccess,
     IconTime,
     IconUser,
 } from "src/ui/assets/icons";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { Link, useNavigate } from "react-router-dom";
-import { appStore, layoutStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, violationStore } from "src/app/AppStore.ts";
 import { getFullName } from "src/shared/utils/getFullName.ts";
 import { ObjectDTO } from "src/features/journal/types/Object.ts";
 import { formatDateShort } from "src/shared/utils/date.ts";
 import { clsx } from "clsx";
 import {
+    IconBuildClock,
     IconDangerous,
     IconHardware,
 } from "src/features/journal/components/JournalItemCard/assets";
@@ -38,6 +40,9 @@ interface journalItemCardProps {
 
 const JournalItemCard = ({ project }: journalItemCardProps) => {
     const navigate = useNavigate();
+    const violatinons = violationStore.allViolations;
+    const isGuilty =
+        violatinons.filter((i) => i.projectId === project.id && i.status !== "DONE")?.length > 0;
     const customerOrg = appStore.organizationsStore.organizationById(project?.customerOrganization);
     const contractorOrg = appStore.organizationsStore.organizationById(
         project?.contractorOrganization,
@@ -59,7 +64,18 @@ const JournalItemCard = ({ project }: journalItemCardProps) => {
                         <IconHardware /> Стройка
                     </div>
                 );
-
+            case "AWAIT":
+                return (
+                    <div className={clsx(styles.badge, styles.await)}>
+                        <IconBuildClock /> Ожидание
+                    </div>
+                );
+            case "COMPLETE":
+                return (
+                    <div className={clsx(styles.badge, styles.complete)}>
+                        <IconSuccess /> Завершён
+                    </div>
+                );
             default:
                 return null;
         }
@@ -97,7 +113,7 @@ const JournalItemCard = ({ project }: journalItemCardProps) => {
     return (
         <div className={styles.container} onClick={() => navigate(`/admin/journal/${project.id}`)}>
             <div className={styles.badgeArray}>
-                {project.hasViolations && (
+                {isGuilty && (
                     <div className={clsx(styles.badge, styles.error)}>
                         <IconDangerous /> Есть нарушения
                     </div>

@@ -290,7 +290,24 @@ flex-shrink: 0;
         }
     }
 
+    &.await {
+        border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+        background: var(--objects-background-neutral-secondary, #e8eaed);
+        color: var(--objects-text-neutral-primary, #111317);
+
+        svg path {
+            fill: var(--objects-text-neutral-primary, #111317);
+        }
+    }
+
+    &.complete {
+        border: 1px solid var(--objects-stroke-positive-secondary, #a0edd2);
+        background: var(--objects-background-positive-tertiary, #e6fff6);
+    }
+
     &.error {
+        color: var(--objects-text-negative-primary, #c02626);
+
         border: 1px solid var(--objects-stroke-negative-secondary, #eda0a0);
         background: var(--objects-background-negative-tertiary, #ffe6e6);
 
