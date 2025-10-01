@@ -519,6 +519,7 @@ const MaterialItemPage = observer(() => {
                                         }
                                     }}
                                     placeholder={"ДД.ММ.ГГГГ / ЧЧ:ММ"}
+                                    width={"calc(100vw - 40px)"}
                                     formName={"Дата изготовления (выгрузки)"}
                                 />
                                 <Input
@@ -689,6 +690,7 @@ const MaterialItemPage = observer(() => {
                                     fullWidth={true}
                                 />
                                 <DatePicker
+                                    width={"calc(100vw - 40px)"}
                                     value={
                                         materialsStore.editForm.waybill?.deliveryDateTime ?? null
                                     }
@@ -891,6 +893,7 @@ const MaterialItemPage = observer(() => {
                                 currentMaterial as any,
                             );
                             snackbarStore.showNeutralPositiveSnackbar("Изменения сохранены");
+                            navigate(-1);
                         }}
                     >
                         Сохранить

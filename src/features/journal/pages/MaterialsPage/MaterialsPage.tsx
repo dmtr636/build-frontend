@@ -2024,7 +2024,9 @@ export const MaterialsPage = observer(() => {
                         mode={"neutral"}
                         size={"small"}
                         iconBefore={<IconPlus />}
-                        onClick={() => navigate("/admin/journal/materials/create")}
+                        onClick={() =>
+                            navigate(`/admin/journal/${currentObj?.id}/materials/create`)
+                        }
                     >
                         Новый материал
                     </Button>
