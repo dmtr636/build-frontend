@@ -87,7 +87,7 @@ const ReviewPage = observer(() => {
             return;
         }
 
-        if (objectId !== currentObjectId) {
+        if (objectId != currentObjectId) {
             setUnlock(false);
             setUnlockReason("Неверный объект");
             return;
@@ -876,7 +876,10 @@ const ReviewPage = observer(() => {
                 <Scanner
                     onScan={(result) => {
                         if (result) {
-                            validateQrCode(atob(result[0]?.rawValue), project?.id as string);
+                            validateQrCode(
+                                atob(result[0]?.rawValue),
+                                project?.objectNumber as string,
+                            );
                             setIsOpen(false);
                         }
                     }}
