@@ -189,8 +189,7 @@ export const Overlay = observer((props: OverlayProps) => {
         <div
             className={clsx(styles.background, hideBackdrop && styles.hideBackdrop)}
             style={props.styles?.background}
-            onClick={(event) => {
-                event.stopPropagation();
+            onClick={() => {
                 if (closeOnBackdropClick) {
                     onClose?.();
                 }

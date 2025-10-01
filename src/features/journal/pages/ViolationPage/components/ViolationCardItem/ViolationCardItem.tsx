@@ -216,105 +216,88 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
     if (!violation) return null;
 
     return (
-        <div
-            className={clsx(styles.container, { [styles.active]: active })}
-            onClick={() => {
-                onClick();
-                if (isMobile && violation.status === "IN_REVIEW") {
-                    navigate(`${violation.id}`);
-                }
-            }}
-        >
-            <div className={styles.badges}>
-                <Tooltip
-                    text={formatDateTime(violation?.violationTime).date}
-                    requireOverflow
-                    delay={500}
-                >
-                    <div className={clsx(styles.badge, styles.badgeNoLimit)}>
-                        <IconCalendar />
-                        <span className={styles.badgeText}>
-                            {formatDateTime(violation?.violationTime).date}
-                        </span>
-                    </div>
-                </Tooltip>
-                <Tooltip
-                    text={formatDateTime(violation?.violationTime).time}
-                    requireOverflow
-                    delay={500}
-                >
-                    <div className={styles.badge}>
-                        <IconTime />
-                        <span className={styles.badgeText}>
-                            {formatDateTime(violation?.violationTime).time}
-                        </span>
-                    </div>
-                </Tooltip>
-                <Tooltip
-                    text={violation?.isNote ? "Замечание" : "Нарушение"}
-                    requireOverflow
-                    delay={500}
-                >
-                    <div className={styles.badge}>
-                        <span className={styles.badgeText}>
-                            {violation?.isNote ? "Замечание" : "Нарушение"}
-                        </span>
-                    </div>
-                </Tooltip>
-
-                <Tooltip text={violation?.category} requireOverflow delay={500}>
-                    <div className={styles.badge}>
-                        <span className={styles.badgeText}>{violation?.category}</span>
-                    </div>
-                </Tooltip>
-
-                <Tooltip text={violation?.kind} requireOverflow delay={500}>
-                    <div className={styles.badge}>
-                        <span className={styles.badgeText}>{violation?.kind}</span>
-                    </div>
-                </Tooltip>
-
-                <Tooltip text={violation?.severityType} requireOverflow delay={500}>
-                    <div
-                        className={clsx(styles.badge, {
-                            [styles.error]: violation?.severityType?.toLowerCase() === "грубое",
-                        })}
+        <>
+            <AddViolationOverlay
+                open={open}
+                setOpen={setOpen}
+                editingViolation={violation}
+                isEditing={true}
+            />
+            <div
+                className={clsx(styles.container, { [styles.active]: active })}
+                onClick={() => {
+                    onClick();
+                    if (isMobile && violation.status === "IN_REVIEW") {
+                        navigate(`${violation.id}`);
+                    }
+                }}
+            >
+                <div className={styles.badges}>
+                    <Tooltip
+                        text={formatDateTime(violation?.violationTime).date}
+                        requireOverflow
+                        delay={500}
                     >
-                        <span className={styles.badgeText}>{violation?.severityType}</span>
-                    </div>
-                </Tooltip>
-            </div>
-            <div className={styles.users}>
-                <div className={styles.user}>
-                    <div className={styles.imgBlock}>
-                        {violation?.author?.imageId ? (
-                            <img
-                                className={styles.userImg}
-                                src={`${GET_FILES_ENDPOINT}/${violation?.author?.imageId}`}
-                            />
-                        ) : (
-                            <div className={styles.noUser}>
-                                <IconUser />
-                            </div>
-                        )}
-                    </div>
-                    <div className={styles.userTexts} onClick={(e) => e.stopPropagation()}>
-                        <div className={styles.role}>Автор</div>
-                        <Link
-                            to={`/admin/users/${violation?.author.id}`}
-                            className={styles.userName}
+                        <div className={clsx(styles.badge, styles.badgeNoLimit)}>
+                            <IconCalendar />
+                            <span className={styles.badgeText}>
+                                {formatDateTime(violation?.violationTime).date}
+                            </span>
+                        </div>
+                    </Tooltip>
+                    <Tooltip
+                        text={formatDateTime(violation?.violationTime).time}
+                        requireOverflow
+                        delay={500}
+                    >
+                        <div className={styles.badge}>
+                            <IconTime />
+                            <span className={styles.badgeText}>
+                                {formatDateTime(violation?.violationTime).time}
+                            </span>
+                        </div>
+                    </Tooltip>
+                    <Tooltip
+                        text={violation?.isNote ? "Замечание" : "Нарушение"}
+                        requireOverflow
+                        delay={500}
+                    >
+                        <div className={styles.badge}>
+                            <span className={styles.badgeText}>
+                                {violation?.isNote ? "Замечание" : "Нарушение"}
+                            </span>
+                        </div>
+                    </Tooltip>
+
+                    <Tooltip text={violation?.category} requireOverflow delay={500}>
+                        <div className={styles.badge}>
+                            <span className={styles.badgeText}>{violation?.category}</span>
+                        </div>
+                    </Tooltip>
+
+                    <Tooltip text={violation?.kind} requireOverflow delay={500}>
+                        <div className={styles.badge}>
+                            <span className={styles.badgeText}>{violation?.kind}</span>
+                        </div>
+                    </Tooltip>
+
+                    <Tooltip text={violation?.severityType} requireOverflow delay={500}>
+                        <div
+                            className={clsx(styles.badge, {
+                                [styles.error]: violation?.severityType?.toLowerCase() === "грубое",
+                            })}
                         >
-                            {getShortName(splitFullName(violation?.author ?? ""))}
-                        </Link>
-                    </div>
+                            <span className={styles.badgeText}>{violation?.severityType}</span>
+                        </div>
+                    </Tooltip>
                 </div>
-                {violation?.assignee && (
+                <div className={styles.users}>
                     <div className={styles.user}>
                         <div className={styles.imgBlock}>
-                            {violation?.assignee?.imageId ? (
+                            {violation?.author?.imageId ? (
                                 <img
                                     className={styles.userImg}
-                                    src={`${GET_FILES_ENDPOINT}/${violation?.assignee?.imageId}`}
+                                    src={`${GET_FILES_ENDPOINT}/${violation?.author?.imageId}`}
                                 />
                             ) : (
                                 <div className={styles.noUser}>
@@ -323,67 +306,91 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                             )}
                         </div>
                         <div className={styles.userTexts} onClick={(e) => e.stopPropagation()}>
-                            <div className={styles.role}>Взял в работу</div>
+                            <div className={styles.role}>Автор</div>
                             <Link
-                                to={`/admin/users/${violation.assignee.id}`}
+                                to={`/admin/users/${violation?.author.id}`}
                                 className={styles.userName}
                             >
-                                {getShortName(splitFullName(violation?.assignee ?? ""))}
+                                {getShortName(splitFullName(violation?.author ?? ""))}
                             </Link>
                         </div>
                     </div>
-                )}
-            </div>
-            <div className={styles.text}>{violation.name}</div>
-            <div className={styles.buttonBlock}>
-                {currentUserRole !== "USER" ? renderStatusButtonPodryadchik : renderStatusButton}
-                {!(currentUserRole === "USER" && violation.status === "IN_REVIEW") && !isMobile && (
-                    <Button
-                        onClick={(e) => e.stopPropagation()}
-                        type={"outlined"}
-                        mode={"neutral"}
-                        size={"small"}
-                    >
-                        Комментарии
-                    </Button>
-                )}
-                {(violation.status === "TODO" || violation.status === "IN_PROGRESS") &&
-                    !isMobile && (
-                        <Button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setOpen(true);
-                            }}
-                            type={"outlined"}
+                    {violation?.assignee && (
+                        <div className={styles.user}>
+                            <div className={styles.imgBlock}>
+                                {violation?.assignee?.imageId ? (
+                                    <img
+                                        className={styles.userImg}
+                                        src={`${GET_FILES_ENDPOINT}/${violation?.assignee?.imageId}`}
+                                    />
+                                ) : (
+                                    <div className={styles.noUser}>
+                                        <IconUser />
+                                    </div>
+                                )}
+                            </div>
+                            <div className={styles.userTexts} onClick={(e) => e.stopPropagation()}>
+                                <div className={styles.role}>Взял в работу</div>
+                                <Link
+                                    to={`/admin/users/${violation.assignee.id}`}
+                                    className={styles.userName}
+                                >
+                                    {getShortName(splitFullName(violation?.assignee ?? ""))}
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div className={styles.text}>{violation.name}</div>
+                <div className={styles.buttonBlock}>
+                    {currentUserRole !== "USER"
+                        ? renderStatusButtonPodryadchik
+                        : renderStatusButton}
+                    {!(currentUserRole === "USER" && violation.status === "IN_REVIEW") &&
+                        !isMobile && (
+                            <Button
+                                onClick={(e) => e.stopPropagation()}
+                                type={"outlined"}
+                                mode={"neutral"}
+                                size={"small"}
+                            >
+                                Комментарии
+                            </Button>
+                        )}
+                    {(violation.status === "TODO" || violation.status === "IN_PROGRESS") &&
+                        !isMobile && (
+                            <Button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpen(true);
+                                }}
+                                type={"outlined"}
+                                mode={"neutral"}
+                                size={"small"}
+                                iconBefore={<IconEdit />}
+                            />
+                        )}
+                    {!isMobile && (
+                        <div className={styles.info}>
+                            <span style={{ opacity: 0.7 }}>Нужно исправить до</span>
+                            <div className={styles.infoDate}>
+                                {formatDueDate(violation.dueDate)}
+                            </div>
+                        </div>
+                    )}
+                    {!isMobile && (
+                        <ButtonIcon
+                            rounding={"peak"}
+                            type={active ? "outlined" : "primary"}
                             mode={"neutral"}
                             size={"small"}
-                            iconBefore={<IconEdit />}
-                        />
+                        >
+                            {active ? <IconClose /> : <IconNext />}
+                        </ButtonIcon>
                     )}
-                {!isMobile && (
-                    <div className={styles.info}>
-                        <span style={{ opacity: 0.7 }}>Нужно исправить до</span>
-                        <div className={styles.infoDate}>{formatDueDate(violation.dueDate)}</div>
-                    </div>
-                )}
-                {!isMobile && (
-                    <ButtonIcon
-                        rounding={"peak"}
-                        type={active ? "outlined" : "primary"}
-                        mode={"neutral"}
-                        size={"small"}
-                    >
-                        {active ? <IconClose /> : <IconNext />}
-                    </ButtonIcon>
-                )}
+                </div>
             </div>
-            <AddViolationOverlay
-                open={open}
-                setOpen={setOpen}
-                editingViolation={violation}
-                isEditing={true}
-            />
-        </div>
+        </>
     );
 });
 
