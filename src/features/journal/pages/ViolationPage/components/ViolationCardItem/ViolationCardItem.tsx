@@ -24,7 +24,7 @@ import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
-import { appStore, layoutStore } from "src/app/AppStore.ts";
+import { accountStore, appStore, layoutStore, userStore } from "src/app/AppStore.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 interface ViolationCardItemProps {
@@ -343,9 +343,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                 </div>
                 <div className={styles.text}>{violation.name}</div>
                 <div className={styles.buttonBlock}>
-                    {currentUserRole !== "USER"
-                        ? renderStatusButtonPodryadchik
-                        : renderStatusButton}
+                    {accountStore.isContractor ? renderStatusButtonPodryadchik : renderStatusButton}
                     {!(currentUserRole === "USER" && violation.status === "IN_REVIEW") &&
                         !isMobile && (
                             <Button
