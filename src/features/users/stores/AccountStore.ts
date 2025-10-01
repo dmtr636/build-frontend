@@ -18,28 +18,19 @@ export class AccountStore {
     }
 
     get isAdmin() {
-        return this.currentUser?.role === "ADMIN" || this.currentUser?.role === "ROOT";
+        return this.currentUser?.role === "ADMIN";
     }
 
     get isContractor() {
-        return (
-            this.currentUser?.position === "Подрядчик" || this.currentUser?.position === "Прораб"
-        );
+        return this.currentUser?.position === "Подрядчик";
     }
 
     get isInspector() {
-        return (
-            this.currentUser?.position === "Инспектор контрольного органа" ||
-            this.currentUser?.position === "ИКО"
-        );
+        return this.currentUser?.position === "Инспектор контрольного органа";
     }
 
     get isCustomer() {
-        return (
-            this.currentUser?.position === "Заказчик" ||
-            this.currentUser?.position === "Служба строительного контроля" ||
-            this.currentUser?.position === "ССК"
-        );
+        return this.currentUser?.position === "Служба строительного контроля";
     }
 
     async authenticate() {
@@ -47,7 +38,6 @@ export class AccountStore {
             const response = await axios.get(endpoints.account);
             this.setUser(response.data);
             this.fetchUserIsOnline(this.currentUser?.id as string);
-            console.log(this.currentUser);
             return true;
         } catch (error) {
             return false;

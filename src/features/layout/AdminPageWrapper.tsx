@@ -70,7 +70,7 @@ const AdminPageWrapper = observer(() => {
             </div>
             <Footer
                 actions={[
-                    { name: "Организация", icon: <IconApartment />, to: "/admin/journal/" },
+                    { name: "Объекты", icon: <IconApartment />, to: "/admin/journal" },
                     { name: "Профиль", icon: <IconUser />, to: `/admin/users/${currentUser?.id}` },
                 ]}
             />

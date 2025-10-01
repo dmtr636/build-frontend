@@ -18,7 +18,7 @@ export class ViolationStore {
         order: "asc",
         label: "По алфавиту, от А - Я",
     };
-
+    allViolations: ProjectViolationDTO[] = [];
     violations: ProjectViolationDTO[] = [];
 
     constructor() {
@@ -28,6 +28,11 @@ export class ViolationStore {
     async fetchViolationByObj(id: string) {
         const response = await axios.get(`${endpoints.violations}/search?projectId=${id}`);
         this.violations = response.data;
+    }
+
+    async fetchAllViolations() {
+        const response = await axios.get(endpoints.violations);
+        this.allViolations = response.data;
     }
 
     async createObject(object: ProjectViolationDTO, id: string) {

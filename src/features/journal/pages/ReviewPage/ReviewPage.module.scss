@@ -190,7 +190,6 @@ gap: 12px;
 }
 
 .badge {
-    flex: 0;
     padding: 6px 8px;
     display: flex;
     align-items: center;
@@ -203,23 +202,33 @@ gap: 12px;
     font-weight: 600;
     line-height: normal;
 
-    svg {
-        width: var(--icons-width-xs, 16px);
-        height: var(--icons-height-xs, 16px);
-        aspect-ratio: 1/1;
-    }
-
     &.progress {
         border: 1px solid var(--objects-stroke-warning-secondary, #edcba0);
         background: var(--objects-background-warning-tertiary, #fff3e5);
-        width: 88px;
 
         svg path {
             fill: #946429;
         }
     }
 
+    &.await {
+        border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
+        background: var(--objects-background-neutral-secondary, #e8eaed);
+        color: var(--objects-text-neutral-primary, #111317);
+
+        svg path {
+            fill: var(--objects-text-neutral-primary, #111317);
+        }
+    }
+
+    &.complete {
+        border: 1px solid var(--objects-stroke-positive-secondary, #a0edd2);
+        background: var(--objects-background-positive-tertiary, #e6fff6);
+    }
+
     &.error {
+        color: var(--objects-text-negative-primary, #c02626);
+
         border: 1px solid var(--objects-stroke-negative-secondary, #eda0a0);
         background: var(--objects-background-negative-tertiary, #ffe6e6);
 

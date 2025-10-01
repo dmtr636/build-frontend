@@ -25,6 +25,7 @@ export class LayoutStore {
 
     setHeaderProps(headerProps: {
         title: string;
+        showNotification?: boolean;
         actions?: {
             icon: React.ReactNode;
             onClick?: () => void;
