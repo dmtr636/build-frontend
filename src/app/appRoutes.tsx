@@ -75,7 +75,7 @@ export const appRoutes: RouteObject[] = [
                     { path: "users", element: <ObjectUsersPage /> },
                     { path: "materials", element: <MaterialsPage /> },
                     {
-                        path: "materials/:materialId",
+                        path: "materials/create",
                         element: layoutStore.isMobile ? <MaterialItemPage /> : <MaterialsPage />,
                     },
                     {

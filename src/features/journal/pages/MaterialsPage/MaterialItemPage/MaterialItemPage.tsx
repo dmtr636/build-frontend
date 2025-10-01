@@ -250,7 +250,7 @@ const MaterialItemPage = observer(() => {
                             }}
                         />
                     </Tooltip>
-                    <FlexColumn gap={16} style={{ position: "relative" }}>
+                    <FlexColumn gap={16} style={{ position: "relative", paddingBottom: 140 }}>
                         <Flex gap={16} align={"center"}>
                             <Typo
                                 variant={"h5"}

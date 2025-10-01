@@ -85,7 +85,7 @@
     padding-bottom: 80px;
     @media screen and (max-width: 767px) {
         padding: 0 16px;
-        padding-bottom: 100px;
+        padding-bottom: 160px;
         min-height: 100dvh;
     }
 }
@@ -392,4 +392,15 @@ margin-left: 8px;
         bottom: 80px;
         width: 100vw;
     }
+}
+
+.footerMobile {
+    position: fixed;
+    bottom: 80px;
+    height: 68px;
+    width: 100vw;
+    display: flex;
+    padding: 0 16px;
+    align-items: center;
+    background: #fff;
 }
