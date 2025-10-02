@@ -149,7 +149,7 @@ const userCardItem = observer(
                             key={"1"}
                             options={[
                                 {
-                                    icon: <IconUser />,
+                                    listItemIcon: <IconUser />,
                                     name: isResponseUser
                                         ? "Снять отвественного"
                                         : "Назначить ответственного",
@@ -157,7 +157,7 @@ const userCardItem = observer(
                                     onClick: onClick,
                                 },
                                 {
-                                    icon: <IconBasket />,
+                                    listItemIcon: <IconBasket />,
                                     name: "Удалить из объекта",
                                     mode: "negative",
                                     onClick: onClickDelete,
