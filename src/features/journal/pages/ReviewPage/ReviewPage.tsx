@@ -322,7 +322,9 @@ const ReviewPage = observer(() => {
     }, []);
 
     const showChecklist =
-        !accountStore.isAdmin && worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS";
+        !accountStore.isAdmin &&
+        !accountStore.isContractor &&
+        worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS";
 
     useLayoutEffect(() => {
         if (project) layoutStore.setHeaderProps({ title: project?.name });
@@ -378,7 +380,7 @@ const ReviewPage = observer(() => {
                                 marginBottom: 124,
                             }}
                         >
-                            {accountStore.isContractor && (
+                            {accountStore.isCustomer && (
                                 <>
                                     {worksStore.openingChecklists?.[0]?.sections?.some((s) =>
                                         s.items.some((i) => !i.answer),
