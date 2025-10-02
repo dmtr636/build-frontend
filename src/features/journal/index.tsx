@@ -172,8 +172,8 @@ export const JournalPage = observer(() => {
 
     const journalList = React.useMemo(() => {
         if (loginUser?.role === "ADMIN") return objectsList;
-        return objectsList.filter((o) => o.projectUsers.some((i) => i.id === loginUser?.id)); // <-- замените на ваше поле
-    }, [objects, loginUser]);
+        return objectsList.filter((o) => o.projectUsers.some((i) => i.id === loginUser?.id));
+    }, [objectsList, loginUser]);
     const [objectStatus, setObjectStatus] = useState<string[]>([]);
     const [types, setTypes] = useState<string[]>([]);
     const typeList = new Set(journalList.map((item) => item.type).filter((i) => i));
