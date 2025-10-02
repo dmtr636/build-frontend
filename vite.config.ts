@@ -10,6 +10,10 @@ export default defineConfig({
         VitePWA({
             registerType: "autoUpdate",
             strategies: "injectManifest",
+            injectManifest: {
+                globPatterns: ["**/*.{html,js,css,svg,png,ico,webp,woff2}"],
+                maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MiB
+            },
             srcDir: "src",
             filename: "sw.ts",
             injectRegister: "auto",
