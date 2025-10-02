@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { Helmet } from "react-helmet";
-import { appStore, layoutStore, worksStore } from "src/app/AppStore.ts";
+import { accountStore, appStore, layoutStore, objectStore, worksStore } from "src/app/AppStore.ts";
 import styles from "./home.module.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { fileUrl } from "src/shared/utils/file.ts";
@@ -12,9 +12,11 @@ import { ProjectWork } from "src/features/journal/types/ProjectWork.ts";
 
 export const HomePage = observer(() => {
     const currentUser = appStore.accountStore.currentUser;
-    const objects = appStore.objectStore.getObjectsByUserId(currentUser?.id ?? "");
+    const allObjects = objectStore.objects;
+    const currentobjects = appStore.objectStore.getObjectsByUserId(currentUser?.id ?? "");
+    const objects = accountStore.isAdmin ? allObjects : currentobjects;
     const navigate = useNavigate();
-    const objectsIdList = objects.map((item) => item.id);
+    const objectsIdList = currentobjects.map((item) => item.id);
     useEffect(() => {
         worksStore.fetchAllWorks();
     }, []);
@@ -22,7 +24,7 @@ export const HomePage = observer(() => {
     const userworks = allWorkList
         .filter((item) => objectsIdList.includes(item.projectId))
         .filter((i) => i.status !== "DONE");
-    if (!objects) return null;
+    if (!currentobjects) return null;
     const isMobile = layoutStore.isMobile;
     useLayoutEffect(() => {
         if (isMobile) {
@@ -37,7 +39,7 @@ export const HomePage = observer(() => {
 
             <div className={styles.itemForm}>
                 <div className={styles.itemHead}>
-                    Мои объекты{" "}
+                    {accountStore.isAdmin ? "Объекты" : "Мои объекты"}{" "}
                     <Link className={styles.itemLink} to="/admin/journal">
                         Перейти
                     </Link>
