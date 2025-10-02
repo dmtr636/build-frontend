@@ -371,7 +371,12 @@ const UserPage = observer(() => {
                                 mode={"negative"}
                                 type={"secondary"}
                                 fullWidth={true}
-                                onClick={() => appStore.accountStore.logout()}
+                                onClick={async () => {
+                                    await appStore.accountStore.logout();
+                                    setTimeout(() => {
+                                        window.location.pathname = "/auth/login";
+                                    });
+                                }}
                             >
                                 Выйти из аккаунта
                             </Button>
