@@ -97,7 +97,7 @@ export const OpeningCheckListSections = observer(
                                                 style={{
                                                     opacity:
                                                         item.answer ||
-                                                        (!accountStore.isContractor &&
+                                                        (!accountStore.isCustomer &&
                                                             !accountStore.isAdmin)
                                                             ? 0
                                                             : 1,
