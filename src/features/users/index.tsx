@@ -101,7 +101,7 @@ export const UsersPage = observer(() => {
     const [sortOption, setSortOption] = useState<SortOption>(appStore.userStore.sortOption);
 
     const [currentUser, setCurrentUser] = useState<User | undefined>();
-    const users = appStore.userStore.users;
+    const users = appStore.userStore.users.filter((u) => u.role !== ("ROOT" as any));
     const loginUser = appStore.accountStore.currentUser;
     const objects = appStore.objectStore.objects;
     const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
@@ -346,7 +346,6 @@ export const UsersPage = observer(() => {
     const filteredUsersByName = useMemo(() => {
         return users.filter((user) => {
             if (name.trim() !== "") {
-                if (user.role === "ROOT") return false;
                 const userName = splitFullName(user).toLowerCase().trim();
                 if (!userName.includes(name.toLowerCase())) return false;
             }
@@ -356,7 +355,6 @@ export const UsersPage = observer(() => {
     const filteredUsers = useMemo(() => {
         return filteredUsersByFilter.filter((user) => {
             if (name.trim() !== "") {
-                if (user.role === "ROOT") return false;
                 const userName = splitFullName(user).toLowerCase().trim();
                 if (!userName.includes(name.toLowerCase())) return false;
             }

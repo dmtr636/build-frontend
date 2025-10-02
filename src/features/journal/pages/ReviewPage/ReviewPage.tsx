@@ -444,7 +444,7 @@ const ReviewPage = observer(() => {
                         <div className={styles.containerAlert}>
                             <Alert
                                 icon={<IconAttention />}
-                                title={"Изменение не доступно"}
+                                title={"Изменение недоступно"}
                                 mode={"warning"}
                                 subtitle={"Посетите объект"}
                                 actions={[

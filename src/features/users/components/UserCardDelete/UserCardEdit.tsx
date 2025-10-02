@@ -88,7 +88,7 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
         firstName,
         lastName,
         patronymic,
-        role: role as "ROOT" | "ADMIN" | "USER",
+        role: role as "ADMIN" | "USER",
         position: position ?? "",
         messenger: messager,
         workPhone: workphone,

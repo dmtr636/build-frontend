@@ -39,7 +39,7 @@ const UserPage = observer(() => {
     const [workphone, setWorkphone] = useState<string>("");
     const [position, setPositionValue] = useState<string | undefined | null>(null);
     const [company, setCompany] = useState<string | null>(null);
-    const [role, setRole] = useState<"ROOT" | "ADMIN" | "USER" | undefined>();
+    const [role, setRole] = useState<"ADMIN" | "USER" | undefined>();
     const users = appStore.userStore.users;
     const userPosition = [...new Set(users.filter((u) => u.position).map((u) => u.position))];
     const loginUser = appStore.accountStore.currentUser;
@@ -48,15 +48,11 @@ const UserPage = observer(() => {
         name: user ?? "",
         value: user ?? "",
     }));
-    const rolesOptions: SelectOption<"ROOT" | "ADMIN" | "USER">[] = [
+    const rolesOptions: SelectOption<"ADMIN" | "USER">[] = [
         { value: "ADMIN", name: "Администратор" },
         {
             value: "USER",
             name: "Пользователь",
-        },
-        {
-            value: "ROOT",
-            name: "ROOT",
         },
     ];
     const organisations = appStore.organizationsStore.organizations;
@@ -112,7 +108,7 @@ const UserPage = observer(() => {
         firstName,
         lastName,
         patronymic,
-        role: role as "ROOT" | "ADMIN" | "USER",
+        role: role as "ADMIN" | "USER",
         position: position ?? null,
         messenger: messager,
         workPhone: workphone,
@@ -244,7 +240,7 @@ const UserPage = observer(() => {
                                             key={"12"}
                                             value={role}
                                             onValueChange={(v) => {
-                                                setRole(v as "ROOT" | "ADMIN" | "USER");
+                                                setRole(v as "ADMIN" | "USER");
                                                 if (v !== "USER") setPositionValue(null);
                                             }}
                                             options={rolesOptions}

@@ -37,22 +37,18 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
     const [workphone, setWorkphone] = useState<string>("");
     const [position, setPositionValue] = useState<string | undefined | null>(undefined);
     const users = appStore.userStore.users;
-    const [role, setRole] = useState<"ROOT" | "ADMIN" | "USER">();
+    const [role, setRole] = useState<"ADMIN" | "USER">();
     const userPosition = [...new Set(users?.filter((u) => u.position).map((u) => u.position))];
     const [company, setCompany] = useState<string | null>(null);
     const usersPositionOptions: AutocompleteOption<string>[] = userPosition.map((user) => ({
         name: user ?? "",
         value: user ?? "",
     }));
-    const rolesOptions: SelectOption<"ROOT" | "ADMIN" | "USER">[] = [
+    const rolesOptions: SelectOption<"ADMIN" | "USER">[] = [
         { value: "ADMIN", name: "Администратор" },
         {
             value: "USER",
             name: "Пользователь",
-        },
-        {
-            value: "ROOT",
-            name: "ROOT",
         },
     ];
     const organisations = appStore.organizationsStore.organizations;
@@ -86,7 +82,7 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
         firstName,
         lastName,
         patronymic,
-        role: role as "ROOT" | "ADMIN" | "USER",
+        role: role as "ADMIN" | "USER",
         position: position ?? null,
         messenger: messager,
         workPhone: workphone,
@@ -240,7 +236,7 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
                                     key={"12"}
                                     value={role}
                                     onValueChange={(v) => {
-                                        setRole(v as "ROOT" | "ADMIN" | "USER");
+                                        setRole(v as "ADMIN" | "USER");
                                         if (v !== "USER") setPositionValue(null);
                                     }}
                                     options={rolesOptions}

@@ -9,7 +9,7 @@ import { LOGIN_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { IconBack, IconLogoLarge } from "src/ui/assets/icons";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
-import logoimg from "./LogIn.webp";
+import logoimg from "./logo.png";
 import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvider.tsx";
 import { useNavigate } from "react-router-dom";
 
@@ -122,8 +122,7 @@ export const LoginPage = (props: LoginPageProps) => {
         <>
             <div className={styles.body}>
                 <div className={styles.leftside}>
-                    {/*  <IconLogoLarge className={styles.iconExp} />
-                    <img src={logoimg} className={styles.logoImgExp} />*/}
+                    <img src={logoimg} className={styles.logoImgExp} />
                 </div>
                 <div className={styles.rightside}>
                     {showRecover ? (
