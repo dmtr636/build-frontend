@@ -74,6 +74,16 @@
         );
     }
 
+    &.warning {
+        @include color-types-mixin(
+            $objects-text-contrast-primary,
+            $objects-text-neutral-primary,
+            #de9e4f,
+            #de9e4f,
+            $objects-stroke-neutral-secondary
+        );
+    }
+
     &.neutralPale {
         &:not(.iconVariant) {
         }

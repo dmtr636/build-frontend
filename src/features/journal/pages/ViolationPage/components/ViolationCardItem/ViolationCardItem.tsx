@@ -95,7 +95,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
 
             case "IN_PROGRESS":
                 return (
-                    <Button size={"small"} type={"primary"} mode={"neutral"}>
+                    <Button size={"small"} type={"primary"} mode={"warning"}>
                         В работе
                     </Button>
                 );
@@ -106,8 +106,8 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                         <Button
                             fullWidth={isMobile}
                             size="small"
-                            type="secondary"
-                            mode="lavender"
+                            type="primary"
+                            mode="positive"
                             onClick={() =>
                                 appStore.violationStore
                                     .changeStatus(violation.id, "DONE", id ?? "")
@@ -116,7 +116,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                                     )
                             }
                         >
-                            Принять
+                            Подтвердить
                         </Button>
 
                         <Button
@@ -201,7 +201,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                         size={"small"}
                         iconBefore={<IconTime />}
                         type={"secondary"}
-                        mode={"lavender"}
+                        mode={"positive"}
                         hover={false}
                     >
                         На проверке
