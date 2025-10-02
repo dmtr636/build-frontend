@@ -1579,6 +1579,7 @@ export const WorkCard = observer(
                                 workVersion.endDate = value || workVersion.endDate;
                                 worksStore.changeType = "date";
                             }}
+                            disabled={isMobile}
                             disableClear={true}
                             disableTime={true}
                             size={"medium"}
@@ -1619,6 +1620,7 @@ export const WorkCard = observer(
                                 workVersion.endDate = value || workVersion.endDate;
                                 worksStore.changeType = "date";
                             }}
+                            disabled={isMobile}
                             disableClear={true}
                             disableTime={true}
                             size={"medium"}

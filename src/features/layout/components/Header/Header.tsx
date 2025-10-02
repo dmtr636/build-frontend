@@ -12,7 +12,13 @@ import {
     IconTime,
 } from "src/ui/assets/icons";
 import { Avatar } from "src/ui/components/solutions/Avatar/Avatar.tsx";
-import { appStore, notificationStore, objectStore, userStore } from "src/app/AppStore.ts";
+import {
+    accountStore,
+    appStore,
+    notificationStore,
+    objectStore,
+    userStore,
+} from "src/app/AppStore.ts";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { clsx } from "clsx";
 import { getNameInitials } from "src/shared/utils/getFullName.ts";
@@ -131,19 +137,23 @@ const Header = observer(() => {
                         </div>
                     )}
                 </NavLink>
-                <NavLink
-                    to={"/admin/organizations"}
-                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
-                >
-                    {() => (
-                        <div className={styles.linkItem}>
-                            <div className={styles.linkItemIcon}>
-                                <IconFlag />
+                {!accountStore.isContractor && (
+                    <NavLink
+                        to={"/admin/organizations"}
+                        className={({ isActive }) =>
+                            clsx(styles.link, { [styles.active]: isActive })
+                        }
+                    >
+                        {() => (
+                            <div className={styles.linkItem}>
+                                <div className={styles.linkItemIcon}>
+                                    <IconFlag />
+                                </div>
+                                Организации
                             </div>
-                            Организации
-                        </div>
-                    )}
-                </NavLink>
+                        )}
+                    </NavLink>
+                )}
                 <NavLink
                     to={"/admin/users"}
                     className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
@@ -157,32 +167,40 @@ const Header = observer(() => {
                         </div>
                     )}
                 </NavLink>
-                <NavLink
-                    to={"/admin/events"}
-                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
-                >
-                    {() => (
-                        <div className={styles.linkItem}>
-                            <div className={styles.linkItemIcon}>
-                                <IconTime />
+                {!accountStore.isContractor && (
+                    <NavLink
+                        to={"/admin/events"}
+                        className={({ isActive }) =>
+                            clsx(styles.link, { [styles.active]: isActive })
+                        }
+                    >
+                        {() => (
+                            <div className={styles.linkItem}>
+                                <div className={styles.linkItemIcon}>
+                                    <IconTime />
+                                </div>
+                                История
                             </div>
-                            История
-                        </div>
-                    )}
-                </NavLink>
-                <NavLink
-                    to={"/admin/dictionaries"}
-                    className={({ isActive }) => clsx(styles.link, { [styles.active]: isActive })}
-                >
-                    {() => (
-                        <div className={styles.linkItem}>
-                            <div className={styles.linkItemIcon}>
-                                <IconInfo />
+                        )}
+                    </NavLink>
+                )}
+                {!accountStore.isContractor && (
+                    <NavLink
+                        to={"/admin/dictionaries"}
+                        className={({ isActive }) =>
+                            clsx(styles.link, { [styles.active]: isActive })
+                        }
+                    >
+                        {() => (
+                            <div className={styles.linkItem}>
+                                <div className={styles.linkItemIcon}>
+                                    <IconInfo />
+                                </div>
+                                Справочники
                             </div>
-                            Справочники
-                        </div>
-                    )}
-                </NavLink>
+                        )}
+                    </NavLink>
+                )}
                 <div style={{ marginLeft: "auto" }}>
                     <Notification
                         notifications={notificationsArray}
