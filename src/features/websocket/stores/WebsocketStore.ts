@@ -212,7 +212,7 @@ export class WebsocketStore {
                         );
                     }
                 }
-
+                // 1
                 if (event.objectName === "event") {
                     if (event.type === "CREATE") {
                         if (!eventsStore.events.filter((d) => d.id === event.data.id)) {
