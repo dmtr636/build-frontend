@@ -813,8 +813,8 @@ export const WorksPage = observer(() => {
                                         }
 
                                         if (currentObj && vm.form) {
-                                            currentObj.status = vm.form?.status;
                                             if (!deepEquals(currentObj, vm.form)) {
+                                                currentObj.status = vm.form?.status;
                                                 await objectStore.updateObject(currentObj);
                                             }
                                             if (
