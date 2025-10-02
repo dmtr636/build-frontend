@@ -312,7 +312,7 @@ const ReviewPage = observer(() => {
         if (project) layoutStore.setHeaderProps({ title: project?.name });
     }, [project]);
     const isMobile = layoutStore.isMobile;
-    useGeofence({
+    const { inside } = useGeofence({
         polygon: project?.polygon ?? ([] as any),
         throttleMs: 1000,
         enableHighAccuracy: true,
@@ -324,6 +324,12 @@ const ReviewPage = observer(() => {
             setUnlock(false);
         },
     });
+
+    useEffect(() => {
+        if (inside) {
+            setUnlock(true);
+        }
+    }, [inside]);
 
     const loading =
         !project ||
