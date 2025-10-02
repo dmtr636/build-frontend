@@ -47,7 +47,7 @@ export class AccountStore {
     }
 
     async logout() {
-        this.fetchUserIsOffline();
+        await this.fetchUserIsOffline();
         await axios.post(LOGOUT_ENDPOINT);
 
         this.setUser(null);
