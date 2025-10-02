@@ -8,6 +8,7 @@ import {
     layoutStore,
     objectStore,
     violationStore,
+    visitsStore,
     worksStore,
 } from "src/app/AppStore.ts";
 import styles from "./ReviewPage.module.scss";
@@ -45,6 +46,7 @@ import { navigate } from "@storybook/addon-links";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { useGeofence } from "src/features/journal/hooks/geofence.ts";
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
@@ -67,6 +69,12 @@ const ReviewPage = observer(() => {
     const { id } = useParams();
 
     const project = appStore.objectStore.ObjectMap.get(id ?? "");
+
+    useEffect(() => {
+        if (unlock && id) {
+            visitsStore.createVisit(id, accountStore.currentUser?.id ?? "");
+        }
+    }, [unlock]);
 
     useEffect(() => {
         try {
@@ -304,21 +312,18 @@ const ReviewPage = observer(() => {
         if (project) layoutStore.setHeaderProps({ title: project?.name });
     }, [project]);
     const isMobile = layoutStore.isMobile;
-    /*const { pos, inside, error, lastChangeTs } = useGeofence({
-            polygon: project?.polygon ?? ([] as any),
-            throttleMs: 1000,
-            enableHighAccuracy: true,
-            minAccuracyMeters: 500,
-            onEnter: (p) => console.log("Вход в зону", p),
-            onExit: (p) => console.log("Выход из зоны", p),
-        });*/
-    /*
-            console.log(pos);
-        */
-    /*console.log(inside);*/
-    /*
-            console.log(JSON.parse(JSON.stringify(project?.polygon)));
-        */
+    useGeofence({
+        polygon: project?.polygon ?? ([] as any),
+        throttleMs: 1000,
+        enableHighAccuracy: true,
+        minAccuracyMeters: 500,
+        onEnter: () => {
+            setUnlock(true);
+        },
+        onExit: () => {
+            setUnlock(false);
+        },
+    });
 
     const loading =
         !project ||

@@ -36,6 +36,7 @@ export class VisitsStore {
         columns: ["userId", "visitDate", "position", "violations", "works"],
         columnWidths: {},
     };
+    currentVisitId = "";
 
     constructor() {
         makeAutoObservable(this);
@@ -139,5 +140,26 @@ export class VisitsStore {
 
     resetFilters = () => {
         this.filters = initialFilter;
+    };
+
+    createVisit = async (projectId: string, userId: string) => {
+        const response = await this.apiClient.get<Visit>(
+            endpoints.projectVisits +
+                `/lookup?projectId=${projectId}&userId=${userId}&date=${new Date().toJSON().slice(0, 10)}`,
+        );
+        if (response.status) {
+            this.currentVisitId = response.data.id;
+            return response.data.id;
+        }
+        const createResponse = await this.apiClient.post<Visit>(endpoints.projectVisits, {
+            projectId: projectId,
+            userId: userId,
+        });
+        if (createResponse.status) {
+            this.currentVisitId = createResponse.data.id;
+            return createResponse.data.id;
+        }
+        this.currentVisitId = "";
+        return "";
     };
 }

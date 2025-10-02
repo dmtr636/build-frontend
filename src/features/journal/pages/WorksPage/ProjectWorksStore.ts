@@ -15,6 +15,7 @@ import {
     ProjectViolationCommentDTO,
     ProjectViolationDTO,
 } from "src/features/journal/types/Violation.ts";
+import { accountStore } from "src/app/AppStore.ts";
 
 interface WorkVersion {
     versionNumber: number;
@@ -418,7 +419,7 @@ export class WorksStore {
             }
         }
 
-        if (hasScheduleChanges) {
+        if (hasScheduleChanges && accountStore.isContractor) {
             for (const workForm of this.worksForm) {
                 const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
                 await this.apiClient.post(endpoints.projectWorkVersions, {

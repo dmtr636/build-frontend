@@ -93,6 +93,9 @@ export function useGeofence({
     const [lastChangeTs, setLastChangeTs] = useState<number | null>(null);
 
     useEffect(() => {
+        if (!polygon?.length) {
+            return;
+        }
         if (!pos) return;
         if (pos.accuracy && pos.accuracy > minAccuracyMeters) return; // слишком шумно — игнор
 
