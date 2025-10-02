@@ -3,6 +3,7 @@ import styles from "./JournalItemCard.module.scss";
 import {
     IconChat,
     IconCheckmark,
+    IconDialogue,
     IconDote,
     IconFlag,
     IconImage,
@@ -80,7 +81,7 @@ const JournalItemCard = ({ project }: journalItemCardProps) => {
             case "FOR_APPROVAL":
                 return (
                     <div className={clsx(styles.badge, styles.approval)}>
-                        <IconChat /> На согласовании
+                        <IconDialogue /> На согласовании
                     </div>
                 );
             default:
