@@ -15,6 +15,7 @@ import styles from "./ReviewPage.module.scss";
 import {
     IconApps,
     IconAttention,
+    IconChat,
     IconCheckmark,
     IconDote,
     IconFlag,
@@ -151,6 +152,12 @@ const ReviewPage = observer(() => {
                 return (
                     <div className={clsx(styles.badge, styles.complete)}>
                         <IconSuccess /> Завершён
+                    </div>
+                );
+            case "FOR_APPROVAL":
+                return (
+                    <div className={clsx(styles.badge, styles.approval)}>
+                        <IconChat /> На согласовании
                     </div>
                 );
             default:

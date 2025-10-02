@@ -172,6 +172,7 @@
     font-style: normal;
     font-weight: 500;
     line-height: 140%;
+
     &:hover {
         opacity: 0.8;
     }
@@ -256,6 +257,7 @@
     font-style: normal;
     font-weight: 500;
     line-height: 140%;
+
     svg {
         width: 18px;
         height: 18px;
@@ -308,6 +310,16 @@
 
         svg path {
             fill: #c02626;
+        }
+    }
+
+    &.approval {
+        color: #e26a08;
+        border: 1px solid #f7801f;
+        background: #fde6d3;
+
+        svg path {
+            fill: #e26a08;
         }
     }
 }

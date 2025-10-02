@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import styles from "./JournalItemCard.module.scss";
 import {
+    IconChat,
     IconCheckmark,
     IconDote,
     IconFlag,
@@ -74,6 +75,12 @@ const JournalItemCard = ({ project }: journalItemCardProps) => {
                 return (
                     <div className={clsx(styles.badge, styles.complete)}>
                         <IconSuccess /> Завершён
+                    </div>
+                );
+            case "FOR_APPROVAL":
+                return (
+                    <div className={clsx(styles.badge, styles.approval)}>
+                        <IconChat /> На согласовании
                     </div>
                 );
             default:
