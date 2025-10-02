@@ -13,7 +13,7 @@ import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { User } from "src/features/users/types/User.ts";
 import { observer } from "mobx-react-lite";
-import { appStore } from "src/app/AppStore.ts";
+import { accountStore, appStore } from "src/app/AppStore.ts";
 import { clsx } from "clsx";
 import { IconMax, IconTg } from "src/features/users/components/UserCard/assets";
 import { formatPhone } from "src/shared/utils/formatPhone.ts";
@@ -258,16 +258,18 @@ const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
                         </div>
                     )}
                 </div>
-                <div className={styles.footer}>
-                    <div style={{ display: "flex", gap: 4 }}>
-                        <span style={{ opacity: 0.5 }}>Системная роль </span>
-                        {user.role}
+                {!accountStore.isContractor && (
+                    <div className={styles.footer}>
+                        <div style={{ display: "flex", gap: 4 }}>
+                            <span style={{ opacity: 0.5 }}>Системная роль </span>
+                            {user.role}
+                        </div>
+                        <div style={{ display: "flex", gap: 4 }}>
+                            <span style={{ opacity: 0.5 }}>Пользователь добавлен </span>
+                            {formatDateShort(user?.createdAt)}
+                        </div>
                     </div>
-                    <div style={{ display: "flex", gap: 4 }}>
-                        <span style={{ opacity: 0.5 }}>Пользователь добавлен </span>
-                        {formatDateShort(user?.createdAt)}
-                    </div>
-                </div>
+                )}
             </div>
             {user && openModal && (
                 <UserCardEdit open={openModal} setOpen={setOpenModal} currentUser={user} />
