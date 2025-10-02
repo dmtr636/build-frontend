@@ -168,7 +168,12 @@ export const JournalPage = observer(() => {
     const [openCreate, setOpenCreate] = useState(false);
     const [sortIsOpen, setSortIsOpen] = useState<boolean>(false);
     const [value, setValue] = useState("");
-    const journalList = appStore.objectStore.objects;
+    const objectsList = appStore.objectStore.objects;
+
+    const journalList = React.useMemo(() => {
+        if (loginUser?.role === "ADMIN") return objectsList;
+        return objectsList.filter((o) => o.projectUsers.some((i) => i.id === loginUser?.id)); // <-- замените на ваше поле
+    }, [objects, loginUser]);
     const [objectStatus, setObjectStatus] = useState<string[]>([]);
     const [types, setTypes] = useState<string[]>([]);
     const typeList = new Set(journalList.map((item) => item.type).filter((i) => i));

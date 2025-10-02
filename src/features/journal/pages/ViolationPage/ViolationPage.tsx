@@ -7,7 +7,13 @@ import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
-import { appStore, layoutStore, registryStore, worksStore } from "src/app/AppStore.ts";
+import {
+    accountStore,
+    appStore,
+    layoutStore,
+    registryStore,
+    worksStore,
+} from "src/app/AppStore.ts";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -149,7 +155,7 @@ const ViolationPage = observer(() => {
                 </Helmet>
                 {!isMobile && (
                     <div className={styles.filterBlock}>
-                        {
+                        {!accountStore.isContractor && (
                             <div>
                                 <Button
                                     size={"small"}
@@ -161,7 +167,7 @@ const ViolationPage = observer(() => {
                                     Добавить нарушение
                                 </Button>
                             </div>
-                        }
+                        )}
                         <div className={styles.filterContainer}>
                             <div className={styles.filterHead}>
                                 <span style={{ opacity: 0.6 }}>Фильтры</span>

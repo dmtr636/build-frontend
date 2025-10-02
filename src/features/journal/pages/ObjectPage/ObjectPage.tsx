@@ -25,6 +25,49 @@ export const ObjectPage = observer(() => {
     useLayoutEffect(() => {
         layoutStore.setHeaderProps({ title: currentObj?.name ?? "Объект", buttonBack: true });
     }, [currentObj]);
+    const customTabs = [
+        {
+            name: "Обзор",
+            value: "review",
+        },
+
+        {
+            name: "Документы",
+            value: "docs",
+            disabled:
+                worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
+                !accountStore.isAdmin,
+        },
+        {
+            name: "Состав работ",
+            value: "status",
+            disabled:
+                worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
+                !accountStore.isAdmin,
+        },
+
+        {
+            name: "Участники",
+            value: "users",
+            disabled:
+                worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
+                !accountStore.isAdmin,
+        },
+        {
+            name: "Материалы",
+            value: "materials",
+            disabled:
+                worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
+                !accountStore.isAdmin,
+        },
+        {
+            name: "Замечания и нарушения",
+            value: "violations",
+            disabled:
+                worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
+                !accountStore.isAdmin,
+        },
+    ];
     return (
         <div>
             <Helmet>
@@ -53,68 +96,72 @@ export const ObjectPage = observer(() => {
                         }}
                         mode={"neutral"}
                         size={"small"}
-                        tabs={[
-                            {
-                                name: "Обзор",
-                                value: "review",
-                            },
-                            {
-                                name: "Об объекте",
-                                value: "about",
-                                disabled:
-                                    worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
-                                    !accountStore.isAdmin,
-                            },
-                            {
-                                name: "Документы",
-                                value: "docs",
-                                disabled:
-                                    worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
-                                    !accountStore.isAdmin,
-                            },
-                            {
-                                name: "Состав работ",
-                                value: "status",
-                                disabled:
-                                    worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
-                                    !accountStore.isAdmin,
-                            },
-                            {
-                                name: "Местоположение",
-                                value: "location",
-                                disabled:
-                                    worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
-                                    !accountStore.isAdmin,
-                            },
-                            {
-                                name: "Участники",
-                                value: "users",
-                                disabled:
-                                    worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
-                                    !accountStore.isAdmin,
-                            },
-                            {
-                                name: "Материалы",
-                                value: "materials",
-                                disabled:
-                                    worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
-                                    !accountStore.isAdmin,
-                            },
-                            {
-                                name: "Визиты",
-                                value: "visits",
-                                disabled:
-                                    worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
-                                    !accountStore.isAdmin,
-                            },
-                            {
-                                name: "Замечания и нарушения",
-                                value: "violations",
-                                disabled:
-                                    worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS" &&
-                                    !accountStore.isAdmin,
-                            },
-                        ]}
+                        tabs={
+                            accountStore.isContractor
+                                ? customTabs
+                                : [
+                                      {
+                                          name: "Обзор",
+                                          value: "review",
+                                      },
+                                      {
+                                          name: "Об объекте",
+                                          value: "about",
+                                          disabled:
+                                              worksStore.openingChecklists?.[0]?.status ===
+                                                  "IN_PROGRESS" && !accountStore.isAdmin,
+                                      },
+                                      {
+                                          name: "Документы",
+                                          value: "docs",
+                                          disabled:
+                                              worksStore.openingChecklists?.[0]?.status ===
+                                                  "IN_PROGRESS" && !accountStore.isAdmin,
+                                      },
+                                      {
+                                          name: "Состав работ",
+                                          value: "status",
+                                          disabled:
+                                              worksStore.openingChecklists?.[0]?.status ===
+                                                  "IN_PROGRESS" && !accountStore.isAdmin,
+                                      },
+                                      {
+                                          name: "Местоположение",
+                                          value: "location",
+                                          disabled:
+                                              worksStore.openingChecklists?.[0]?.status ===
+                                                  "IN_PROGRESS" && !accountStore.isAdmin,
+                                      },
+                                      {
+                                          name: "Участники",
+                                          value: "users",
+                                          disabled:
+                                              worksStore.openingChecklists?.[0]?.status ===
+                                                  "IN_PROGRESS" && !accountStore.isAdmin,
+                                      },
+                                      {
+                                          name: "Материалы",
+                                          value: "materials",
+                                          disabled:
+                                              worksStore.openingChecklists?.[0]?.status ===
+                                                  "IN_PROGRESS" && !accountStore.isAdmin,
+                                      },
+                                      {
+                                          name: "Визиты",
+                                          value: "visits",
+                                          disabled:
+                                              worksStore.openingChecklists?.[0]?.status ===
+                                                  "IN_PROGRESS" && !accountStore.isAdmin,
+                                      },
+                                      {
+                                          name: "Замечания и нарушения",
+                                          value: "violations",
+                                          disabled:
+                                              worksStore.openingChecklists?.[0]?.status ===
+                                                  "IN_PROGRESS" && !accountStore.isAdmin,
+                                      },
+                                  ]
+                        }
                         style={{
                             marginBottom: -1,
                         }}
