@@ -24,7 +24,7 @@ import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
-import { accountStore, appStore, layoutStore, userStore } from "src/app/AppStore.ts";
+import { accountStore, appStore, layoutStore, worksStore, userStore } from "src/app/AppStore.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 
 interface ViolationCardItemProps {
@@ -347,7 +347,11 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                     {!(currentUserRole === "USER" && violation.status === "IN_REVIEW") &&
                         !isMobile && (
                             <Button
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    worksStore.showViolationComments = true;
+                                    worksStore.currentViolation = violation;
+                                }}
                                 type={"outlined"}
                                 mode={"neutral"}
                                 size={"small"}

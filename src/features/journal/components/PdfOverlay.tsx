@@ -1,6 +1,6 @@
 import { Document, Page, pdfjs } from "react-pdf";
 import { useState } from "react";
-// Указываем worker (см. документацию react-pdf)
+
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     "pdfjs-dist/build/pdf.worker.min.mjs",
     import.meta.url,

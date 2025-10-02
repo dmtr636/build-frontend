@@ -1,8 +1,6 @@
-// geofence.ts
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LatLng, useGeolocation } from "./useGeolocation";
 
-// Быстрый бокс (оптимизация перед ray casting)
 function makeBBox(polygon: LatLng[]) {
     let minLat = Infinity,
         maxLat = -Infinity,
@@ -25,11 +23,6 @@ function inBBox(
     return y >= box.minLat && y <= box.maxLat && x >= box.minLng && x <= box.maxLng;
 }
 
-/**
- * Ray casting: true, если точка внутри полигона или на его ребре.
- * Вершины — произвольного порядка (по/против часовой), замыкать не обязательно.
- * Не поддерживает полигоны с «дырами» и пересечение анти-меридиана.
- */
 export function isPointInPolygon(point: LatLng, polygon: LatLng[]): boolean {
     const x = point.longitude; // как X
     const y = point.latitude; // как Y
@@ -93,6 +86,9 @@ export function useGeofence({
     const [lastChangeTs, setLastChangeTs] = useState<number | null>(null);
 
     useEffect(() => {
+        if (!polygon?.length) {
+            return;
+        }
         if (!pos) return;
         if (pos.accuracy && pos.accuracy > minAccuracyMeters) return; // слишком шумно — игнор
 

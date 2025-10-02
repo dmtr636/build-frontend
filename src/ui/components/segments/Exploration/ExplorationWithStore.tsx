@@ -62,7 +62,7 @@ export const ExplorationWithStore = observer((props: ExplorationWithStoreProps) 
                         disabled={
                             JSON.stringify(store.filterValues) === JSON.stringify(store.filterForm)
                         }
-                        mode={"brand"}
+                        mode={"accent"}
                     >
                         {props.applyButtonLabel ?? "Применить"}
                     </Button>,

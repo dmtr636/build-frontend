@@ -42,10 +42,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    /*
-overflow: hidden;
-*/
 }
 
 .noUser {
@@ -113,7 +109,7 @@ overflow: hidden;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 18.2px */
+    line-height: 140%;
     &.sortDate {
     }
 }
@@ -157,5 +153,5 @@ overflow: hidden;
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 16.8px */
+    line-height: 140%;
 }

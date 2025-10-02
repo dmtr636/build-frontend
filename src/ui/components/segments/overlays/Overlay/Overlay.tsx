@@ -247,9 +247,6 @@ export const Overlay = observer((props: OverlayProps) => {
                         </Typo>
                         {onClose && (
                             <ButtonIcon
-                                /*
-                                className={styles.closeIcon}
-*/
                                 onClick={onClose}
                                 type={"outlined"}
                                 mode={"neutral"}

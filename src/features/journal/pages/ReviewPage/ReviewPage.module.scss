@@ -3,12 +3,11 @@
     gap: 12px;
     color: var(--text-neutral-tertiary, #444d5f);
 
-    /* Headings/H4 */
     font-family: Manrope;
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
-    line-height: 120%; /* 28.8px */
+    line-height: 120%;
 }
 
 .icon {
@@ -31,9 +30,7 @@
     @media screen and (max-width: 768px) {
         flex-direction: column;
         width: 100%;
-        /*
-padding: 0 16px;
-*/
+
         margin-top: 16px;
         margin-bottom: 100px;
     }
@@ -45,8 +42,6 @@ padding: 0 16px;
 }
 
 .itemForm {
-    /* width: 346px;*/
-
     border-radius: 12px;
     border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
     background: #f9fafb;
@@ -62,12 +57,6 @@ padding: 0 16px;
             width: calc(100vw - 32px);
         }
     }
-
-    /*.right {
-display: flex;
-flex-direction: column;
-gap: 12px;
-}*/
 }
 
 .buttonsCheck {
@@ -121,6 +110,7 @@ gap: 12px;
         width: 109px;
         height: 158px;
         object-fit: cover;
+        border-radius: 8px;
     }
 }
 
@@ -146,12 +136,11 @@ gap: 12px;
     color: var(--text-neutral-secondary, #2c313a);
     text-align: justify;
 
-    /* Body/S */
     font-family: Manrope;
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 16.8px */
+    line-height: 140%;
     opacity: 0.5;
 }
 
@@ -169,12 +158,11 @@ gap: 12px;
     color: var(--text-neutral-tertiary, #444d5f);
     text-align: justify;
 
-    /* Body/M */
     font-family: Manrope;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 18.2px */
+    line-height: 140%;
     svg {
         width: 18px;
         height: 18px;
@@ -249,7 +237,7 @@ gap: 12px;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 22.4px */
+    line-height: 140%;
     align-items: center;
 
     svg {
@@ -294,12 +282,11 @@ gap: 12px;
     color: var(--text-neutral-secondary, #2c313a);
     text-align: justify;
 
-    /* Subhead/S */
     font-family: Manrope;
     font-size: 13px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 16.9px */
+    line-height: 130%;
     opacity: 0.8;
 }
 
@@ -312,9 +299,7 @@ gap: 12px;
 .itemLogo {
     width: 36px;
     height: 36px;
-    /*
-flex-shrink: 0;
-*/
+
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -353,12 +338,11 @@ flex-shrink: 0;
     color: var(--objects-text-accent-primary, #2053d5);
     text-align: justify;
 
-    /* Body/M */
     font-family: Manrope;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 18.2px */
+    line-height: 140%;
     &:hover {
         opacity: 0.8;
     }
@@ -406,12 +390,11 @@ flex-shrink: 0;
     text-align: justify;
     cursor: pointer;
 
-    /* Subhead/S */
     font-family: Manrope;
     font-size: 13px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 16.9px */
+    line-height: 130%;
     &:hover {
         opacity: 0.8;
     }
@@ -433,7 +416,7 @@ flex-shrink: 0;
     font-size: 13px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 16.9px */
+    line-height: 130%;
 }
 
 .VCount {
@@ -452,7 +435,7 @@ flex-shrink: 0;
     font-size: 13px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 16.9px */
+    line-height: 130%;
 }
 
 .noWork {
@@ -461,12 +444,12 @@ flex-shrink: 0;
     color: var(--text-neutral-secondary, #2c313a);
     text-align: justify;
     cursor: pointer;
-    /* Subhead/S */
+
     font-family: Manrope;
     font-size: 13px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 16.9px */
+    line-height: 130%;
     gap: 12px;
 }
 
@@ -493,12 +476,11 @@ flex-shrink: 0;
     background: var(--objects-background-accent-tertiary, #e5ecff);
     color: var(--objects-text-accent-primary, #2053d5);
 
-    /* Body/M */
     font-family: Manrope;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 18.2px */
+    line-height: 140%;
     &.noMap {
         &:hover {
             opacity: 0.8;

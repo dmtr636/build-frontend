@@ -6,7 +6,9 @@ import {
     accountStore,
     appStore,
     layoutStore,
+    objectStore,
     violationStore,
+    visitsStore,
     worksStore,
 } from "src/app/AppStore.ts";
 import styles from "./ReviewPage.module.scss";
@@ -40,14 +42,31 @@ import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { OpeningCheckListSections } from "src/features/journal/pages/WorksPage/components/CheckListSection/OpeningCheckListSections.tsx";
 import { Alert } from "src/ui/components/solutions/Alert/Alert.tsx";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { navigate } from "@storybook/addon-links";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { Scanner } from "@yudiel/react-qr-scanner";
-import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
+import { useGeofence } from "src/features/journal/hooks/geofence.ts";
 
-function formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // месяцы идут с 0
+function formatDate(dateInput: string | [number, number, number]): string {
+    let date: Date;
+
+    if (Array.isArray(dateInput)) {
+        const [year, month, day] = dateInput;
+
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+            return "Invalid Date";
+        }
+
+        date = new Date(year, month - 1, day);
+    } else {
+        const isoDateStr = dateInput.includes("T") ? dateInput : `${dateInput}T00:00:00`;
+        date = new Date(isoDateStr);
+    }
+
+    if (isNaN(date.getTime())) {
+        return "Invalid Date";
+    }
+
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${month}.${year}`;
 }
@@ -66,6 +85,12 @@ const ReviewPage = observer(() => {
     const { id } = useParams();
 
     const project = appStore.objectStore.ObjectMap.get(id ?? "");
+
+    useEffect(() => {
+        if (unlock && id) {
+            visitsStore.createVisit(id, accountStore.currentUser?.id ?? "");
+        }
+    }, [unlock]);
 
     useEffect(() => {
         try {
@@ -296,27 +321,33 @@ const ReviewPage = observer(() => {
         };
     }, []);
 
-    const showChecklist = worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS";
+    const showChecklist =
+        !accountStore.isAdmin &&
+        !accountStore.isContractor &&
+        worksStore.openingChecklists?.[0]?.status === "IN_PROGRESS";
 
     useLayoutEffect(() => {
         if (project) layoutStore.setHeaderProps({ title: project?.name });
     }, [project]);
     const isMobile = layoutStore.isMobile;
-    /*const { pos, inside, error, lastChangeTs } = useGeofence({
-            polygon: project?.polygon ?? ([] as any),
-            throttleMs: 1000,
-            enableHighAccuracy: true,
-            minAccuracyMeters: 500,
-            onEnter: (p) => console.log("Вход в зону", p),
-            onExit: (p) => console.log("Выход из зоны", p),
-        });*/
-    /*
-            console.log(pos);
-        */
-    /*console.log(inside);*/
-    /*
-            console.log(JSON.parse(JSON.stringify(project?.polygon)));
-        */
+    const { inside } = useGeofence({
+        polygon: project?.polygon ?? ([] as any),
+        throttleMs: 1000,
+        enableHighAccuracy: true,
+        minAccuracyMeters: 500,
+        onEnter: () => {
+            setUnlock(true);
+        },
+        onExit: () => {
+            setUnlock(false);
+        },
+    });
+
+    useEffect(() => {
+        if (inside) {
+            setUnlock(true);
+        }
+    }, [inside]);
 
     const loading =
         !project ||
@@ -349,7 +380,7 @@ const ReviewPage = observer(() => {
                                 marginBottom: 124,
                             }}
                         >
-                            {accountStore.isContractor && (
+                            {accountStore.isCustomer && (
                                 <>
                                     {worksStore.openingChecklists?.[0]?.sections?.some((s) =>
                                         s.items.some((i) => !i.answer),
@@ -378,6 +409,10 @@ const ReviewPage = observer(() => {
                                                     },
                                                 );
                                                 await worksStore.fetchChecklists(id ?? "");
+                                                await objectStore.updateObject({
+                                                    ...(project ?? {}),
+                                                    status: "FOR_APPROVAL",
+                                                });
                                             }}
                                         >
                                             Отправить на согласование
@@ -423,6 +458,10 @@ const ReviewPage = observer(() => {
                                                 },
                                             );
                                             await worksStore.fetchChecklists(id ?? "");
+                                            await objectStore.updateObject({
+                                                ...(project ?? {}),
+                                                status: "IN_PROGRESS",
+                                            });
                                         }}
                                     >
                                         Согласовать открытие
@@ -500,7 +539,6 @@ const ReviewPage = observer(() => {
                                                   .length
                                             : undefined
                                     }
-                                    /*   iconBefore={<IconPlus />}*/
                                     mode={"neutral"}
                                     size={"small"}
                                 >

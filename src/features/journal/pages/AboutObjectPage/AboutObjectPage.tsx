@@ -97,7 +97,6 @@ const AboutObjectPage = observer(() => {
             end: endDate as string,
         },
     };
-    console.log(currentOrg?.objectNumber);
     const onClick = () => {
         if (objForm)
             appStore.objectStore.updateObject(objForm).then(() => {
@@ -146,7 +145,7 @@ const AboutObjectPage = observer(() => {
                     onSelectFile={async (file) => {
                         const imageId = await appStore.accountStore.uploadMediaFile(
                             file,
-                            "PROFILE_IMAGE",
+                            "PROJECT_COVER_IMAGE",
                         );
                         setObjPreview(imageId);
                     }}

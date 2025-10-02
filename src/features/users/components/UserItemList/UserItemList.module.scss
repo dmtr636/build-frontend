@@ -6,7 +6,6 @@
     flex-direction: column;
     gap: 8px;
     overflow: hidden;
-    /*max-height: 100%;*/
 }
 
 .count {
@@ -17,7 +16,7 @@
     font-size: 14px;
     font-style: normal;
     font-weight: 600;
-    line-height: 20px; /* 142.857% */
+    line-height: 20px;
 }
 
 .countItem {
@@ -34,10 +33,6 @@
     @media screen and (min-width: 1500px) {
         width: 634px;
     }
-
-    /*
-  margin-top: 12px;
-  */
 }
 
 .chipsArray {
@@ -52,6 +47,6 @@
     font-size: 17px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 22.1px */
+    line-height: 130%;
     margin-bottom: 12px;
 }

@@ -53,20 +53,6 @@
         }
     }
 
-    &.brand {
-        --current-background-color: var(--objects-background-brand-expfolio-tertiary);
-
-        .content {
-            .header {
-                color: var(--objects-text-brand-expfolio-primary);
-            }
-
-            .text {
-                color: var(--objects-text-neutral-secondary);
-            }
-        }
-    }
-
     &.top {
         flex-direction: column;
     }

@@ -1,9 +1,7 @@
 .container {
     width: 1240px;
     display: flex;
-    /*
-margin-top: 40px;
-*/
+
     gap: 24px;
     position: relative;
     min-height: calc(100vh - 100px);
@@ -64,7 +62,7 @@ margin-top: 40px;
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
-    line-height: 120%; /* 19.2px */
+    line-height: 120%;
     padding: 12.5px 16px;
 }
 

@@ -485,15 +485,6 @@ export const PolygonPointRow = observer(
                     number={true}
                     readonly={true}
                 />
-                {/*<Tooltip header={"Удалить точку"} delay={500}>*/}
-                {/*    <Button*/}
-                {/*        type={"outlined"}*/}
-                {/*        mode={"neutral"}*/}
-                {/*        iconBefore={<IconClose />}*/}
-                {/*        onClick={props.onDelete}*/}
-                {/*        disabled={!props.onDelete}*/}
-                {/*    />*/}
-                {/*</Tooltip>*/}
             </Grid>
         );
     },

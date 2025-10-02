@@ -169,8 +169,8 @@
     align-items: center;
     margin: -1px;
     border-radius: var(--s, 8px);
-    border: 1px dashed var(--objects-stroke-brand-expfolio-primary, #a0b6ed);
-    background: var(--objects-background-brand-expfolio-tertiary, #e5ecff);
+    border: 1px dashed #a0b6ed;
+    background: #e5ecff;
 }
 
 .photoGridPreview {

@@ -18,7 +18,7 @@ export const Footer = observer((props: Props) => {
     const navigate = useNavigate();
 
     const isDevBranch = () => {
-        return window.location.hostname.includes("dev.expfolio");
+        return window.location.hostname.includes("dev.build");
     };
 
     return (

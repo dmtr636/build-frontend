@@ -24,7 +24,6 @@ const UserItemList = observer(
             .map(([id]) => id);
         type SortField = "createdAt" | "name" | "group" | "role";
         type SortOrder = "asc" | "desc";
-        console.log(appStore.organizationsStore.organizationById(""));
 
         function groupUsers(users: User[], field: SortField, order: SortOrder = "asc") {
             switch (field) {

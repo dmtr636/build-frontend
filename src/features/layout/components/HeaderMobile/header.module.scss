@@ -34,15 +34,13 @@
 .title {
     overflow: hidden;
     color: var(--text-neutral-tertiary, #444d5f);
-    /*
-text-align: start;
-*/
+
     text-wrap: nowrap;
     text-overflow: ellipsis;
     font-size: 20px;
     font-style: normal;
     font-weight: 700;
-    line-height: 120%; /* 24px */
+    line-height: 120%;
     width: 100%;
 }
 
@@ -90,7 +88,7 @@ text-align: start;
     font-size: 12px;
     font-style: normal;
     font-weight: 600;
-    line-height: 16px; /* 133.333% */
+    line-height: 16px;
 }
 
 .badge {
@@ -100,7 +98,7 @@ text-align: start;
     font-size: 15px;
     font-style: normal;
     font-weight: 600;
-    line-height: 20px; /* 133.333% */
+    line-height: 20px;
     letter-spacing: 0.15px;
     border-radius: var(--4XL, 40px);
     text-wrap: nowrap;

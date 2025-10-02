@@ -36,7 +36,7 @@ export const ConfirmCloseOverlay = (props: {
                               <Button
                                   key="save"
                                   type={"primary"}
-                                  mode={"brand"}
+                                  mode={"accent"}
                                   onClick={props.onSave}
                                   loading={props.loading}
                                   fullWidth={true}
@@ -49,7 +49,7 @@ export const ConfirmCloseOverlay = (props: {
                           <Button
                               key="save"
                               type={"primary"}
-                              mode={"brand"}
+                              mode={"accent"}
                               onClick={props.onSave}
                               loading={props.loading}
                           >

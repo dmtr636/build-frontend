@@ -11,6 +11,11 @@ import { deepEquals } from "src/shared/utils/deepEquals.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import axios from "axios";
 import dayjs from "dayjs";
+import {
+    ProjectViolationCommentDTO,
+    ProjectViolationDTO,
+} from "src/features/journal/types/Violation.ts";
+import { accountStore } from "src/app/AppStore.ts";
 
 interface WorkVersion {
     versionNumber: number;
@@ -69,6 +74,9 @@ export class WorksStore {
     works: ProjectWork[] = [];
     worksForm: ProjectWork[] = [];
     workComments: ProjectWorkComment[] = [];
+    violationComments: ProjectViolationCommentDTO[] = [];
+    showViolationComments = false;
+    currentViolation: ProjectViolationDTO | null = null;
     loading = false;
     currentWorkVersion = 1;
     allWorks = [];
@@ -288,6 +296,17 @@ export class WorksStore {
         this.loading = false;
     }
 
+    async fetchViolationsComments(violationId: string) {
+        this.loading = true;
+        const response = await this.apiClient.get<ProjectViolationCommentDTO[]>(
+            endpoints.projectViolationsComments + `/search?violationId=${violationId}`,
+        );
+        if (response.status) {
+            this.violationComments = response.data;
+        }
+        this.loading = false;
+    }
+
     async fetchWorkCommentsCount(workId: string) {
         const response = await this.apiClient.get<ProjectWorkComment[]>(
             endpoints.projectWorkComments + `/search?workId=${workId}`,
@@ -302,6 +321,16 @@ export class WorksStore {
         this.loading = true;
         await this.apiClient.post<ProjectWorkComment>(endpoints.projectWorkComments, comment);
         await this.fetchWorkComments(comment?.workId ?? "");
+        this.loading = false;
+    }
+
+    async createViolationComment(comment: Partial<ProjectViolationCommentDTO>) {
+        this.loading = true;
+        await this.apiClient.post<ProjectViolationCommentDTO>(
+            endpoints.projectViolationsComments,
+            comment,
+        );
+        await this.fetchViolationsComments(comment?.violationId ?? "");
         this.loading = false;
     }
 
@@ -390,7 +419,7 @@ export class WorksStore {
             }
         }
 
-        if (hasScheduleChanges) {
+        if (hasScheduleChanges && accountStore.isContractor) {
             for (const workForm of this.worksForm) {
                 const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
                 await this.apiClient.post(endpoints.projectWorkVersions, {

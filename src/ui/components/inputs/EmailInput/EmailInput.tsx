@@ -44,12 +44,8 @@ export const EmailInput = ({
 }) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    /*     const [value, setValue] = React.useState("")
-     */
     const [emailIsValid, setEmailIsValid] = React.useState(true);
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
-        /*         setValue(event.target.value);
-         */
         onChange(event.target.value);
         const isValid = emailRegex.test(event.target.value);
         setEmailIsValid(isValid);

@@ -66,7 +66,7 @@
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
-    line-height: 120%; /* 28.8px */
+    line-height: 120%;
 }
 
 .userlistBlock {
@@ -81,7 +81,6 @@
     align-self: flex-start;
     background-color: white;
     z-index: 2;
-    /* padding-top: 40px;*/
 }
 
 .renderHeader {
@@ -89,7 +88,7 @@
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
-    line-height: 120%; /* 19.2px */
+    line-height: 120%;
     padding: 12.5px 16px;
 }
 
@@ -108,9 +107,7 @@
 .buttonsOverlay {
     display: flex;
     margin-top: 80px;
-    /*
-margin-left: auto;
-*/
+
     gap: 12px;
 }
 
@@ -134,7 +131,6 @@ margin-left: auto;
     color: var(--text-neutral-secondary, #2c313a);
     text-align: center;
 
-    /* Action/XL */
     font-family: Manrope;
     font-size: 16px;
     font-style: normal;
@@ -199,5 +195,5 @@ margin-left: auto;
     font-size: 14px;
     font-style: normal;
     font-weight: 600;
-    line-height: 20px; /* 142.857% */
+    line-height: 20px;
 }

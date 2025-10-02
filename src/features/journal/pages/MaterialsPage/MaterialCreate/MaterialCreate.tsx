@@ -653,16 +653,13 @@ const MaterialCreate = observer(() => {
                                                 materialsStore.addForm.waybill = {} as any;
                                             }
                                             if (materialsStore.addForm.waybill) {
-                                                materialsStore.addForm.waybill.volume = event.target
-                                                    .value
-                                                    ? Number(event.target.value)
-                                                    : null;
+                                                materialsStore.addForm.waybill.volume =
+                                                    event.target.value;
                                             }
                                         }}
                                         value={materialsStore.addForm.waybill?.volume ?? ""}
                                         formName={"Объём"}
                                         placeholder={"Введите значение"}
-                                        number={true}
                                         onClear={() => {
                                             if (materialsStore.addForm.waybill) {
                                                 materialsStore.addForm.waybill.volume = null;
@@ -675,16 +672,13 @@ const MaterialCreate = observer(() => {
                                                 materialsStore.addForm.waybill = {} as any;
                                             }
                                             if (materialsStore.addForm.waybill) {
-                                                materialsStore.addForm.waybill.netWeight = event
-                                                    .target.value
-                                                    ? Number(event.target.value)
-                                                    : null;
+                                                materialsStore.addForm.waybill.netWeight =
+                                                    event.target.value;
                                             }
                                         }}
                                         value={materialsStore.addForm.waybill?.netWeight ?? ""}
                                         formName={"Нетто"}
                                         placeholder={"Введите число"}
-                                        number={true}
                                         onClear={() => {
                                             if (materialsStore.addForm.waybill) {
                                                 materialsStore.addForm.waybill.netWeight = null;
@@ -697,16 +691,13 @@ const MaterialCreate = observer(() => {
                                                 materialsStore.addForm.waybill = {} as any;
                                             }
                                             if (materialsStore.addForm.waybill) {
-                                                materialsStore.addForm.waybill.grossWeight = event
-                                                    .target.value
-                                                    ? Number(event.target.value)
-                                                    : null;
+                                                materialsStore.addForm.waybill.grossWeight =
+                                                    event.target.value;
                                             }
                                         }}
                                         value={materialsStore.addForm.waybill?.grossWeight ?? ""}
                                         formName={"Брутто"}
                                         placeholder={"Введите число"}
-                                        number={true}
                                         onClear={() => {
                                             if (materialsStore.addForm.waybill) {
                                                 materialsStore.addForm.waybill.grossWeight = null;

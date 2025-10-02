@@ -6,7 +6,6 @@ import { User, UserOnlineMap } from "src/features/users/types/User.ts";
 import { SortOption } from "src/features/users";
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
 
-/** --- LocalStorage helpers --- */
 const LS_KEYS = {
     sortOption: "userStore.sortOption",
     roles: "userStore.roles",

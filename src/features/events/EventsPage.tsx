@@ -140,17 +140,13 @@ export const EventsPage = observer(() => {
                                 multiple={true}
                                 formName={"Объект"}
                                 size={"medium"}
-                                options={[
-                                    {
-                                        name: "Объект 1",
-                                        value: "Объект 1",
-                                    },
-                                    {
-                                        name: "Объект 2",
-                                        value: "Объект 2",
-                                    },
-                                ]}
+                                options={objectStore.objects.map((o) => ({
+                                    name: o.name,
+                                    value: o.id,
+                                }))}
                                 placeholder={"Все"}
+                                fullWidth={false}
+                                tipPosition={"top-left"}
                                 onValuesChange={(values) => {
                                     eventsStore.filters.objectIds = values;
                                 }}

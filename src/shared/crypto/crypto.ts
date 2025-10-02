@@ -4,7 +4,6 @@ export interface SymPayload {
     ciphertext: string; // base64, AES-GCM (включая auth-tag)
 }
 
-// --- Утилиты base64 ---
 const b64enc = (buf: ArrayBuffer | Uint8Array): string => {
     const u8 = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
     let s = "";
@@ -19,17 +18,14 @@ const b64dec = (b64: string): Uint8Array => {
     return u8;
 };
 
-// --- Вспомогательные энкодеры ---
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 
-// --- Выводим ссылку на Web Crypto ---
 const subtle: SubtleCrypto = (() => {
     if (typeof crypto !== "undefined" && crypto.subtle) return crypto.subtle;
     throw new Error("Web Crypto Subtle API недоступен в этом окружении.");
 })();
 
-// --- Производная ключа AES-GCM из пароля + соли (PBKDF2 / SHA-256) ---
 async function deriveAesGcmKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
     const keyMaterial = await subtle.importKey(
         "raw",
@@ -53,7 +49,6 @@ async function deriveAesGcmKey(password: string, salt: Uint8Array): Promise<Cryp
     );
 }
 
-// --- Шифрование ---
 export async function encryptSym(plaintext: string, password: string): Promise<SymPayload> {
     const salt = crypto.getRandomValues(new Uint8Array(16)); // уникальная соль на сообщение
     const iv = crypto.getRandomValues(new Uint8Array(12)); // 12 байт для GCM
@@ -68,7 +63,6 @@ export async function encryptSym(plaintext: string, password: string): Promise<S
     };
 }
 
-// --- Дешифрование (на фронте — для локальной проверки; на бэке делаем Java-версией) ---
 export async function decryptSym(payload: SymPayload, password: string): Promise<string> {
     const salt = b64dec(payload.salt);
     const iv = b64dec(payload.iv);

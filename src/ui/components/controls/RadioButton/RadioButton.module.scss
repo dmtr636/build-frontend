@@ -67,14 +67,6 @@
         );
     }
 
-    &.brand {
-        @include color-mode-vars(
-            $objects-stroke-brand-expfolio-primary,
-            $objects-text-brand-expfolio-primary,
-            $objects-text-brand-expfolio-secondary
-        );
-    }
-
     @include color-state-vars("pale");
 
     &.checked,

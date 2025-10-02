@@ -31,16 +31,6 @@
                     .circle {
                         background-color: lighter-hover($objects-graphic-accent-primary);
                     }
-
-                    &.brand {
-                        background-color: darker-hover(
-                            $objects-background-brand-expfolio-secondary
-                        );
-
-                        .circle {
-                            background-color: darker-hover($objects-graphic-brand-expfolio-primary);
-                        }
-                    }
                 }
             }
 
@@ -63,20 +53,6 @@
 
                 .circle {
                     background-color: lighter-disabled($objects-graphic-accent-primary);
-                }
-            }
-
-            &.brand {
-                &.checked {
-                    background-color: lighter-disabled(
-                        $objects-background-brand-expfolio-secondary
-                    );
-
-                    .circle {
-                        background-color: lighter-disabled(
-                            $objects-graphic-brand-expfolio-tertiary
-                        );
-                    }
                 }
             }
         }
@@ -117,20 +93,6 @@
         .circle {
             background-color: var(--objects-graphic-accent-primary, #2053d5);
             left: 28px;
-        }
-
-        &.brand {
-            background-color: ($objects-background-brand-expfolio-secondary);
-
-            .circle {
-                background-color: var(--objects-graphic-brand-expfolio-primary);
-
-                svg {
-                    path {
-                        fill: var(--objects-text-neutral-primary);
-                    }
-                }
-            }
         }
     }
 }

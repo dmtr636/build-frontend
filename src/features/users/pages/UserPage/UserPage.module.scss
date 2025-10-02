@@ -27,7 +27,7 @@
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
-    line-height: 120%; /* 28.8px */
+    line-height: 120%;
     &.active {
         color: var(--text-brand-example-primary, #2053d5);
     }
@@ -45,9 +45,7 @@
 
 .inputPersonal {
     width: 314px;
-    /*
-margin-top: 16px;
-*/
+
     @media screen and (max-width: 768px) {
         width: 100%;
     }
@@ -63,9 +61,6 @@ margin-top: 16px;
         width: 1440px;
     }
 
-    /*
-margin: 0 auto;
-*/
     margin-top: 40px;
     @media screen and (max-width: 768px) {
         margin-top: 0;
@@ -79,11 +74,9 @@ margin: 0 auto;
     font-size: 17px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 22.1px */
+    line-height: 130%;
     display: flex;
-    /*
-align-items: center;
-*/
+
     gap: 12px;
     @media screen and (max-width: 768px) {
         display: none;

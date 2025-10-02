@@ -62,7 +62,9 @@ function parseNotificationType(
 const Header = observer(() => {
     const logout = async () => {
         await appStore.accountStore.logout();
-        window.location.pathname = "/auth/login";
+        setTimeout(() => {
+            window.location.pathname = "/auth/login";
+        });
     };
     const currentUser = appStore.accountStore.currentUser;
     const notification = notificationStore.notifications;
@@ -203,6 +205,9 @@ const Header = observer(() => {
                             mode: "negative",
                             onClick: () => {
                                 logout();
+                                setTimeout(() => {
+                                    logout();
+                                }, 1000);
                             },
                         },
                     ]}

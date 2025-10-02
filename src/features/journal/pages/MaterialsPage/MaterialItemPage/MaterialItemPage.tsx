@@ -763,16 +763,13 @@ const MaterialItemPage = observer(() => {
                                                 materialsStore.editForm.waybill = {} as any;
                                             }
                                             if (materialsStore.editForm.waybill) {
-                                                materialsStore.editForm.waybill.volume = event
-                                                    .target.value
-                                                    ? Number(event.target.value)
-                                                    : null;
+                                                materialsStore.editForm.waybill.volume =
+                                                    event.target.value;
                                             }
                                         }}
                                         value={materialsStore.editForm.waybill?.volume ?? ""}
                                         formName={"Объём"}
                                         placeholder={"Введите значение"}
-                                        number={true}
                                         onClear={() => {
                                             if (materialsStore.editForm.waybill) {
                                                 materialsStore.editForm.waybill.volume = null;
@@ -785,16 +782,13 @@ const MaterialItemPage = observer(() => {
                                                 materialsStore.editForm.waybill = {} as any;
                                             }
                                             if (materialsStore.editForm.waybill) {
-                                                materialsStore.editForm.waybill.netWeight = event
-                                                    .target.value
-                                                    ? Number(event.target.value)
-                                                    : null;
+                                                materialsStore.editForm.waybill.netWeight =
+                                                    event.target.value;
                                             }
                                         }}
                                         value={materialsStore.editForm.waybill?.netWeight ?? ""}
                                         formName={"Нетто"}
-                                        placeholder={"Введите число"}
-                                        number={true}
+                                        placeholder={"Введите значение"}
                                         onClear={() => {
                                             if (materialsStore.editForm.waybill) {
                                                 materialsStore.editForm.waybill.netWeight = null;
@@ -807,16 +801,13 @@ const MaterialItemPage = observer(() => {
                                                 materialsStore.editForm.waybill = {} as any;
                                             }
                                             if (materialsStore.editForm.waybill) {
-                                                materialsStore.editForm.waybill.grossWeight = event
-                                                    .target.value
-                                                    ? Number(event.target.value)
-                                                    : null;
+                                                materialsStore.editForm.waybill.grossWeight =
+                                                    event.target.value;
                                             }
                                         }}
                                         value={materialsStore.editForm.waybill?.grossWeight ?? ""}
                                         formName={"Брутто"}
-                                        placeholder={"Введите число"}
-                                        number={true}
+                                        placeholder={"Введите значение"}
                                         onClear={() => {
                                             if (materialsStore.editForm.waybill) {
                                                 materialsStore.editForm.waybill.grossWeight = null;

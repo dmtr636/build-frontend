@@ -59,16 +59,7 @@ const MaterialListCard = observer(({ onClick, isOpen, material }: UserItemCardPr
                                     color: "var(--objects-text-neutral-quaternary, #5F6A81)",
                                 }}
                             >
-                                {material.waybill.volume} м
-                                <sup
-                                    style={{
-                                        marginTop: -10,
-                                        display: "inline-block",
-                                        translate: "0 3px",
-                                    }}
-                                >
-                                    3
-                                </sup>
+                                {material.waybill.volume}
                             </span>
                         )}
                     </div>

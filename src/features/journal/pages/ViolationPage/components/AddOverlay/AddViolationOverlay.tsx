@@ -29,13 +29,11 @@ interface AddViolationOverlayProps {
     editingViolation?: ProjectViolationDTO;
 }
 
-// --- медиа-слоты ---
 type MediaSlot = { id: string; imageId: string | null };
 
 function formatInstant(input: Date | string): string {
     const date = input instanceof Date ? input : new Date(input);
 
-    // Берём UTC-компоненты
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, "0");
     const day = String(date.getUTCDate()).padStart(2, "0");
@@ -58,7 +56,6 @@ const AddViolationOverlay = observer(
             name: v.name,
             value: v.id,
         }));
-        // если нужно — одинаково считаем dueDate и violationTime
         const [document, setDocument] = useState<string[]>([]);
         const [violation, setViolation] = useState<string | null>();
         const [violationTime, setViolationTime] = React.useState<string | null>(null);
@@ -102,7 +99,6 @@ const AddViolationOverlay = observer(
 
                 name: currentViolation?.name,
 
-                // Дата дедлайна = дата обнаружения + violationDays (в формате YYYY-MM-DD)
                 dueDate: (() => {
                     if (!violationTime || !violationDays) return null;
                     const start = new Date(violationTime);
@@ -111,24 +107,18 @@ const AddViolationOverlay = observer(
                     return due.toISOString().slice(0, 10);
                 })(),
 
-                // ISO-строка времени обнаружения
                 violationTime: formatInstant(violationTime as any),
 
-                status: "TODO", // TODO | IN_PROGRESS | IN_REVIEW | DONE
+                status: editingViolation?.status ?? "TODO",
 
-                // Если в справочнике у нарушения есть эти поля — возьмём их, иначе дефолты из примера
                 category: currentViolation?.category,
                 kind: currentViolation?.kind ?? "Устранимое",
                 severityType: currentViolation?.severityType ?? "Простое",
 
                 isNote,
 
-                // Координаты — подставьте ваши значения/стор (если есть выбор точки на карте)
-                /* latitude: appStore.mapStore?.selectedPoint?.lat ?? null,
-                   longitude: appStore.mapStore?.selectedPoint?.lng ?? null,*/
                 normativeDocuments: document.map((id) => ({ id })),
 
-                // Фото — из загруженных imageIds
                 photos: imageIds.map((id) => ({ id })),
                 latitude: coords?.lat || null,
                 longitude: coords?.lng || null,
@@ -193,7 +183,10 @@ const AddViolationOverlay = observer(
             }
         }, [editingViolation, isEditing, violations, documents, open]);
         const handleSelectFile = (slotIndex: number) => async (file: File) => {
-            const imageId = await appStore.accountStore.uploadMediaFile(file, "PROFILE_IMAGE");
+            const imageId = await appStore.accountStore.uploadMediaFile(
+                file,
+                "PROJECT_CONTENT_IMAGE",
+            );
 
             setSlots((prev) => {
                 const next = [...prev];

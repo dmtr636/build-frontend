@@ -165,7 +165,9 @@ export class OrganizationsStore {
                     organization.employees?.map((e) => e.id),
                 );
             }
-            this.organizations.push(response.data);
+            if (!this.organizations.find((o) => o.id === response.data.id)) {
+                this.organizations.push(response.data);
+            }
             return true;
         } else {
             this.loading = false;

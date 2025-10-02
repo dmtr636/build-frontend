@@ -11,6 +11,7 @@ import {
     ProjectViolationDTO,
     ProjectViolationStatus,
 } from "src/features/journal/types/Violation.ts";
+import { visitsStore } from "src/app/AppStore.ts";
 
 export class ViolationStore {
     sortOption: SortOption = {
@@ -52,7 +53,13 @@ export class ViolationStore {
     }
 
     async changeStatus(id: string, status: ProjectViolationStatus, idOrg: string) {
-        await axios.patch(`${endpoints.violations}/${id}/status?status=${status}`);
+        if (visitsStore.currentVisitId) {
+            await axios.patch(
+                `${endpoints.violations}/${id}/status?status=${status}&visitId=${visitsStore.currentVisitId}`,
+            );
+        } else {
+            await axios.patch(`${endpoints.violations}/${id}/status?status=${status}`);
+        }
         this.fetchViolationByObj(idOrg);
     }
 }

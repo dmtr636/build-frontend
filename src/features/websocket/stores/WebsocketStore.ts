@@ -1,8 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { Client } from "@stomp/stompjs";
 import { DEBUG, domain } from "src/shared/config/domain.ts";
-import { throttle } from "src/shared/utils/throttle.ts";
-import { store } from "storybook-dark-mode/dist/ts/Tool";
 import {
     accountStore,
     appStore,

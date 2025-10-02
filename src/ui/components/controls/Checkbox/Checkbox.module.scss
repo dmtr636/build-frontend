@@ -112,32 +112,6 @@
         );
     }
 
-    &.brand {
-        @include color-mode-vars(
-            $objects-graphic-brand-expfolio-primary,
-            $objects-text-brand-expfolio-primary,
-            $objects-text-brand-expfolio-tertiary
-        );
-        @include color-mode-vars-brand(
-            $objects-graphic-brand-expfolio-primary,
-            $objects-text-brand-expfolio-primary,
-            $objects-text-brand-expfolio-tertiary
-        );
-    }
-
-    &.brand:not(.checked) {
-        @include color-mode-vars(
-            $objects-graphic-brand-expfolio-secondary,
-            $objects-text-brand-expfolio-primary,
-            $objects-text-brand-expfolio-tertiary
-        );
-        @include color-mode-vars-brand(
-            $objects-graphic-brand-expfolio-secondary,
-            $objects-text-brand-expfolio-primary,
-            $objects-text-brand-expfolio-tertiary
-        );
-    }
-
     @include color-state-vars("pale");
 
     &.checked,

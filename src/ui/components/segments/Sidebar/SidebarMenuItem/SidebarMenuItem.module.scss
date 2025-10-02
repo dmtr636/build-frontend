@@ -48,17 +48,3 @@
         transform: scaleX(-1);
     }
 }
-
-.brandButton {
-    color: var(--objects-text-brand-expfolio-secondary) !important;
-
-    @media (hover: hover) and (pointer: fine) {
-        &:hover {
-            color: darker-hover($objects-text-brand-expfolio-secondary) !important;
-        }
-    }
-
-    &:active {
-        color: darker-pressing($objects-text-brand-expfolio-secondary) !important;
-    }
-}

@@ -61,7 +61,7 @@
     font-size: 14px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 18.2px */
+    line-height: 130%;
 }
 
 .online {
@@ -78,9 +78,7 @@
     background: var(--objects-background-neutral-secondary, #e8eaed);
     padding: 0 8px;
     margin-top: 8px;
-    /*
-padding-bottom: 2px;
-*/
+
     height: 16px;
 
     &.active {
@@ -100,12 +98,12 @@ padding-bottom: 2px;
     color: var(--objects-text-neutral-primary, #111317);
     text-align: center;
     opacity: 0.8;
-    /* Body/M */
+
     font-family: Manrope;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 18.2px */
+    line-height: 140%;
 }
 
 .role {
@@ -116,7 +114,7 @@ padding-bottom: 2px;
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 16.8px */
+    line-height: 140%;
     opacity: 0.5;
 }
 
@@ -134,7 +132,7 @@ padding-bottom: 2px;
     font-size: 15px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 21px */
+    line-height: 140%;
 
     &:hover {
         opacity: 0.6;
@@ -192,7 +190,7 @@ padding-bottom: 2px;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 18.2px */
+    line-height: 140%;
     padding: 16px 20px 0;
     display: flex;
     flex-direction: column;

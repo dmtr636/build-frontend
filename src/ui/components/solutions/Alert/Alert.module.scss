@@ -7,11 +7,6 @@
     padding: var(--lvl-5);
     border-radius: var(--s);
 
-    &.brand {
-        color: var(--objects-text-brand-expfolio-primary, #184d28);
-        background: var(--objects-background-brand-expfolio-tertiary, #e5ffed);
-    }
-
     &.positive {
         color: $objects-text-positive-primary;
         background: var(--objects-background-positive-tertiary, #ecf9ef);

@@ -47,7 +47,7 @@ export class AccountStore {
     }
 
     async logout() {
-        this.fetchUserIsOffline();
+        await this.fetchUserIsOffline();
         await axios.post(LOGOUT_ENDPOINT);
 
         this.setUser(null);
@@ -106,11 +106,6 @@ export class AccountStore {
         this.initialized = initialized;
     }
 
-    /**
-     * Универсальная загрузка медиа/документов.
-     * Возвращает id загруженного файла (как возвращает fileStore.uploadFile).
-     * onUpload вызывается с (id, width, height). Для документов ширина/высота = 0.
-     */
     async uploadMediaFile(
         file: File,
         type: FileType,
@@ -147,7 +142,7 @@ export class AccountStore {
                         try {
                             URL.revokeObjectURL(url);
                         } catch {
-                            /* empty */
+                            console.error("error while revoking url");
                         }
                     };
                     video.addEventListener(
@@ -173,7 +168,6 @@ export class AccountStore {
             };
 
             const result = await fileStore.uploadFile(file, type);
-            console.log(result);
             try {
                 const { width, height } = await getVideoDimensions(URL.createObjectURL(file));
                 onUpload?.(result, width, height);
@@ -189,7 +183,6 @@ export class AccountStore {
             const result = await fileStore.uploadFile(file, type);
             // Для документов размеров нет — отдаем 0,0
             onUpload?.(result, 0, 0);
-            console.log(result);
             return result;
         }
 
@@ -207,7 +200,7 @@ export class AccountStore {
                             try {
                                 URL.revokeObjectURL(dataURL);
                             } catch {
-                                /* empty */
+                                console.error("error while revoking url");
                             }
                         };
                         img.onload = () => {
@@ -301,7 +294,6 @@ export class AccountStore {
         });
 
         const result = await fileStore.uploadFile(processedFile, type);
-        console.log(result);
         onUpload?.(result, width, height);
         return result;
     }

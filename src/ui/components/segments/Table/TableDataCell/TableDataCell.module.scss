@@ -20,7 +20,7 @@
     }
 
     &.selected {
-        background: lighter-focus($objects-background-brand-expfolio-tertiary);
+        background: lighter-focus(#e5ecff);
     }
 
     &:not(:last-child) {

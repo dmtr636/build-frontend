@@ -455,11 +455,11 @@ export const MapEditor = observer(
                         </Marker>
                     )}
 
-                    {/* Нужен контейнер для корректного z-index внутренних паней */}
+                    {}
                     <FeatureGroup />
                 </MapContainer>
 
-                {/* зум-кнопки */}
+                {}
                 <Button
                     mode={"contrast"}
                     type={"primary"}

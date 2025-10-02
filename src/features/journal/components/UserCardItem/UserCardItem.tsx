@@ -163,13 +163,8 @@ const userCardItem = observer(
                                     onClick: onClickDelete,
                                 },
                             ]}
-                            /*
-                                                        show={chats}
-                            */ hideTip={true}
+                            hideTip={true}
                             tipPosition={"top-right"}
-                            /*
-                                                        setShow={setChats}
-                            */
                         >
                             <ButtonIcon
                                 pale={true}
@@ -189,9 +184,6 @@ const userCardItem = observer(
                             <Tooltip text={"Связаться"}>
                                 <div
                                     className={styles.buttonsBlockChat}
-                                    /*
-                                                                    ref={ref}
-                                    */
                                     onMouseEnter={(e) => e.stopPropagation()}
                                     onMouseLeave={(e) => e.stopPropagation()}
                                     onClick={() => {

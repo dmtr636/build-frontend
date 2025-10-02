@@ -25,20 +25,6 @@
         }
     }
 
-    &.brand {
-        &.primary {
-            color: var(--objects-stroke-brand-expfolio-primary);
-        }
-
-        &.secondary {
-            color: var(--objects-stroke-brand-expfolio-secondary);
-        }
-
-        &.tertiary {
-            color: var(--objects-stroke-brand-expfolio-tertiary);
-        }
-    }
-
     &.contrast {
         &.primary {
             color: var(--objects-stroke-contrast-primary);

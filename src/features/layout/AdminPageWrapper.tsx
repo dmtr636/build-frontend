@@ -61,7 +61,6 @@ const AdminPageWrapper = observer(() => {
             appStore.websocketStore.closeSocket();
         };
     }, []);
-    console.log(isMobile);
     return (
         <div ref={containerRef}>
             {!isMobile && <Header />}

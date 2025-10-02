@@ -50,18 +50,6 @@
             color: var(--objects-text-contrast-secondary, #f9fafb);
         }
     }
-
-    &.brand {
-        background-color: var(--objects-background-brand-expfolio-tertiary, #111317);
-
-        .header {
-            color: var(--objects-text-brand-expfolio-primary, #fff);
-        }
-
-        .text {
-            color: var(--objects-text-neutral-secondary, #f9fafb);
-        }
-    }
 }
 
 .header {

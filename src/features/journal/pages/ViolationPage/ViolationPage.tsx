@@ -7,7 +7,7 @@ import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { MultipleSelect } from "src/ui/components/inputs/Select/MultipleSelect.tsx";
 import { MultipleAutocomplete } from "src/ui/components/inputs/Autocomplete/MultipleAutocomplete.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
-import { appStore, layoutStore, registryStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, registryStore, worksStore } from "src/app/AppStore.ts";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -23,6 +23,7 @@ import { IconBuildArrow, IconBuildPhoto } from "src/features/users/components/Us
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
 import { User } from "src/features/users/types/User.ts";
 import { clsx } from "clsx";
+import { ViolationComments } from "src/features/journal/pages/ViolationPage/components/ViolationComments/ViolationComments.tsx";
 
 const ViolationPage = observer(() => {
     const loginUser = appStore.accountStore.currentUser;
@@ -56,9 +57,6 @@ const ViolationPage = observer(() => {
                 layoutStore.setHeaderProps({ title: "Нарушения" });
             }
         }
-        /* return () => {
-            layoutStore.setHeaderProps({ title: "Нарушения" });
-        };*/
     }, [location.search]);
     useEffect(() => {
         if (id) {
@@ -130,7 +128,6 @@ const ViolationPage = observer(() => {
         const authorSet = new Set(author); // id автора
 
         return violations.filter((v) => {
-            /* if (statusRequired && v.status !== statusRequired) return false;*/
             if (dateFilter && !sameDay(v.violationTime, dateFilter)) return false;
             if (categorySet.size && !categorySet.has(normalize(v.category))) return false;
             if (viewSet.size && !viewSet.has(normalize(v.severityType))) return false;
@@ -152,7 +149,6 @@ const ViolationPage = observer(() => {
                 </Helmet>
                 {!isMobile && (
                     <div className={styles.filterBlock}>
-                        {/*loginUser?.role !== "USER" &&*/}
                         {
                             <div>
                                 <Button
@@ -166,18 +162,6 @@ const ViolationPage = observer(() => {
                                 </Button>
                             </div>
                         }
-                        {/*<div>
-                    <Button
-                        fullWidth={true}
-                        size={"small"}
-                        type={"outlined"}
-                        customIconBefore={<IconXlsx />}
-                        mode={"neutral"}
-                                                onClick={downloadExcel}
-                    >
-                        Экспорт в XLSX
-                    </Button>
-                </div>*/}
                         <div className={styles.filterContainer}>
                             <div className={styles.filterHead}>
                                 <span style={{ opacity: 0.6 }}>Фильтры</span>
@@ -424,6 +408,14 @@ const ViolationPage = observer(() => {
                 open={openCreate}
                 setOpen={() => setOpenCreate(false)}
             />
+
+            {worksStore.currentViolation && worksStore.showViolationComments && (
+                <ViolationComments
+                    violation={worksStore.currentViolation}
+                    show={worksStore.showViolationComments}
+                    setShow={(show) => (worksStore.showViolationComments = show)}
+                />
+            )}
         </>
     );
 });
