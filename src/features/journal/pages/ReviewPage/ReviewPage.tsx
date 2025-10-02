@@ -6,6 +6,7 @@ import {
     accountStore,
     appStore,
     layoutStore,
+    objectStore,
     violationStore,
     worksStore,
 } from "src/app/AppStore.ts";
@@ -379,6 +380,10 @@ const ReviewPage = observer(() => {
                                                     },
                                                 );
                                                 await worksStore.fetchChecklists(id ?? "");
+                                                await objectStore.updateObject({
+                                                    ...(project ?? {}),
+                                                    status: "FOR_APPROVAL",
+                                                });
                                             }}
                                         >
                                             Отправить на согласование
@@ -424,6 +429,10 @@ const ReviewPage = observer(() => {
                                                 },
                                             );
                                             await worksStore.fetchChecklists(id ?? "");
+                                            await objectStore.updateObject({
+                                                ...(project ?? {}),
+                                                status: "IN_PROGRESS",
+                                            });
                                         }}
                                     >
                                         Согласовать открытие
