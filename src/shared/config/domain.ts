@@ -19,7 +19,7 @@ if (isDevelopment) {
         domain = DEVELOPMENT_DOMAIN;
     }
 } else {
-    domain = `https://api.${hostname}`;
+    domain = `https://api.${hostname}`.replace("api.m.", "api.");
 }
 
 export { domain };
