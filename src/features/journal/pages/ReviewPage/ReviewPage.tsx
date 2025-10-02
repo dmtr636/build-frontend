@@ -17,6 +17,7 @@ import {
     IconAttention,
     IconChat,
     IconCheckmark,
+    IconDialogue,
     IconDote,
     IconFlag,
     IconImage,
@@ -157,7 +158,7 @@ const ReviewPage = observer(() => {
             case "FOR_APPROVAL":
                 return (
                     <div className={clsx(styles.badge, styles.approval)}>
-                        <IconChat /> На согласовании
+                        <IconDialogue /> На согласовании
                     </div>
                 );
             default:

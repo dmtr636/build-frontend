@@ -205,7 +205,7 @@
         border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
         background: var(--objects-background-neutral-secondary, #e8eaed);
         color: var(--objects-text-neutral-primary, #111317);
-
+        width: 110px;
         svg path {
             fill: var(--objects-text-neutral-primary, #111317);
         }
@@ -231,7 +231,7 @@
         color: #e26a08;
         border: 1px solid #f7801f;
         background: #fde6d3;
-
+        width: 160px;
         svg path {
             fill: #e26a08;
         }
