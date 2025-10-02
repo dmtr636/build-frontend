@@ -17,7 +17,7 @@ export type ProjectViolationDTO = {
     id: string;
     projectId: string;
     name: string;
-    dueDate: any; // date
+    dueDate: string | null; // date
     violationTime: string; // date-time
     status: ProjectViolationStatus;
     category: string;

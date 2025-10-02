@@ -33,8 +33,17 @@ interface ViolationCardItemProps {
     active?: boolean;
 }
 
-function formatDueDate(dateArray: [number, number, number]): string {
-    const [year, month, day] = dateArray;
+function formatDueDate(dateArray: [number, number, number] | string): string {
+    let year: number, month: number, day: number;
+
+    if (typeof dateArray === "string") {
+        const [y, m, d] = dateArray.split("-").map(Number);
+        year = y;
+        month = m;
+        day = d;
+    } else {
+        [year, month, day] = dateArray;
+    }
 
     const dd = String(day).padStart(2, "0");
     const mm = String(month).padStart(2, "0");
@@ -372,7 +381,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                                 iconBefore={<IconEdit />}
                             />
                         )}
-                    {!isMobile && (
+                    {!isMobile && violation.dueDate && (
                         <div className={styles.info}>
                             <span style={{ opacity: 0.7 }}>Нужно исправить до</span>
                             <div className={styles.infoDate}>

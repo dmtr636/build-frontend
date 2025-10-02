@@ -146,10 +146,12 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
                     Посмотреть место нарушения
                 </Button>
             )}
-            <div className={styles.textBlock}>
-                <div>Нужно исправить до</div>
-                <div className={styles.textBlockSubtext}>{formatDate(violation.dueDate)}</div>
-            </div>
+            {violation.dueDate && (
+                <div className={styles.textBlock}>
+                    <div>Нужно исправить до</div>
+                    <div className={styles.textBlockSubtext}>{formatDate(violation.dueDate)}</div>
+                </div>
+            )}
             <div className={styles.textBlock}>
                 <div>Нормативные документы</div>
                 <div className={styles.docsArray}>
