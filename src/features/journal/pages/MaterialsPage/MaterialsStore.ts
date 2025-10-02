@@ -1,8 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import { ApiClient } from "src/shared/api/ApiClient.ts";
-import { endpoints } from "src/shared/api/endpoints.ts";
+import { endpoints, FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { Material } from "src/features/journal/pages/MaterialsPage/Material.ts";
 import { formatDate } from "src/shared/utils/date.ts";
+import axios from "axios";
 
 interface Filter {
     date: string | null;
@@ -36,6 +37,7 @@ export class MaterialsStore {
     showDeleteOverlay = false;
     deletingMaterial: Material | null = null;
     tab: "waybill" | "quality" = "waybill";
+    ocrLoading = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -165,5 +167,34 @@ export class MaterialsStore {
 
     resetFilters = () => {
         this.filters = initialFilter;
+    };
+
+    doOcr = async (file: Blob) => {
+        this.ocrLoading = true;
+        const formData = new FormData();
+        formData.set("file", file);
+        try {
+            const response = await axios.post<{ data?: any }>(endpoints.ocr, formData);
+            if (response?.data?.data) {
+                if (!this.addForm.waybill) {
+                    this.addForm.waybill = {} as any;
+                }
+                if (this.addForm.waybill) {
+                    this.addForm.waybill.grossWeight = response.data.data.grossWeight;
+                    this.addForm.waybill.invoiceNumber = response.data.data.invoiceNumber;
+                    this.addForm.waybill.materialName = response.data.data.materialName;
+                    this.addForm.waybill.volume = response.data.data.volume;
+                    this.addForm.waybill.netWeight = response.data.data.netWeight;
+                    this.addForm.waybill.packageCount = response.data.data.packageCount;
+                }
+            }
+        } catch (e) {
+            if (!axios.isCancel(e)) {
+                console.error("Не удалось загрузить файл");
+            }
+            return "";
+        } finally {
+            this.ocrLoading = false;
+        }
     };
 }
