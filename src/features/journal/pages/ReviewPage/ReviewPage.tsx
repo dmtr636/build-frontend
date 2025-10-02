@@ -360,6 +360,9 @@ const ReviewPage = observer(() => {
         !project ||
         !worksStore.openingChecklistsForm?.[0]?.sections?.length ||
         !worksStore.todayChecklistForm?.sections?.length;
+    console.log(project);
+    console.log(worksStore.openingChecklistsForm?.[0]?.sections?.length);
+    console.log(worksStore.todayChecklistForm?.sections?.length);
     return (
         <>
             <div className={styles.container}>
