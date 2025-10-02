@@ -4,6 +4,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import styles from "./journal.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import {
+    accountStore,
     appStore,
     layoutStore,
     organizationsStore,
@@ -484,65 +485,83 @@ export const JournalPage = observer(() => {
                             multiple={true}
                             formName={"Статус объекта"}
                         ></MultipleSelect>
-                        <MultipleAutocomplete
-                            formName={"Ответственный (Заказчик)"}
-                            options={usersArrayList
-                                .filter((user) => user.side === "CUSTOMER" && user.isResponsible)
-                                .map((item) => ({
-                                    name: getFullName(item),
-                                    value: item.id,
+                        {!accountStore.isContractor && (
+                            <MultipleAutocomplete
+                                formName={"Ответственный (Заказчик)"}
+                                options={usersArrayList
+                                    .filter(
+                                        (user) => user.side === "CUSTOMER" && user.isResponsible,
+                                    )
+                                    .map((item) => ({
+                                        name: getFullName(item),
+                                        value: item.id,
+                                    }))}
+                                placeholder={"Все"}
+                                values={responseCustomer}
+                                onValuesChange={setResponseCustomer}
+                                multiple={true}
+                            />
+                        )}
+                        {!accountStore.isContractor && (
+                            <MultipleAutocomplete
+                                formName={"Ответственный (Подрядчик)"}
+                                options={usersArrayList
+                                    .filter(
+                                        (user) => user.side === "CONTRUCTOR" && user.isResponsible,
+                                    )
+                                    .map((item) => ({
+                                        name: getFullName(item),
+                                        value: item.id,
+                                    }))}
+                                placeholder={"Все"}
+                                values={responseContractor}
+                                onValuesChange={setResponseContractor}
+                                multiple={true}
+                            />
+                        )}
+                        {!accountStore.isContractor && (
+                            <MultipleAutocomplete
+                                formName={"Заказчик"}
+                                options={orgsIdArrayCustomer.map((org) => ({
+                                    name:
+                                        appStore.organizationsStore.organizationById(org)?.name ??
+                                        "",
+                                    value: org,
                                 }))}
-                            placeholder={"Все"}
-                            values={responseCustomer}
-                            onValuesChange={setResponseCustomer}
-                            multiple={true}
-                        />
-                        <MultipleAutocomplete
-                            formName={"Ответственный (Подрядчик)"}
-                            options={usersArrayList
-                                .filter((user) => user.side === "CONTRUCTOR" && user.isResponsible)
-                                .map((item) => ({
-                                    name: getFullName(item),
-                                    value: item.id,
+                                placeholder={"Все"}
+                                values={customerOrg}
+                                onValuesChange={setCustomerOrg}
+                                multiple={true}
+                            />
+                        )}
+                        {!accountStore.isContractor && (
+                            <MultipleAutocomplete
+                                formName={"Подрядчик"}
+                                options={orgsIdArrayContractor.map((org) => ({
+                                    name:
+                                        appStore.organizationsStore.organizationById(org)?.name ??
+                                        "",
+                                    value: org,
                                 }))}
-                            placeholder={"Все"}
-                            values={responseContractor}
-                            onValuesChange={setResponseContractor}
-                            multiple={true}
-                        />
-                        <MultipleAutocomplete
-                            formName={"Заказчик"}
-                            options={orgsIdArrayCustomer.map((org) => ({
-                                name: appStore.organizationsStore.organizationById(org)?.name ?? "",
-                                value: org,
-                            }))}
-                            placeholder={"Все"}
-                            values={customerOrg}
-                            onValuesChange={setCustomerOrg}
-                            multiple={true}
-                        />
-                        <MultipleAutocomplete
-                            formName={"Подрядчик"}
-                            options={orgsIdArrayContractor.map((org) => ({
-                                name: appStore.organizationsStore.organizationById(org)?.name ?? "",
-                                value: org,
-                            }))}
-                            placeholder={"Все"}
-                            values={contractorOrg}
-                            onValuesChange={setContractorOrg}
-                            multiple={true}
-                        />
-                        <MultipleAutocomplete
-                            formName={"Задействован пользователь"}
-                            options={usersArrayList.map((user) => ({
-                                name: getFullName(user),
-                                value: user.id,
-                            }))}
-                            placeholder={"Все"}
-                            values={haveUser}
-                            onValuesChange={setHaveUser}
-                            multiple={true}
-                        />
+                                placeholder={"Все"}
+                                values={contractorOrg}
+                                onValuesChange={setContractorOrg}
+                                multiple={true}
+                            />
+                        )}
+                        {!accountStore.isContractor && (
+                            <MultipleAutocomplete
+                                formName={"Задействован пользователь"}
+                                options={usersArrayList.map((user) => ({
+                                    name: getFullName(user),
+                                    value: user.id,
+                                }))}
+                                placeholder={"Все"}
+                                values={haveUser}
+                                onValuesChange={setHaveUser}
+                                multiple={true}
+                            />
+                        )}
                         <Checkbox
                             size={"large"}
                             onChange={setHasViolations}
