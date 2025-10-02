@@ -137,7 +137,7 @@ export const PageablePopover = (props: PageablePopoverProps) => {
                         {props.onCopy && typeof text === "string" && (
                             <Button
                                 iconBefore={<IconEdit />}
-                                mode={"brand"}
+                                mode={"accent"}
                                 onClick={() => {
                                     props.onCopy?.(text);
                                     props.setShow?.(false);
@@ -155,7 +155,7 @@ export const PageablePopover = (props: PageablePopoverProps) => {
                         <Spacing width={16} />
                         <ButtonIcon
                             type={"primary"}
-                            mode={"brand"}
+                            mode={"accent"}
                             onClick={() => {
                                 const index = pageIndex === 0 ? pages.length - 1 : pageIndex - 1;
                                 setPageIndex(index);
@@ -167,7 +167,7 @@ export const PageablePopover = (props: PageablePopoverProps) => {
                         <Spacing width={12} />
                         <ButtonIcon
                             type={"primary"}
-                            mode={"brand"}
+                            mode={"accent"}
                             onClick={() => {
                                 const index = pageIndex === pages.length - 1 ? 0 : pageIndex + 1;
                                 setPageIndex(index);

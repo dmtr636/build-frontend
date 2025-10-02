@@ -9,16 +9,6 @@
     background: white;
     display: flex;
 
-    /*&:hover {
-    background-color: lighter-hover($objects-background-neutral-tertiary);
-    border: 1px solid lighter-hover($objects-stroke-neutral-tertiary);
-    cursor: pointer;
-
-    .userImg {
-      opacity: 0.85;
-    }
-  }*/
-
     &.isOpen {
         border: 1px solid var(--objects-stroke-accent-primary, #2053d5);
     }
@@ -38,10 +28,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    /*
-overflow: hidden;
-*/
 }
 
 .noUser {
@@ -110,7 +96,7 @@ overflow: hidden;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 18.2px */
+    line-height: 140%;
 }
 
 .buttonsBlock {

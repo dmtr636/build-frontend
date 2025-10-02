@@ -38,7 +38,6 @@
         font-weight: 600;
         line-height: normal;
         letter-spacing: 0.32px;
-        /*margin-right: 8px;*/
     }
 
     @media (hover: hover) and (pointer: fine) {
@@ -54,20 +53,6 @@
             }
         }
     }
-
-    /*.active {
-    cursor: alias;
-
-    .text {
-      color: $objects-text-neutral-primary;
-    }
-
-    .icon {
-      path {
-        fill: red;
-      }
-    }
-  }*/
 
     &.disabled {
         pointer-events: none;

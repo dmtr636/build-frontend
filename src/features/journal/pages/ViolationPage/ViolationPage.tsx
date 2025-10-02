@@ -57,9 +57,6 @@ const ViolationPage = observer(() => {
                 layoutStore.setHeaderProps({ title: "Нарушения" });
             }
         }
-        /* return () => {
-            layoutStore.setHeaderProps({ title: "Нарушения" });
-        };*/
     }, [location.search]);
     useEffect(() => {
         if (id) {
@@ -131,7 +128,6 @@ const ViolationPage = observer(() => {
         const authorSet = new Set(author); // id автора
 
         return violations.filter((v) => {
-            /* if (statusRequired && v.status !== statusRequired) return false;*/
             if (dateFilter && !sameDay(v.violationTime, dateFilter)) return false;
             if (categorySet.size && !categorySet.has(normalize(v.category))) return false;
             if (viewSet.size && !viewSet.has(normalize(v.severityType))) return false;
@@ -153,7 +149,6 @@ const ViolationPage = observer(() => {
                 </Helmet>
                 {!isMobile && (
                     <div className={styles.filterBlock}>
-                        {/*loginUser?.role !== "USER" &&*/}
                         {
                             <div>
                                 <Button
@@ -167,18 +162,6 @@ const ViolationPage = observer(() => {
                                 </Button>
                             </div>
                         }
-                        {/*<div>
-                    <Button
-                        fullWidth={true}
-                        size={"small"}
-                        type={"outlined"}
-                        customIconBefore={<IconXlsx />}
-                        mode={"neutral"}
-                                                onClick={downloadExcel}
-                    >
-                        Экспорт в XLSX
-                    </Button>
-                </div>*/}
                         <div className={styles.filterContainer}>
                             <div className={styles.filterHead}>
                                 <span style={{ opacity: 0.6 }}>Фильтры</span>

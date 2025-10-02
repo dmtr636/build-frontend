@@ -12,11 +12,10 @@ export class LayoutStore {
         actions?: {
             icon: React.ReactNode;
             onClick?: () => void;
-            /* type?: "primary" | "secondary";*/
+
             counter?: number;
         }[];
         buttonBack?: boolean;
-        /* badge?: { text: string; type?: "warning" | "negative" | "positive" | "info" };*/
     } = { title: "Объекты" };
 
     constructor() {
@@ -29,12 +28,11 @@ export class LayoutStore {
         actions?: {
             icon: React.ReactNode;
             onClick?: () => void;
-            /* type?: "primary" | "secondary";*/
+
             counter?: number;
         }[];
         buttonBack?: boolean;
         hide?: boolean;
-        /* badge?: { text: string; type?: "warning" | "negative" | "positive" | "info" };*/
     }) {
         this.headerProps = headerProps;
     }

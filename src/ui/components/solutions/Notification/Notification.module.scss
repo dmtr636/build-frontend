@@ -22,13 +22,10 @@
 }
 
 .notification {
-    /*width: 100%;*/
     width: 600px;
 
     display: flex;
-    /*
-flex-direction: column;
-*/
+
     gap: 12px;
     border-radius: var(--s, 8px);
     border: 1px solid var(--objects-stroke-neutral-secondary, #d6d9e0);
@@ -36,12 +33,6 @@ flex-direction: column;
     padding: 8px;
     padding-right: 12px;
 
-    /*
-align-items: center;
-*/
-    /*
-color: lighter-pale($color-components-text-neutral);
-*/
     color: var(--objects-text-neutral-primary, #111317);
 
     white-space: nowrap;
@@ -57,23 +48,11 @@ color: lighter-pale($color-components-text-neutral);
 
 .notificationDate {
     display: flex;
-    /*height: 28px;*/
+
     color: var(--objects-text-neutral-quaternary, #5f6a81);
     margin-top: 1px;
     align-items: center;
-
-    /*padding: 0 var(--padding-s);
-align-items: center;
-gap: 8px;
-border-radius: var(--main-xs);
-border: 1px solid var(--color-components-stroke-accent-tertiary);
-color: var(--color-components-text-accent);*/
 }
-
-/*.notificationDateDivider {
-  height: 100%;
-  border-left: 1px solid var(--color-components-stroke-accent-tertiary);
-}*/
 
 .notificationText {
 }
@@ -127,7 +106,7 @@ color: var(--color-components-text-accent);*/
     font-size: 13px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 16.9px */
+    line-height: 130%;
     text-align: start;
 }
 
@@ -159,7 +138,7 @@ color: var(--color-components-text-accent);*/
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 16.8px */
+    line-height: 140%;
     text-align: start;
 }
 
@@ -168,7 +147,7 @@ color: var(--color-components-text-accent);*/
 
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* не переносим заголовок */
+    white-space: nowrap;
 }
 
 .comment {

@@ -198,9 +198,7 @@ const DocumentCard = ({ documentItem, object }: DocumentCardProps) => {
                                 document.body.appendChild(link);
                                 link.click();
                                 link.remove();
-                                /*
-                                snackbarStore.showNeutralPositiveSnackbar("Скачивание файла");
-*/
+
                                 window.URL.revokeObjectURL(blobUrl);
                             }}
                             pale

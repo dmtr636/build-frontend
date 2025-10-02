@@ -42,15 +42,31 @@ import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { OpeningCheckListSections } from "src/features/journal/pages/WorksPage/components/CheckListSection/OpeningCheckListSections.tsx";
 import { Alert } from "src/ui/components/solutions/Alert/Alert.tsx";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
-import { navigate } from "@storybook/addon-links";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { Scanner } from "@yudiel/react-qr-scanner";
-import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { useGeofence } from "src/features/journal/hooks/geofence.ts";
 
-function formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // месяцы идут с 0
+function formatDate(dateInput: string | [number, number, number]): string {
+    let date: Date;
+
+    if (Array.isArray(dateInput)) {
+        const [year, month, day] = dateInput;
+
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+            return "Invalid Date";
+        }
+
+        date = new Date(year, month - 1, day);
+    } else {
+        const isoDateStr = dateInput.includes("T") ? dateInput : `${dateInput}T00:00:00`;
+        date = new Date(isoDateStr);
+    }
+
+    if (isNaN(date.getTime())) {
+        return "Invalid Date";
+    }
+
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${month}.${year}`;
 }
@@ -521,7 +537,6 @@ const ReviewPage = observer(() => {
                                                   .length
                                             : undefined
                                     }
-                                    /*   iconBefore={<IconPlus />}*/
                                     mode={"neutral"}
                                     size={"small"}
                                 >

@@ -1,10 +1,6 @@
 @import "src/ui/styles/functions";
 @import "src/ui/styles/vars";
 
-/*
-@import url(https://db.onlinewebfonts.com/c/2767b18dd6a611e3ce83d0bfe4729cb4?family=Password+Dots+Regular);
-*/
-
 @font-face {
     font-family: "Password";
     src: url("./Password-Dots.woff") format("woff");
@@ -19,9 +15,7 @@
     font-style: normal;
     font-weight: 600;
     line-height: normal;
-    /*
-letter-spacing: 0.15px;
-*/
+
     background-color: white;
     border-radius: 12px;
     cursor: text;
@@ -150,10 +144,6 @@ letter-spacing: 0.15px;
     &.active {
         border: 1px solid var(--objects-stroke-accent-primary);
         box-shadow: none;
-
-        &.brand {
-            border: 1px solid $objects-stroke-brand-expfolio-quaternary;
-        }
     }
 
     &.error {
@@ -191,7 +181,7 @@ letter-spacing: 0.15px;
         }
 
         &.outlined {
-            border: 1px solid red; /*?*/
+            border: 1px solid red;
             box-shadow: none;
 
             &.disabled {
@@ -360,34 +350,6 @@ letter-spacing: 0.15px;
         height: 44px;
     }
 }
-
-/*.passShow {
-  width: 24px;
-  height: 24px;
-}*/
-
-/*.passShowBlock {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border-radius: 18px;
-  z-index: 2;
-
-  svg path {
-    fill: var(--color-components-text-negative, #c2180f);
-  }
-
-  svg path[stroke] {
-    stroke: var(--color-components-text-negative, #c2180f);
-  }
-}*/
 
 .icon {
     path {

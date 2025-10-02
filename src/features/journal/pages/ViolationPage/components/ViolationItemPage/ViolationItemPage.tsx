@@ -155,13 +155,7 @@ const ViolationItemPage = observer(() => {
                 <div>Нормативные документы</div>
                 <div className={styles.docsArray}>
                     {violation.normativeDocuments.map((doc) => (
-                        <div
-                            key={doc.id}
-                            /*
-                                                        to={`/admin/dictionaries/normative-documents/${doc.id}}`}
-                            */
-                            className={styles.docItem}
-                        >
+                        <div key={doc.id} className={styles.docItem}>
                             <IconDocument />
                             <span style={{ marginTop: 1 }}>
                                 {`${doc.name} (${doc.regulation})`}{" "}

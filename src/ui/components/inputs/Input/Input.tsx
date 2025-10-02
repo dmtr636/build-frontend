@@ -17,10 +17,6 @@ import { IconClose, IconInvalide, IconValide } from "src/ui/assets/icons";
 import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { Backlight } from "src/ui/components/controls/Backlight/Backlight.tsx";
 
-/*
-import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
-*/
-
 export interface InputProps {
     placeholder?: string;
     onChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -98,9 +94,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
         brand,
         required,
         validate,
-        /*
-            showTooltip = true,
-    */
+
         id,
         readonly,
         onClear,
@@ -368,14 +362,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
                     {formNameText}
                 </div>
             )}
-            {/*{needTooltip && !isInputFocused && showTooltip ? (
-                <Tooltip tipPosition={"top-center"} mode={"neutral"} text={value}>
-                    {renderInput()}
-                </Tooltip>
-            ) : (
-                renderInput()
-            )}
-*/}{" "}
             {renderInput()}
             {formText && (
                 <div className={clsx(styles.formText, styles[size], { [styles.error]: error })}>

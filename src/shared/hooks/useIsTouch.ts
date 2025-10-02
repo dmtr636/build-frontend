@@ -1,4 +1,3 @@
-// useIsTouch.ts
 import { useEffect, useState } from "react";
 
 export const useIsTouch = () => {

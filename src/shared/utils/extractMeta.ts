@@ -51,15 +51,12 @@ function parseDate(dateValue: any): string | undefined {
 
 export async function extractImageMetadata(file: File): Promise<SimpleImageMetadata> {
     if (!file.type || !file.type.startsWith("image/")) {
-        console.log(file);
         return { raw: {} };
     }
 
     try {
         const arrayBuffer = await file.arrayBuffer();
-        console.log(arrayBuffer);
         const raw = await exifr.parse(arrayBuffer);
-        console.log(raw);
 
         if (!raw || Object.keys(raw).length === 0) {
             return { raw: {} };

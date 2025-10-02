@@ -6,8 +6,6 @@ import { IconAttention, IconSuccess } from "src/ui/assets/icons";
 import { Alert } from "src/ui/components/solutions/Alert/Alert.tsx";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 
-import { useIsTgApp } from "src/shared/hooks/useIsTgApp.ts";
-
 interface loginFormProps {
     logo: ReactNode | string;
     email: string;
@@ -47,9 +45,6 @@ export const LoginForm = ({
     passIsChange,
     isLoading = false,
     fullwidthButton,
-    /*
-                                  brand,
-                              */
 }: loginFormProps) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const disabledButton = !(password && emailRegex.test(email.trim()));
@@ -65,18 +60,12 @@ export const LoginForm = ({
                     <EmailInput
                         autofocus={true}
                         formName={``}
-                        /*
-                                                brand={brand}
-                        */
                         value={email}
                         onChange={onChangeEmail}
                         error={error}
                     />
                     <PasswordInput
                         showName={false}
-                        /*
-                                                brand={brand}
-                        */
                         value={password}
                         onChange={onChangePassword}
                         error={error}
@@ -131,17 +120,6 @@ export const LoginForm = ({
                     )}
                 </div>
             </form>
-            {/*   <div className={styles.dividerBlock}>
-                <div className={styles.divider}></div>
-                или <div className={styles.divider}></div>
-            </div>*/}
-            {/* <div className={styles.noAcc}>
-                Нет аккаунта?{" "}
-                <a className={styles.rega} href={`/auth/register`}>
-                    &nbsp;Зарегистрироваться
-                </a>
-                <div></div>
-            </div>*/}
         </div>
     );
 };

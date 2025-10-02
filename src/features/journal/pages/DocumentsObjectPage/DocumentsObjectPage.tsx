@@ -66,9 +66,6 @@ const DocumentsObjectPage = observer(() => {
     });
     const onChangeSort = (sort: SortOption) => {
         setSortOption(sort);
-        /*
-                appStore.objectStore.setSortOption(sort);
-        */
     };
     const isSelected = (field: string, order: "asc" | "desc") =>
         sortOption?.field === field && sortOption?.order === order;
@@ -477,9 +474,7 @@ const DocumentsObjectPage = observer(() => {
                             </div>
                         )}
 
-                        {/* {chipArray && chipArray?.length > 0 && (
-                            <div className={styles.chipsArray}>{chipArray}</div>
-                        )}*/}
+                        {}
                     </div>
 
                     <div className={clsx(styles.containerList)}>

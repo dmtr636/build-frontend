@@ -137,10 +137,6 @@
     border-radius: var(--s, 8px);
     pointer-events: none;
     border: 1px solid var(--objects-stroke-accent-primary, #2053d5);
-
-    &.brand {
-        border: 1px solid var(--objects-stroke-brand-expfolio-quaternary, #2a8445);
-    }
 }
 
 .required {

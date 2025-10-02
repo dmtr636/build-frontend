@@ -138,21 +138,7 @@ export const Notification = observer((props: NotificationProps) => {
                                         </div>
                                     </div>
                                 </div>
-                                {/*<div className={styles.notificationDate}>
-                                    <Typo variant={"bodyL"}>
-                                        {new Date(notification.date).toLocaleDateString([], {
-                                            day: "2-digit",
-                                            month: "short",
-                                        })}
-                                    </Typo>
-                                    <div className={styles.notificationDateDivider} />
-                                    <Typo variant={"bodyL"}>
-                                        {new Date(notification.date).toLocaleTimeString([], {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                        })}
-                                    </Typo>
-                                </div>*/}
+                                {}
                             </button>
                         ))}
                     </div>

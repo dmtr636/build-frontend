@@ -11,7 +11,7 @@ import { layoutStore } from "src/app/AppStore.ts";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { useIsMobile } from "src/shared/hooks/useIsMobile.ts";
 
-export const telegramContactLink = "https://t.me/expfolio_support_bot";
+export const telegramContactLink = "https://t.me/dmtr636";
 
 export const ErrorPage = () => {
     const error = useRouteError() as ErrorResponse | Error;

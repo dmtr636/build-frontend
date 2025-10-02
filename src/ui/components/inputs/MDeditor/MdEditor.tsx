@@ -27,13 +27,11 @@ const ToolbarContents = () => (
         <UndoRedo />
         <BoldItalicUnderlineToggles />
         <BlockTypeSelect />
-        {/*
-        <ChangeCodeMirrorLanguage />,
-*/}
+        {}
         <CreateLink />
         <ListsToggle options={["number", "bullet"]} />
         <InsertCodeBlock />
-        {/* <InsertTable />*/}
+        {}
     </>
 );
 

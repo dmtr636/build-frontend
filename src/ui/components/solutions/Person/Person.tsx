@@ -23,7 +23,6 @@ interface PersonProps {
     deleteIcon?: ReactNode;
     disabledDelete?: boolean;
     brand?: boolean;
-    /*size?: "small" | "medium";*/
 }
 
 export const Person = (props: PersonProps) => {

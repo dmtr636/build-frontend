@@ -288,7 +288,6 @@ const UserCardEdit = memo(({ open, setOpen, currentUser }: UserFormProps) => {
                                     value={role}
                                     disabled={loginUser?.role === "USER"}
                                     onValueChange={(v) => {
-                                        console.log(v);
                                         setRole(v as "ROOT" | "ADMIN" | "USER");
                                         if (v !== "USER") setPositionValue(null);
                                     }}

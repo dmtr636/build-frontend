@@ -10,9 +10,6 @@ export interface FooterProps {
         icon?: React.ReactNode;
         to: string;
         counter?: number;
-        /*
-                counterType?: 'primary' | 'secondary'
-        */
     }[];
 }
 
@@ -28,11 +25,7 @@ const Footer = observer(({ actions }: FooterProps) => {
                     <div className={styles.iconContainer}>
                         {" "}
                         {item.icon}{" "}
-                        {item.counter && (
-                            <div className={styles.counter}>
-                                {item.counter /*> 99 ? '99+' : item.counter*/}
-                            </div>
-                        )}
+                        {item.counter && <div className={styles.counter}>{item.counter}</div>}
                     </div>
                     {item.name}
                 </NavLink>

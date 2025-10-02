@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDebouncedCallback } from "src/shared/hooks/useDebouncedCallback.ts";
 
-const keyPrefix = "expfolio.accordionCollapsed";
+const keyPrefix = "build.accordionCollapsed";
 
 export const useAccordionCollapsedState = (
     key: string,

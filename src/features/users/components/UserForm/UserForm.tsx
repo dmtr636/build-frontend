@@ -118,9 +118,6 @@ const UserForm = ({ open, setOpen, initialOrgId, onSave }: UserFormProps) => {
             onClose={() => {
                 setOpen(false);
             }}
-            /*
-            styles={{ card: { marginTop: 24, marginBottom: 24 } }}
-*/
             title={"Новый пользователь"}
             actions={[
                 <div className={styles.footer} key={"1"}>

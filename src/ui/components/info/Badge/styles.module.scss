@@ -141,25 +141,6 @@
             "invert"
         );
     }
-
-    &.brand {
-        @include color-types-mixin(
-            $objects-text-brand-expfolio-primary,
-            $objects-text-brand-expfolio-primary,
-            $objects-background-brand-expfolio-primary,
-            $objects-background-brand-expfolio-secondary,
-            $objects-stroke-brand-expfolio-tertiary
-        );
-
-        &.outlined {
-            @include color-states-mixin(
-                "outlined",
-                $objects-text-brand-expfolio-tertiary,
-                $objects-background-brand-expfolio-secondary,
-                $objects-stroke-brand-expfolio-tertiary
-            );
-        }
-    }
 }
 
 .disabled {

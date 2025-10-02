@@ -12,23 +12,6 @@
     color: var(--objects-text-accent-primary, #2053d5);
     overflow: hidden;
 
-    &.brand {
-        background: $objects-background-brand-expfolio-tertiary;
-        color: $objects-text-brand-expfolio-primary;
-
-        @media (hover: hover) and (pointer: fine) {
-            &:hover {
-                background: darker-hover($objects-background-brand-expfolio-tertiary);
-                color: darker-hover($objects-text-brand-expfolio-primary);
-            }
-        }
-
-        &.showDropdown:focus {
-            background: lighter-focus($objects-background-brand-expfolio-tertiary);
-            color: lighter-focus($objects-text-brand-expfolio-primary);
-        }
-    }
-
     &.small {
         width: 36px;
         height: 36px;

@@ -97,7 +97,6 @@ const AboutObjectPage = observer(() => {
             end: endDate as string,
         },
     };
-    console.log(currentOrg?.objectNumber);
     const onClick = () => {
         if (objForm)
             appStore.objectStore.updateObject(objForm).then(() => {

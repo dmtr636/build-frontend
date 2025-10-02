@@ -76,9 +76,7 @@ export const PasswordInput = ({
                                 type="tertiary"
                                 mode="neutral"
                                 pale={true}
-                                /* focused={isInputFocused} */ onClick={() =>
-                                    setShowPass(!showPass)
-                                }
+                                onClick={() => setShowPass(!showPass)}
                             >
                                 <IconShowPass />
                             </ButtonIcon>
@@ -95,7 +93,7 @@ export const PasswordInput = ({
                                 size={buttonSize}
                                 disabled={disabled}
                                 type="tertiary"
-                                /* focused={isInputFocused} */ mode="neutral"
+                                mode="neutral"
                                 onClick={() => setShowPass(!showPass)}
                             >
                                 <IconDontShowPass />

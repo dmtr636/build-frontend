@@ -23,7 +23,7 @@
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
-    line-height: 120%; /* 28.8px */
+    line-height: 120%;
     position: sticky;
     top: 118px;
     background-color: white;
@@ -142,10 +142,8 @@
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
-    line-height: 120%; /* 19.2px */
-    /*
-margin-left: 8px;
-*/
+    line-height: 120%;
+
     padding: 12.5px 16px;
 }
 
@@ -311,7 +309,7 @@ margin-left: 8px;
     font-size: 14px;
     font-style: normal;
     font-weight: 600;
-    line-height: 20px; /* 142.857% */
+    line-height: 20px;
 }
 
 .countItem {
@@ -420,5 +418,5 @@ margin-left: 8px;
     font-size: 16px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 20.8px */
+    line-height: 130%;
 }

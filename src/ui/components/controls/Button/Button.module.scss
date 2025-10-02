@@ -11,7 +11,6 @@
 
     &.accent {
         &:not(.iconVariant) {
-            /*background-color: $objects-background-contrast-primary;*/
         }
 
         @include color-types-mixin(
@@ -25,7 +24,6 @@
 
     &.positive {
         &:not(.iconVariant) {
-            /*background-color: $objects-background-contrast-primary;*/
         }
 
         @include color-types-mixin(
@@ -39,7 +37,6 @@
 
     &.negative {
         &:not(.iconVariant) {
-            /* background-color: $objects-background-contrast-primary;*/
         }
 
         @include color-types-mixin(
@@ -53,7 +50,6 @@
 
     &.neutral {
         &:not(.iconVariant) {
-            /*  background-color: $objects-background-contrast-primary;*/
         }
 
         @include color-types-mixin(
@@ -67,7 +63,6 @@
 
     &.lavender {
         &:not(.iconVariant) {
-            /*  background-color: $objects-background-contrast-primary;*/
         }
 
         @include color-types-mixin(
@@ -81,7 +76,6 @@
 
     &.neutralPale {
         &:not(.iconVariant) {
-            /*  background-color: $objects-background-contrast-primary;*/
         }
 
         @include color-types-mixin(
@@ -181,64 +175,6 @@
         &:disabled,
         &.disabled {
             color: darker-disabled($objects-text-contrast-primary);
-        }
-    }
-
-    &.brand {
-        &:not(.iconVariant) {
-            /* background-color: $objects-background-contrast-primary;*/
-        }
-
-        @include color-types-mixin(
-            $objects-text-brand-expfolio-primary,
-            $objects-text-brand-expfolio-primary,
-            $objects-background-brand-expfolio-primary,
-            $objects-background-brand-expfolio-tertiary,
-            $objects-stroke-brand-expfolio-secondary
-        );
-
-        &.primary {
-            @media (hover: hover) and (pointer: fine) {
-                &:hover {
-                    background-color: darker-hover($objects-background-brand-expfolio-primary);
-                }
-            }
-
-            &.hover {
-                background-color: darker-hover($objects-background-brand-expfolio-primary);
-            }
-
-            &:active {
-                background-color: darker-pressing($objects-background-brand-expfolio-primary);
-            }
-
-            &.focused {
-                background-color: darker-focus($objects-background-brand-expfolio-primary);
-            }
-
-            &:disabled,
-            &.disabled {
-                background-color: lighter-disabled($objects-background-brand-expfolio-primary);
-            }
-        }
-
-        &.tertiary {
-            @include color-states-mixin(
-                "tertiary",
-                $objects-text-brand-expfolio-primary,
-                $objects-background-brand-expfolio-tertiary
-            );
-        }
-
-        &.outlined {
-            border: 1px solid currentColor;
-            padding: 0 calc(var(--current-padding) - 1px);
-            @include color-states-mixin(
-                "outlined",
-                $objects-text-brand-expfolio-tertiary,
-                $objects-background-brand-expfolio-tertiary,
-                $objects-stroke-brand-expfolio-primary
-            );
         }
     }
 
@@ -428,10 +364,6 @@
     &.peakRounding {
         border-radius: $x3xl;
     }
-
-    /* &.lowRounding {
-border-radius: var(--s, 8px);
-}*/
 
     &.iconVariant {
         aspect-ratio: 1;
@@ -675,58 +607,6 @@ border-radius: var(--s, 8px);
             &:disabled,
             &.disabled {
                 color: darker-disabled($objects-text-contrast-primary);
-            }
-        }
-
-        &.brand {
-            color: $objects-text-brand-expfolio-tertiary;
-
-            @media (hover: hover) and (pointer: fine) {
-                &:hover {
-                    color: darker-hover($objects-text-brand-expfolio-tertiary);
-                }
-            }
-
-            &.hover {
-                color: darker-hover($objects-text-brand-expfolio-tertiary);
-            }
-
-            &:active {
-                color: darker-pressing($objects-text-brand-expfolio-tertiary);
-            }
-
-            &.pale {
-                color: lighter-pale($objects-text-brand-expfolio-tertiary);
-            }
-
-            &.focused {
-                color: darker-focus($objects-text-brand-expfolio-tertiary);
-            }
-
-            &:disabled,
-            &.disabled {
-                color: lighter-disabled($objects-text-brand-expfolio-tertiary);
-            }
-        }
-    }
-
-    &.brandListItem {
-        svg path:first-child {
-            fill: $objects-graphic-brand-expfolio-primary;
-        }
-
-        svg path:not(:first-child) {
-            fill: $objects-text-brand-expfolio-tertiary;
-        }
-
-        &:disabled,
-        &.disabled {
-            svg path:first-child {
-                fill: lighter-disabled($objects-graphic-brand-expfolio-primary);
-            }
-
-            svg path:not(:first-child) {
-                fill: lighter-disabled($objects-text-brand-expfolio-tertiary);
             }
         }
     }

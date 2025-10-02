@@ -39,7 +39,7 @@ export const Project = (props: IProps) => {
 
         return (
             <div className={styles.externalUrlStatus}>
-                <Status size={"tiny"} mode={"brand"} iconBefore={<IconLink />}>
+                <Status size={"tiny"} mode={"accent"} iconBefore={<IconLink />}>
                     {domain}
                 </Status>
             </div>

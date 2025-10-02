@@ -656,7 +656,11 @@ export const Media = observer(
                                 )}
                                 {dragActive && (
                                     <div ref={dropzoneRef} className={styles.dropzone}>
-                                        <Typo variant={"actionXL"} mode={"brand"} type={"tertiary"}>
+                                        <Typo
+                                            variant={"actionXL"}
+                                            mode={"accent"}
+                                            type={"tertiary"}
+                                        >
                                             {props.type === "image"
                                                 ? "Перетащите изображение сюда и отпустите его"
                                                 : props.type === "doc"
@@ -695,7 +699,7 @@ export const Media = observer(
                                 />
                                 <Flex gap={16}>
                                     <Button
-                                        mode={"brand"}
+                                        mode={"accent"}
                                         size={"medium"}
                                         fullWidth={isMobile}
                                         onClick={() => {

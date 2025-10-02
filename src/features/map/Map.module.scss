@@ -37,20 +37,16 @@
     }
 }
 
-/* Размер вершины будет масштабироваться через CSS-переменную */
 :global(.leaflet-editing-icon),
 :global(.leaflet-vertex-icon),
 :global(.leaflet-middle-icon) {
-    /* ваш стиль */
     border-radius: 2px !important;
     border: 1px solid #fff !important;
     background: rgba(250, 0, 50, 0.8) !important;
 
-    /* базовый размер 13px, умножаем на масштаб */
     width: calc(13px * var(--vertex-scale, 1)) !important;
     height: calc(13px * var(--vertex-scale, 1)) !important;
 
-    /* корректно центрируем маркер над точкой (перебиваем inline-стили DivIcon) */
     margin-left: calc((13px * var(--vertex-scale, 1)) / -2) !important;
     margin-top: calc((13px * var(--vertex-scale, 1)) / -2) !important;
 
@@ -58,7 +54,6 @@
     box-shadow: none !important;
 }
 
-/* Если хотите, чтобы «средние» точки между вершинами были чуть меньше: */
 :global(.leaflet-middle-icon) {
     width: calc(11px * var(--vertex-scale, 1)) !important;
     height: calc(11px * var(--vertex-scale, 1)) !important;

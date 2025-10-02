@@ -71,12 +71,6 @@
         background: var(--objects-background-accent-tertiary);
     }
 
-    &.brand {
-        color: var(--objects-text-brand-expfolio-primary);
-        border: 1px solid var(--objects-stroke-brand-expfolio-primary);
-        background: var(--objects-background-brand-expfolio-tertiary);
-    }
-
     svg path {
         fill: currentColor;
     }

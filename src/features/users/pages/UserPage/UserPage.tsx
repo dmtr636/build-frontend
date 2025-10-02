@@ -18,7 +18,6 @@ import { clsx } from "clsx";
 import { User } from "src/features/users/types/User.ts";
 import { snackbarStore } from "src/shared/stores/SnackbarStore.tsx";
 import { emailValidate } from "src/shared/utils/emailValidate.ts";
-import { backButton } from "@telegram-apps/sdk";
 
 const normalizePhone = (value?: string | null): string => {
     if (!value || value.trim() === "" || value === "+7") return "";

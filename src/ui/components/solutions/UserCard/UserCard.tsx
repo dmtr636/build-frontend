@@ -47,7 +47,7 @@ export const UserCard = (props: UserCardProps) => {
                     <Contact type={"email"} text={email} />
                 </div>
             </div>
-            {/*{props.onEditClick && (*/}
+            {}
             <Button
                 iconBefore={<IconEdit />}
                 type={"secondary"}
@@ -56,7 +56,7 @@ export const UserCard = (props: UserCardProps) => {
                 disabled={!props.onEditClick}
                 onClick={props.onEditClick}
             />
-            {/*)}*/}
+            {}
         </div>
     );
 };

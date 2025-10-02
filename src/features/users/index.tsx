@@ -519,9 +519,6 @@ export const UsersPage = observer(() => {
                         fullWidth={true}
                         size={"small"}
                         type={"outlined"}
-                        /*
-                        iconBefore={<IconXlsx />}
-*/
                         customIconBefore={<IconXlsx />}
                         mode={"neutral"}
                         onClick={downloadExcel}
@@ -667,7 +664,7 @@ export const UsersPage = observer(() => {
                 )}
             </div>
             <UserForm open={openCreate} setOpen={setOpenCreate} />
-            {/* <SnackbarProvider />*/}
+            {}
         </div>
     );
 });

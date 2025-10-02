@@ -101,9 +101,6 @@ export const PhoneInput = ({
             onChange(value);
         } else {
             onChange("");
-            /*setTimeout(() => handleClearInput(), 0);*/
-
-            /* setTimeout(() => handleClearInput(), 0);*/
         }
     }, []);
     useEffect(() => {
@@ -137,7 +134,6 @@ export const PhoneInput = ({
                 required={required}
                 onClear={() => {
                     setPhoneMask(``);
-                    console.log(123);
                     onChange("");
                     if (setError) {
                         setError(false);

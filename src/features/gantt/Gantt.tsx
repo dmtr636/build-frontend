@@ -3,7 +3,6 @@ import { gantt } from "dhtmlx-gantt";
 import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
 import { ProjectWork } from "src/features/journal/types/ProjectWork.ts";
 
-/** ==== Вспомогалки для дат и разбиения ==== */
 const isoToYYYYMMDD = (iso: string) => {
     // Берём первые 10 символов «YYYY-MM-DD»
     return (iso ?? "").slice(0, 10);
@@ -23,7 +22,6 @@ const addDays = (isoStart: string, days: number) => {
     return d.toISOString().slice(0, 10);
 };
 
-/** ==== Типы данных для dhtmlx-gantt ==== */
 type GanttTask = {
     id: string;
     text: string;
@@ -35,7 +33,6 @@ type GanttTask = {
     status?: string;
 };
 
-/** ==== Преобразование ProjectWork[] -> GanttTask[] ==== */
 function buildGanttTasks(works: ProjectWork[], currentWorkVersion: number): GanttTask[] {
     const tasks: GanttTask[] = [];
 
@@ -95,15 +92,14 @@ function buildGanttTasks(works: ProjectWork[], currentWorkVersion: number): Gant
     return tasks;
 }
 
-/** ==== Компонент с переключением масштаба ==== */
 type ScaleMode = "day" | "week" | "month";
 
 type Props = {
     works: ProjectWork[];
     currentWorkVersion: number;
-    /** начальный масштаб, по умолчанию 'day' */
+
     initialScale?: ScaleMode;
-    /** размеры контейнера */
+
     width?: string | number;
     height?: string | number;
 };
@@ -233,43 +229,6 @@ export default function GanttWorks({
 
     return (
         <div style={{ width, display: "flex", flexDirection: "column", gap: 8 }}>
-            {/*<div style={{ display: "flex", gap: 8, alignItems: "center" }}>*/}
-            {/*    <span style={{ fontSize: 14, opacity: 0.75 }}>Масштаб:</span>*/}
-            {/*    <button*/}
-            {/*        onClick={() => setScale("day")}*/}
-            {/*        style={{*/}
-            {/*            padding: "6px 10px",*/}
-            {/*            borderRadius: 8,*/}
-            {/*            border: "1px solid #ccc",*/}
-            {/*            background: scale === "day" ? "#eee" : "#fff",*/}
-            {/*        }}*/}
-            {/*    >*/}
-            {/*        Дни*/}
-            {/*    </button>*/}
-            {/*    <button*/}
-            {/*        onClick={() => setScale("week")}*/}
-            {/*        style={{*/}
-            {/*            padding: "6px 10px",*/}
-            {/*            borderRadius: 8,*/}
-            {/*            border: "1px solid #ccc",*/}
-            {/*            background: scale === "week" ? "#eee" : "#fff",*/}
-            {/*        }}*/}
-            {/*    >*/}
-            {/*        Недели*/}
-            {/*    </button>*/}
-            {/*    <button*/}
-            {/*        onClick={() => setScale("month")}*/}
-            {/*        style={{*/}
-            {/*            padding: "6px 10px",*/}
-            {/*            borderRadius: 8,*/}
-            {/*            border: "1px solid #ccc",*/}
-            {/*            background: scale === "month" ? "#eee" : "#fff",*/}
-            {/*        }}*/}
-            {/*    >*/}
-            {/*        Месяцы*/}
-            {/*    </button>*/}
-            {/*</div>*/}
-
             <div ref={ref} style={{ width: "100%" }} />
         </div>
     );

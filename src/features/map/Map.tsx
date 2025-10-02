@@ -25,7 +25,6 @@ import styles from "./Map.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { IconMinus, IconPlus } from "src/ui/assets/icons";
 import { Switch } from "src/ui/components/controls/Switch/Switch.tsx";
-import { shadow } from "pdfjs-dist";
 import { IconMapPin } from "src/features/map/assets";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
@@ -277,28 +276,6 @@ export default function MapObjectsEditor({
                 ))}
 
                 <FeatureGroup ref={fgRef as any}>
-                    {/*<EditControl*/}
-                    {/*    position="topleft"*/}
-                    {/*    onCreated={handleCreated}*/}
-                    {/*    onEdited={handleEdited}*/}
-                    {/*    onDeleted={handleDeleted}*/}
-                    {/*    draw={{*/}
-                    {/*        rectangle: false,*/}
-                    {/*        circle: false,*/}
-                    {/*        circlemarker: false,*/}
-                    {/*        polyline: false,*/}
-                    {/*        marker: false,*/}
-                    {/*        polygon: {*/}
-                    {/*            allowIntersection: false,*/}
-                    {/*            showArea: true,*/}
-                    {/*            drawError: { color: "#e03131", message: "Нельзя самопересечение" },*/}
-                    {/*        },*/}
-                    {/*    }}*/}
-                    {/*    edit={{*/}
-                    {/*        remove: true,*/}
-                    {/*    }}*/}
-                    {/*/>*/}
-
                     {objects.map((o) => (
                         <Polygon
                             key={`p-${o.id}`}

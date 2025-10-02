@@ -113,14 +113,9 @@ const UserItemCard = observer(
         });
 
         function handleCard(event: React.MouseEvent<HTMLDivElement>) {
-            console.log(ref);
             if (ref.current && !ref.current.contains(event.target as Node) && onClick) {
                 onClick();
             }
-            /*if (!ref.current && onClick) {
-                console.log(123);
-                onClick();
-            }*/
         }
 
         return (
@@ -185,9 +180,6 @@ const UserItemCard = observer(
                             <Tooltip text={"Связаться"}>
                                 <div
                                     className={styles.buttonsBlockChat}
-                                    /*
-                                                                    ref={ref}
-                                    */
                                     onMouseEnter={(e) => e.stopPropagation()}
                                     onMouseLeave={(e) => e.stopPropagation()}
                                     onClick={() => {

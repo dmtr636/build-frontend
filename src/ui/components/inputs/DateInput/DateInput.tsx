@@ -55,7 +55,7 @@ export const DateInput = ({
         const [day, month, year] = value.split(".");
         const isValidDay = parseInt(day, 10) >= 1 && parseInt(day, 10) <= 31;
         const isValidMonth = parseInt(month, 10) >= 1 && parseInt(month, 10) <= 12;
-        /*  const isValidYear = parseInt(year, 10) >= 1900 && parseInt(year, 10) <= 2100;*/
+
         return isValidDay && isValidMonth;
     }
 

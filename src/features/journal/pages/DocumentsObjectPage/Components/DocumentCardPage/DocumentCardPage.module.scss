@@ -8,20 +8,6 @@
     border: 1px solid var(--objects-stroke-neutral-tertiary, #e8eaed);
     background: var(--background-neutral-tertiary, #f9fafb);
     display: flex;
-
-    /*&:hover {
-        background-color: darker-hover($objects-background-neutral-tertiary);
-        border: 1px solid darker-hover($objects-stroke-neutral-tertiary);
-        cursor: pointer;
-
-        .userImg {
-            opacity: 0.85;
-        }
-    }
-
-    &.isOpen {
-        border: 1px solid var(--objects-stroke-accent-primary, #2053d5);
-    }*/
 }
 
 .container:has(.buttonsBlockChat:hover) {
@@ -38,10 +24,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    /*
-overflow: hidden;
-*/
 }
 
 .noUser {
@@ -55,12 +37,11 @@ overflow: hidden;
     border-radius: 8px;
     color: var(--graphic-neutral-primary, #111317);
 
-    /* Body/S */
     font-family: Manrope;
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 16.8px */
+    line-height: 140%;
     opacity: 0.6;
 
     svg {
@@ -119,7 +100,7 @@ overflow: hidden;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 18.2px */
+    line-height: 140%;
     &.sortDate {
     }
 }
@@ -163,7 +144,7 @@ overflow: hidden;
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
-    line-height: 140%; /* 16.8px */
+    line-height: 140%;
 }
 
 .inputOverlayContainer {
@@ -181,9 +162,7 @@ overflow: hidden;
 .buttonsOverlay {
     display: flex;
     margin-top: 80px;
-    /*
-  margin-left: auto;
-  */
+
     gap: 12px;
     align-items: center;
 }

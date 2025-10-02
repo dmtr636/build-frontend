@@ -3,7 +3,7 @@
 .skeleton {
     border-radius: 8px;
     animation: skeleton-loading 0.7s linear infinite alternate;
-    background-color: lighter-pale($objects-background-neutral-secondary); /*#e6e6e6ff;*/
+    background-color: lighter-pale($objects-background-neutral-secondary);
 }
 
 @keyframes skeleton-loading {

@@ -400,11 +400,6 @@ export const JournalPage = observer(() => {
 
             displayLabel: "Заказчик",
         },
-        /* {
-             key: "createdAt",
-             displayLabel: "Регистрация в системе",
-             width: 25,
-         },*/
     ];
     const date = new Date();
     const formattedDate = formatDateShort(date.toString()).slice(0, 5);
@@ -601,9 +596,6 @@ export const JournalPage = observer(() => {
 
                 <div
                     className={clsx(styles.containerHeader, {
-                        /*
-                        [styles.scrolled]: scrolled,
-*/
                         [styles.windowScrolled]: layoutStore.scrolled,
                     })}
                 >
@@ -625,9 +617,7 @@ export const JournalPage = observer(() => {
                         </div>
                     )}
 
-                    {/* {chipArray && chipArray?.length > 0 && (
-                        <div className={styles.chipsArray}>{chipArray}</div>
-                    )}*/}
+                    {}
                 </div>
 
                 <div className={clsx(styles.containerList)}>
@@ -642,7 +632,6 @@ export const JournalPage = observer(() => {
                 styles={{
                     card: {
                         width: 564,
-                        /* height: 408,*/
                     },
                 }}
                 title={"Новый объект"}

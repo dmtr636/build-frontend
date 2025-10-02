@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "./styles.module.scss";
 import { LoginForm } from "src/ui/components/pages/login/LoginForm/LoginForm.tsx";
 import axios from "axios";
-import { RecoveryForm } from "src/ui/components/pages/recovery/RecoveryForm/RecoveryForm.tsx";
-/* import { useNavigate } from "react-router-dom";
- */
+
 import { LOGIN_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { IconBack, IconLogoLarge } from "src/ui/assets/icons";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
@@ -121,16 +119,10 @@ export const LoginPage = (props: LoginPageProps) => {
     return (
         <>
             <div className={styles.body}>
-                <div className={styles.leftside}>
-                    {/*  <IconLogoLarge className={styles.iconExp} />
-                    <img src={logoimg} className={styles.logoImgExp} />*/}
-                </div>
+                <div className={styles.leftside}>{}</div>
                 <div className={styles.rightside}>
                     {showRecover ? (
-                        <RecoveryForm
-                            passIsChange={() => setPassIsChange(true)}
-                            onClickRecover={() => setShowRecover(false)}
-                        />
+                        <></>
                     ) : (
                         <LoginForm
                             brand={true}
@@ -143,7 +135,7 @@ export const LoginPage = (props: LoginPageProps) => {
                             onChangePassword={setPassValue}
                             logo={""}
                             error={error}
-                            recover={/*props.recover ?? */ false}
+                            recover={false}
                             blockButton={blockButton}
                             subtitleAlertext={alertText}
                             onClickEnter={onClickEnter}
@@ -154,17 +146,7 @@ export const LoginPage = (props: LoginPageProps) => {
                             fullwidthButton={true}
                         />
                     )}
-                    {/*{!showRecover && (
-                        <div className={styles.backButton}>
-                            <ButtonIcon
-                                onClick={() => navigate("/")}
-                                mode={"neutral"}
-                                type={"outlined"}
-                            >
-                                <IconBack />
-                            </ButtonIcon>
-                        </div>
-                    )}*/}
+                    {}
                 </div>
             </div>
             <SnackbarProvider />
