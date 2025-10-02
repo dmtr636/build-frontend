@@ -59,6 +59,7 @@ import { WorkComments } from "src/features/journal/pages/WorksPage/components/Wo
 import { Helmet } from "react-helmet";
 import { CheckListSection } from "src/features/journal/pages/WorksPage/components/CheckListSection/CheckListSection.tsx";
 import { endpoints } from "src/shared/api/endpoints.ts";
+import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -66,6 +67,7 @@ class VM {
     showAddOverlay = false;
     showEditOverlay = false;
     editingWork: ProjectWork | null = null;
+    deletingWork: ProjectWork | null = null;
     editForm: ProjectWork | null = null;
     addForm: Partial<ProjectWork> = {};
     addFormUnit = "";
@@ -1012,10 +1014,22 @@ export const WorksPage = observer(() => {
                     open={vm.showEditOverlay}
                     onClose={() => (vm.showEditOverlay = false)}
                     actions={[
-                        <Flex justify={"end"} gap={16} key={"0"}>
+                        <Flex justify={"start"} gap={16} key={"0"}>
+                            <Button
+                                type={"secondary"}
+                                mode={"negative"}
+                                onClick={() => {
+                                    vm.deletingWork = vm.editingWork;
+                                }}
+                            >
+                                Удалить
+                            </Button>
                             <Button
                                 mode={"neutral"}
                                 type={"secondary"}
+                                style={{
+                                    marginLeft: "auto",
+                                }}
                                 onClick={() => {
                                     vm.showEditOverlay = false;
                                     vm.editForm = null;
@@ -1207,6 +1221,25 @@ export const WorksPage = observer(() => {
                     </FlexColumn>
                 </Overlay>
             )}
+            <DeleteOverlay
+                open={!!vm.deletingWork}
+                title={"Удалить работу"}
+                subtitle={"Будет удалена работа"}
+                info={vm.deletingWork?.name}
+                deleteButtonLabel={"Удалить"}
+                onDelete={async () => {
+                    if (vm.deletingWork && id) {
+                        await worksStore.deleteWork(vm.deletingWork);
+                        await worksStore.fetchWorks(id);
+                        vm.deletingWork = null;
+                        vm.editingWork = null;
+                        vm.editForm = null;
+                        snackbarStore.showNeutralPositiveSnackbar("Работа удалена");
+                    }
+                }}
+                loading={worksStore.loading}
+                onCancel={() => (vm.deletingWork = null)}
+            />
         </div>
     );
 });

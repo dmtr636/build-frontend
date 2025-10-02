@@ -459,6 +459,12 @@ export class WorksStore {
         this.loading = false;
     }
 
+    async deleteWork(work: ProjectWork) {
+        this.loading = true;
+        await this.apiClient.delete(endpoints.projectWorks, work.id ?? "");
+        this.loading = false;
+    }
+
     async deleteDisabledWorkVersions() {
         for (const workForm of this.worksForm) {
             const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
