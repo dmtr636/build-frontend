@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import styles from "./ObjectUsersPage.module.scss";
 import { IconGroupBuild, IconPlus } from "src/ui/assets/icons";
-import { appStore } from "src/app/AppStore.ts";
+import { accountStore, appStore } from "src/app/AppStore.ts";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import CompanyCardItem from "src/features/journal/components/CompanyCardItem/CompanyCardItem.tsx";
 import { getFullName } from "src/shared/utils/getFullName.ts";
@@ -212,12 +212,19 @@ const ObjectUsersPage = observer(() => {
                 </div>
                 Участники
             </div>
-            <div className={styles.content}>
+            <div
+                className={styles.content}
+                style={{
+                    display: "flex",
+                    flexDirection: accountStore.isContractor ? "row-reverse" : "row",
+                }}
+            >
                 <div className={styles.itemForm}>
                     <div className={styles.formName}>Заказчик</div>
                     <div style={{ width: "100%" }}>
                         {customerOrganizations && customerOrg ? (
                             <CompanyCardItem
+                                disabled={accountStore.isContractor}
                                 onClear={() => {
                                     setCustomArrayUser([]);
                                     setResponsibleCutomerUser(null);
@@ -227,6 +234,7 @@ const ObjectUsersPage = observer(() => {
                             />
                         ) : (
                             <Autocomplete
+                                disabled={accountStore.isContractor}
                                 size={"large"}
                                 iconBefore={<IconPlus />}
                                 formName={"Организация"}
@@ -246,7 +254,9 @@ const ObjectUsersPage = observer(() => {
                             disabled={
                                 usersCustOptions?.filter(
                                     (org) => !customArrayUser.some((item) => org.value === item),
-                                ).length === 0 || !customerOrganizations
+                                ).length === 0 ||
+                                !customerOrganizations ||
+                                accountStore.isContractor
                             }
                             options={
                                 usersCustOptions?.filter(
@@ -295,6 +305,7 @@ const ObjectUsersPage = observer(() => {
                                 </Typo>
                                 {responsibleCutomerUser && respCustUser ? (
                                     <UserCardItem
+                                        disabled={accountStore.isContractor}
                                         enabled={onlineIds.includes(respCustUser.id)}
                                         isResponseUser={true}
                                         onClick={() => setResponsibleCutomerUser(null)}
@@ -318,6 +329,7 @@ const ObjectUsersPage = observer(() => {
                                         }}
                                     >
                                         <Autocomplete
+                                            disabled={accountStore.isContractor}
                                             size={"large"}
                                             iconBefore={<IconPlus />}
                                             placeholder={"Введите имя или выберите из списка"}
@@ -346,6 +358,7 @@ const ObjectUsersPage = observer(() => {
                                             .filter((item) => item !== responsibleCutomerUser)
                                             .map((user) => (
                                                 <UserCardItem
+                                                    disabled={accountStore.isContractor}
                                                     key={1}
                                                     enabled={onlineIds.includes(user)}
                                                     user={appStore.userStore.userById(user) as any}

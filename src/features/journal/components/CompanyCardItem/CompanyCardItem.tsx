@@ -19,9 +19,11 @@ import { useNavigate } from "react-router-dom";
 const CompanyCardItem = ({
     organization,
     onClear,
+    disabled,
 }: {
     organization: Organization;
     onClear: () => void;
+    disabled?: boolean;
 }) => {
     const navigate = useNavigate();
     return (
@@ -53,17 +55,19 @@ const CompanyCardItem = ({
                 </div>
             </div>
             <div className={styles.buttonsBlock}>
-                <Tooltip text={"Удалить из объекта"}>
-                    <ButtonIcon
-                        onClick={onClear}
-                        pale={true}
-                        mode={"negative"}
-                        size={"small"}
-                        type={"tertiary"}
-                    >
-                        <IconBasket />
-                    </ButtonIcon>
-                </Tooltip>
+                {!disabled && (
+                    <Tooltip text={"Удалить из объекта"}>
+                        <ButtonIcon
+                            onClick={onClear}
+                            pale={true}
+                            mode={"negative"}
+                            size={"small"}
+                            type={"tertiary"}
+                        >
+                            <IconBasket />
+                        </ButtonIcon>
+                    </Tooltip>
+                )}
                 <Tooltip text={"Перейти в организацию"}>
                     <ButtonIcon
                         onClick={() => navigate(`/admin/organizations/${organization.id}`)}

@@ -31,6 +31,7 @@ interface UserItemCardProps {
     onClickDelete: () => void;
     user: User;
     enabled?: boolean;
+    disabled?: boolean;
     isResponseUser?: boolean;
 }
 
@@ -45,7 +46,15 @@ function getShortName(fullName: string): string {
 }
 
 const userCardItem = observer(
-    ({ onClickChat, onClick, user, enabled, isResponseUser, onClickDelete }: UserItemCardProps) => {
+    ({
+        onClickChat,
+        onClick,
+        user,
+        enabled,
+        isResponseUser,
+        onClickDelete,
+        disabled,
+    }: UserItemCardProps) => {
         const ref = useRef<HTMLDivElement | null>(null);
         const navigate = useNavigate();
         const initials = user?.position
@@ -144,38 +153,40 @@ const userCardItem = observer(
                 </div>
 
                 <div className={styles.buttonsBlock}>
-                    <div>
-                        <SingleDropdownList
-                            key={"1"}
-                            options={[
-                                {
-                                    listItemIcon: <IconUser />,
-                                    name: isResponseUser
-                                        ? "Снять отвественного"
-                                        : "Назначить ответственного",
-                                    mode: "neutral",
-                                    onClick: onClick,
-                                },
-                                {
-                                    listItemIcon: <IconBasket />,
-                                    name: "Удалить из объекта",
-                                    mode: "negative",
-                                    onClick: onClickDelete,
-                                },
-                            ]}
-                            hideTip={true}
-                            tipPosition={"top-right"}
-                        >
-                            <ButtonIcon
-                                pale={true}
-                                mode={"neutral"}
-                                size={"small"}
-                                type={"tertiary"}
+                    {!disabled && (
+                        <div>
+                            <SingleDropdownList
+                                key={"1"}
+                                options={[
+                                    {
+                                        listItemIcon: <IconUser />,
+                                        name: isResponseUser
+                                            ? "Снять отвественного"
+                                            : "Назначить ответственного",
+                                        mode: "neutral",
+                                        onClick: onClick,
+                                    },
+                                    {
+                                        listItemIcon: <IconBasket />,
+                                        name: "Удалить из объекта",
+                                        mode: "negative",
+                                        onClick: onClickDelete,
+                                    },
+                                ]}
+                                hideTip={true}
+                                tipPosition={"top-right"}
                             >
-                                <IconMore />
-                            </ButtonIcon>
-                        </SingleDropdownList>
-                    </div>
+                                <ButtonIcon
+                                    pale={true}
+                                    mode={"neutral"}
+                                    size={"small"}
+                                    type={"tertiary"}
+                                >
+                                    <IconMore />
+                                </ButtonIcon>
+                            </SingleDropdownList>
+                        </div>
+                    )}
                     <div ref={ref}>
                         {(user?.email ||
                             user?.messenger ||
