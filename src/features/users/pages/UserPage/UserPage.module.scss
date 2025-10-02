@@ -28,6 +28,7 @@
     font-style: normal;
     font-weight: 700;
     line-height: 120%;
+
     &.active {
         color: var(--text-brand-example-primary, #2053d5);
     }
@@ -152,4 +153,12 @@
         box-shadow: 0 0 6px 0 rgba(11, 59, 154, 0.12) inset;
         object-fit: cover;
     }
+}
+.journalList {
+    margin-top: 40px;
+    width: 900px;
+    margin-right: 80px;
+    /*
+  margin-right: auto;
+  */
 }

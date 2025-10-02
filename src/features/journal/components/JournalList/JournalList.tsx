@@ -7,7 +7,7 @@ import { IconError } from "src/ui/assets/icons";
 
 interface JournalListProps {
     journalList: ObjectDTO[];
-    sort: SortOption;
+    sort?: SortOption;
 }
 
 const JournalList = ({ journalList }: JournalListProps) => {
