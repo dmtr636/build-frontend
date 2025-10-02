@@ -13,7 +13,13 @@ import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
 import { GET_FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { User } from "src/features/users/types/User.ts";
 import { observer } from "mobx-react-lite";
-import { accountStore, appStore } from "src/app/AppStore.ts";
+import {
+    accountStore,
+    appStore,
+    objectStore,
+    organizationsStore,
+    violationStore,
+} from "src/app/AppStore.ts";
 import { clsx } from "clsx";
 import { IconMax, IconTg } from "src/features/users/components/UserCard/assets";
 import { formatPhone } from "src/shared/utils/formatPhone.ts";
@@ -25,6 +31,7 @@ import { getFullName } from "src/shared/utils/getFullName.ts";
 import { DropdownListOptions } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
 import { useNavigate } from "react-router-dom";
 import { SingleDropdownList } from "src/ui/components/solutions/DropdownList/SingleDropdownList.tsx";
+import useExcelExporter from "src/features/users/hooks/useExcelExporter.ts";
 
 interface UserCardProps {
     userId: string;
@@ -96,12 +103,71 @@ const UserCard = observer(({ userId, clearUser }: UserCardProps) => {
     const [openModal, setOpenModal] = useState(false);
     const [openModalDelete, setOpenModalDelete] = useState(false);
     const navigate = useNavigate();
+    const violatinons = violationStore.violations;
+    const journalList = objectStore.getObjectsByUserId(userId);
     const userObjects = appStore.objectStore.getObjectsByUserId(userId);
+    const usersForCsv = journalList.map((item) => ({
+        name: item.name,
+        type: item.type,
+        address: [item.address?.city, item.address?.street, item.address?.house]
+            .filter(Boolean)
+            .join(", "),
+        hasViolations:
+            violatinons.filter((i) => i.projectId === item.id && i.status !== "DONE")?.length > 0,
+        lastInspection: formatDateShort(item.lastInspection),
+        planned: `${formatDateShort(item.plannedPeriod?.start)} - ${formatDateShort(item.plannedPeriod?.end)}`,
+        customerOrg: organizationsStore.organizationById(item.customerOrganization)?.name,
+        consumerOrg: organizationsStore.organizationById(item.contractorOrganization)?.name,
+    }));
+    const columnHeaders = [
+        {
+            key: "name",
+            displayLabel: "Название",
+        },
+        {
+            key: "type",
+            displayLabel: "Тип",
+        },
+        {
+            key: "address",
+            displayLabel: "Адрес",
+        },
+        {
+            key: "hasViolations",
+            displayLabel: "Есть нарушения",
+        },
+        {
+            key: "lastInspection",
+            displayLabel: "Последняя инспекция",
+        },
+        {
+            key: "planned",
+            displayLabel: "Планируемое время",
+        },
+        {
+            key: "consumerOrg",
+            displayLabel: "Подрядчик",
+        },
+        {
+            key: "customerOrg",
+
+            displayLabel: "Заказчик",
+        },
+    ];
+    const date = new Date();
+    const formattedDate = formatDateShort(date.toString()).slice(0, 5);
+    const { downloadExcel } = useExcelExporter({
+        data: usersForCsv as any,
+        columnHeaders: columnHeaders,
+        filename: `Объекты_${user.lastName ?? ""} ${user.firstName ?? ""} ${user.patronymic ?? ""}_${formattedDate}`,
+    });
     const moreOptions: DropdownListOptions = [
         {
             name: "Выгрузить объекты (XLSX)",
             mode: "neutral",
-            onClick: () => {},
+            onClick: () => {
+                downloadExcel();
+            },
         },
         {
             name: "История действий",

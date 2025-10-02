@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { appStore, layoutStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, violationStore } from "src/app/AppStore.ts";
 import UserItemList from "src/features/users/components/UserItemList/UserItemList.tsx";
 import styles from "./UsersPage.module.scss";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
@@ -247,6 +247,7 @@ export const UsersPage = observer(() => {
     useLayoutEffect(() => {
         appStore.objectStore.fetchObjects();
         appStore.userStore.fetchOnlineUser();
+        violationStore.fetchAllViolations();
     }, []);
     const chipArray = useMemo(() => {
         const companyChips = company?.map((comp: SelectOption<string>) => (
@@ -366,6 +367,7 @@ export const UsersPage = observer(() => {
         setPositionValue([]);
         setCompany([]);
         setOnlineOnly(false);
+        setObj([]);
     };
     const onClickCard = (u: User) => {
         if (u.id !== currentUser?.id || !currentUser) {
@@ -527,7 +529,10 @@ export const UsersPage = observer(() => {
                 <div className={styles.filterContainer}>
                     <div className={styles.filterHead}>
                         <span style={{ opacity: 0.6 }}>Фильтры</span>
-                        {(company?.length > 0 || positionValue.length > 0 || onlineOnly) && (
+                        {(company?.length > 0 ||
+                            positionValue.length > 0 ||
+                            onlineOnly ||
+                            obj.length > 0) && (
                             <Button
                                 onClick={resetFilters}
                                 size={"tiny"}
