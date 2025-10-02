@@ -202,6 +202,9 @@ export const WorksPage = observer(() => {
         return "Сохранить изменения";
     };
     const isMobile = layoutStore.isMobile;
+    console.log(
+        worksStore.works.flatMap((item) => item.stages.filter((i) => i.status === "ON_CHECK")),
+    );
     return (
         <div className={styles.container}>
             <Helmet>
@@ -500,15 +503,22 @@ export const WorksPage = observer(() => {
                                             }}
                                         />
                                     )}
-                                    {isMobile && (
-                                        <Counter
-                                            value={
-                                                worksStore.todayCheckListSectionsInProgress.length
-                                            }
-                                            mode={"lavender"}
-                                            size={"medium"}
-                                        />
-                                    )}
+                                    {isMobile &&
+                                        worksStore.works.flatMap((item) =>
+                                            item.stages.filter((i) => i.status === "ON_CHECK"),
+                                        ).length > 0 && (
+                                            <Counter
+                                                value={
+                                                    worksStore.works.flatMap((item) =>
+                                                        item.stages.filter(
+                                                            (i) => i.status === "ON_CHECK",
+                                                        ),
+                                                    ).length
+                                                }
+                                                mode={"lavender"}
+                                                size={"medium"}
+                                            />
+                                        )}
                                 </div>
                                 <div
                                     className={styles.tasksAreaHeaderTab}
