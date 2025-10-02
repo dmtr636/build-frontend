@@ -162,6 +162,14 @@ export const MaterialsPage = observer(() => {
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
+        if (
+            materialsStore.tab === "waybill" &&
+            !materialsStore.addForm.waybill?.files?.length &&
+            materialsStore.showAddOverlay &&
+            files?.[0]
+        ) {
+            await materialsStore.doOcr(files[0]);
+        }
         if (files && files[0]) {
             await fileStore.uploadFile(files[0], "PROJECT_DOCUMENT", undefined, (fileDto) => {
                 if (materialsStore.tab === "waybill") {
@@ -173,6 +181,9 @@ export const MaterialsPage = observer(() => {
                         ) {
                             materialsStore.addForm.waybill.files = [];
                         }
+                    }
+                    if (materialsStore.addForm.waybill && !materialsStore.addForm.waybill?.files) {
+                        materialsStore.addForm.waybill.files = [];
                     }
                     materialsStore.addForm.waybill?.files.push(fileDto);
                 } else {
@@ -874,11 +885,12 @@ export const MaterialsPage = observer(() => {
                                                     fileInputRef.current.click();
                                                 }
                                             }}
+                                            loading={materialsStore.ocrLoading}
                                         >
                                             Прикрепить{" "}
                                             {materialsStore.addForm.waybill?.files?.length
                                                 ? "ещё"
-                                                : "файлы"}
+                                                : "файл"}
                                         </Button>
                                         <input
                                             type="file"
@@ -1616,7 +1628,7 @@ export const MaterialsPage = observer(() => {
                                             Прикрепить{" "}
                                             {materialsStore.editForm.waybill?.files?.length
                                                 ? "ещё"
-                                                : "файлы"}
+                                                : "файл"}
                                         </Button>
                                         <input
                                             type="file"

@@ -105,6 +105,13 @@ const MaterialCreate = observer(() => {
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
+        if (
+            materialsStore.tab === "waybill" &&
+            !materialsStore.addForm.waybill?.files?.length &&
+            files?.[0]
+        ) {
+            await materialsStore.doOcr(files[0]);
+        }
         if (files && files[0]) {
             await fileStore.uploadFile(files[0], "PROJECT_DOCUMENT", undefined, (fileDto) => {
                 if (materialsStore.tab === "waybill") {
@@ -116,6 +123,9 @@ const MaterialCreate = observer(() => {
                         ) {
                             materialsStore.addForm.waybill.files = [];
                         }
+                    }
+                    if (materialsStore.addForm.waybill && !materialsStore.addForm.waybill?.files) {
+                        materialsStore.addForm.waybill.files = [];
                     }
                     materialsStore.addForm.waybill?.files.push(fileDto);
                 } else {
@@ -448,6 +458,7 @@ const MaterialCreate = observer(() => {
                                 <Button
                                     mode={"neutral"}
                                     iconBefore={<IconAttach />}
+                                    loading={materialsStore.ocrLoading}
                                     onClick={() => {
                                         if (fileInputRef.current) {
                                             fileInputRef.current.value = "";

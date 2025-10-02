@@ -153,7 +153,9 @@ export class VisitsStore {
         }
         const createResponse = await this.apiClient.post<Visit>(endpoints.projectVisits, {
             projectId: projectId,
-            userId: userId,
+            user: {
+                id: userId,
+            },
         });
         if (createResponse.status) {
             this.currentVisitId = createResponse.data.id;
