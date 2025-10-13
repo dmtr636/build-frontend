@@ -174,18 +174,18 @@ export class MaterialsStore {
         const formData = new FormData();
         formData.set("file", file);
         try {
-            const response = await axios.post<{ data?: any }>(endpoints.ocr, formData);
-            if (response?.data?.data) {
+            const response = await axios.post<any>(endpoints.ocr, formData);
+            if (response?.data) {
                 if (!this.addForm.waybill) {
                     this.addForm.waybill = {} as any;
                 }
                 if (this.addForm.waybill) {
-                    this.addForm.waybill.grossWeight = response.data.data.grossWeight;
-                    this.addForm.waybill.invoiceNumber = response.data.data.invoiceNumber;
-                    this.addForm.waybill.materialName = response.data.data.materialName;
-                    this.addForm.waybill.volume = response.data.data.volume;
-                    this.addForm.waybill.netWeight = response.data.data.netWeight;
-                    this.addForm.waybill.packageCount = response.data.data.packageCount;
+                    this.addForm.waybill.grossWeight = response.data.grossWeight;
+                    this.addForm.waybill.invoiceNumber = response.data.invoiceNumber;
+                    this.addForm.waybill.materialName = response.data.materialName;
+                    this.addForm.waybill.volume = response.data.volume;
+                    this.addForm.waybill.netWeight = response.data.netWeight;
+                    this.addForm.waybill.packageCount = response.data.packageCount;
                 }
             }
         } catch (e) {

@@ -18,7 +18,7 @@ export default defineConfig({
             filename: "sw.ts",
             injectRegister: "auto",
             devOptions: {
-                enabled: true,
+                enabled: false,
                 type: "module",
             },
             manifest: {
