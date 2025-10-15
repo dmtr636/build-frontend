@@ -190,7 +190,7 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                                 )
                         }
                     >
-                        Отправить на проверку
+                        На проверку
                     </Button>
                 );
 
@@ -353,21 +353,26 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                 <div className={styles.text}>{violation.name}</div>
                 <div className={styles.buttonBlock}>
                     {accountStore.isContractor ? renderStatusButtonPodryadchik : renderStatusButton}
-                    {!(currentUserRole === "USER" && violation.status === "IN_REVIEW") &&
-                        !isMobile && (
-                            <Button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    worksStore.showViolationComments = true;
-                                    worksStore.currentViolation = violation;
-                                }}
-                                type={"outlined"}
-                                mode={"neutral"}
-                                size={"small"}
-                            >
-                                Комментарии
-                            </Button>
-                        )}
+                    {!(currentUserRole === "USER" && violation.status === "IN_REVIEW") && (
+                        <Button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                worksStore.showViolationComments = true;
+                                worksStore.currentViolation = violation;
+                            }}
+                            type={"outlined"}
+                            mode={"neutral"}
+                            fullWidth={isMobile}
+                            size={"small"}
+                            counter={
+                                violation.comments.length > 0
+                                    ? violation.comments.length
+                                    : undefined
+                            }
+                        >
+                            Комментарии
+                        </Button>
+                    )}
                     {(violation.status === "TODO" || violation.status === "IN_PROGRESS") &&
                         !isMobile && (
                             <Button

@@ -32,6 +32,7 @@ export class LayoutStore {
             counter?: number;
         }[];
         buttonBack?: boolean;
+        onClickBack?: () => void;
         hide?: boolean;
     }) {
         this.headerProps = headerProps;

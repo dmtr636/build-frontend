@@ -157,6 +157,9 @@
     gap: 8px;
     align-items: center;
     margin-top: 20px;
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+    }
 }
 
 .info {

@@ -54,7 +54,7 @@ const ViolationPage = observer(() => {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const status = params.get("status");
-        if (status) {
+        if (status && !worksStore.showViolationComments) {
             setActiveTab(status as any);
             if (status === "4") {
                 layoutStore.setHeaderProps({ title: "Исправленные нарушения" });
@@ -63,7 +63,7 @@ const ViolationPage = observer(() => {
                 layoutStore.setHeaderProps({ title: "Нарушения" });
             }
         }
-    }, [location.search]);
+    }, [location.search, worksStore.showViolationComments]);
     useEffect(() => {
         if (id) {
             appStore.violationStore.fetchViolationByObj(id);

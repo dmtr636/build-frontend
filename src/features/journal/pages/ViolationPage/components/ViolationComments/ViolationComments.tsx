@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import React, { useLayoutEffect, useMemo, useRef } from "react";
-import { accountStore, appStore, userStore, worksStore } from "src/app/AppStore.ts";
+import { accountStore, appStore, layoutStore, userStore, worksStore } from "src/app/AppStore.ts";
 import styles from "./ViolationComments.module.scss";
 import {
     IconAttach,
@@ -79,23 +79,36 @@ export const ViolationComments = observer(
             }
             return <IconDocument style={{ opacity: 0.6 }} />;
         };
+        const isMobile = layoutStore.isMobile;
 
+        useLayoutEffect(() => {
+            if (isMobile) {
+                layoutStore.setHeaderProps({
+                    title: props.violation.name,
+                    onClickBack: () => {
+                        props.setShow(false);
+                    },
+                });
+            }
+        }, []);
         return (
             <Overlay
                 open={props.show}
-                onClose={() => props.setShow(false)}
-                title={props.violation.name}
+                onClose={isMobile ? undefined : () => props.setShow(false)}
+                title={isMobile ? undefined : props.violation.name}
                 titleNoWrap={true}
                 smallPadding={true}
                 styles={{
                     content: {
-                        padding: "16px 20px",
+                        padding: isMobile ? "4px 16px" : "16px 20px",
                     },
                     card: {
-                        width: 460,
+                        width: isMobile ? "100vw" : 460,
+                        paddingBottom: isMobile ? 80 : 0,
+                        paddingTop: isMobile ? 60 : 0,
                     },
                     actions: {
-                        padding: 20,
+                        padding: isMobile ? 16 : 20,
                         borderTop: "1px solid var(--objects-stroke-neutral-tertiary, #E8EAED)",
                         background: "#F9FAFB",
                     },

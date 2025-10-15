@@ -17,10 +17,19 @@ interface HeaderProps {
     buttonBack?: boolean;
     badge?: { text: string; type?: "warning" | "negative" | "positive" | "info" };
     hide?: boolean;
+    onClickBack?: () => void;
 }
 
 const HeaderMobile = observer(
-    ({ title, actions, badge, buttonBack = true, showNotification, hide }: HeaderProps) => {
+    ({
+        title,
+        actions,
+        badge,
+        buttonBack = true,
+        showNotification,
+        hide,
+        onClickBack,
+    }: HeaderProps) => {
         const navigate = useNavigate();
         const notifications = notificationStore.notifications;
         const textCenter =
@@ -37,7 +46,10 @@ const HeaderMobile = observer(
                 }}
             >
                 {buttonBack && (
-                    <button onClick={() => navigate(-1)} className={styles.buttonBack}>
+                    <button
+                        onClick={onClickBack ? onClickBack : () => navigate(-1)}
+                        className={styles.buttonBack}
+                    >
                         <IconBack />
                     </button>
                 )}
