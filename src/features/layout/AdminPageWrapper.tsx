@@ -20,6 +20,7 @@ import HeaderMobile from "src/features/layout/components/HeaderMobile/HeaderMobi
 import Footer from "src/features/layout/components/Footer/Footer.tsx";
 import { IconApartment, IconUser } from "src/ui/assets/icons";
 import { useOnlineStatus } from "src/features/offline/useOnlineStatus.ts";
+import { offlineQueue } from "src/features/offline/OfflineQueueStore.tsx";
 
 const AdminPageWrapper = observer(() => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -80,11 +81,18 @@ const AdminPageWrapper = observer(() => {
         }
     }, [isMobile, isOnline]);
     useEffect(() => {
+        if (!isMobile) {
+            return;
+        }
         if (offlineStore.isOnline && !isOnline) {
             offlineStore.handleOnline();
         }
+        if (!offlineStore.isOnline && isOnline) {
+            offlineQueue.flush();
+        }
+        offlineQueue.setOnline(isOnline);
         offlineStore.isOnline = isOnline;
-    }, [isOnline]);
+    }, [isOnline, isMobile]);
 
     return (
         <div ref={containerRef}>

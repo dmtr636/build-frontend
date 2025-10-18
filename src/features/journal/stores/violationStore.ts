@@ -11,7 +11,9 @@ import {
     ProjectViolationDTO,
     ProjectViolationStatus,
 } from "src/features/journal/types/Violation.ts";
-import { visitsStore } from "src/app/AppStore.ts";
+import { offlineStore, visitsStore } from "src/app/AppStore.ts";
+import { enqueueApi } from "src/features/offline/OfflineQueueStore.tsx";
+import { v4 } from "uuid";
 
 export class ViolationStore {
     sortOption: SortOption = {
@@ -37,14 +39,34 @@ export class ViolationStore {
     }
 
     async createObject(object: ProjectViolationDTO, id: string) {
-        const response = await axios.post(endpoints.violations, object);
-        this.fetchViolationByObj(id);
-        return response;
+        if (!offlineStore.isOnline) {
+            enqueueApi.post(endpoints.violations, object);
+            this.violations.push({
+                ...object,
+                id: v4(),
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                status: "TODO",
+            });
+        } else {
+            const response = await axios.post(endpoints.violations, object);
+            this.fetchViolationByObj(id);
+            return response;
+        }
     }
 
     async updateObject(object: ProjectViolationDTO, id: string) {
-        await axios.put(endpoints.violations, object);
-        this.fetchViolationByObj(id);
+        if (!offlineStore.isOnline) {
+            enqueueApi.put(endpoints.violations, object);
+            const violation = this.violations.find((v) => v.id === object.id);
+            if (violation) {
+                Object.assign(violation, object);
+            }
+            this.violations = [...this.violations];
+        } else {
+            await axios.put(endpoints.violations, object);
+            this.fetchViolationByObj(id);
+        }
     }
 
     async deleteObject(id: string, idOrg: string) {
@@ -54,12 +76,30 @@ export class ViolationStore {
 
     async changeStatus(id: string, status: ProjectViolationStatus, idOrg: string) {
         if (visitsStore.currentVisitId) {
-            await axios.patch(
-                `${endpoints.violations}/${id}/status?status=${status}&visitId=${visitsStore.currentVisitId}`,
-            );
+            if (!offlineStore.isOnline) {
+                enqueueApi.patch(
+                    `${endpoints.violations}/${id}/status?status=${status}&visitId=${visitsStore.currentVisitId}`,
+                );
+            } else {
+                await axios.patch(
+                    `${endpoints.violations}/${id}/status?status=${status}&visitId=${visitsStore.currentVisitId}`,
+                );
+            }
         } else {
-            await axios.patch(`${endpoints.violations}/${id}/status?status=${status}`);
+            if (!offlineStore.isOnline) {
+                enqueueApi.patch(`${endpoints.violations}/${id}/status?status=${status}`);
+            } else {
+                await axios.patch(`${endpoints.violations}/${id}/status?status=${status}`);
+            }
         }
-        this.fetchViolationByObj(idOrg);
+        if (!offlineStore.isOnline) {
+            const violation = this.violations.find((v) => v.id === id);
+            if (violation) {
+                violation.status = status;
+            }
+            this.violations = [...this.violations];
+        } else {
+            this.fetchViolationByObj(idOrg);
+        }
     }
 }
