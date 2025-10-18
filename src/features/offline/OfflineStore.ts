@@ -1,7 +1,11 @@
 import { makeAutoObservable } from "mobx";
 import dayjs from "dayjs";
 import { ApiClient } from "src/shared/api/ApiClient.ts";
-import { ProjectWork, ProjectWorkComment } from "src/features/journal/types/ProjectWork.ts";
+import {
+    CheckListInstance,
+    ProjectWork,
+    ProjectWorkComment,
+} from "src/features/journal/types/ProjectWork.ts";
 import { endpoints } from "src/shared/api/endpoints.ts";
 import { ObjectDTO } from "src/features/journal/types/Object.ts";
 import { ConstructionWorkStage } from "src/features/registry/types.ts";
@@ -46,6 +50,12 @@ export class OfflineStore {
             );
             await this.apiClient.get<Visit[]>(
                 endpoints.projectVisits + `/search?projectId=${object.id}`,
+            );
+            await this.apiClient.get<CheckListInstance[]>(
+                endpoints.projectChecklists + `/${object.id}?type=DAILY`,
+            );
+            await this.apiClient.get<CheckListInstance[]>(
+                endpoints.projectChecklists + `/${object.id}?type=OPENING`,
             );
             for (const work of worksResponse.data) {
                 await this.apiClient.get<ConstructionWorkStage[]>(
