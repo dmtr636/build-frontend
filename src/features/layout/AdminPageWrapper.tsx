@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import Header from "src/features/layout/components/Header/Header.tsx";
 import { Outlet } from "react-router-dom";
 import { SnackbarProvider } from "src/ui/components/info/Snackbar/SnackbarProvider.tsx";
-import { appStore, layoutStore, notificationStore, objectStore } from "src/app/AppStore.ts";
+import {
+    accountStore,
+    appStore,
+    layoutStore,
+    notificationStore,
+    objectStore,
+} from "src/app/AppStore.ts";
 import styles from "./styles.module.scss";
 import { observer } from "mobx-react-lite";
 import { getScrollBarWidth } from "src/shared/utils/getScrollbarWidth.ts";
@@ -60,6 +66,10 @@ const AdminPageWrapper = observer(() => {
             }
             appStore.websocketStore.closeSocket();
         };
+    }, []);
+    useEffect(() => {
+        const dispose = accountStore.bindRoleHotkeys();
+        return dispose; // снимем хэндлер при размонтировании
     }, []);
     return (
         <div ref={containerRef}>

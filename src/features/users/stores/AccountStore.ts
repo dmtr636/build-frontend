@@ -21,6 +21,84 @@ export class AccountStore {
         return this.currentUser?.role === "ADMIN";
     }
 
+    setUserIsAdmin() {
+        if (this.currentUser) {
+            this.currentUser.role = "ADMIN";
+            this.currentUser.position = undefined;
+        }
+    }
+
+    setUserIsContractor() {
+        if (this.currentUser) {
+            this.currentUser.role = "USER";
+            this.currentUser.position = "Подрядчик";
+        }
+    }
+
+    setUserIsCustomer() {
+        if (this.currentUser) {
+            this.currentUser.role = "USER";
+            this.currentUser.position = "Служба строительного контроля";
+        }
+    }
+
+    setUserIsInspector() {
+        if (this.currentUser) {
+            this.currentUser.role = "USER";
+            this.currentUser.position = "Инспектор контрольного органа";
+        }
+    }
+
+    private _onKeyDown?: (e: KeyboardEvent) => void;
+
+    bindRoleHotkeys() {
+        if (this._onKeyDown) return;
+
+        this._onKeyDown = (e: KeyboardEvent) => {
+            const t = e.target as HTMLElement | null;
+            const inInput =
+                !!t &&
+                (t.tagName === "INPUT" ||
+                    t.tagName === "TEXTAREA" ||
+                    (t as HTMLElement).isContentEditable);
+
+            if (inInput || e.repeat) return;
+
+            switch (e.key) {
+                case "F1":
+                    e.preventDefault();
+                    this.setUserIsAdmin();
+                    break;
+                case "F2":
+                    e.preventDefault();
+
+                    this.setUserIsContractor();
+                    break;
+                case "F3":
+                    e.preventDefault();
+
+                    this.setUserIsCustomer();
+                    break;
+                case "F4":
+                    e.preventDefault();
+
+                    this.setUserIsInspector();
+                    break;
+                default:
+                    return;
+            }
+        };
+
+        window.addEventListener("keydown", this._onKeyDown);
+    }
+
+    unbindRoleHotkeys() {
+        if (this._onKeyDown) {
+            window.removeEventListener("keydown", this._onKeyDown);
+            this._onKeyDown = undefined;
+        }
+    }
+
     get isContractor() {
         return this.currentUser?.position === "Подрядчик";
     }

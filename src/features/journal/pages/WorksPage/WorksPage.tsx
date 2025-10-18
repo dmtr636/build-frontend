@@ -165,8 +165,7 @@ export const WorksPage = observer(() => {
     const [showMapOverlay, setShowMapOverlay] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const currentCentroid = isEdit ? vm.editForm?.centroid : vm.addForm.centroid;
-    console.log(currentCentroid);
-    console.log(vm.addForm);
+
     useEffect(() => {
         if (tasksAreaContentRef.current) {
             setShowGradient(
