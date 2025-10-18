@@ -8,6 +8,7 @@ import {
     IconCheckmark,
     IconClose,
     IconEdit,
+    IconPin,
     IconPlus,
     IconSuccess,
     IconTime,
@@ -60,6 +61,8 @@ import { Helmet } from "react-helmet";
 import { CheckListSection } from "src/features/journal/pages/WorksPage/components/CheckListSection/CheckListSection.tsx";
 import { endpoints } from "src/shared/api/endpoints.ts";
 import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
+import { MapEditor } from "src/features/map/MapEditor.tsx";
+import { LatLngLiteral } from "leaflet";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -103,7 +106,8 @@ export const WorksPage = observer(() => {
     const { id } = useParams();
     const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
     const vm = useMemo(() => new VM(), []);
-
+    const [coords, setCoords] = useState<LatLngLiteral | null>(null);
+    console.log(coords);
     useLayoutEffect(() => {
         if (currentObj) {
             vm.form = deepCopy(currentObj);
@@ -158,7 +162,11 @@ export const WorksPage = observer(() => {
 
     const tasksAreaContentRef = useRef<HTMLDivElement | null>(null);
     const [showGradient, setShowGradient] = useState(false);
-
+    const [showMapOverlay, setShowMapOverlay] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
+    const currentCentroid = isEdit ? vm.editForm?.centroid : vm.addForm.centroid;
+    console.log(currentCentroid);
+    console.log(vm.addForm);
     useEffect(() => {
         if (tasksAreaContentRef.current) {
             setShowGradient(
@@ -177,7 +185,7 @@ export const WorksPage = observer(() => {
             work.workVersions[worksStore.currentWorkVersion - 2];
         if (
             currVersion.endDate &&
-            currentObj?.plannedPeriod.end &&
+            currentObj?.plannedPeriod?.end &&
             dayjs(currentObj.plannedPeriod.end).isBefore(dayjs(currVersion.endDate))
         ) {
             return true;
@@ -202,14 +210,106 @@ export const WorksPage = observer(() => {
         return "Сохранить изменения";
     };
     const isMobile = layoutStore.isMobile;
-    console.log(
-        worksStore.works.flatMap((item) => item.stages.filter((i) => i.status === "ON_CHECK")),
-    );
+
     return (
         <div className={styles.container}>
             <Helmet>
                 <title>{currentObj?.name}</title>
             </Helmet>
+            {showMapOverlay && (
+                <div
+                    style={{
+                        width: 777,
+                    }}
+                >
+                    <Overlay
+                        open={showMapOverlay}
+                        onClose={() => setShowMapOverlay(false)}
+                        title={"Укажите место работы"}
+                        smallPadding={true}
+                        styles={{
+                            background: {
+                                zIndex: 10000,
+                            },
+                        }}
+                        mobileMapOverlay={true}
+                    >
+                        <div
+                            style={{
+                                width: 777,
+                            }}
+                        >
+                            <MapEditor
+                                readyProp={true}
+                                disableSatellite={true}
+                                height={"400px"}
+                                value={{
+                                    polygon: currentObj?.polygon
+                                        ? currentObj.polygon.map((item) => ({
+                                              lat: item.latitude,
+                                              lng: item.longitude,
+                                          }))
+                                        : null,
+                                    marker: currentCentroid
+                                        ? {
+                                              lat: currentCentroid?.latitude,
+                                              lng: currentCentroid?.longitude,
+                                          }
+                                        : null,
+                                }}
+                                onChange={(data) => {
+                                    const newCoors = data.marker
+                                        ? { lat: data.marker.lat, lng: data.marker.lng }
+                                        : null;
+
+                                    setCoords(newCoors);
+
+                                    if (isEdit && vm.editForm) {
+                                        vm.editForm.centroid = newCoors
+                                            ? {
+                                                  longitude: newCoors?.lng,
+                                                  latitude: newCoors?.lat,
+                                              }
+                                            : undefined;
+                                    }
+                                    if (!isEdit && vm.addForm) {
+                                        vm.addForm.centroid = newCoors
+                                            ? {
+                                                  longitude: newCoors?.lng,
+                                                  latitude: newCoors?.lat,
+                                              }
+                                            : undefined;
+                                    }
+                                }}
+                                center={
+                                    currentObj?.centroid
+                                        ? {
+                                              lat: currentObj?.centroid?.latitude,
+                                              lng: currentObj?.centroid?.longitude,
+                                          }
+                                        : undefined
+                                }
+                                editable={true}
+                                selectingPoint={true}
+                            />
+                            <Grid gap={12} style={{ marginTop: 20 }} columns={"1fr"}>
+                                <Input
+                                    onChange={() => {}}
+                                    value={coords?.lat ?? "-"}
+                                    formName={"Широта"}
+                                    readonly={true}
+                                />
+                                <Input
+                                    onChange={() => {}}
+                                    value={coords?.lng ?? "-"}
+                                    formName={"Долгота"}
+                                    readonly={true}
+                                />
+                            </Grid>
+                        </div>
+                    </Overlay>
+                </div>
+            )}
             {!isMobile && (
                 <div className={styles.header}>
                     <div className={styles.iconHeader}>
@@ -1015,6 +1115,23 @@ export const WorksPage = observer(() => {
                                 required={true}
                             />
                         </Grid>
+                        <Button
+                            iconBefore={<IconPin />}
+                            size={"large"}
+                            fullWidth={true}
+                            mode={"neutral"}
+                            type={vm.addForm.centroid ? "outlined" : "primary"}
+                            onClick={() => {
+                                {
+                                    setShowMapOverlay(true);
+                                    setIsEdit(false);
+                                }
+                            }}
+                        >
+                            {vm.addForm.centroid
+                                ? "Посмотреть отмеченное место"
+                                : "Указать место работы"}
+                        </Button>
                     </FlexColumn>
                 </Overlay>
             )}
@@ -1228,6 +1345,21 @@ export const WorksPage = observer(() => {
                                 required={true}
                             />
                         </Grid>
+                        <Button
+                            iconBefore={<IconPin />}
+                            size={"large"}
+                            fullWidth={true}
+                            mode={"neutral"}
+                            type={vm.editForm.centroid ? "outlined" : "primary"}
+                            onClick={() => {
+                                setShowMapOverlay(true);
+                                setIsEdit(true);
+                            }}
+                        >
+                            {vm.editForm.centroid
+                                ? "Посмотреть отмеченное место"
+                                : "Указать место работы"}
+                        </Button>
                     </FlexColumn>
                 </Overlay>
             )}

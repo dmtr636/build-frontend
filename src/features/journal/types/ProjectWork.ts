@@ -1,4 +1,4 @@
-import { FileDto } from "src/features/journal/types/Object.ts";
+import { CoordinateDTO, FileDto } from "src/features/journal/types/Object.ts";
 
 export interface ProjectWork {
     id: string;
@@ -9,6 +9,7 @@ export interface ProjectWork {
     workVersions: ProjectWorkVersion[];
     completionPercent: number;
     plannedVolume: number | null;
+    centroid?: CoordinateDTO;
     actualVolume: number | null;
     volumeUnit: string;
     stages: ProjectWorkStage[];
