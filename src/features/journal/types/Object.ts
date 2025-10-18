@@ -1,3 +1,5 @@
+import { ProjectViolationDTO } from "src/features/journal/types/Violation.ts";
+
 export interface ObjectDTO {
     id: string; // uuid
     name: string;
@@ -8,6 +10,7 @@ export interface ObjectDTO {
     customerOrganization: string; // uuid
     contractorOrganization: string; // uuid
     projectUsers: ProjectUserDTO[];
+    violations?: ProjectViolationDTO[] | null;
     lastInspection: string; // date-time
     plannedPeriod: ConstructionPeriodDTO;
     actualPeriod: ConstructionPeriodDTO;

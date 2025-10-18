@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
-import { appStore, registryStore } from "src/app/AppStore.ts";
+import { appStore, registryStore, worksStore } from "src/app/AppStore.ts";
 import { observer } from "mobx-react-lite";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
@@ -65,7 +65,12 @@ const AddViolationOverlay = observer(
         const [coords, setCoords] = useState<LatLngLiteral | null>(null);
         const { id } = useParams();
         const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
+        const [workId, setWorkId] = useState<string | null>(null);
 
+        const workslistOptions = worksStore.works.map((work) => ({
+            name: work.name,
+            value: work.id,
+        }));
         const idSeq = useRef(0);
         const newId = () => {
             idSeq.current += 1;
@@ -122,6 +127,7 @@ const AddViolationOverlay = observer(
                 photos: imageIds.map((id) => ({ id })),
                 latitude: coords?.lat || null,
                 longitude: coords?.lng || null,
+                workId: workId,
             };
         }, [
             object?.id,
@@ -160,6 +166,7 @@ const AddViolationOverlay = observer(
                 setDocument(editingViolation.normativeDocuments.map((i) => i.id));
                 setViolationDays(violDays ?? (currentViolation?.remediationDueDays as number));
                 setIsNote(editingViolation.isNote);
+                setWorkId(editingViolation.workId ?? null);
                 if (editingViolation.photos)
                     setSlots(
                         createSlotsFromImageIds(
@@ -352,6 +359,19 @@ const AddViolationOverlay = observer(
                     >
                         {coords?.lat ? "Посмотреть отмеченное место" : "Указать место нарушения"}
                     </Button>
+                    {workslistOptions.length > 0 && (
+                        <div>
+                            <Autocomplete
+                                size={"large"}
+                                zIndex={99999}
+                                formName={"Во время какой работы выявлено нарушение"}
+                                placeholder={"Выберите работу"}
+                                options={workslistOptions}
+                                value={workId}
+                                onValueChange={setWorkId}
+                            />
+                        </div>
+                    )}
                     <div>
                         <MultipleAutocomplete
                             size={"large"}
@@ -365,6 +385,7 @@ const AddViolationOverlay = observer(
                             onValuesChange={setDocument}
                         />
                     </div>
+
                     <div className={styles.text}>
                         Фотографии, подтверждающие факт нарушения{" "}
                         <span style={{ color: "#C02626" }}>*</span>

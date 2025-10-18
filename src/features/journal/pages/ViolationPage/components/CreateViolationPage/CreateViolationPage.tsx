@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
-import { appStore, layoutStore, registryStore } from "src/app/AppStore.ts";
+import { appStore, layoutStore, registryStore, worksStore } from "src/app/AppStore.ts";
 import { observer } from "mobx-react-lite";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
@@ -122,7 +122,7 @@ const CreateViolationPage = observer(() => {
             isNote,
 
             normativeDocuments: document.map((id) => ({ id })),
-
+            workId: workId,
             photos: imageIds.map((id) => ({ id })),
             latitude: coords?.lat || null,
             longitude: coords?.lng || null,
@@ -160,6 +160,12 @@ const CreateViolationPage = observer(() => {
             return next;
         });
     };
+    const [workId, setWorkId] = useState<string | null>(null);
+
+    const workslistOptions = worksStore.works.map((work) => ({
+        name: work.name,
+        value: work.id,
+    }));
     const resetViolationForm = () => {
         setDocument([]);
         setViolation(null);
@@ -169,6 +175,7 @@ const CreateViolationPage = observer(() => {
         setIsNote(false);
         setSlots([createEmptySlot()]);
         setCoords(null);
+        setWorkId(null);
     };
 
     const handleRemoveFile = (slotIndex: number) => () => {
@@ -235,6 +242,19 @@ const CreateViolationPage = observer(() => {
                 >
                     {coords?.lat ? "Посмотреть отмеченное место" : "Указать место нарушения"}
                 </Button>
+                {workslistOptions.length > 0 && (
+                    <div>
+                        <Autocomplete
+                            size={"large"}
+                            zIndex={99999}
+                            formName={"Во время какой работы выявлено нарушение"}
+                            placeholder={"Выберите работу"}
+                            options={workslistOptions}
+                            value={workId}
+                            onValueChange={setWorkId}
+                        />
+                    </div>
+                )}
                 <div>
                     <MultipleAutocomplete
                         size={"large"}

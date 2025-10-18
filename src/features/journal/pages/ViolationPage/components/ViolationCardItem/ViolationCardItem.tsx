@@ -300,6 +300,9 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
                         </div>
                     </Tooltip>
                 </div>
+                <div className={styles.workName}>
+                    {worksStore.works.find((i) => i.id === violation.workId)?.name}
+                </div>
                 <div className={styles.users}>
                     <div className={styles.user}>
                         <div className={styles.imgBlock}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import styles from "./ViolationPage.module.scss";
 import { Helmet } from "react-helmet";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
@@ -84,6 +84,8 @@ const ViolationPage = observer(() => {
             setCurrentViolent(null);
         }
     };
+    const [workId, setWorkId] = useState<string[]>([]);
+
     const filteredViolations = React.useMemo(() => {
         const normalize = (v?: string | null) => (v ?? "").trim().toLowerCase();
         const sameDay = (a?: string | null, b?: string | null) => {
@@ -107,6 +109,7 @@ const ViolationPage = observer(() => {
         const viewSet = new Set(view.map(normalize)); // severityType
         const typeSet = new Set(type.map(normalize)); // kind
         const authorSet = new Set(author); // id автора
+        const workIdSet = new Set(workId); // id(ы) работ
 
         return violations.filter((v) => {
             if (statusRequired && v.status !== statusRequired) return false;
@@ -115,9 +118,12 @@ const ViolationPage = observer(() => {
             if (viewSet.size && !viewSet.has(normalize(v.severityType))) return false;
             if (typeSet.size && !typeSet.has(normalize(v.kind))) return false;
             if (authorSet.size && !authorSet.has(v.author.id)) return false;
+            if (workIdSet.size && !workIdSet.has(String(v.workId ?? ""))) return false;
+
             return true;
         });
-    }, [violations, activeTab, dateFilter, category, view, type, author]);
+    }, [violations, activeTab, dateFilter, category, view, type, author, workId]);
+
     const filteredViolationsWithoutStatus = useMemo(() => {
         const normalize = (v?: string | null) => (v ?? "").trim().toLowerCase();
         const sameDay = (a?: string | null, b?: string | null) => {
@@ -132,6 +138,7 @@ const ViolationPage = observer(() => {
         const viewSet = new Set(view.map(normalize)); // severityType
         const typeSet = new Set(type.map(normalize)); // kind
         const authorSet = new Set(author); // id автора
+        const workIdSet = new Set(workId); // id(ы) работ
 
         return violations.filter((v) => {
             if (dateFilter && !sameDay(v.violationTime, dateFilter)) return false;
@@ -139,9 +146,18 @@ const ViolationPage = observer(() => {
             if (viewSet.size && !viewSet.has(normalize(v.severityType))) return false;
             if (typeSet.size && !typeSet.has(normalize(v.kind))) return false;
             if (authorSet.size && !authorSet.has(v.author.id)) return false;
+
+            // фильтрация по работе; приводим к строке на всякий случай
+            if (workIdSet.size && !workIdSet.has(String(v.workId ?? ""))) return false;
+
             return true;
         });
-    }, [violations, activeTab, dateFilter, category, view, type, author]);
+    }, [violations, activeTab, dateFilter, category, view, type, author, workId]);
+
+    const workslistOptions = worksStore.works.map((work) => ({
+        name: work.name,
+        value: work.id,
+    }));
     const isMobile = layoutStore.isMobile;
     useLayoutEffect(() => {
         layoutStore.setHeaderProps({ title: "Нарушения" });
@@ -231,6 +247,14 @@ const ViolationPage = observer(() => {
                                     placeholder={"Все"}
                                     values={author}
                                     onValuesChange={setAuthor}
+                                    multiple={true}
+                                />
+                                <MultipleAutocomplete
+                                    formName={"Работы"}
+                                    options={workslistOptions}
+                                    placeholder={"Все"}
+                                    values={workId}
+                                    onValuesChange={setWorkId}
                                     multiple={true}
                                 />
                             </FlexColumn>

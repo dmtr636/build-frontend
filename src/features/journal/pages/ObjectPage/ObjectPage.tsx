@@ -23,6 +23,10 @@ export const ObjectPage = observer(() => {
     const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
     const isMobile = layoutStore.isMobile;
     useLayoutEffect(() => {
+        if (currentObj) {
+            worksStore.fetchWorks(currentObj.id, true);
+        }
+
         layoutStore.setHeaderProps({ title: currentObj?.name ?? "Объект", buttonBack: true });
     }, [currentObj]);
     const customTabs = [

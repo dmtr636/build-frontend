@@ -9,12 +9,14 @@ interface Filter {
     date: string | null;
     names: string[];
     userIds: string[];
+    workIds: string[];
 }
 
 const initialFilter: Filter = {
     date: null,
     names: [],
     userIds: [],
+    workIds: [],
 };
 
 export class MaterialsStore {
@@ -100,6 +102,13 @@ export class MaterialsStore {
                 (visit) =>
                     visit.waybill.materialName &&
                     this.filters.names.includes(visit.waybill.materialName),
+            );
+        }
+        if (this.filters.workIds?.length) {
+            materials = materials.filter(
+                (visit) =>
+                    visit.waybill.projectWorkId &&
+                    this.filters.workIds.includes(visit.waybill.projectWorkId),
             );
         }
         return materials;

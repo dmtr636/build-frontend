@@ -12,6 +12,7 @@ import { fileUrl } from "src/shared/utils/file.ts";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { MapEditor } from "src/features/map/MapEditor.tsx";
 import { appStore, worksStore } from "src/app/AppStore.ts";
+import { observer } from "mobx-react-lite";
 
 interface ViolationCardProps {
     violation: ProjectViolationDTO;
@@ -50,7 +51,7 @@ function formatDate(dateStr: string): string {
     return `${month}.${year}`;
 }
 
-const ViolationCard = ({ violation }: ViolationCardProps) => {
+const ViolationCard = observer(({ violation }: ViolationCardProps) => {
     const [activeTab, setActiveTab] = useState(1);
     const [showMapOverlay, setShowMapOverlay] = useState(false);
     const { id } = useParams();
@@ -151,22 +152,32 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
                     <div>Нужно исправить до</div>
                     <div className={styles.textBlockSubtext}>{formatDate(violation.dueDate)}</div>
                 </div>
-            )}
-            <div className={styles.textBlock}>
-                <div>Нормативные документы</div>
-                <div className={styles.docsArray}>
-                    {violation.normativeDocuments.map((doc) => (
-                        <Link
-                            key={doc.id}
-                            to={`/admin/dictionaries/normative-documents/${doc.id}}`}
-                            className={styles.docItem}
-                        >
-                            <IconDocument />
-                            <span style={{ marginTop: 1 }}>{doc.name} </span>
-                        </Link>
-                    ))}
+            )}{" "}
+            {violation.workId && (
+                <div className={styles.textBlock}>
+                    <div>Во время какой работы выявлено нарушение</div>
+                    <div className={styles.textFormWork}>
+                        {worksStore.works.find((i) => i.id === violation.workId)?.name}
+                    </div>
                 </div>
-            </div>
+            )}
+            {violation.normativeDocuments.length > 0 && (
+                <div className={styles.textBlock}>
+                    <div>Нормативные документы</div>
+                    <div className={styles.docsArray}>
+                        {violation.normativeDocuments.map((doc) => (
+                            <Link
+                                key={doc.id}
+                                to={`/admin/dictionaries/normative-documents/${doc.id}}`}
+                                className={styles.docItem}
+                            >
+                                <IconDocument />
+                                <span style={{ marginTop: 1 }}>{doc.name} </span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
             <div className={styles.PhotoBlock}>
                 <div>Фотографии, подтверждающие факт нарушения</div>
                 {violation.photos.map((photo, index) => (
@@ -212,6 +223,6 @@ const ViolationCard = ({ violation }: ViolationCardProps) => {
             )}
         </div>
     );
-};
+});
 
 export default ViolationCard;

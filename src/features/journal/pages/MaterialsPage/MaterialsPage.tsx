@@ -56,7 +56,10 @@ export const MaterialsPage = observer(() => {
     const orgCardRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
     const params = useParams<{ materialId: string }>();
-
+    const workslistOptions = worksStore.works.map((work) => ({
+        name: work.name,
+        value: work.id,
+    }));
     useLayoutEffect(() => {
         materialsStore.currentMaterialId = params.materialId || null;
     }, [params.materialId]);
@@ -337,6 +340,16 @@ export const MaterialsPage = observer(() => {
                                         materialsStore.filters.userIds = values;
                                     }}
                                     fullWidth={false}
+                                />
+                                <MultipleAutocomplete
+                                    formName={"Работы"}
+                                    options={workslistOptions}
+                                    placeholder={"Все"}
+                                    values={materialsStore.filters.workIds}
+                                    onValuesChange={(values) => {
+                                        materialsStore.filters.workIds = values;
+                                    }}
+                                    multiple={true}
                                 />
                             </FlexColumn>
                         </div>
