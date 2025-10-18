@@ -2,12 +2,13 @@
 
 import { clientsClaim } from "workbox-core";
 import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
-import { registerRoute, setDefaultHandler } from "workbox-routing";
+import { registerRoute, setDefaultHandler, NavigationRoute } from "workbox-routing";
 import { StaleWhileRevalidate, NetworkFirst, NetworkOnly, CacheFirst } from "workbox-strategies";
 import { BackgroundSyncPlugin } from "workbox-background-sync";
 import { ExpirationPlugin } from "workbox-expiration";
 import { CacheableResponsePlugin } from "workbox-cacheable-response";
 import { RangeRequestsPlugin } from "workbox-range-requests";
+import { createHandlerBoundToURL } from "workbox-precaching";
 
 declare let self: ServiceWorkerGlobalScope;
 
@@ -56,6 +57,15 @@ registerRoute(
                 purgeOnQuotaError: true,
             }),
         ],
+    }),
+);
+
+registerRoute(
+    ({ request, url }) =>
+        request.method === "GET" && isApiHost(url) && url.pathname.startsWith("/actuator/"),
+    new NetworkFirst({
+        cacheName: "api-get-actuator-nf-cache",
+        networkTimeoutSeconds: 5,
     }),
 );
 
@@ -123,3 +133,11 @@ setDefaultHandler(
         plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
     }),
 );
+
+const navigationHandler = createHandlerBoundToURL("/index.html");
+
+const navigationRoute = new NavigationRoute(navigationHandler, {
+    denylist: [/^\/api\//, /^\/cdn\/files(?:\/|$)/, /\/[^/?]+\.[^/]+$/i],
+});
+
+registerRoute(navigationRoute);

@@ -11,6 +11,7 @@ import { WorksStore } from "src/features/journal/pages/WorksPage/ProjectWorksSto
 import { VisitsStore } from "src/features/journal/pages/VisitsPage/VisitsStore.ts";
 import { NotificationStore } from "src/features/notification/store/notificationStore.ts";
 import { MaterialsStore } from "src/features/journal/pages/MaterialsPage/MaterialsStore.ts";
+import { OfflineStore } from "src/features/offline/OfflineStore.ts";
 
 export const layoutStore = new LayoutStore();
 export const accountStore = new AccountStore();
@@ -25,6 +26,7 @@ export const worksStore = new WorksStore();
 export const visitsStore = new VisitsStore();
 export const notificationStore = new NotificationStore();
 export const materialsStore = new MaterialsStore();
+export const offlineStore = new OfflineStore();
 export const appStore = {
     layoutStore,
     violationStore,
@@ -39,4 +41,5 @@ export const appStore = {
     notificationStore,
     visitsStore,
     materialsStore,
+    offlineStore,
 };

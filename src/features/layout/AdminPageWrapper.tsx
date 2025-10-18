@@ -8,6 +8,7 @@ import {
     layoutStore,
     notificationStore,
     objectStore,
+    offlineStore,
 } from "src/app/AppStore.ts";
 import styles from "./styles.module.scss";
 import { observer } from "mobx-react-lite";
@@ -18,12 +19,14 @@ import { fileStore } from "src/features/users/stores/FileStore.ts";
 import HeaderMobile from "src/features/layout/components/HeaderMobile/HeaderMobile.tsx";
 import Footer from "src/features/layout/components/Footer/Footer.tsx";
 import { IconApartment, IconUser } from "src/ui/assets/icons";
+import { useOnlineStatus } from "src/features/offline/useOnlineStatus.ts";
 
 const AdminPageWrapper = observer(() => {
     const containerRef = useRef<HTMLDivElement>(null);
     const currentUser = appStore.accountStore.currentUser;
     const isMobile = layoutStore.isMobile;
     const mobileData = layoutStore.headerProps;
+    const isOnline = useOnlineStatus();
     useEffect(() => {
         appStore.userStore.fetchUsers();
         appStore.organizationsStore.fetchOrganizations();
@@ -71,6 +74,18 @@ const AdminPageWrapper = observer(() => {
         const dispose = accountStore.bindRoleHotkeys();
         return dispose; // снимем хэндлер при размонтировании
     }, []);
+    useEffect(() => {
+        if (isMobile && isOnline) {
+            offlineStore.init();
+        }
+    }, [isMobile, isOnline]);
+    useEffect(() => {
+        if (offlineStore.isOnline && !isOnline) {
+            offlineStore.handleOnline();
+        }
+        offlineStore.isOnline = isOnline;
+    }, [isOnline]);
+
     return (
         <div ref={containerRef}>
             {!isMobile && <Header />}
