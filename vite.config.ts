@@ -11,9 +11,12 @@ export default defineConfig({
             registerType: "autoUpdate",
             strategies: "injectManifest",
             injectManifest: {
-                globPatterns: ["**/*.{html,js,css,svg,png,ico,webp,woff2}"],
-                maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MiB
+                globPatterns: [
+                    "**/*.{html,js,css,svg,png,ico,webp,woff,woff2,ttf,otf,json,wasm,map}",
+                ],
+                maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
             },
+            includeAssets: ["favicon.svg"],
             srcDir: "src",
             filename: "sw.ts",
             injectRegister: "auto",
