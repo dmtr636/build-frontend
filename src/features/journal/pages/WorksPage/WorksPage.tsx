@@ -2423,7 +2423,10 @@ export const ApproveButtons = observer(
                 <div className={styles.buttonItem}>
                     <Button
                         disabled={
-                            !props.unlock && Boolean(props.centroid) && !hasQrAccess(id ?? "")
+                            !props.unlock &&
+                            Boolean(props.centroid) &&
+                            !hasQrAccess(id ?? "") &&
+                            isMobile
                         }
                         fullWidth={isMobile}
                         type={"secondary"}
@@ -2436,7 +2439,7 @@ export const ApproveButtons = observer(
                 </div>
                 <div className={styles.buttonItem}>
                     <Button
-                        disabled={!props.unlock && Boolean(props.centroid)}
+                        disabled={!props.unlock && Boolean(props.centroid) && isMobile}
                         fullWidth={isMobile}
                         type={"primary"}
                         mode={"positive"}
