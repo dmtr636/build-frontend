@@ -15,7 +15,9 @@ import {
     ProjectViolationCommentDTO,
     ProjectViolationDTO,
 } from "src/features/journal/types/Violation.ts";
-import { accountStore } from "src/app/AppStore.ts";
+import { accountStore, offlineStore } from "src/app/AppStore.ts";
+import { enqueueApi } from "src/features/offline/OfflineQueueStore.tsx";
+import { v4 } from "uuid";
 
 interface WorkVersion {
     versionNumber: number;
@@ -318,6 +320,19 @@ export class WorksStore {
     }
 
     async createComment(comment: Partial<ProjectWorkComment>) {
+        if (!offlineStore.isOnline) {
+            enqueueApi.post(endpoints.projectWorkComments, comment);
+            this.workComments.push({
+                ...comment,
+                authorId: comment.authorId ?? accountStore.currentUser?.id ?? "",
+                createdAt: dayjs().toISOString(),
+                updatedAt: dayjs().toISOString(),
+                text: comment.text ?? "",
+                workId: comment.workId ?? "",
+                files: comment.files ?? [],
+            });
+            return;
+        }
         this.loading = true;
         await this.apiClient.post<ProjectWorkComment>(endpoints.projectWorkComments, comment);
         await this.fetchWorkComments(comment?.workId ?? "");
@@ -325,6 +340,21 @@ export class WorksStore {
     }
 
     async createViolationComment(comment: Partial<ProjectViolationCommentDTO>) {
+        if (!offlineStore.isOnline) {
+            enqueueApi.post(endpoints.projectViolationsComments, comment);
+            this.violationComments.push({
+                ...comment,
+                authorId: comment.authorId ?? accountStore.currentUser?.id ?? "",
+                createdAt: dayjs().toISOString(),
+                updatedAt: dayjs().toISOString(),
+                text: comment.text ?? "",
+                files: comment.files ?? [],
+                violationId: comment.violationId ?? "",
+                id: comment.id ?? v4(),
+            });
+            return;
+        }
+
         this.loading = true;
         await this.apiClient.post<ProjectViolationCommentDTO>(
             endpoints.projectViolationsComments,
@@ -364,6 +394,15 @@ export class WorksStore {
     }
 
     async updateWork(work: ProjectWork) {
+        if (!offlineStore.isOnline) {
+            enqueueApi.put(endpoints.projectWorks, work);
+            const idx = this.works.findIndex((w) => w.id === work.id);
+            if (idx !== -1) this.works[idx] = deepCopy(work);
+            const fidx = this.worksForm.findIndex((w) => w.id === work.id);
+            if (fidx !== -1) this.worksForm[fidx] = deepCopy(work);
+            return true;
+        }
+
         this.loading = true;
         const response = await this.apiClient.put<ProjectWork>(endpoints.projectWorks, work);
         if (response.status) {
@@ -375,6 +414,16 @@ export class WorksStore {
     }
 
     async changeStatus(work: ProjectWork) {
+        if (!offlineStore.isOnline) {
+            enqueueApi.patch(endpoints.projectWorks + `/${work.id}/status?status=${work.status}`);
+            const idx = this.works.findIndex((w) => w.id === work.id);
+            if (idx !== -1) this.works[idx].status = work.status;
+            const fidx = this.worksForm.findIndex((w) => w.id === work.id);
+            if (fidx !== -1) this.worksForm[fidx].status = work.status;
+            snackbarStore.showNeutralPositiveSnackbar("Изменения сохранены");
+            return true;
+        }
+
         this.loading = true;
         const response = await this.apiClient.patch<ProjectWork>(
             endpoints.projectWorks + `/${work.id}/status?status=${work.status}`,
@@ -389,15 +438,61 @@ export class WorksStore {
     }
 
     async saveWorksForm() {
+        if (!offlineStore.isOnline) {
+            this.worksForm.forEach((work) => {
+                if (work.status === "READY_TO_CHECK") work.status = "ON_CHECK";
+                work.stages.forEach((stage) => {
+                    if (stage.status === "READY_TO_CHECK") {
+                        stage.status = "ON_CHECK";
+                        stage.date = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`;
+                    }
+                });
+            });
+
+            let hasScheduleChanges = false;
+            for (const workForm of this.worksForm) {
+                const work = this.works.find((w) => w.id === workForm.id);
+                if (!work) continue;
+                const workVersion = work.workVersions[this.currentWorkVersion - 1];
+                const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
+                if (
+                    workVersion.startDate !== workFormVersion.startDate ||
+                    workVersion.endDate !== workFormVersion.endDate
+                ) {
+                    hasScheduleChanges = true;
+                }
+            }
+
+            if (hasScheduleChanges && accountStore.isContractor) {
+                for (const workForm of this.worksForm) {
+                    const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
+                    enqueueApi.post(endpoints.projectWorkVersions, {
+                        workId: workForm.id,
+                        startDate: workFormVersion.startDate,
+                        endDate: workFormVersion.endDate,
+                        active: false,
+                    });
+                }
+            }
+
+            for (const work of this.worksForm) {
+                const original = this.works.find((w) => w.id === work.id);
+                if (original && deepEquals(work, original)) continue;
+                const clonedWork = deepCopy(work);
+                clonedWork.stages.forEach((stage) => ((stage as any).id = null));
+                enqueueApi.put(endpoints.projectWorks, clonedWork);
+            }
+
+            this.works = deepCopy(this.worksForm);
+            return;
+        }
+
         this.loading = true;
         this.worksForm.forEach((work) => {
-            if (work.status === "READY_TO_CHECK") {
-                work.status = "ON_CHECK";
-            }
+            if (work.status === "READY_TO_CHECK") work.status = "ON_CHECK";
             work.stages.forEach((stage) => {
                 if (stage.status === "READY_TO_CHECK") {
                     stage.status = "ON_CHECK";
-
                     stage.date = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`;
                 }
             });
@@ -406,9 +501,7 @@ export class WorksStore {
         let hasScheduleChanges = false;
         for (const workForm of this.worksForm) {
             const work = this.works.find((w) => w.id === workForm.id);
-            if (!work || !workForm) {
-                continue;
-            }
+            if (!work) continue;
             const workVersion = work.workVersions[this.currentWorkVersion - 1];
             const workFormVersion = workForm.workVersions[this.currentWorkVersion - 1];
             if (
@@ -432,9 +525,7 @@ export class WorksStore {
             await this.fetchWorks(this.worksForm[0]?.projectId || this.works[0]?.projectId);
             for (const workForm of this.worksForm) {
                 const work = this.works.find((w) => w.id === workForm.id);
-                if (!work || !workForm) {
-                    continue;
-                }
+                if (!work) continue;
                 workForm.workVersion = deepCopy(work.workVersion);
                 workForm.workVersions = deepCopy(work.workVersions);
             }
@@ -446,13 +537,10 @@ export class WorksStore {
                     work,
                     this.works.find((w) => w.id === work.id),
                 )
-            ) {
+            )
                 continue;
-            }
             const clonedWork = deepCopy(work);
-            clonedWork.stages.forEach((stage) => {
-                (stage as any).id = null;
-            });
+            clonedWork.stages.forEach((stage) => ((stage as any).id = null));
             await this.apiClient.put(endpoints.projectWorks, clonedWork);
         }
         await this.fetchWorks(this.worksForm[0]?.projectId || this.works[0]?.projectId);

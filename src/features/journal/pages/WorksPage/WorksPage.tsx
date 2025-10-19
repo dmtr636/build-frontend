@@ -22,6 +22,7 @@ import {
     layoutStore,
     materialsStore,
     objectStore,
+    offlineStore,
     registryStore,
     violationStore,
     worksStore,
@@ -45,7 +46,11 @@ import { clsx } from "clsx";
 import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
-import { ProjectWork, ProjectWorkStage } from "src/features/journal/types/ProjectWork.ts";
+import {
+    CheckListInstance,
+    ProjectWork,
+    ProjectWorkStage,
+} from "src/features/journal/types/ProjectWork.ts";
 import { Flex } from "src/ui/components/atoms/Flex/Flex";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
@@ -63,8 +68,10 @@ import { Helmet } from "react-helmet";
 import { CheckListSection } from "src/features/journal/pages/WorksPage/components/CheckListSection/CheckListSection.tsx";
 import { endpoints } from "src/shared/api/endpoints.ts";
 import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
-import { MapEditor, MapEditorValue } from "src/features/map/MapEditor.tsx";
+import { MapEditor } from "src/features/map/MapEditor.tsx";
 import { LatLngLiteral } from "leaflet";
+import { enqueueApi } from "src/features/offline/OfflineQueueStore.tsx";
+import { v4 } from "uuid";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -908,6 +915,7 @@ export const WorksPage = observer(() => {
                                                 ) {
                                                     status = "DONE";
                                                 }
+
                                                 const answers =
                                                     worksStore.todayChecklistForm?.sections.flatMap(
                                                         (s) =>
@@ -915,17 +923,88 @@ export const WorksPage = observer(() => {
                                                                 templateItemId: item.templateItemId,
                                                                 answer: item.answer,
                                                             })),
+                                                    ) ?? [];
+
+                                                if (!offlineStore.isOnline) {
+                                                    enqueueApi.put(
+                                                        endpoints.projectChecklists + `/${id}`,
+                                                        {
+                                                            checklistInstanceId:
+                                                                worksStore.todayChecklist?.id,
+                                                            status,
+                                                            answers,
+                                                        },
                                                     );
-                                                await worksStore.apiClient.put(
-                                                    endpoints.projectChecklists + `/${id}`,
-                                                    {
-                                                        checklistInstanceId:
-                                                            worksStore.todayChecklist?.id,
-                                                        status: status,
-                                                        answers: answers,
-                                                    },
-                                                );
-                                                await worksStore.fetchChecklists(id ?? "");
+
+                                                    const byDay = (c: any) =>
+                                                        dayjs(c.checkDate).isSame(
+                                                            worksStore.checkListsDay,
+                                                            "day",
+                                                        );
+
+                                                    const existing = worksStore.todayChecklist;
+                                                    const updated: CheckListInstance = {
+                                                        id:
+                                                            existing?.id ??
+                                                            worksStore.todayChecklistForm?.id ??
+                                                            (typeof id === "string" ? id : v4()),
+                                                        checkDate:
+                                                            worksStore.todayChecklistForm
+                                                                ?.checkDate ??
+                                                            existing?.checkDate ??
+                                                            worksStore.checkListsDay.toISOString(),
+                                                        sections: deepCopy(
+                                                            worksStore.todayChecklistForm
+                                                                ?.sections ??
+                                                                existing?.sections ??
+                                                                [],
+                                                        ),
+                                                        status: status as any,
+                                                        type:
+                                                            (worksStore.todayChecklistForm as any)
+                                                                ?.type ??
+                                                            existing?.type ??
+                                                            "DAILY",
+                                                        templateTitle:
+                                                            (worksStore.todayChecklistForm as any)
+                                                                ?.templateTitle ??
+                                                            existing?.templateTitle ??
+                                                            "",
+                                                    };
+
+                                                    const iForm =
+                                                        worksStore.dailyChecklistsForm.findIndex(
+                                                            byDay,
+                                                        );
+                                                    if (iForm !== -1)
+                                                        worksStore.dailyChecklistsForm[iForm] =
+                                                            deepCopy(updated);
+                                                    else
+                                                        worksStore.dailyChecklistsForm.push(
+                                                            deepCopy(updated),
+                                                        );
+
+                                                    const iData =
+                                                        worksStore.dailyChecklists.findIndex(byDay);
+                                                    if (iData !== -1)
+                                                        worksStore.dailyChecklists[iData] =
+                                                            deepCopy(updated);
+                                                    else
+                                                        worksStore.dailyChecklists.push(
+                                                            deepCopy(updated),
+                                                        );
+                                                } else {
+                                                    await worksStore.apiClient.put(
+                                                        endpoints.projectChecklists + `/${id}`,
+                                                        {
+                                                            checklistInstanceId:
+                                                                worksStore.todayChecklist?.id,
+                                                            status,
+                                                            answers,
+                                                        },
+                                                    );
+                                                    await worksStore.fetchChecklists(id ?? "");
+                                                }
                                             }
                                         }
 
