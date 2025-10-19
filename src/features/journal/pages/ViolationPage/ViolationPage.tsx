@@ -11,12 +11,14 @@ import {
     accountStore,
     appStore,
     layoutStore,
+    materialsStore,
     registryStore,
+    violationStore,
     worksStore,
 } from "src/app/AppStore.ts";
 import { Checkbox } from "src/ui/components/controls/Checkbox/Checkbox.tsx";
 import { DatePicker } from "src/ui/components/inputs/DatePicker/DatePicker.tsx";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ViolationCardItem from "src/features/journal/pages/ViolationPage/components/ViolationCardItem/ViolationCardItem.tsx";
 import { observer } from "mobx-react-lite";
 import AddViolationOverlay from "src/features/journal/pages/ViolationPage/components/AddOverlay/AddViolationOverlay.tsx";
@@ -49,6 +51,9 @@ const ViolationPage = observer(() => {
     const [view, setView] = React.useState<string[]>([]);
     const [author, setAuthor] = React.useState<string[]>([]);
     const object = appStore.objectStore.ObjectMap.get(id ?? "");
+
+    const [searchParams] = useSearchParams();
+    const workIdSearch = searchParams.get("workId");
 
     const location = useLocation();
     useEffect(() => {
@@ -85,6 +90,12 @@ const ViolationPage = observer(() => {
         }
     };
     const [workId, setWorkId] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (workIdSearch) {
+            setWorkId([workIdSearch]);
+        }
+    }, [workIdSearch]);
 
     const filteredViolations = React.useMemo(() => {
         const normalize = (v?: string | null) => (v ?? "").trim().toLowerCase();

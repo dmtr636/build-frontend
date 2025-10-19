@@ -2,6 +2,10 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { gantt } from "dhtmlx-gantt";
 import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
 import { ProjectWork } from "src/features/journal/types/ProjectWork.ts";
+import { Button } from "src/ui/components/controls/Button/Button.tsx";
+import { Popover } from "src/ui/components/solutions/Popover/Popover.tsx";
+import { useParams } from "react-router-dom";
+import { materialsStore, violationStore } from "src/app/AppStore.ts";
 
 const isoToYYYYMMDD = (iso: string) => {
     // Берём первые 10 символов «YYYY-MM-DD»
@@ -112,14 +116,28 @@ export default function GanttWorks({
 }: Props) {
     const ref = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState<ScaleMode>(initialScale);
+    const { id } = useParams();
 
-    // Пересчитываем задачи из доменных данных
     const data = useMemo(
         () => buildGanttTasks(works, currentWorkVersion),
         [works, currentWorkVersion],
     );
+    const [popover, setPopover] = useState<{ open: boolean; x: number; y: number; task?: any }>({
+        open: false,
+        x: 0,
+        y: 0,
+        task: undefined,
+    });
+    const popoverOpenRef = useRef(false);
 
-    // Инициализация один раз
+    useEffect(() => {
+        popoverOpenRef.current = popover.open;
+        if (popover.open) {
+            if (gantt.ext?.tooltips) gantt.ext.tooltips.tooltip.hide();
+            else (gantt as any).tooltip?.hide();
+        }
+    }, [popover.open]);
+
     useEffect(() => {
         if (!ref.current) return;
 
@@ -179,17 +197,82 @@ export default function GanttWorks({
   `;
         };
 
-        // Масштаб по умолчанию
         applyScale(scale);
 
         gantt.init(ref.current);
 
+        const onTaskClick = gantt.attachEvent("onTaskClick", (id, e: MouseEvent) => {
+            if (gantt.ext && gantt.ext.tooltips) {
+                gantt.ext.tooltips.tooltip.hide();
+            } else if ((gantt as any).tooltip) {
+                (gantt as any).tooltip.hide();
+            }
+
+            const el = ref.current!;
+            const rect = el.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top + el.scrollTop;
+            setPopover({ open: true, x, y, task: gantt.getTask(id) });
+            return true;
+        });
+
+        const onScroll = gantt.attachEvent("onGanttScroll", () =>
+            setPopover((p) => ({ ...p, open: false })),
+        );
+        const onEmpty = gantt.attachEvent("onEmptyClick", () =>
+            setPopover((p) => ({ ...p, open: false })),
+        );
+
+        gantt.attachEvent("onMouseMove", (_id, e) => {
+            if ((e.target as HTMLElement).closest(".gantt-popover")) {
+                if (gantt.ext && gantt.ext.tooltips) gantt.ext.tooltips.tooltip.hide();
+            }
+            return true;
+        });
+
+        const origTooltip = gantt.templates.tooltip_text;
+        gantt.templates.tooltip_text = (s, e, task) => {
+            if (popoverOpenRef.current) return "";
+            return origTooltip ? origTooltip(s, e, task) : "";
+        };
+
+        const onGridClickId = gantt.attachEvent(
+            "onTaskRowClick",
+            (id: string, rowEl: HTMLElement) => {
+                const textCell = rowEl;
+
+                if (!textCell) return true;
+
+                if (gantt.ext?.tooltips.tooltip?.hide) {
+                    gantt.ext.tooltips.tooltip?.hide();
+                } else if ((gantt as any).tooltip?.hide) {
+                    (gantt as any).tooltip.hide();
+                }
+
+                const container = ref.current!;
+                const containerRect = container.getBoundingClientRect();
+                const cellRect = textCell.getBoundingClientRect();
+
+                const x = cellRect.right - containerRect.left + container.scrollLeft + 8;
+                const y =
+                    cellRect.top - containerRect.top + container.scrollTop + cellRect.height / 2;
+
+                setPopover({ open: true, x, y, task: gantt.getTask(id) });
+                popoverOpenRef.current = true;
+
+                return false;
+            },
+        );
+
         return () => {
+            gantt.detachEvent(onTaskClick);
+            gantt.detachEvent(onScroll);
+            gantt.detachEvent(onEmpty);
+            gantt.detachEvent(onGridClickId);
             gantt.clearAll();
         };
-    }, []); // init один раз
+    }, []);
 
-    // Применение масштаба
     const applyScale = (mode: ScaleMode) => {
         switch (mode) {
             case "day":
@@ -227,9 +310,75 @@ export default function GanttWorks({
         gantt.setSizes();
     }, [data]);
 
+    useEffect(() => {
+        if (id) {
+            materialsStore.fetchMaterials(id);
+            violationStore.fetchViolationByObj(id);
+        }
+    }, []);
+
     return (
         <div style={{ width, display: "flex", flexDirection: "column", gap: 8 }}>
-            <div ref={ref} style={{ width: "100%" }} />
+            <div style={{ position: "relative", width: "100%" }}>
+                <div ref={ref} style={{ width: "100%" }} />
+
+                {popover.open && (
+                    <div
+                        className="gantt-popover"
+                        style={{
+                            position: "absolute",
+                            left: popover.x,
+                            top: popover.y,
+                            transform: "translate(-50%, 8px)",
+                            zIndex: 1000,
+                            background: "#fff",
+                            borderRadius: 8,
+                            boxShadow: "0 1px 3px 0 rgba(17, 19, 23, 0.12)",
+                            padding: 8,
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div style={{ display: "flex", gap: 8 }}>
+                            <Button
+                                type={"outlined"}
+                                mode={"neutral"}
+                                size={"small"}
+                                onClick={() => {
+                                    window.open(
+                                        `/admin/journal/${id}/materials?workId=${popover.task.id}`,
+                                        "_blank",
+                                    );
+                                }}
+                                counter={
+                                    materialsStore.materials.filter(
+                                        (m) => m.waybill.projectWorkId === popover.task.id,
+                                    ).length || undefined
+                                }
+                            >
+                                Материалы
+                            </Button>
+                            <Button
+                                type={"outlined"}
+                                mode={"neutral"}
+                                size={"small"}
+                                onClick={() => {
+                                    window.open(
+                                        `/admin/journal/${id}/violations?workId=${popover.task.id}`,
+                                        "_blank",
+                                    );
+                                }}
+                                counter={
+                                    violationStore.violations.filter(
+                                        (v) => v.workId === popover.task.id,
+                                    ).length || undefined
+                                }
+                            >
+                                Нарушения
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

@@ -16,7 +16,7 @@ import {
     IconVideo,
 } from "src/ui/assets/icons";
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { appStore, layoutStore, materialsStore, worksStore } from "src/app/AppStore.ts";
 import { Helmet } from "react-helmet";
 import { DropdownListOption } from "src/ui/components/solutions/DropdownList/DropdownList.types.ts";
@@ -56,10 +56,19 @@ export const MaterialsPage = observer(() => {
     const orgCardRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
     const params = useParams<{ materialId: string }>();
+    const [searchParams] = useSearchParams();
+    const workId = searchParams.get("workId");
     const workslistOptions = worksStore.works.map((work) => ({
         name: work.name,
         value: work.id,
     }));
+
+    useEffect(() => {
+        if (workId) {
+            materialsStore.filters.workIds = [workId];
+        }
+    }, [workId]);
+
     useLayoutEffect(() => {
         materialsStore.currentMaterialId = params.materialId || null;
     }, [params.materialId]);
@@ -350,6 +359,8 @@ export const MaterialsPage = observer(() => {
                                         materialsStore.filters.workIds = values;
                                     }}
                                     multiple={true}
+                                    fullWidth={false}
+                                    tipPosition={"top-left"}
                                 />
                             </FlexColumn>
                         </div>
