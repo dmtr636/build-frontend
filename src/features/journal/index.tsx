@@ -723,7 +723,7 @@ export const JournalPage = observer(() => {
                         },
                     }}
                 >
-                    <MapObjectsEditor objects={objects} />
+                    <MapObjectsEditor objects={objects} navigateOnClick={true} />
                 </Overlay>
             )}
         </div>

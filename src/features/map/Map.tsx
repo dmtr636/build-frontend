@@ -28,6 +28,7 @@ import { Switch } from "src/ui/components/controls/Switch/Switch.tsx";
 import { IconMapPin } from "src/features/map/assets";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
 import { Typo } from "src/ui/components/atoms/Typo/Typo.tsx";
+import { objectStore } from "src/app/AppStore.ts";
 
 delete (L.Icon.Default as any).prototype._getIconUrl;
 
@@ -55,6 +56,7 @@ type Props = {
     zoom?: number;
     height?: string | number;
     onObjectsChange?: (next: MapObject[]) => void;
+    navigateOnClick?: boolean;
 };
 
 const centroid = (coords: LatLngLiteral[]): LatLngLiteral => {
@@ -81,6 +83,7 @@ export default function MapObjectsEditor({
     zoom = 10,
     height = "calc(min(100vh - 250px, 850px))",
     onObjectsChange,
+    navigateOnClick,
 }: Props) {
     const objectsRef = useRef<MapObject[]>(objects);
     const mapRef = useRef<L.Map>(null);
@@ -254,6 +257,15 @@ export default function MapObjectsEditor({
                         // draggable
                         eventHandlers={{
                             dragend: onMarkerDragEnd(o.id),
+                            click: () => {
+                                if (!navigateOnClick) {
+                                    return;
+                                }
+                                const object = objectStore.objects.find(
+                                    (_o) => _o.objectNumber === o.id,
+                                );
+                                window.open(`/admin/journal/${object?.id}`, "_blank");
+                            },
                         }}
                     >
                         <Tooltip
@@ -282,6 +294,17 @@ export default function MapObjectsEditor({
                             positions={o.polygon}
                             pathOptions={polyStyle(o)}
                             ref={bindLayer(o.id)}
+                            eventHandlers={{
+                                click: () => {
+                                    if (!navigateOnClick) {
+                                        return;
+                                    }
+                                    const object = objectStore.objects.find(
+                                        (_o) => _o.objectNumber === o.id,
+                                    );
+                                    window.open(`/admin/journal/${object?.id}`, "_blank");
+                                },
+                            }}
                         >
                             <Tooltip
                                 direction="top"
