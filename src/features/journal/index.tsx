@@ -421,7 +421,7 @@ export const JournalPage = observer(() => {
                 <title>Объекты – Build</title>
             </Helmet>
             <div className={styles.filterBlock}>
-                {loginUser?.role !== "USER" && (
+                {!accountStore.isContractor && (
                     <div>
                         <Button
                             size={"small"}
