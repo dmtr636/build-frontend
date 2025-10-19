@@ -1,0 +1,70 @@
+/* Глобальные переменные для простого тюнинга */
+:root {
+    /* Итоговый размер мокапа */
+    --mock-w: 421px;
+    --mock-h: 858px;
+
+    /* Внутренний прямоугольник контента */
+    --content-w: 376px;
+    --content-h: 815px;
+
+    /* Отступы рассчитываем автоматически по центру */
+    --content-left: calc((var(--mock-w) - var(--content-w)) / 2);
+    --content-top: calc((var(--mock-h) - var(--content-h)) / 2);
+
+    /* Радиус скругления для "экрана" (при желании)
+     Подгони под свой мокап */
+    --content-radius: 24px;
+
+    /* Тень вокруг устройства (необязательно) */
+    --device-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
+
+    --frame-image: url("./Google_Pixel_5.svg"); /* пример: url("/frames/iphone15.png") */
+}
+
+.mockRoot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.device {
+    position: relative;
+    width: var(--mock-w);
+    height: var(--mock-h);
+    /*
+  box-shadow: var(--device-shadow);
+  */
+}
+
+.iframe {
+    position: absolute;
+    left: var(--content-left);
+    top: var(--content-top);
+    width: var(--content-w);
+    height: var(--content-h);
+    border: 0;
+    display: block;
+    border-radius: var(--content-radius);
+    /* сгладить скролл внутри */
+    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
+    z-index: 10;
+    background: #fff;
+}
+
+/* Оверлей-рамка — поверх всего, не мешает кликам по контенту */
+.frameOverlay {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: var(--frame-image);
+    /* если у рамки есть прозрачные вырезы — оставляем как есть */
+    /* z-index выше iframe */
+    z-index: 2;
+}
