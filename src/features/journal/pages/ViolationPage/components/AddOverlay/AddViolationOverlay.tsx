@@ -139,6 +139,7 @@ const AddViolationOverlay = observer(
             imageIds,
             coords?.lat,
             coords?.lng,
+            workId,
         ]);
 
         useEffect(() => {

@@ -4,6 +4,10 @@ import { endpoints, FILES_ENDPOINT } from "src/shared/api/endpoints.ts";
 import { Material } from "src/features/journal/pages/MaterialsPage/Material.ts";
 import { formatDate } from "src/shared/utils/date.ts";
 import axios from "axios";
+import { offlineStore } from "src/app/AppStore.ts";
+import { enqueueApi } from "src/features/offline/OfflineQueueStore.tsx";
+import { v4 } from "uuid";
+import dayjs from "dayjs";
 
 interface Filter {
     date: string | null;
@@ -129,6 +133,22 @@ export class MaterialsStore {
     };
 
     createMaterial = async (material: Partial<Material>): Promise<boolean> => {
+        if (!offlineStore.isOnline) {
+            enqueueApi.post(endpoints.projectMaterials, material);
+            const newMaterial: Material = {
+                ...material,
+                id: v4(),
+                createdAt: dayjs().toISOString(),
+                updatedAt: dayjs().toISOString(),
+                projectId: material.projectId ?? "",
+                waybill: material.waybill!,
+                passportQuality: material.passportQuality ?? null,
+            };
+            this.materials.push(newMaterial);
+            this.addForm = {};
+            return true;
+        }
+
         this.loading = true;
         const response = await this.apiClient.post<Material>(endpoints.projectMaterials, material);
         this.loading = false;
@@ -179,11 +199,25 @@ export class MaterialsStore {
     };
 
     doOcr = async (file: Blob) => {
+        if (!offlineStore.isOnline) {
+            return;
+        }
+
         this.ocrLoading = true;
         const formData = new FormData();
         formData.set("file", file);
+
+        const MIN_DURATION = 3000;
+        const start = Date.now();
+
         try {
             const response = await axios.post<any>(endpoints.ocr, formData);
+
+            const elapsed = Date.now() - start;
+            if (elapsed < MIN_DURATION) {
+                await new Promise((resolve) => setTimeout(resolve, MIN_DURATION - elapsed));
+            }
+
             if (response?.data) {
                 if (!this.addForm.waybill) {
                     this.addForm.waybill = {} as any;

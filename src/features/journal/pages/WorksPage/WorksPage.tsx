@@ -15,13 +15,16 @@ import {
     IconUp,
 } from "src/ui/assets/icons";
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
     accountStore,
     appStore,
     layoutStore,
+    materialsStore,
     objectStore,
+    offlineStore,
     registryStore,
+    violationStore,
     worksStore,
 } from "src/app/AppStore.ts";
 import { makeAutoObservable } from "mobx";
@@ -43,7 +46,11 @@ import { clsx } from "clsx";
 import { Counter } from "src/ui/components/info/Counter/Counter.tsx";
 import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
 import { FlexColumn } from "src/ui/components/atoms/FlexColumn/FlexColumn.tsx";
-import { ProjectWork, ProjectWorkStage } from "src/features/journal/types/ProjectWork.ts";
+import {
+    CheckListInstance,
+    ProjectWork,
+    ProjectWorkStage,
+} from "src/features/journal/types/ProjectWork.ts";
 import { Flex } from "src/ui/components/atoms/Flex/Flex";
 import { Autocomplete } from "src/ui/components/inputs/Autocomplete/Autocomplete.tsx";
 import { Input } from "src/ui/components/inputs/Input/Input.tsx";
@@ -65,6 +72,8 @@ import { MapEditor } from "src/features/map/MapEditor.tsx";
 import { LatLngLiteral } from "leaflet";
 import { useGeofence } from "src/features/journal/hooks/geofence.ts";
 import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
+import { enqueueApi } from "src/features/offline/OfflineQueueStore.tsx";
+import { v4 } from "uuid";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -121,12 +130,17 @@ export const WorksPage = observer(() => {
     const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
     const vm = useMemo(() => new VM(), []);
     const [coords, setCoords] = useState<LatLngLiteral | null>(null);
+    console.log(coords);
     useLayoutEffect(() => {
         if (currentObj) {
             vm.form = deepCopy(currentObj);
             worksStore.fetchWorks(currentObj.id, true);
             worksStore.changeType = "";
             worksStore.fetchChecklists(currentObj.id);
+            if (layoutStore.isMobile) {
+                violationStore.fetchViolationByObj(currentObj.id);
+                materialsStore.fetchMaterials(currentObj.id);
+            }
         } else {
             vm.form = null;
         }
@@ -915,6 +929,7 @@ export const WorksPage = observer(() => {
                                                 ) {
                                                     status = "DONE";
                                                 }
+
                                                 const answers =
                                                     worksStore.todayChecklistForm?.sections.flatMap(
                                                         (s) =>
@@ -922,17 +937,88 @@ export const WorksPage = observer(() => {
                                                                 templateItemId: item.templateItemId,
                                                                 answer: item.answer,
                                                             })),
+                                                    ) ?? [];
+
+                                                if (!offlineStore.isOnline) {
+                                                    enqueueApi.put(
+                                                        endpoints.projectChecklists + `/${id}`,
+                                                        {
+                                                            checklistInstanceId:
+                                                                worksStore.todayChecklist?.id,
+                                                            status,
+                                                            answers,
+                                                        },
                                                     );
-                                                await worksStore.apiClient.put(
-                                                    endpoints.projectChecklists + `/${id}`,
-                                                    {
-                                                        checklistInstanceId:
-                                                            worksStore.todayChecklist?.id,
-                                                        status: status,
-                                                        answers: answers,
-                                                    },
-                                                );
-                                                await worksStore.fetchChecklists(id ?? "");
+
+                                                    const byDay = (c: any) =>
+                                                        dayjs(c.checkDate).isSame(
+                                                            worksStore.checkListsDay,
+                                                            "day",
+                                                        );
+
+                                                    const existing = worksStore.todayChecklist;
+                                                    const updated: CheckListInstance = {
+                                                        id:
+                                                            existing?.id ??
+                                                            worksStore.todayChecklistForm?.id ??
+                                                            (typeof id === "string" ? id : v4()),
+                                                        checkDate:
+                                                            worksStore.todayChecklistForm
+                                                                ?.checkDate ??
+                                                            existing?.checkDate ??
+                                                            worksStore.checkListsDay.toISOString(),
+                                                        sections: deepCopy(
+                                                            worksStore.todayChecklistForm
+                                                                ?.sections ??
+                                                                existing?.sections ??
+                                                                [],
+                                                        ),
+                                                        status: status as any,
+                                                        type:
+                                                            (worksStore.todayChecklistForm as any)
+                                                                ?.type ??
+                                                            existing?.type ??
+                                                            "DAILY",
+                                                        templateTitle:
+                                                            (worksStore.todayChecklistForm as any)
+                                                                ?.templateTitle ??
+                                                            existing?.templateTitle ??
+                                                            "",
+                                                    };
+
+                                                    const iForm =
+                                                        worksStore.dailyChecklistsForm.findIndex(
+                                                            byDay,
+                                                        );
+                                                    if (iForm !== -1)
+                                                        worksStore.dailyChecklistsForm[iForm] =
+                                                            deepCopy(updated);
+                                                    else
+                                                        worksStore.dailyChecklistsForm.push(
+                                                            deepCopy(updated),
+                                                        );
+
+                                                    const iData =
+                                                        worksStore.dailyChecklists.findIndex(byDay);
+                                                    if (iData !== -1)
+                                                        worksStore.dailyChecklists[iData] =
+                                                            deepCopy(updated);
+                                                    else
+                                                        worksStore.dailyChecklists.push(
+                                                            deepCopy(updated),
+                                                        );
+                                                } else {
+                                                    await worksStore.apiClient.put(
+                                                        endpoints.projectChecklists + `/${id}`,
+                                                        {
+                                                            checklistInstanceId:
+                                                                worksStore.todayChecklist?.id,
+                                                            status,
+                                                            answers,
+                                                        },
+                                                    );
+                                                    await worksStore.fetchChecklists(id ?? "");
+                                                }
                                             }
                                         }
 
@@ -1440,6 +1526,7 @@ export const WorkCard = observer(
         const [unlock, setUnlock] = React.useState(false);
         const { id } = useParams();
         const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
+
         const { inside } = useGeofence({
             polygon: props.work.centroid ? [props.work.centroid] : ([] as any),
             throttleMs: 1000,
@@ -1458,6 +1545,7 @@ export const WorkCard = observer(
                 setUnlock(true);
             }
         }, [inside]);
+        const currentObject = objectStore.objects.find((o) => o.id === props.work.projectId);
         const renderStage = (
             stage: ProjectWorkStage,
             index: number,
@@ -1657,6 +1745,7 @@ export const WorkCard = observer(
 
         const [showComments, setShowComments] = useState(false);
         const [commentsCount, setCommentsCount] = useState(0);
+        const [showMapOverlay, setShowMapOverlay] = useState(false);
 
         useEffect(() => {
             if (showComments) {
@@ -1666,6 +1755,8 @@ export const WorkCard = observer(
                 .fetchWorkCommentsCount(props.work.id)
                 .then((count) => setCommentsCount(count));
         }, [props.work.id, showComments]);
+
+        const navigate = useNavigate();
 
         if (activeVersion?.endDate === workVersion.endDate && props.previewNewVersion) {
             return null;
@@ -1775,6 +1866,70 @@ export const WorkCard = observer(
                         </Flex>
                     )}
                 </div>
+
+                <div style={{ display: "flex", gap: 8, paddingLeft: 20, paddingBottom: 18 }}>
+                    <Button
+                        type={"outlined"}
+                        mode={"neutral"}
+                        size={"small"}
+                        onClick={() => {
+                            if (isMobile) {
+                                navigate(
+                                    `/admin/journal/${props.work.projectId}/materials?workId=${props.work.id}`,
+                                );
+                            } else {
+                                window.open(
+                                    `/admin/journal/${props.work.projectId}/materials?workId=${props.work.id}`,
+                                    "_blank",
+                                );
+                            }
+                        }}
+                        counter={
+                            materialsStore.materials.filter(
+                                (m) => m.waybill?.projectWorkId === props.work.id,
+                            ).length || undefined
+                        }
+                    >
+                        Материалы
+                    </Button>
+                    <Button
+                        type={"outlined"}
+                        mode={"neutral"}
+                        size={"small"}
+                        onClick={() => {
+                            if (isMobile) {
+                                navigate(
+                                    `/admin/journal/${props.work.projectId}/violations?workId=${props.work.id}`,
+                                );
+                            } else {
+                                window.open(
+                                    `/admin/journal/${props.work.projectId}/violations?workId=${props.work.id}`,
+                                    "_blank",
+                                );
+                            }
+                        }}
+                        counter={
+                            violationStore.violations.filter((v) => v.workId === props.work.id)
+                                .length || undefined
+                        }
+                    >
+                        Нарушения
+                    </Button>
+                    {props.work.centroid?.latitude && (
+                        <Tooltip text={"Место работы"}>
+                            <Button
+                                iconBefore={<IconPin />}
+                                size={"small"}
+                                mode={"neutral"}
+                                type={"outlined"}
+                                onClick={() => {
+                                    setShowMapOverlay(true);
+                                }}
+                            />
+                        </Tooltip>
+                    )}
+                </div>
+
                 {isMobile && props.work.centroid && !hasQrAccess(id ?? "") && (
                     <Flex gap={8} style={{ paddingLeft: 16, paddingRight: 16, paddingBottom: 19 }}>
                         {" "}
@@ -2070,6 +2225,71 @@ export const WorkCard = observer(
                 </div>
                 {showComments && (
                     <WorkComments show={showComments} setShow={setShowComments} work={props.work} />
+                )}
+                {showMapOverlay && (
+                    <Overlay
+                        open={showMapOverlay}
+                        onClose={() => setShowMapOverlay(false)}
+                        title={"Место работы"}
+                        smallPadding={true}
+                        styles={{
+                            background: {
+                                zIndex: 10000,
+                            },
+                        }}
+                        mobileMapOverlay={isMobile}
+                    >
+                        <div
+                            style={{
+                                width: isMobile ? "100%" : 777,
+                            }}
+                        >
+                            <MapEditor
+                                readyProp={true}
+                                disableSatellite={true}
+                                height={"400px"}
+                                value={{
+                                    polygon: currentObject?.polygon
+                                        ? currentObject.polygon.map((item) => ({
+                                              lat: item.latitude,
+                                              lng: item.longitude,
+                                          }))
+                                        : null,
+                                    marker: props.work.centroid
+                                        ? {
+                                              lat: props.work.centroid.latitude,
+                                              lng: props.work.centroid.longitude,
+                                          }
+                                        : null,
+                                }}
+                                center={
+                                    currentObject?.centroid
+                                        ? {
+                                              lat: currentObject?.centroid?.latitude,
+                                              lng: currentObject?.centroid?.longitude,
+                                          }
+                                        : undefined
+                                }
+                                editable={false}
+                                selectingPoint={false}
+                                onChange={() => {}}
+                            />
+                            <Grid gap={12} style={{ marginTop: 20 }} columns={"1fr"}>
+                                <Input
+                                    onChange={() => {}}
+                                    value={props.work.centroid?.latitude ?? "-"}
+                                    formName={"Широта"}
+                                    readonly={true}
+                                />
+                                <Input
+                                    onChange={() => {}}
+                                    value={props.work.centroid?.longitude ?? "-"}
+                                    formName={"Долгота"}
+                                    readonly={true}
+                                />
+                            </Grid>
+                        </div>
+                    </Overlay>
                 )}
             </div>
         );
