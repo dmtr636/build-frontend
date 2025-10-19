@@ -24,6 +24,8 @@ export class AccountStore {
     setUserIsAdmin() {
         if (this.currentUser) {
             this.currentUser.role = "ADMIN";
+            this.currentUser.lastName = "Администратор";
+            this.currentUser.firstName = "Тестовый";
             this.currentUser.position = undefined;
         }
     }
@@ -31,6 +33,8 @@ export class AccountStore {
     setUserIsContractor() {
         if (this.currentUser) {
             this.currentUser.role = "USER";
+            this.currentUser.lastName = "Подрядчик";
+            this.currentUser.firstName = "Тестовый";
             this.currentUser.position = "Подрядчик";
         }
     }
@@ -38,6 +42,9 @@ export class AccountStore {
     setUserIsCustomer() {
         if (this.currentUser) {
             this.currentUser.role = "USER";
+
+            this.currentUser.lastName = "Заказчик";
+            this.currentUser.firstName = "Тестовый";
             this.currentUser.position = "Служба строительного контроля";
         }
     }
@@ -45,6 +52,9 @@ export class AccountStore {
     setUserIsInspector() {
         if (this.currentUser) {
             this.currentUser.role = "USER";
+
+            this.currentUser.lastName = "Инспектор";
+            this.currentUser.firstName = "Тестовый";
             this.currentUser.position = "Инспектор контрольного органа";
         }
     }
