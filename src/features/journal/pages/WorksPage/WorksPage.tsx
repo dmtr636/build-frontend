@@ -1765,105 +1765,217 @@ export const WorkCard = observer(
         return (
             <div className={styles.workCard}>
                 <div
-                    className={styles.workCardHeader}
-                    style={{
-                        gridTemplateColumns:
-                            !!progressStages.length || !!finishedStages.length
-                                ? "auto 1fr auto"
-                                : "1fr auto",
-                        paddingTop: props.previewNewVersion ? "24px" : undefined,
-                        paddingBottom: props.previewNewVersion ? "24px" : undefined,
-                    }}
+                    className={clsx(styles.workCardHeader, isMobile && styles.mobile)}
+                    style={
+                        isMobile
+                            ? undefined
+                            : {
+                                  gridTemplateColumns:
+                                      !!progressStages.length || !!finishedStages.length
+                                          ? "auto 1fr auto"
+                                          : "1fr auto",
+                                  paddingTop: props.previewNewVersion ? "24px" : undefined,
+                                  paddingBottom: props.previewNewVersion ? "24px" : undefined,
+                              }
+                    }
                 >
-                    {(!!progressStages.length || !!finishedStages.length) &&
-                        !props.previewNewVersion && (
-                            <Flex gap={12} align={"center"}>
-                                <Button
-                                    mode={"neutral"}
-                                    type={"outlined"}
-                                    size={"small"}
-                                    onClick={() => {
-                                        setCollapsed(!collapsed);
-                                    }}
-                                >
-                                    <IconArrowUp
-                                        style={{
-                                            transition: "transform 0.1s",
-                                            transform: collapsed
-                                                ? "rotate(180deg)"
-                                                : "rotate(0deg)",
-                                        }}
-                                    />
-                                </Button>
-                                {collapsed && !!onCheckCountStages && (
-                                    <Counter
-                                        size={"small"}
-                                        value={onCheckCountStages}
-                                        style={{
-                                            backgroundColor: "#8C3AF8",
-                                        }}
-                                    />
-                                )}
-                            </Flex>
-                        )}
-                    {props.previewNewVersion ? (
-                        <Typo variant={"actionXL"} className={styles.previewNewVersionWorkName}>
-                            {props.work.name}
-                        </Typo>
+                    {isMobile ? (
+                        <>
+                            <div className={styles.row}>
+                                <div className={styles.cellLeft}>
+                                    {!props.previewNewVersion && (
+                                        <Flex gap={8} align={"center"}>
+                                            <CircularProgress
+                                                value={props.work.completionPercent}
+                                            />
+                                            <Typo variant={"subheadM"}>
+                                                {props.work.completionPercent}%
+                                            </Typo>
+                                        </Flex>
+                                    )}
+                                </div>
+                                <div className={styles.cellRight}>
+                                    {(!!progressStages.length || !!finishedStages.length) &&
+                                        !props.previewNewVersion && (
+                                            <Flex gap={12} align={"center"}>
+                                                <Button
+                                                    mode={"neutral"}
+                                                    type={"tertiary"}
+                                                    size={"small"}
+                                                    onClick={() => setCollapsed(!collapsed)}
+                                                >
+                                                    <IconArrowUp
+                                                        style={{
+                                                            transition: "transform 0.1s",
+                                                            transform: collapsed
+                                                                ? "rotate(180deg)"
+                                                                : "rotate(0deg)",
+                                                        }}
+                                                    />
+                                                </Button>
+                                                {/*{collapsed && !!onCheckCountStages && (
+                                                    <Counter
+                                                        size={"small"}
+                                                        value={onCheckCountStages}
+                                                        style={{ backgroundColor: "#8C3AF8" }}
+                                                    />
+                                                )}*/}
+                                            </Flex>
+                                        )}
+                                </div>
+                            </div>
+
+                            <div className={styles.row}>
+                                <div className={styles.cellLeft}>
+                                    {props.previewNewVersion ? (
+                                        <Typo
+                                            variant={"actionXL"}
+                                            className={styles.previewNewVersionWorkName}
+                                        >
+                                            {props.work.name}
+                                        </Typo>
+                                    ) : (
+                                        <Checkbox
+                                            style={{ alignItems: "start" }}
+                                            onChange={(checked) => {
+                                                props.work.status = checked
+                                                    ? "READY_TO_CHECK"
+                                                    : "IN_PROGRESS";
+                                                worksStore.changeType = "checkbox";
+                                            }}
+                                            title={props.work.name}
+                                            size={"large"}
+                                            checked={
+                                                props.work.status !== "IN_PROGRESS" ||
+                                                (!!props.work.stages.length &&
+                                                    props.work.stages.every(
+                                                        (stage) => stage.status !== "IN_PROGRESS",
+                                                    ))
+                                            }
+                                            color={
+                                                props.work.status === "ON_CHECK" ||
+                                                (!!props.work.stages.length &&
+                                                    props.work.stages.every(
+                                                        (stage) =>
+                                                            stage.status === "DONE" ||
+                                                            stage.status === "ON_CHECK",
+                                                    ) &&
+                                                    props.work.stages.some(
+                                                        (stage) => stage.status === "ON_CHECK",
+                                                    ))
+                                                    ? "lavender"
+                                                    : props.work.status === "DONE"
+                                                      ? "positive"
+                                                      : "neutral"
+                                            }
+                                            disabled={
+                                                props.work.stages.some(
+                                                    (stage) =>
+                                                        stage.status === "IN_PROGRESS" ||
+                                                        stage.status === "ON_CHECK",
+                                                ) ||
+                                                props.work.status === "ON_CHECK" ||
+                                                props.work.status === "DONE" ||
+                                                !!props.work.stages.length
+                                            }
+                                        />
+                                    )}
+                                </div>
+                                <div className={styles.cellRight} />
+                            </div>
+                        </>
                     ) : (
-                        <Checkbox
-                            onChange={(checked) => {
-                                if (checked) {
-                                    props.work.status = "READY_TO_CHECK";
-                                } else {
-                                    props.work.status = "IN_PROGRESS";
-                                }
-                                worksStore.changeType = "checkbox";
-                            }}
-                            title={props.work.name}
-                            size={"large"}
-                            checked={
-                                props.work.status !== "IN_PROGRESS" ||
-                                (!!props.work.stages.length &&
-                                    props.work.stages.every(
-                                        (stage) => stage.status !== "IN_PROGRESS",
-                                    ))
-                            }
-                            color={
-                                props.work.status === "ON_CHECK" ||
-                                (!!props.work.stages.length &&
-                                    props.work.stages.every(
-                                        (stage) =>
-                                            stage.status === "DONE" || stage.status === "ON_CHECK",
-                                    ) &&
-                                    props.work.stages.some((stage) => stage.status === "ON_CHECK"))
-                                    ? "lavender"
-                                    : props.work.status === "DONE"
-                                      ? "positive"
-                                      : "neutral"
-                            }
-                            disabled={
-                                props.work.stages.some(
-                                    (stage) =>
-                                        stage.status === "IN_PROGRESS" ||
-                                        stage.status === "ON_CHECK",
-                                ) ||
-                                props.work.status === "ON_CHECK" ||
-                                props.work.status === "DONE" ||
-                                !!props.work.stages.length
-                            }
-                            style={
-                                {
-                                    // pointerEvents: props.work.status === "IN_PROGRESS" ? undefined : "none",
-                                }
-                            }
-                        />
-                    )}
-                    {!props.previewNewVersion && (
-                        <Flex gap={8} align={"center"}>
-                            <CircularProgress value={props.work.completionPercent} />
-                            <Typo variant={"subheadM"}>{props.work.completionPercent}%</Typo>
-                        </Flex>
+                        <>
+                            {(!!progressStages.length || !!finishedStages.length) &&
+                                !props.previewNewVersion && (
+                                    <Flex gap={12} align={"center"}>
+                                        <Button
+                                            mode={"neutral"}
+                                            type={"outlined"}
+                                            size={"small"}
+                                            onClick={() => setCollapsed(!collapsed)}
+                                        >
+                                            <IconArrowUp
+                                                style={{
+                                                    transition: "transform 0.1s",
+                                                    transform: collapsed
+                                                        ? "rotate(180deg)"
+                                                        : "rotate(0deg)",
+                                                }}
+                                            />
+                                        </Button>
+                                        {collapsed && !!onCheckCountStages && (
+                                            <Counter
+                                                size={"small"}
+                                                value={onCheckCountStages}
+                                                style={{ backgroundColor: "#8C3AF8" }}
+                                            />
+                                        )}
+                                    </Flex>
+                                )}
+
+                            {props.previewNewVersion ? (
+                                <Typo
+                                    variant={"actionXL"}
+                                    className={styles.previewNewVersionWorkName}
+                                >
+                                    {props.work.name}
+                                </Typo>
+                            ) : (
+                                <Checkbox
+                                    onChange={(checked) => {
+                                        props.work.status = checked
+                                            ? "READY_TO_CHECK"
+                                            : "IN_PROGRESS";
+                                        worksStore.changeType = "checkbox";
+                                    }}
+                                    title={props.work.name}
+                                    size={"large"}
+                                    checked={
+                                        props.work.status !== "IN_PROGRESS" ||
+                                        (!!props.work.stages.length &&
+                                            props.work.stages.every(
+                                                (stage) => stage.status !== "IN_PROGRESS",
+                                            ))
+                                    }
+                                    color={
+                                        props.work.status === "ON_CHECK" ||
+                                        (!!props.work.stages.length &&
+                                            props.work.stages.every(
+                                                (stage) =>
+                                                    stage.status === "DONE" ||
+                                                    stage.status === "ON_CHECK",
+                                            ) &&
+                                            props.work.stages.some(
+                                                (stage) => stage.status === "ON_CHECK",
+                                            ))
+                                            ? "lavender"
+                                            : props.work.status === "DONE"
+                                              ? "positive"
+                                              : "neutral"
+                                    }
+                                    disabled={
+                                        props.work.stages.some(
+                                            (stage) =>
+                                                stage.status === "IN_PROGRESS" ||
+                                                stage.status === "ON_CHECK",
+                                        ) ||
+                                        props.work.status === "ON_CHECK" ||
+                                        props.work.status === "DONE" ||
+                                        !!props.work.stages.length
+                                    }
+                                />
+                            )}
+
+                            {!props.previewNewVersion && (
+                                <Flex gap={8} align={"center"}>
+                                    <CircularProgress value={props.work.completionPercent} />
+                                    <Typo variant={"subheadM"}>
+                                        {props.work.completionPercent}%
+                                    </Typo>
+                                </Flex>
+                            )}
+                        </>
                     )}
                 </div>
 
@@ -1915,7 +2027,7 @@ export const WorkCard = observer(
                     >
                         Нарушения
                     </Button>
-                    {props.work.centroid?.latitude && (
+                    {props.work.centroid?.latitude && !isMobile && (
                         <Tooltip text={"Место работы"}>
                             <Button
                                 iconBefore={<IconPin />}

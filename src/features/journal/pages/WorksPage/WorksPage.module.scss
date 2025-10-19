@@ -165,8 +165,42 @@
     display: grid;
     align-items: center;
     gap: 12px;
+
     @media screen and (max-width: 768px) {
         padding: 16px;
+    }
+}
+
+.mobile {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 8px;
+
+    .row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cellLeft {
+        min-width: 0;
+        display: flex;
+        align-items: start;
+        gap: 12px;
+    }
+
+    .cellRight {
+        justify-self: end;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .previewNewVersionWorkName {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 
