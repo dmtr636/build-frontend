@@ -202,11 +202,22 @@ export class MaterialsStore {
         if (!offlineStore.isOnline) {
             return;
         }
+
         this.ocrLoading = true;
         const formData = new FormData();
         formData.set("file", file);
+
+        const MIN_DURATION = 3000;
+        const start = Date.now();
+
         try {
             const response = await axios.post<any>(endpoints.ocr, formData);
+
+            const elapsed = Date.now() - start;
+            if (elapsed < MIN_DURATION) {
+                await new Promise((resolve) => setTimeout(resolve, MIN_DURATION - elapsed));
+            }
+
             if (response?.data) {
                 if (!this.addForm.waybill) {
                     this.addForm.waybill = {} as any;

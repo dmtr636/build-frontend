@@ -94,6 +94,7 @@ const CreateViolationPage = observer(() => {
             setHaveViolations(true);
         }
     };
+    const [workId, setWorkId] = useState<string | null>(null);
 
     const currentViolation = registryStore.violationsMap.get(violation as string);
     const violationForm = useMemo(() => {
@@ -137,6 +138,7 @@ const CreateViolationPage = observer(() => {
         imageIds,
         coords?.lat,
         coords?.lng,
+        workId,
     ]);
 
     useEffect(() => {
@@ -160,7 +162,6 @@ const CreateViolationPage = observer(() => {
             return next;
         });
     };
-    const [workId, setWorkId] = useState<string | null>(null);
 
     const workslistOptions = worksStore.works.map((work) => ({
         name: work.name,
