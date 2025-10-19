@@ -6,7 +6,7 @@ export default function MobileMock() {
             <div className={s.device}>
                 <iframe
                     className={s.iframe}
-                    src={"http://localhost:3000/admin/journal"}
+                    src={"https://dev.build.kydas.ru/admin/journal"}
                     allow="clipboard-write *"
                 />
                 <div aria-hidden className={s.frameOverlay} />
