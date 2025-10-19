@@ -25,7 +25,7 @@ import {
     worksStore,
 } from "src/app/AppStore.ts";
 import { makeAutoObservable } from "mobx";
-import { ObjectDTO } from "src/features/journal/types/Object.ts";
+import { CoordinateDTO, ObjectDTO } from "src/features/journal/types/Object.ts";
 import { deepCopy } from "src/shared/utils/deepCopy.ts";
 import { Select } from "src/ui/components/inputs/Select/Select.tsx";
 import { SelectOption } from "src/ui/components/inputs/Select/Select.types.ts";
@@ -63,6 +63,8 @@ import { endpoints } from "src/shared/api/endpoints.ts";
 import { DeleteOverlay } from "src/ui/components/segments/overlays/DeleteOverlay/DeleteOverlay.tsx";
 import { MapEditor } from "src/features/map/MapEditor.tsx";
 import { LatLngLiteral } from "leaflet";
+import { useGeofence } from "src/features/journal/hooks/geofence.ts";
+import { ButtonIcon } from "src/ui/components/controls/ButtonIcon/ButtonIcon.tsx";
 
 class VM {
     form: ObjectDTO | null = null;
@@ -102,12 +104,23 @@ const unitMap: Record<string, string> = {
     Штука: "шт",
 };
 
+function hasQrAccess(currentObjectId: string): boolean {
+    const data = localStorage.getItem("qrAccess");
+    if (!data) return false;
+
+    try {
+        const { objectId } = JSON.parse(data);
+        return objectId === currentObjectId;
+    } catch {
+        return false;
+    }
+}
+
 export const WorksPage = observer(() => {
     const { id } = useParams();
     const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
     const vm = useMemo(() => new VM(), []);
     const [coords, setCoords] = useState<LatLngLiteral | null>(null);
-    console.log(coords);
     useLayoutEffect(() => {
         if (currentObj) {
             vm.form = deepCopy(currentObj);
@@ -1418,12 +1431,33 @@ export const WorkStageRow = observer(
 );
 
 export const WorkCard = observer(
-    (props: { work: ProjectWork; vm: VM; previewNewVersion?: boolean }) => {
+    (props: { work: ProjectWork; vm: VM; previewNewVersion?: boolean; id?: string }) => {
         const [collapsed, setCollapsed] = useState(false);
-
+        const [showMap, setShowMap] = useState(false);
         const progressStages = props.work.stages.filter((stage) => stage.status !== "DONE");
         const finishedStages = props.work.stages.filter((stage) => stage.status === "DONE");
         const isMobile = layoutStore.isMobile;
+        const [unlock, setUnlock] = React.useState(false);
+        const { id } = useParams();
+        const currentObj = appStore.objectStore.ObjectMap.get(id ?? "");
+        const { inside } = useGeofence({
+            polygon: props.work.centroid ? [props.work.centroid] : ([] as any),
+            throttleMs: 1000,
+            enableHighAccuracy: true,
+            minAccuracyMeters: 500,
+            onEnter: () => {
+                setUnlock(true);
+            },
+            onExit: () => {
+                setUnlock(false);
+            },
+        });
+
+        useEffect(() => {
+            if (inside) {
+                setUnlock(true);
+            }
+        }, [inside]);
         const renderStage = (
             stage: ProjectWorkStage,
             index: number,
@@ -1431,6 +1465,63 @@ export const WorkCard = observer(
         ) => {
             return (
                 <FlexColumn gap={16}>
+                    {showMap && (
+                        <div
+                            style={{
+                                width: "100%",
+                            }}
+                        >
+                            <Overlay
+                                open={showMap}
+                                onClose={() => setShowMap(false)}
+                                title={"Место работы"}
+                                smallPadding={true}
+                                styles={{
+                                    background: {
+                                        zIndex: 10000,
+                                    },
+                                }}
+                                mobileMapOverlay={true}
+                            >
+                                <div
+                                    style={{
+                                        width: "100%",
+                                    }}
+                                >
+                                    <MapEditor
+                                        readyProp={true}
+                                        disableSatellite={true}
+                                        height={"400px"}
+                                        value={{
+                                            polygon: currentObj?.polygon
+                                                ? currentObj.polygon.map((item) => ({
+                                                      lat: item.latitude,
+                                                      lng: item.longitude,
+                                                  }))
+                                                : null,
+                                            marker: props.work.centroid
+                                                ? {
+                                                      lat: props.work.centroid?.latitude,
+                                                      lng: props.work.centroid?.longitude,
+                                                  }
+                                                : null,
+                                        }}
+                                        onChange={() => {}}
+                                        center={
+                                            props.work.centroid
+                                                ? {
+                                                      lat: props.work.centroid?.latitude,
+                                                      lng: props.work.centroid?.longitude,
+                                                  }
+                                                : undefined
+                                        }
+                                        editable={false}
+                                        selectingPoint={false}
+                                    />
+                                </div>
+                            </Overlay>
+                        </div>
+                    )}
                     <Flex gap={16} direction={isMobile ? "column" : "row"}>
                         <Checkbox
                             onChange={(checked) => {
@@ -1525,6 +1616,8 @@ export const WorkCard = observer(
                             accountStore.isInspector) && (
                             <div>
                                 <ApproveButtons
+                                    unlock={unlock ?? undefined}
+                                    centroid={props.work.centroid}
                                     onReject={() => {
                                         stage.status = "IN_PROGRESS";
                                     }}
@@ -1682,6 +1775,28 @@ export const WorkCard = observer(
                         </Flex>
                     )}
                 </div>
+                {isMobile && props.work.centroid && !hasQrAccess(id ?? "") && (
+                    <Flex gap={8} style={{ paddingLeft: 16, paddingRight: 16, paddingBottom: 19 }}>
+                        {" "}
+                        <div style={{ width: "100%" }}>
+                            <Button
+                                size={"tiny"}
+                                fullWidth={true}
+                                type={"secondary"}
+                                mode={unlock ? "positive" : "neutral"}
+                            >
+                                {unlock ? "Вы в зоне работы" : "Войдите в зону работы"}
+                            </Button>
+                        </div>
+                        <Button
+                            onClick={() => setShowMap(true)}
+                            size={"tiny"}
+                            iconBefore={<IconPin />}
+                            type={"primary"}
+                            mode={"neutral"}
+                        ></Button>
+                    </Flex>
+                )}
                 {props.work.status === "ON_CHECK" &&
                     !props.previewNewVersion &&
                     !progressStages.length &&
@@ -1961,32 +2076,45 @@ export const WorkCard = observer(
     },
 );
 
-export const ApproveButtons = observer((props: { onReject: () => void; onApprove: () => void }) => {
-    const isMobile = layoutStore.isMobile;
-    return (
-        <Flex gap={8}>
-            <div className={styles.buttonItem}>
-                <Button
-                    fullWidth={isMobile}
-                    type={"secondary"}
-                    mode={"negative"}
-                    size={"tiny"}
-                    onClick={props.onReject}
-                >
-                    Отклонить
-                </Button>
-            </div>
-            <div className={styles.buttonItem}>
-                <Button
-                    fullWidth={isMobile}
-                    type={"primary"}
-                    mode={"positive"}
-                    size={"tiny"}
-                    onClick={props.onApprove}
-                >
-                    Принять
-                </Button>
-            </div>
-        </Flex>
-    );
-});
+export const ApproveButtons = observer(
+    (props: {
+        onReject: () => void;
+        onApprove: () => void;
+        centroid?: CoordinateDTO;
+        unlock?: boolean;
+    }) => {
+        const isMobile = layoutStore.isMobile;
+        const { id } = useParams();
+
+        return (
+            <Flex gap={8}>
+                <div className={styles.buttonItem}>
+                    <Button
+                        disabled={
+                            !props.unlock && Boolean(props.centroid) && !hasQrAccess(id ?? "")
+                        }
+                        fullWidth={isMobile}
+                        type={"secondary"}
+                        mode={"negative"}
+                        size={"tiny"}
+                        onClick={props.onReject}
+                    >
+                        Отклонить
+                    </Button>
+                </div>
+                <div className={styles.buttonItem}>
+                    <Button
+                        disabled={!props.unlock && Boolean(props.centroid)}
+                        fullWidth={isMobile}
+                        type={"primary"}
+                        mode={"positive"}
+                        size={"tiny"}
+                        onClick={props.onApprove}
+                    >
+                        Принять
+                    </Button>
+                </div>
+            </Flex>
+        );
+    },
+);
