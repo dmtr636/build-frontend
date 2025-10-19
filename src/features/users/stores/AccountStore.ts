@@ -71,18 +71,18 @@ export class AccountStore {
                     break;
                 case "F2":
                     e.preventDefault();
+                    this.setUserIsCustomer();
 
-                    this.setUserIsContractor();
                     break;
                 case "F3":
                     e.preventDefault();
 
-                    this.setUserIsCustomer();
+                    this.setUserIsInspector();
                     break;
                 case "F4":
                     e.preventDefault();
 
-                    this.setUserIsInspector();
+                    this.setUserIsContractor();
                     break;
                 default:
                     return;

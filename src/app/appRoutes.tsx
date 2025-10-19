@@ -29,11 +29,17 @@ import NotificationMobile from "src/features/notification/NotificationMobile.tsx
 import { layoutStore } from "src/app/AppStore.ts";
 import MaterialItemPage from "src/features/journal/pages/MaterialsPage/MaterialItemPage/MaterialItemPage.tsx";
 import MaterialCreate from "src/features/journal/pages/MaterialsPage/MaterialCreate/MaterialCreate.tsx";
+import MobileMock from "src/features/Mockup/MockPage.tsx";
 
 export const appRoutes: RouteObject[] = [
     {
         path: "/qr/:key",
         element: <QRPage />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: "/mockup",
+        element: <MobileMock />,
         errorElement: <ErrorPage />,
     },
     {
