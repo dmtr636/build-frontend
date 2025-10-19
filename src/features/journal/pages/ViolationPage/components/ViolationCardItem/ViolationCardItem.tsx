@@ -88,14 +88,20 @@ const ViolationCardItem = observer(({ violation, onClick, active }: ViolationCar
         switch (violation?.status) {
             case "TODO":
                 return (
-                    <Button size={"small"} hover={true} type={"outlined"} mode={"neutral"}>
+                    <Button
+                        size={"small"}
+                        hover={true}
+                        type={"outlined"}
+                        mode={"neutral"}
+                        fullWidth={isMobile}
+                    >
                         Ожидание
                     </Button>
                 );
 
             case "IN_PROGRESS":
                 return (
-                    <Button size={"small"} type={"primary"} mode={"warning"}>
+                    <Button size={"small"} type={"primary"} mode={"warning"} fullWidth={isMobile}>
                         В работе
                     </Button>
                 );

@@ -4,8 +4,15 @@ import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
 import { ProjectWork } from "src/features/journal/types/ProjectWork.ts";
 import { Button } from "src/ui/components/controls/Button/Button.tsx";
 import { Popover } from "src/ui/components/solutions/Popover/Popover.tsx";
-import { useParams } from "react-router-dom";
-import { materialsStore, violationStore } from "src/app/AppStore.ts";
+import { useNavigate, useParams } from "react-router-dom";
+import { layoutStore, materialsStore, objectStore, violationStore } from "src/app/AppStore.ts";
+import { Tooltip } from "src/ui/components/info/Tooltip/Tooltip.tsx";
+import { IconPin } from "src/ui/assets/icons";
+import { Overlay } from "src/ui/components/segments/overlays/Overlay/Overlay.tsx";
+import { MapEditor } from "src/features/map/MapEditor.tsx";
+import { Grid } from "src/ui/components/atoms/Grid/Grid.tsx";
+import { Input } from "src/ui/components/inputs/Input/Input.tsx";
+import { observer } from "mobx-react-lite";
 
 const isoToYYYYMMDD = (iso: string) => {
     // Берём первые 10 символов «YYYY-MM-DD»
@@ -108,15 +115,11 @@ type Props = {
     height?: string | number;
 };
 
-export default function GanttWorks({
-    works,
-    currentWorkVersion,
-    initialScale = "day",
-    width = "100%",
-}: Props) {
+function GanttWorks({ works, currentWorkVersion, initialScale = "day", width = "100%" }: Props) {
     const ref = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState<ScaleMode>(initialScale);
     const { id } = useParams();
+    const currentObject = objectStore.objects.find((o) => o.id === id);
 
     const data = useMemo(
         () => buildGanttTasks(works, currentWorkVersion),
@@ -315,7 +318,13 @@ export default function GanttWorks({
             materialsStore.fetchMaterials(id);
             violationStore.fetchViolationByObj(id);
         }
-    }, []);
+    }, [id]);
+
+    const popoverWork = works.find((w) => w.id === popover?.task?.id);
+
+    const [showMapOverlay, setShowMapOverlay] = useState(false);
+    const navigate = useNavigate();
+    const isMobile = layoutStore.isMobile;
 
     return (
         <div style={{ width, display: "flex", flexDirection: "column", gap: 8 }}>
@@ -344,14 +353,20 @@ export default function GanttWorks({
                                 mode={"neutral"}
                                 size={"small"}
                                 onClick={() => {
-                                    window.open(
-                                        `/admin/journal/${id}/materials?workId=${popover.task.id}`,
-                                        "_blank",
-                                    );
+                                    if (isMobile) {
+                                        navigate(
+                                            `/admin/journal/${id}/materials?workId=${popover.task.id}`,
+                                        );
+                                    } else {
+                                        window.open(
+                                            `/admin/journal/${id}/materials?workId=${popover.task.id}`,
+                                            "_blank",
+                                        );
+                                    }
                                 }}
                                 counter={
                                     materialsStore.materials.filter(
-                                        (m) => m.waybill.projectWorkId === popover.task.id,
+                                        (m) => m.waybill?.projectWorkId === popover.task.id,
                                     ).length || undefined
                                 }
                             >
@@ -362,10 +377,16 @@ export default function GanttWorks({
                                 mode={"neutral"}
                                 size={"small"}
                                 onClick={() => {
-                                    window.open(
-                                        `/admin/journal/${id}/violations?workId=${popover.task.id}`,
-                                        "_blank",
-                                    );
+                                    if (isMobile) {
+                                        navigate(
+                                            `/admin/journal/${id}/violations?workId=${popover.task.id}`,
+                                        );
+                                    } else {
+                                        window.open(
+                                            `/admin/journal/${id}/violations?workId=${popover.task.id}`,
+                                            "_blank",
+                                        );
+                                    }
                                 }}
                                 counter={
                                     violationStore.violations.filter(
@@ -375,10 +396,91 @@ export default function GanttWorks({
                             >
                                 Нарушения
                             </Button>
+                            {popoverWork?.centroid?.latitude && (
+                                <Tooltip text={"Место работы"}>
+                                    <Button
+                                        iconBefore={<IconPin />}
+                                        size={"small"}
+                                        mode={"neutral"}
+                                        type={"outlined"}
+                                        onClick={() => {
+                                            setShowMapOverlay(true);
+                                        }}
+                                    />
+                                </Tooltip>
+                            )}
                         </div>
                     </div>
                 )}
             </div>
+
+            {showMapOverlay && (
+                <Overlay
+                    open={showMapOverlay}
+                    onClose={() => setShowMapOverlay(false)}
+                    title={"Место работы"}
+                    smallPadding={true}
+                    styles={{
+                        background: {
+                            zIndex: 10000,
+                        },
+                    }}
+                    mobileMapOverlay={layoutStore.isMobile}
+                >
+                    <div
+                        style={{
+                            width: layoutStore.isMobile ? "100%" : 777,
+                        }}
+                    >
+                        <MapEditor
+                            readyProp={true}
+                            disableSatellite={true}
+                            height={"400px"}
+                            value={{
+                                polygon: currentObject?.polygon
+                                    ? currentObject.polygon.map((item) => ({
+                                          lat: item.latitude,
+                                          lng: item.longitude,
+                                      }))
+                                    : null,
+                                marker: popoverWork?.centroid
+                                    ? {
+                                          lat: popoverWork?.centroid.latitude,
+                                          lng: popoverWork?.centroid.longitude,
+                                      }
+                                    : null,
+                            }}
+                            center={
+                                currentObject?.centroid
+                                    ? {
+                                          lat: currentObject?.centroid?.latitude,
+                                          lng: currentObject?.centroid?.longitude,
+                                      }
+                                    : undefined
+                            }
+                            editable={false}
+                            selectingPoint={false}
+                            onChange={() => {}}
+                        />
+                        <Grid gap={12} style={{ marginTop: 20 }} columns={"1fr"}>
+                            <Input
+                                onChange={() => {}}
+                                value={popoverWork?.centroid?.latitude ?? "-"}
+                                formName={"Широта"}
+                                readonly={true}
+                            />
+                            <Input
+                                onChange={() => {}}
+                                value={popoverWork?.centroid?.longitude ?? "-"}
+                                formName={"Долгота"}
+                                readonly={true}
+                            />
+                        </Grid>
+                    </div>
+                </Overlay>
+            )}
         </div>
     );
 }
+
+export default observer(GanttWorks);
